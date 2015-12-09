@@ -5,6 +5,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TEMPLATE = app
 
+INCLUDEPATH += $$PWD/src
+
+QMAKE_CXXFLAGS += -std=c++11
+
 SOURCES += \
 	src/main.cpp \
 	src/mainwindow.cpp \

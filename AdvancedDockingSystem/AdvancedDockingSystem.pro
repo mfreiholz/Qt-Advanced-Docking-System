@@ -9,6 +9,8 @@ CONFIG += staticlib
 
 INCLUDEPATH += $$PWD/src
 
+QMAKE_CXXFLAGS += -std=c++11
+
 SOURCES += \
 	src/ads/section_content.cpp \
 	src/ads/ads.cpp \
