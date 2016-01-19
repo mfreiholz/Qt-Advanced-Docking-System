@@ -19,19 +19,6 @@ static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal)
 	return s;
 }
 
-//static void deleteEmptySplitter(ContainerWidget* container)
-//{
-//	auto splitters = container->findChildren<QSplitter*>();
-//	for (auto i = 0; i < splitters.count(); ++i)
-//	{
-//		if (splitters[i]->count() == 0 && container->_splitter != splitters[i])
-//		{
-//			qDebug() << "Delete empty QSplitter";
-//			splitters[i]->deleteLater();
-//		}
-//	}
-//}
-
 ///////////////////////////////////////////////////////////////////////
 
 ContainerWidget::ContainerWidget(QWidget *parent) :

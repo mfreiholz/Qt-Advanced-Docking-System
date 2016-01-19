@@ -9,6 +9,7 @@
 #include <QDrag>
 #include <QCursor>
 #include <QStyle>
+#include <QSplitter>
 
 #ifdef ADS_ANIMATIONS_ENABLED
 #include <QPropertyAnimation>
@@ -22,6 +23,21 @@
 #include "container_widget.h"
 
 ADS_NAMESPACE_BEGIN
+
+static void deleteEmptySplitter(ContainerWidget* container)
+{
+	auto splitters = container->findChildren<QSplitter*>();
+	for (auto i = 0; i < splitters.count(); ++i)
+	{
+		if (splitters[i]->count() == 0 && container->_splitter != splitters[i])
+		{
+			if (splitters[i] == container->_splitter)
+				continue;
+			qDebug() << "Delete empty QSplitter";
+			splitters[i]->deleteLater();
+		}
+	}
+}
 
 SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* parent) :
 	QFrame(parent),
@@ -103,12 +119,12 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 				resizeAnim->setDuration(ADS_ANIMATION_DURATION);
 
 				auto animGroup = new QParallelAnimationGroup(this);
-				QObject::connect(animGroup, &QPropertyAnimation::finished, [this, sw]()
+				QObject::connect(animGroup, &QPropertyAnimation::finished, [this, data, sw, loc]()
 				{
 					auto data = _fw->takeContent();
 					_fw->deleteLater();
 					_fw.clear();
-					sw->addContent(data, true);
+					cw->dropContent(data, sw, loc);
 				});
 				animGroup->addAnimation(moveAnim);
 				animGroup->addAnimation(resizeAnim);
@@ -203,6 +219,10 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 			delete section;
 			section = NULL;
 		}
+
+		// Delete old splitter, if it is empty now
+		deleteEmptySplitter(cw);
+
 		ev->accept();
 		return;
 	}
