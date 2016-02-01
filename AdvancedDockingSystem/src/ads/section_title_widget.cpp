@@ -29,12 +29,12 @@ static void deleteEmptySplitter(ContainerWidget* container)
 	auto splitters = container->findChildren<QSplitter*>();
 	for (auto i = 0; i < splitters.count(); ++i)
 	{
-		if (splitters[i]->count() == 0 && container->_splitter != splitters[i])
+		if (splitters[i]->count() == 0 /*&& container->_splitter != splitters[i]*/)
 		{
 			if (splitters[i] == container->_splitter)
 				continue;
 			qDebug() << "Delete empty QSplitter";
-			splitters[i]->deleteLater();
+			delete splitters[i];//splitters[i]->deleteLater();
 		}
 	}
 }
@@ -96,11 +96,7 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 		if (sw)
 		{
 			auto loc = showDropOverlay(sw);
-			if (loc == InvalidDropArea)
-			{
-				qDebug() << "Invalid drop area";
-			}
-			else
+			if (loc != InvalidDropArea)
 			{
 #if !defined(ADS_ANIMATIONS_ENABLED)
 				auto data = _fw->takeContent();
@@ -133,9 +129,28 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 			}
 		}
 		// Mouse is over a outer-edge drop area
-		else if (false)
+		else
 		{
+			DropArea dropArea = DropArea::InvalidDropArea;
+			if (cw->outerTopDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
+				dropArea = DropArea::TopDropArea;
+			if (cw->outerRightDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
+				dropArea = DropArea::RightDropArea;
+			if (cw->outerBottomDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
+				dropArea = DropArea::BottomDropArea;
+			if (cw->outerLeftDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
+				dropArea = DropArea::LeftDropArea;
 
+			if (dropArea != DropArea::InvalidDropArea)
+			{
+#if !defined(ADS_ANIMATIONS_ENABLED)
+				auto data = _fw->takeContent();
+				_fw->deleteLater();
+				_fw.clear();
+				cw->dropContent(data, NULL, dropArea);
+#else
+#endif
+			}
 		}
 	}
 
@@ -169,19 +184,19 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 			// Top, Right, Bottom, Left
 			else if (cw->outerTopDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				qDebug() << "Top area...";
+				showDropOverlay(cw, cw->outerTopDropRect());
 			}
 			else if (cw->outerRightDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				qDebug() << "Right area...";
+				showDropOverlay(cw, cw->outerRightDropRect());
 			}
 			else if (cw->outerBottomDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				qDebug() << "Bottom area...";
+				showDropOverlay(cw, cw->outerBottomDropRect());
 			}
 			else if (cw->outerLeftDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				qDebug() << "Left area...";
+				showDropOverlay(cw, cw->outerLeftDropRect());
 			}
 			else
 			{

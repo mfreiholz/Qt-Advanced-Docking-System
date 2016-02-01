@@ -79,6 +79,7 @@ public:
 class ContainerWidget* findParentContainerWidget(class QWidget* w);
 class SectionWidget* findParentSectionWidget(class QWidget* w);
 QSplitter* findParentSplitter(class QWidget* w);
+QSplitter* findImmediateSplitter(class QWidget* w);
 
 ADS_NAMESPACE_END
 

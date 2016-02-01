@@ -2,6 +2,7 @@
 #define DROP_OVERLAY_H
 
 #include <QFrame>
+#include <QRect>
 
 #include "ads.h"
 
@@ -54,6 +55,7 @@ private:
 
 
 DropArea showDropOverlay(QWidget* parent);
+void showDropOverlay(QWidget* parent, const QRect& areaRect);
 void hideDropOverlay();
 
 ADS_NAMESPACE_END

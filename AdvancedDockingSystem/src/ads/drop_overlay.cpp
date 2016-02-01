@@ -168,6 +168,7 @@ DropArea DropSplitAreas::cursorLocation() const
 
 static QPointer<DropOverlay> MyOverlay;
 static QPointer<QWidget> MyOverlayParent;
+static QRect MyOverlayParentRect;
 
 DropArea showDropOverlay(QWidget* parent)
 {
@@ -190,6 +191,27 @@ DropArea showDropOverlay(QWidget* parent)
 	return MyOverlay->cursorLocation();
 }
 
+void showDropOverlay(QWidget* parent, const QRect& areaRect)
+{
+	if (MyOverlay)
+	{
+		if (MyOverlayParent == parent && MyOverlayParentRect == areaRect)
+		{
+			return;
+		}
+		hideDropOverlay();
+	}
+
+	// Create overlay and move it to the parent's areaRect
+	MyOverlay = new DropOverlay(parent);
+	MyOverlay->resize(areaRect.size());
+	MyOverlay->move(parent->mapToGlobal(QPoint(areaRect.x(), areaRect.y())));
+	MyOverlay->show();
+	MyOverlayParent = parent;
+	MyOverlayParentRect = areaRect;
+	return;
+}
+
 void hideDropOverlay()
 {
 	if (MyOverlay)
@@ -197,6 +219,7 @@ void hideDropOverlay()
 		MyOverlay->hide();
 		delete MyOverlay;
 		MyOverlayParent.clear();
+		MyOverlayParentRect = QRect();
 	}
 }
 

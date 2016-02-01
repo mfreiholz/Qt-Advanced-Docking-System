@@ -57,4 +57,21 @@ QSplitter* findParentSplitter(class QWidget* w)
 	return cw;
 }
 
+QSplitter* findImmediateSplitter(class QWidget* w)
+{
+	QSplitter* sp = NULL;
+	QLayout* l = w->layout();
+	if (!l || l->count() <= 0)
+		return sp;
+	for (int i = 0; i < l->count(); ++i)
+	{
+		QLayoutItem* li = l->itemAt(0);
+		if (!li->widget())
+			continue;
+		if ((sp = dynamic_cast<QSplitter*>(li->widget())) != NULL)
+			break;
+	}
+	return sp;
+}
+
 ADS_NAMESPACE_END

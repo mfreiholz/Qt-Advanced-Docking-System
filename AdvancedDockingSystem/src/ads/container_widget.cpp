@@ -19,6 +19,41 @@ static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal)
 	return s;
 }
 
+static void dropContentOuterHelper(ContainerWidget* cw, QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append)
+{
+	auto sw = new SectionWidget(cw);
+	sw->addContent(data, true);
+
+	QSplitter* oldsp = findImmediateSplitter(cw);
+	if (oldsp->orientation() == orientation
+		|| oldsp->count() == 1)
+	{
+		oldsp->setOrientation(orientation);
+		if (append)
+			oldsp->addWidget(sw);
+		else
+			oldsp->insertWidget(0, sw);
+	}
+	else
+	{
+		auto sp = newSplitter(orientation);
+		if (append)
+		{
+			auto li = l->replaceWidget(oldsp, sp);
+			sp->addWidget(oldsp);
+			sp->addWidget(sw);
+			delete li;
+		}
+		else
+		{
+			sp->addWidget(sw);
+			auto li = l->replaceWidget(oldsp, sp);
+			sp->addWidget(oldsp);
+			delete li;
+		}
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////
 
 ContainerWidget::ContainerWidget(QWidget *parent) :
@@ -49,9 +84,24 @@ void ContainerWidget::setOrientation(Qt::Orientation orientation)
 
 void ContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area)
 {
+	// Drop on outer area
 	if (!targetSection)
 	{
-		qWarning() << "Drop on invalid targetSection";
+		switch (area)
+		{
+		case TopDropArea:
+			dropContentOuterHelper(this, _mainLayout, data, Qt::Vertical, false);
+			break;
+		case RightDropArea:
+			dropContentOuterHelper(this, _mainLayout, data, Qt::Horizontal, true);
+			break;
+		case BottomDropArea:
+			dropContentOuterHelper(this, _mainLayout, data, Qt::Vertical, true);
+			break;
+		case LeftDropArea:
+			dropContentOuterHelper(this, _mainLayout, data, Qt::Horizontal, false);
+			break;
+		}
 		return;
 	}
 
@@ -224,6 +274,27 @@ QRect ContainerWidget::outerLeftDropRect() const
 	auto r = rect();
 	auto w = r.width() / 100 * 5;
 	return QRect(r.left(), r.top(), w, r.height());
+}
+
+QByteArray ContainerWidget::saveGeometry() const
+{
+	QByteArray ba;
+	QDataStream out(&ba, QIODevice::WriteOnly);
+	out.setVersion(QDataStream::Qt_4_5);
+	out << (int) 0x00001337;
+	out << _sections.size();
+	return ba;
+}
+
+bool ContainerWidget::restoreGeometry(const QByteArray& data)
+{
+	QDataStream in(data);
+	in.setVersion(QDataStream::Qt_4_5);
+
+	int magic = 0;
+	in >> magic;
+
+	return false;
 }
 
 void ContainerWidget::paintEvent(QPaintEvent* e)

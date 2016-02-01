@@ -41,6 +41,10 @@ public:
 	QRect outerBottomDropRect() const;
 	QRect outerLeftDropRect() const;
 
+	// Geometry and state serialization
+	QByteArray saveGeometry() const;
+	bool restoreGeometry(const QByteArray& data);
+
 protected:
 	virtual void paintEvent(QPaintEvent*);
 	virtual void contextMenuEvent(QContextMenuEvent*);
