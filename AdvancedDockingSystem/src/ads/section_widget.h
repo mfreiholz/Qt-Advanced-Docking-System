@@ -39,6 +39,10 @@ public:
 	void addContent(SectionContent::RefPtr c);
 	void addContent(const InternalContentData& data, bool autoActivate);
 	InternalContentData take(int uid, bool del = true);
+	int indexOfContent(SectionContent::RefPtr c) const;
+	int indexOfContentByTitlePos(const QPoint& pos, QWidget* exclude = NULL) const;
+
+	void moveContent(int from, int to);
 
 public slots:
 	void setCurrentIndex(int index);

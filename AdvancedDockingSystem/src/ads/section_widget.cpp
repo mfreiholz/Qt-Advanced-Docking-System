@@ -189,9 +189,52 @@ InternalContentData SectionWidget::take(int uid, bool del)
 	return data;
 }
 
+int SectionWidget::indexOfContent(SectionContent::RefPtr c) const
+{
+	return _contents.indexOf(c);
+}
+
+int SectionWidget::indexOfContentByTitlePos(const QPoint& p, QWidget* exclude) const
+{
+	int index = -1;
+	for (int i = 0; i < _sectionTitles.size(); ++i)
+	{
+		if (_sectionTitles[i]->geometry().contains(p) && (exclude == NULL || _sectionTitles[i] != exclude))
+		{
+			index = i;
+			break;
+		}
+	}
+	return index;
+}
+
+void SectionWidget::moveContent(int from, int to)
+{
+	if (from >= _contents.size() || from < 0 || to >= _contents.size() || to < 0 || from == to)
+	{
+		qCritical() << "Invalid index for tab movement" << from << to;
+		return;
+	}
+
+	SectionContent::RefPtr sc = _contents.at(from);
+	_contents.move(from, to);
+	_sectionTitles.move(from, to);
+	_sectionContents.move(from, to);
+
+	QLayoutItem* liFrom = NULL;
+
+	liFrom = _tabsLayout->takeAt(from);
+	_tabsLayout->insertItem(to, liFrom);
+
+	liFrom = _contentsLayout->takeAt(from);
+	_contentsLayout->insertWidget(to, liFrom->widget());
+	delete liFrom;
+}
+
 void SectionWidget::setCurrentIndex(int index)
 {
 	// Set active TAB.
+	qDebug() << Q_FUNC_INFO << index;
 	for (int i = 0; i < _tabsLayout->count(); ++i)
 	{
 		auto item = _tabsLayout->itemAt(i);
