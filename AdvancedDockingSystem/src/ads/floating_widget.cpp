@@ -7,13 +7,15 @@
 #include <QMouseEvent>
 #include <QStyle>
 
+#include "container_widget.h"
 #include "section_title_widget.h"
 #include "section_content_widget.h"
 
 ADS_NAMESPACE_BEGIN
 
-FloatingWidget::FloatingWidget(SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent) :
+FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent) :
 	QWidget(parent, Qt::CustomizeWindowHint | Qt::Tool),
+	_container(container),
 	_content(sc),
 	_titleWidget(titleWidget),
 	_contentWidget(contentWidget)
@@ -47,6 +49,14 @@ FloatingWidget::FloatingWidget(SectionContent::RefPtr sc, SectionTitleWidget* ti
 	// Content
 	l->addWidget(contentWidget, 1);
 	contentWidget->show();
+
+	_container->_floatingWidgets.append(this);
+}
+
+FloatingWidget::~FloatingWidget()
+{
+	qDebug() << Q_FUNC_INFO;
+	_container->_floatingWidgets.removeAll(this);
 }
 
 InternalContentData FloatingWidget::takeContent()

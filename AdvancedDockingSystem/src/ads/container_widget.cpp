@@ -216,9 +216,8 @@ void ContainerWidget::splitSections(SectionWidget* s1, SectionWidget* s2, Qt::Or
 {
 	addSection(s1);
 	addSection(s2);
-	//_sections.append(s2);
 
-	auto currentSplitter = findParentSplitter(s1);
+	QSplitter* currentSplitter = findParentSplitter(s1);
 	if (currentSplitter)
 	{
 		const int index = currentSplitter->indexOf(s1);
@@ -229,14 +228,11 @@ void ContainerWidget::splitSections(SectionWidget* s1, SectionWidget* s2, Qt::Or
 		splitter->addWidget(s2);
 		currentSplitter->insertWidget(index, splitter);
 	}
-//	_mainLayout->replaceWidget(section1, splitter);
-//	splitter->addWidget(section1);
-//	splitter->addWidget(section2);
 }
 
 SectionWidget* ContainerWidget::sectionAt(const QPoint& pos) const
 {
-	auto gpos = mapToGlobal(pos);
+	const QPoint gpos = mapToGlobal(pos);
 	for (int i = 0; i < _sections.size(); ++i)
 	{
 		auto sw = _sections[i];
@@ -297,34 +293,35 @@ bool ContainerWidget::restoreGeometry(const QByteArray& data)
 	return false;
 }
 
-void ContainerWidget::paintEvent(QPaintEvent* e)
+QMenu* ContainerWidget::createContextMenu() const
 {
-	QFrame::paintEvent(e);
+	QMenu* m = new QMenu(const_cast<ContainerWidget*>(this));
 
-//	QPainter p(this);
-//	p.fillRect(outerTopDropRect(), QBrush(QColor(Qt::red)));
-//	p.fillRect(outerRightDropRect(), QBrush(QColor(Qt::green)));
-//	p.fillRect(outerBottomDropRect(), QBrush(QColor(Qt::blue)));
-//	p.fillRect(outerLeftDropRect(), QBrush(QColor(Qt::yellow)));
-}
+	// Contents of SectionWidgets
+	for (int i = 0; i < _sections.size(); ++i)
+	{
+		SectionWidget* sw = _sections.at(i);
+		QList<SectionContent::RefPtr> contents = sw->contents();
+		foreach (const SectionContent::RefPtr& c, contents)
+		{
+			m->addAction(QIcon(), QString("Content %1").arg(c->uid()));
+		}
+	}
 
-void ContainerWidget::contextMenuEvent(QContextMenuEvent*)
-{
-	qDebug() << Q_FUNC_INFO;
-//	if (_contents.size() <= 0)
-//	{
-//		QFrame::contextMenuEvent(e);
-//		return;
-//	}
+	// Contents of FloatingWidgets
+	if (_floatingWidgets.size())
+	{
+		if (m->actions().size())
+			m->addSeparator();
+		for (int i = 0; i < _floatingWidgets.size(); ++i)
+		{
+			FloatingWidget* fw = _floatingWidgets.at(i);
+			SectionContent::RefPtr c = fw->content();
+			m->addAction(QIcon(), QString("Floating %1").arg(c->uid()));
+		}
+	}
 
-//	// Menu with all available contents.
-//	QMenu m;
-//	for (int i = 0; i < _contents.size(); ++i)
-//	{
-//		auto c = _contents[i];
-//		m.addAction(QIcon(), QString("Content %1").arg(c->uid()));
-//	}
-//	m.exec();
+	return m;
 }
 
 ADS_NAMESPACE_END

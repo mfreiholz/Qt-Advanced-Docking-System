@@ -57,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 	ui->mainToolBar->hide();
+	ui->statusBar->hide();
 	QObject::connect(ui->actionAddSectionContent, &QAction::triggered, this, &MainWindow::onActionAddSectionContentTriggered);
 
 	// CREATE SOME TESTING DOCKS

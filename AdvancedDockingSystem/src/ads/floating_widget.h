@@ -11,6 +11,7 @@ class QBoxLayout;
 
 ADS_NAMESPACE_BEGIN
 
+class ContainerWidget;
 class SectionTitleWidget;
 class SectionContentWidget;
 
@@ -21,13 +22,17 @@ class FloatingWidget : public QWidget
 	Q_OBJECT
 
 public:
-	FloatingWidget(SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent = nullptr);
+	FloatingWidget(ContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent = nullptr);
+	virtual ~FloatingWidget();
+
 	InternalContentData takeContent();
+	SectionContent::RefPtr content() const { return _content; }
 
 protected:
 	virtual void closeEvent(QCloseEvent* e);
 
 private:
+	ContainerWidget* _container;
 	SectionContent::RefPtr _content;
 	SectionTitleWidget* _titleWidget;
 	SectionContentWidget* _contentWidget;

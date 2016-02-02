@@ -6,6 +6,7 @@
 #include <QPoint>
 #include <QList>
 class QSplitter;
+class QMenu;
 
 #include "ads.h"
 #include "section_content.h"
@@ -22,6 +23,7 @@ class ContainerWidget : public QFrame
 	Q_PROPERTY(Qt::Orientation orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
 
 	friend class SectionWidget;
+	friend class FloatingWidget;
 
 public:
 	explicit ContainerWidget(QWidget *parent = NULL);
@@ -45,9 +47,7 @@ public:
 	QByteArray saveGeometry() const;
 	bool restoreGeometry(const QByteArray& data);
 
-protected:
-	virtual void paintEvent(QPaintEvent*);
-	virtual void contextMenuEvent(QContextMenuEvent*);
+	QMenu* createContextMenu() const;
 
 private: // Make private!
 

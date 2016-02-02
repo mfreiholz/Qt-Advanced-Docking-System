@@ -226,14 +226,13 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 	}
 	// Begin to drag/float the SectionContent.
 	else if (!_fw && !_dragStartPos.isNull() && (ev->buttons() & Qt::LeftButton)
-			//&& (ev->globalPos() - _dragStartPos).manhattanLength() >= QApplication::startDragDistance()
 			&& (section = findParentSectionWidget(this)) != NULL
 			&& !section->titleAreaGeometry().contains(section->mapFromGlobal(ev->globalPos())))
 	{
 		// Create floating widget.
 		auto data = section->take(_content->uid(), false);
 
-		_fw = new FloatingWidget(data.content, data.titleWidget, data.contentWidget, cw);
+		_fw = new FloatingWidget(cw, data.content, data.titleWidget, data.contentWidget, cw);
 		_fw->resize(section->size());
 		setActiveTab(false);
 
@@ -267,6 +266,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 	}
 	// Begin to drag title inside the title area to switch its position inside the SectionWidget.
 	else if (!_dragStartPos.isNull() && (ev->buttons() & Qt::LeftButton)
+			&& (ev->pos() - _dragStartPos).manhattanLength() >= QApplication::startDragDistance() // Wait a few pixels before start moving
 			&& (section = findParentSectionWidget(this)) != NULL
 			&& section->titleAreaGeometry().contains(section->mapFromGlobal(ev->globalPos())))
 	{

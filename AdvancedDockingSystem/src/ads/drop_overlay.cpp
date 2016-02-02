@@ -29,12 +29,12 @@ DropOverlay::DropOverlay(QWidget *parent) :
 	QFrame(parent),
 	_splitAreas(NULL)
 {
-	setAttribute(Qt::WA_TransparentForMouseEvents);
+	//setAttribute(Qt::WA_TransparentForMouseEvents);
 	setWindowFlags(windowFlags() | Qt::Tool);
 	setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
 	setWindowOpacity(0.2);
 
-	auto l = new QBoxLayout(QBoxLayout::TopToBottom);
+	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
 	setLayout(l);
@@ -68,14 +68,44 @@ void DropOverlay::paintEvent(QPaintEvent*)
 {
 	QPainter p(this);
 
-	// Draw rect over the entire size + border.
-	auto r = rect();
-	r.setWidth(r.width() - 1);
-	r.setHeight(r.height() - 1);
+	// Draw rect based on location
+	QRect r = rect();
+	const DropArea da = cursorLocation();
+	switch (da)
+	{
+	case DropArea::TopDropArea:
+		r.setHeight(r.height() / 2);
+		break;
+	case DropArea::RightDropArea:
+		r.setX(r.width() / 2);
+		break;
+	case DropArea::BottomDropArea:
+		r.setY(r.height() / 2);
+		break;
+	case DropArea::LeftDropArea:
+		r.setWidth(r.width() / 2);
+		break;
+	case DropArea::CenterDropArea:
+		r = rect();
+		break;
+	default:
+		r = QRect();
+	}
+	if (!r.isNull())
+	{
+		p.fillRect(r, QBrush(QColor(0, 100, 255), Qt::Dense4Pattern));
+		p.setBrush(QBrush(QColor(0, 100, 255)));
+		p.drawRect(r);
+	}
 
-	p.fillRect(r, QBrush(QColor(0, 100, 255), Qt::Dense4Pattern));
-	p.setBrush(QBrush(QColor(0, 100, 255)));
-	p.drawRect(r);
+	// Draw rect over the entire size + border.
+//	auto r = rect();
+//	r.setWidth(r.width() - 1);
+//	r.setHeight(r.height() - 1);
+
+//	p.fillRect(r, QBrush(QColor(0, 100, 255), Qt::Dense4Pattern));
+//	p.setBrush(QBrush(QColor(0, 100, 255)));
+//	p.drawRect(r);
 }
 
 void DropOverlay::resizeEvent(QResizeEvent* e)
@@ -169,6 +199,7 @@ DropArea DropSplitAreas::cursorLocation() const
 static QPointer<DropOverlay> MyOverlay;
 static QPointer<QWidget> MyOverlayParent;
 static QRect MyOverlayParentRect;
+static DropArea MyOverlayLastLocation = InvalidDropArea;
 
 DropArea showDropOverlay(QWidget* parent)
 {
@@ -177,7 +208,13 @@ DropArea showDropOverlay(QWidget* parent)
 		if (MyOverlayParent == parent)
 		{
 			// Hint: We could update geometry of overlay here.
-			return MyOverlay->cursorLocation();
+			DropArea da = MyOverlay->cursorLocation();
+			if (da != MyOverlayLastLocation)
+			{
+				MyOverlay->repaint();
+				MyOverlayLastLocation = da;
+			}
+			return da;
 		}
 		hideDropOverlay();
 	}
@@ -220,6 +257,7 @@ void hideDropOverlay()
 		delete MyOverlay;
 		MyOverlayParent.clear();
 		MyOverlayParentRect = QRect();
+		MyOverlayLastLocation = InvalidDropArea;
 	}
 }
 
