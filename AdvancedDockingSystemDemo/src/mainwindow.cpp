@@ -21,26 +21,32 @@ static int CONTENT_COUNT = 0;
 
 static ads::SectionContent::RefPtr createLongTextLabelSC()
 {
-	auto w = new QLabel();
-	w->setWordWrap(true);
-	w->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	w->setText(QString("Lorem Ipsum ist ein einfacher Demo-Text für die Print- und Schriftindustrie. Lorem Ipsum ist in der Industrie bereits der Standard Demo-Text seit 1500, als ein unbekannter Schriftsteller eine Hand voll Wörter nahm und diese durcheinander warf um ein Musterbuch zu erstellen. Es hat nicht nur 5 Jahrhunderte überlebt, sondern auch in Spruch in die elektronische Schriftbearbeitung geschafft (bemerke, nahezu unverändert). Bekannt wurde es 1960, mit dem erscheinen von Letrase, welches Passagen von Lorem Ipsum enhielt, so wie Desktop Software wie Aldus PageMaker - ebenfalls mit Lorem Ipsum."));
-	return ads::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Title %1").arg(++CONTENT_COUNT)), w);
+	QWidget* w = new QWidget();
+	QBoxLayout* bl = new QBoxLayout(QBoxLayout::TopToBottom);
+	w->setLayout(bl);
+
+	QLabel* l = new QLabel();
+	l->setWordWrap(true);
+	l->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	l->setText(QString("Lorem Ipsum ist ein einfacher Demo-Text für die Print- und Schriftindustrie. Lorem Ipsum ist in der Industrie bereits der Standard Demo-Text seit 1500, als ein unbekannter Schriftsteller eine Hand voll Wörter nahm und diese durcheinander warf um ein Musterbuch zu erstellen. Es hat nicht nur 5 Jahrhunderte überlebt, sondern auch in Spruch in die elektronische Schriftbearbeitung geschafft (bemerke, nahezu unverändert). Bekannt wurde es 1960, mit dem erscheinen von Letrase, welches Passagen von Lorem Ipsum enhielt, so wie Desktop Software wie Aldus PageMaker - ebenfalls mit Lorem Ipsum."));
+	bl->addWidget(l);
+
+	return ads::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Label %1").arg(++CONTENT_COUNT)), w);
 }
 
 static ads::SectionContent::RefPtr createCalendarSC()
 {
-	auto w = new QCalendarWidget();
-	return ads::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Title %1").arg(++CONTENT_COUNT)), w);
+	QCalendarWidget* w = new QCalendarWidget();
+	return ads::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Calendar %1").arg(++CONTENT_COUNT)), w);
 }
 
-static ads::SectionContent::RefPtr createTreeSC()
+static ads::SectionContent::RefPtr createFileSystemTreeSC()
 {
-	auto m = new QFileSystemModel();
-	m->setRootPath(QDir::currentPath());
-	auto w = new QTreeView();
-	w->setModel(m);
-	return ads::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Title %1").arg(++CONTENT_COUNT)), w);
+	QTreeView* w = new QTreeView();
+//	QFileSystemModel* m = new QFileSystemModel(w);
+//	m->setRootPath(QDir::currentPath());
+//	w->setModel(m);
+	return ads::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Filesystem %1").arg(++CONTENT_COUNT)), w);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -50,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+	ui->mainToolBar->hide();
 	QObject::connect(ui->actionAddSectionContent, &QAction::triggered, this, &MainWindow::onActionAddSectionContentTriggered);
 
 	// CREATE SOME TESTING DOCKS
@@ -57,26 +64,23 @@ MainWindow::MainWindow(QWidget *parent) :
 	_container->setOrientation(Qt::Vertical);
 	setCentralWidget(_container);
 
-	auto leftSection = new ads::SectionWidget(_container);
-	leftSection->addContent(createLongTextLabelSC());
-	_container->addSection(leftSection);
+	ads::SectionWidget* section = NULL;
 
-	auto middleSection = new ads::SectionWidget(_container);
-	middleSection->addContent(createCalendarSC());
-	_container->addSection(middleSection);
+	section = new ads::SectionWidget(_container);
+	section->addContent(createLongTextLabelSC());
+	_container->addSection(section);
 
-	auto middleBottom = new ads::SectionWidget(_container);
-	middleBottom->addContent(createLongTextLabelSC());
-	_container->addSection(middleBottom);
-//	_container->splitSections(middleSection, middleBottom, Qt::Vertical);
+	section = new ads::SectionWidget(_container);
+	section->addContent(createCalendarSC());
+	_container->addSection(section);
 
-	auto rightSection = new ads::SectionWidget(_container);
-	rightSection->addContent(createLongTextLabelSC());
-	_container->addSection(rightSection);
+	section = new ads::SectionWidget(_container);
+	section->addContent(createFileSystemTreeSC());
+	_container->addSection(section);
 
-//	auto middleTopRight = new ads::SectionWidget(_container);
-//	middleTopRight->addContent(createLongTextLabelSC());
-//	_container->splitSections(middleSection, middleTopRight);
+	section = new ads::SectionWidget(_container);
+	section->addContent(createCalendarSC());
+	_container->addSection(section);
 }
 
 MainWindow::~MainWindow()

@@ -64,7 +64,7 @@ ContainerWidget::ContainerWidget(QWidget *parent) :
 {
 	_mainLayout = new QGridLayout();
 	_mainLayout->setContentsMargins(9, 9, 9, 9);
-	_mainLayout->setSpacing(9);
+	_mainLayout->setSpacing(0);
 	setLayout(_mainLayout);
 }
 

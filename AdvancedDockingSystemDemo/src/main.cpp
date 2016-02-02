@@ -38,15 +38,26 @@ int main(int argc, char *argv[])
 
 	Q_INIT_RESOURCE(ads);
 
-	// Development style.
+	// Default style.
 	a.setStyleSheet(""
-		" QSplitter::handle { border: 1px solid #000000; background: #000000; } "
-		" ads--ContainerWidget { border: 1px solid #ff0000; background: #FFE6E6; padding: 6px; } "
-		" ads--SectionWidget { border: 1px solid #00ff00; background: #E6FFE6; padding: 6px; } "
-		" ads--SectionTitleWidget { border: 1px solid #0000ff; background: #E6E6FF; padding: 6px; } "
-		" ads--SectionTitleWidget[activeTab=\"true\"] { border: 1px solid #0000ff; background: #9696FF; padding: 6px; } "
-		" ads--SectionContentWidget { border: 1px solid #FFFF00; background: #FFFFE6; padding: 6px; } "
+		" QSplitter::handle { background: palette(dark); } "
+		" ads--ContainerWidget { background: palette(dark); } "
+		" ads--SectionWidget { background: palette(window); } "
+		" ads--SectionTitleWidget { background: palette(window); } "
+		" ads--SectionTitleWidget[activeTab=\"true\"] { background: palette(light); } "
+		" ads--SectionContentWidget { border: 1px solid palette(light); } "
+		"  "
 	);
+
+	// Development style.
+//	a.setStyleSheet(""
+//		" QSplitter::handle { border: 1px solid #000000; background: #000000; } "
+//		" ads--ContainerWidget { border: 1px solid #ff0000; background: #FFE6E6; padding: 6px; } "
+//		" ads--SectionWidget { border: 1px solid #00ff00; background: #E6FFE6; padding: 6px; } "
+//		" ads--SectionTitleWidget { border: 1px solid #0000ff; background: #E6E6FF; padding: 6px; } "
+//		" ads--SectionTitleWidget[activeTab=\"true\"] { border: 1px solid #0000ff; background: #9696FF; padding: 6px; } "
+//		" ads--SectionContentWidget { border: 1px solid #FFFF00; background: #FFFFE6; padding: 6px; } "
+//	);
 
 	// PARTsolutions style.
 //	a.setStyleSheet(""

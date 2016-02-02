@@ -31,8 +31,6 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	_uid(NextUid++),
 	_container(parent)
 {
-	//setAttribute(Qt::WA_DeleteOnClose, true);
-
 	auto l = new QBoxLayout(QBoxLayout::TopToBottom);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
