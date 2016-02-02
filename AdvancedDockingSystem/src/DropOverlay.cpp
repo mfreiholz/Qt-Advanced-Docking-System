@@ -1,4 +1,4 @@
-#include "drop_overlay.h"
+#include "ads/DropOverlay.h"
 
 #include <QDebug>
 #include <QPointer>

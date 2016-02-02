@@ -6,7 +6,7 @@
 #include <QHash>
 #include <QSharedPointer>
 
-#include "ads.h"
+#include "ads/API.h"
 
 ADS_NAMESPACE_BEGIN
 

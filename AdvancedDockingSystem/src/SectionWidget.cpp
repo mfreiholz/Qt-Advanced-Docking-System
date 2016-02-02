@@ -1,4 +1,4 @@
-#include "section_widget.h"
+#include "ads/SectionWidget.h"
 
 #include <QApplication>
 #include <QBoxLayout>
@@ -14,12 +14,12 @@
 #include <QGraphicsDropShadowEffect>
 #endif
 
-#include "drop_overlay.h"
-#include "section_content.h"
-#include "section_title_widget.h"
-#include "section_content_widget.h"
-#include "floating_widget.h"
-#include "container_widget.h"
+#include "ads/DropOverlay.h"
+#include "ads/SectionContent.h"
+#include "ads/SectionTitleWidget.h"
+#include "ads/SectionContentWidget.h"
+#include "ads/FloatingWidget.h"
+#include "ads/ContainerWidget.h"
 
 ADS_NAMESPACE_BEGIN
 

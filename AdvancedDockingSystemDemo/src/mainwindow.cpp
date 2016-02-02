@@ -9,9 +9,9 @@
 #include <QTreeView>
 #include <QFileSystemModel>
 
-#include "ads/container_widget.h"
-#include "ads/section_widget.h"
-#include "ads/section_content.h"
+#include "ads/ContainerWidget.h"
+#include "ads/SectionWidget.h"
+#include "ads/SectionContent.h"
 
 #include "icontitlewidget.h"
 

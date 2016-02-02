@@ -1,4 +1,4 @@
-#include "floating_widget.h"
+#include "ads/FloatingWidget.h"
 
 #include <QDebug>
 #include <QBoxLayout>
@@ -7,9 +7,9 @@
 #include <QMouseEvent>
 #include <QStyle>
 
-#include "container_widget.h"
-#include "section_title_widget.h"
-#include "section_content_widget.h"
+#include "ads/ContainerWidget.h"
+#include "ads/SectionTitleWidget.h"
+#include "ads/SectionContentWidget.h"
 
 ADS_NAMESPACE_BEGIN
 

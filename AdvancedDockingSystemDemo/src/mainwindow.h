@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "ads/ads.h"
+#include "ads/API.h"
 
 namespace Ui {
 class MainWindow;

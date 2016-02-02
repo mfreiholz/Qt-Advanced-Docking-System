@@ -8,10 +8,10 @@
 class QSplitter;
 class QMenu;
 
-#include "ads.h"
-#include "section_content.h"
-#include "section_widget.h"
-#include "floating_widget.h"
+#include "ads/API.h"
+#include "ads/SectionContent.h"
+#include "ads/SectionWidget.h"
+#include "ads/FloatingWidget.h"
 
 ADS_NAMESPACE_BEGIN
 

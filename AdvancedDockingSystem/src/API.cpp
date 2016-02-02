@@ -1,9 +1,9 @@
-#include "ads.h"
+#include "ads/API.h"
 
 #include <QWidget>
 #include <QSplitter>
 
-#include "container_widget.h"
+#include "ads/ContainerWidget.h"
 
 const QString DragData::MIMETYPE = QString("qt/ads-dragdata");
 

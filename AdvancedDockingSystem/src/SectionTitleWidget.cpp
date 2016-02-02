@@ -1,4 +1,4 @@
-#include "section_title_widget.h"
+#include "ads/SectionTitleWidget.h"
 
 #include <QDebug>
 #include <QString>
@@ -16,11 +16,11 @@
 #include <QParallelAnimationGroup>
 #endif
 
-#include "drop_overlay.h"
-#include "section_content.h"
-#include "section_widget.h"
-#include "floating_widget.h"
-#include "container_widget.h"
+#include "ads/DropOverlay.h"
+#include "ads/SectionContent.h"
+#include "ads/SectionWidget.h"
+#include "ads/FloatingWidget.h"
+#include "ads/ContainerWidget.h"
 
 ADS_NAMESPACE_BEGIN
 

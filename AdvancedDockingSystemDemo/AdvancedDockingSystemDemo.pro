@@ -27,8 +27,8 @@ win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../AdvancedDockingSyst
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../AdvancedDockingSystem/debug/ -lAdvancedDockingSystem
 else:unix: LIBS += -L$$OUT_PWD/../AdvancedDockingSystem/ -lAdvancedDockingSystem
 
-INCLUDEPATH += $$PWD/../AdvancedDockingSystem/src
-DEPENDPATH += $$PWD/../AdvancedDockingSystem/src
+INCLUDEPATH += $$PWD/../AdvancedDockingSystem/include
+DEPENDPATH += $$PWD/../AdvancedDockingSystem/include
 
 win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../AdvancedDockingSystem/release/libAdvancedDockingSystem.a
 else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../AdvancedDockingSystem/debug/libAdvancedDockingSystem.a

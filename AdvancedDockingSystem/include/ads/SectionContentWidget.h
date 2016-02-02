@@ -3,8 +3,8 @@
 
 #include <QFrame>
 
-#include "ads.h"
-#include "section_content.h"
+#include "ads/API.h"
+#include "ads/SectionContent.h"
 
 ADS_NAMESPACE_BEGIN
 

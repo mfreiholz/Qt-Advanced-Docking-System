@@ -8,28 +8,29 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 INCLUDEPATH += $$PWD/src
+INCLUDEPATH += $$PWD/include
 
 QMAKE_CXXFLAGS += -std=c++11
 
 SOURCES += \
-	src/ads/section_content.cpp \
-	src/ads/ads.cpp \
-	src/ads/section_widget.cpp \
-	src/ads/section_title_widget.cpp \
-	src/ads/container_widget.cpp \
-	src/ads/drop_overlay.cpp \
-	src/ads/floating_widget.cpp \
-	src/ads/section_content_widget.cpp
+	src/API.cpp \
+  src/ContainerWidget.cpp \
+  src/SectionWidget.cpp \
+  src/SectionContent.cpp \
+	src/SectionTitleWidget.cpp \
+	src/SectionContentWidget.cpp \
+	src/DropOverlay.cpp \
+	src/FloatingWidget.cpp
 
 HEADERS += \
-	src/ads/ads.h \
-	src/ads/container_widget.h \
-	src/ads/section_widget.h \
-	src/ads/section_content.h \
-	src/ads/section_title_widget.h \
-	src/ads/section_content_widget.h \
-	src/ads/drop_overlay.h \
-	src/ads/floating_widget.h
+	include/ads/API.h \
+	include/ads/ContainerWidget.h \
+	include/ads/SectionWidget.h \
+	include/ads/SectionContent.h \
+	include/ads/SectionTitleWidget.h \
+	include/ads/SectionContentWidget.h \
+	include/ads/DropOverlay.h \
+	include/ads/FloatingWidget.h
 
 RESOURCES += \
 	res/ads.qrc

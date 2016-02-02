@@ -1,4 +1,4 @@
-#include "section_content.h"
+#include "ads/SectionContent.h"
 
 #include <QLabel>
 

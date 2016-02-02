@@ -1,4 +1,4 @@
-#include "section_content_widget.h"
+#include "ads/SectionContentWidget.h"
 
 #include <QBoxLayout>
 
