@@ -315,6 +315,7 @@ QMenu* ContainerWidget::createContextMenu() const
 			QAction* a = m->addAction(QIcon(), QString("Floating %1").arg(c->uid()));
 			a->setCheckable(true);
 			a->setChecked(fw->isVisible());
+			QObject::connect(a, &QAction::toggled, fw, &FloatingWidget::setVisible);
 		}
 	}
 

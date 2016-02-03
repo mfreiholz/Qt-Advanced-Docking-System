@@ -23,6 +23,9 @@ public:
 private slots:
 	void onActionAddSectionContentTriggered();
 
+protected:
+	virtual void contextMenuEvent(QContextMenuEvent* e);
+
 private:
 	Ui::MainWindow *ui;
 	ads::ContainerWidget* _container;

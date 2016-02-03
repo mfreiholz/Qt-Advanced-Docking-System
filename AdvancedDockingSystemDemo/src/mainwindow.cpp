@@ -101,3 +101,10 @@ void MainWindow::onActionAddSectionContentTriggered()
 //	_container->addSection(section);
 //	section->addContent(content);
 }
+
+void MainWindow::contextMenuEvent(QContextMenuEvent* e)
+{
+	QMenu* m = _container->createContextMenu();
+	m->exec(QCursor::pos());
+	delete m;
+}
