@@ -1,5 +1,5 @@
-#ifndef ADS_H
-#define ADS_H
+#ifndef ADS_API_H
+#define ADS_API_H
 
 #include <QByteArray>
 #include <QDataStream>
@@ -22,39 +22,6 @@ class QSplitter;
 //#define ADS_ANIMATIONS_ENABLED 1
 //#define ADS_ANIMATION_DURATION 150
 
-// DragData contains information about dragged contents (SectionContent).
-// e.g. from where is has been dragged.
-class DragData
-{
-public:
-	static const QString MIMETYPE;
-
-	QByteArray serialize() const
-	{
-		QByteArray ba;
-		QDataStream out(&ba, QIODevice::WriteOnly);
-		out << contentUid;
-		out << sectionUid;
-		return ba;
-	}
-
-	void deserialize(const QByteArray& bytes)
-	{
-		QDataStream in(bytes);
-		in >> contentUid;
-		in >> sectionUid;
-	}
-
-	QString toString() const
-	{
-		return QString("content-uid=%1; section-uid=%2").arg(contentUid).arg(sectionUid);
-	}
-
-public:
-	int contentUid;
-	int sectionUid;
-};
-
 ADS_NAMESPACE_BEGIN
 
 enum DropArea
@@ -76,11 +43,11 @@ public:
 	class SectionContentWidget* contentWidget;
 };
 
+void deleteEmptySplitter(class ContainerWidget* container);
 class ContainerWidget* findParentContainerWidget(class QWidget* w);
 class SectionWidget* findParentSectionWidget(class QWidget* w);
 QSplitter* findParentSplitter(class QWidget* w);
 QSplitter* findImmediateSplitter(class QWidget* w);
 
 ADS_NAMESPACE_END
-
-#endif // ADC_H
+#endif

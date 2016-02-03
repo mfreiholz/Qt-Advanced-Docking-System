@@ -1,6 +1,7 @@
 #ifndef ADS_CONTAINERWIDGET_H
 #define ADS_CONTAINERWIDGET_H
 
+#include <QPointer>
 #include <QFrame>
 #include <QGridLayout>
 #include <QPoint>
@@ -49,9 +50,6 @@ public:
 
 	QMenu* createContextMenu() const;
 
-private: // Make private!
-
-
 signals:
 	void orientationChanged();
 
@@ -66,7 +64,7 @@ public:
 	// Layout stuff
 	QGridLayout* _mainLayout;
 	Qt::Orientation _orientation;   ///< Default orientation of new sections.
-	QSplitter* _splitter;           ///< Default/main splitter.
+	QPointer<QSplitter> _splitter;           ///< Default/main splitter.
 };
 
 ADS_NAMESPACE_END

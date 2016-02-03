@@ -1,3 +1,4 @@
+
 #include "ads/FloatingWidget.h"
 
 #include <QDebug>
@@ -20,21 +21,22 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 	_titleWidget(titleWidget),
 	_contentWidget(contentWidget)
 {
-	auto l = new QBoxLayout(QBoxLayout::TopToBottom);
+	auto l = new QBoxLayout(QBoxLayout::TopToBottom, this);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
 	setLayout(l);
 
 	// Title + Controls
-	_titleLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+	_titleLayout = new QBoxLayout(QBoxLayout::LeftToRight, this);
 	_titleLayout->addWidget(titleWidget, 1);
+	l->addLayout(_titleLayout, 0);
 
-	auto maximizeButton = new QPushButton();
-	maximizeButton->setObjectName("maximizeButton");
-	maximizeButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarMaxButton));
-	maximizeButton->setToolTip(tr("Maximize"));
-	maximizeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	_titleLayout->addWidget(maximizeButton);
+//	auto maximizeButton = new QPushButton();
+//	maximizeButton->setObjectName("maximizeButton");
+//	maximizeButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarMaxButton));
+//	maximizeButton->setToolTip(tr("Maximize"));
+//	maximizeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+//	_titleLayout->addWidget(maximizeButton);
 
 	auto closeButton = new QPushButton();
 	closeButton->setObjectName("closeButton");
@@ -43,8 +45,6 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 	closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	_titleLayout->addWidget(closeButton);
 	QObject::connect(closeButton, &QPushButton::clicked, this, &FloatingWidget::close);
-
-	l->addLayout(_titleLayout, 0);
 
 	// Content
 	l->addWidget(contentWidget, 1);

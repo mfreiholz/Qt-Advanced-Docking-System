@@ -10,12 +10,11 @@ ADS_NAMESPACE_BEGIN
 
 // Static Helper //////////////////////////////////////////////////////
 
-static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal)
+static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = 0)
 {
-	QSplitter* s = new QSplitter();
+	QSplitter* s = new QSplitter(orientation, parent);
 	s->setChildrenCollapsible(false);
 	s->setOpaqueResize(false);
-	s->setOrientation(orientation);
 	return s;
 }
 
@@ -105,24 +104,24 @@ void ContainerWidget::dropContent(const InternalContentData& data, SectionWidget
 		return;
 	}
 
-	auto targetSectionSplitter = findParentSplitter(targetSection);
+	QSplitter* targetSectionSplitter = findParentSplitter(targetSection);
 
 	// Drop logic based on area.
 	switch (area)
 	{
 	case TopDropArea:
 	{
-		auto sw = new SectionWidget(this);
+		SectionWidget* sw = new SectionWidget(this);
 		sw->addContent(data, true);
 		if (targetSectionSplitter->orientation() == Qt::Vertical)
 		{
-			auto index = targetSectionSplitter->indexOf(targetSection);
+			const int index = targetSectionSplitter->indexOf(targetSection);
 			targetSectionSplitter->insertWidget(index, sw);
 		}
 		else
 		{
-			auto index = targetSectionSplitter->indexOf(targetSection);
-			auto s = newSplitter(Qt::Vertical);
+			const int index = targetSectionSplitter->indexOf(targetSection);
+			QSplitter* s = newSplitter(Qt::Vertical);
 			s->addWidget(sw);
 			s->addWidget(targetSection);
 			targetSectionSplitter->insertWidget(index, s);
@@ -131,17 +130,17 @@ void ContainerWidget::dropContent(const InternalContentData& data, SectionWidget
 	}
 	case RightDropArea:
 	{
-		auto sw = new SectionWidget(this);
+		SectionWidget* sw = new SectionWidget(this);
 		sw->addContent(data, true);
 		if (targetSectionSplitter->orientation() == Qt::Horizontal)
 		{
-			auto index = targetSectionSplitter->indexOf(targetSection);
+			const int index = targetSectionSplitter->indexOf(targetSection);
 			targetSectionSplitter->insertWidget(index + 1, sw);
 		}
 		else
 		{
-			auto index = targetSectionSplitter->indexOf(targetSection);
-			auto s = newSplitter(Qt::Horizontal);
+			const int index = targetSectionSplitter->indexOf(targetSection);
+			QSplitter* s = newSplitter(Qt::Horizontal);
 			s->addWidget(targetSection);
 			s->addWidget(sw);
 			targetSectionSplitter->insertWidget(index, s);
@@ -199,9 +198,7 @@ void ContainerWidget::addSection(SectionWidget* section)
 	// Create default splitter.
 	if (!_splitter)
 	{
-		_splitter = new QSplitter(_orientation);
-		_splitter->setChildrenCollapsible(false);
-		_splitter->setOpaqueResize(false);
+		_splitter = newSplitter(_orientation);
 		_mainLayout->addWidget(_splitter, 0, 0);
 	}
 	if (_splitter->indexOf(section) != -1)
@@ -221,9 +218,7 @@ void ContainerWidget::splitSections(SectionWidget* s1, SectionWidget* s2, Qt::Or
 	if (currentSplitter)
 	{
 		const int index = currentSplitter->indexOf(s1);
-		auto splitter = new QSplitter(orientation, this);
-		splitter->setChildrenCollapsible(false);
-		splitter->setOpaqueResize(false);
+		QSplitter* splitter = newSplitter(orientation, this);
 		splitter->addWidget(s1);
 		splitter->addWidget(s2);
 		currentSplitter->insertWidget(index, splitter);
@@ -317,7 +312,9 @@ QMenu* ContainerWidget::createContextMenu() const
 		{
 			FloatingWidget* fw = _floatingWidgets.at(i);
 			SectionContent::RefPtr c = fw->content();
-			m->addAction(QIcon(), QString("Floating %1").arg(c->uid()));
+			QAction* a = m->addAction(QIcon(), QString("Floating %1").arg(c->uid()));
+			a->setCheckable(true);
+			a->setChecked(fw->isVisible());
 		}
 	}
 

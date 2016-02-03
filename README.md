@@ -21,6 +21,7 @@ Open the `build.pro` with QtCreator and start the build, that's it.
 
 ## TODOs
 Sorted by priority
+- Improve FloatingWidget (Remove maximize button, only support close-button which hides the widget)
 - Serialize state/size/positions of dockings
 - Deserialize state/size/positions of dockings
 - Make compatible with Qt 4.5 (\*ROFL!\*)
@@ -28,7 +29,7 @@ Sorted by priority
 - Pin contents: Pins a content and its title widget to the edge and opens on click/hover as long as it has focus
 
 ## Bugs
-- Working with outer-edge-drops sometimes leaves empty splitters
+- **[DONE]** Working with outer-edge-drops sometimes leaves empty splitters
 - **[DONE]** Clean up of unused e.g. count()<=1 QSplitters doesn't work well
 
 ## Credits

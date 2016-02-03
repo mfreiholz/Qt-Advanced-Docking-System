@@ -24,21 +24,6 @@
 
 ADS_NAMESPACE_BEGIN
 
-static void deleteEmptySplitter(ContainerWidget* container)
-{
-	auto splitters = container->findChildren<QSplitter*>();
-	for (auto i = 0; i < splitters.count(); ++i)
-	{
-		if (splitters[i]->count() == 0 /*&& container->_splitter != splitters[i]*/)
-		{
-			if (splitters[i] == container->_splitter)
-				continue;
-			qDebug() << "Delete empty QSplitter";
-			delete splitters[i];//splitters[i]->deleteLater();
-		}
-	}
-}
-
 SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* parent) :
 	QFrame(parent),
 	_content(content),

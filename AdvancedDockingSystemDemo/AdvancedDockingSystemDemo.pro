@@ -7,7 +7,15 @@ TEMPLATE = app
 
 INCLUDEPATH += $$PWD/src
 
-QMAKE_CXXFLAGS += -std=c++11
+windows {
+	# MinGW
+	*-g++* {
+		QMAKE_CXXFLAGS += -std=c++11
+	}
+	# MSVC
+	*-msvc* {
+	}
+}
 
 SOURCES += \
 	src/main.cpp \

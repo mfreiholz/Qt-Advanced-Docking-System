@@ -10,7 +10,15 @@ CONFIG += staticlib
 INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/include
 
-QMAKE_CXXFLAGS += -std=c++11
+windows {
+	# MinGW
+	*-g++* {
+		QMAKE_CXXFLAGS += -std=c++11
+	}
+	# MSVC
+	*-msvc* {
+	}
+}
 
 SOURCES += \
 	src/API.cpp \
