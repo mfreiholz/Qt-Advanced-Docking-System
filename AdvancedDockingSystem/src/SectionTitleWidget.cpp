@@ -186,19 +186,19 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 			// Top, Right, Bottom, Left
 			else if (cw->outerTopDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				showDropOverlay(cw, cw->outerTopDropRect());
+				showDropOverlay(cw, cw->outerTopDropRect(), DropArea::TopDropArea);
 			}
 			else if (cw->outerRightDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				showDropOverlay(cw, cw->outerRightDropRect());
+				showDropOverlay(cw, cw->outerRightDropRect(), DropArea::RightDropArea);
 			}
 			else if (cw->outerBottomDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				showDropOverlay(cw, cw->outerBottomDropRect());
+				showDropOverlay(cw, cw->outerBottomDropRect(), DropArea::BottomDropArea);
 			}
 			else if (cw->outerLeftDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				showDropOverlay(cw, cw->outerLeftDropRect());
+				showDropOverlay(cw, cw->outerLeftDropRect(), DropArea::LeftDropArea);
 			}
 			else
 			{

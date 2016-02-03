@@ -100,6 +100,8 @@ void ContainerWidget::dropContent(const InternalContentData& data, SectionWidget
 		case LeftDropArea:
 			dropContentOuterHelper(this, _mainLayout, data, Qt::Horizontal, false);
 			break;
+		default:
+			return;
 		}
 		return;
 	}
@@ -190,6 +192,8 @@ void ContainerWidget::dropContent(const InternalContentData& data, SectionWidget
 		targetSection->addContent(data, true);
 		break;
 	}
+	default:
+		break;
 	}
 }
 

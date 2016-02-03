@@ -26,13 +26,16 @@ ADS_NAMESPACE_BEGIN
 
 enum DropArea
 {
-	TopDropArea,
-	RightDropArea,
-	BottomDropArea,
-	LeftDropArea,
-	CenterDropArea,
-	InvalidDropArea
+	InvalidDropArea = 0,
+	TopDropArea = 1,
+	RightDropArea = 2,
+	BottomDropArea = 4,
+	LeftDropArea = 8,
+	CenterDropArea = 16,
+
+	AllAreas = TopDropArea | RightDropArea | BottomDropArea | LeftDropArea | CenterDropArea
 };
+Q_DECLARE_FLAGS(DropAreas, DropArea)
 
 class InternalContentData
 {
