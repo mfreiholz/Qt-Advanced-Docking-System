@@ -22,7 +22,7 @@ static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal, QWid
 
 static void dropContentOuterHelper(ContainerWidget* cw, QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append)
 {
-	auto sw = new SectionWidget(cw);
+	SectionWidget* sw = new SectionWidget(cw);
 	sw->addContent(data, true);
 
 	QSplitter* oldsp = findImmediateSplitter(cw);
@@ -37,10 +37,10 @@ static void dropContentOuterHelper(ContainerWidget* cw, QLayout* l, const Intern
 	}
 	else
 	{
-		auto sp = newSplitter(orientation);
+		QSplitter* sp = newSplitter(orientation);
 		if (append)
 		{
-			auto li = l->replaceWidget(oldsp, sp);
+			QLayoutItem* li = l->replaceWidget(oldsp, sp);
 			sp->addWidget(oldsp);
 			sp->addWidget(sw);
 			delete li;
@@ -48,7 +48,7 @@ static void dropContentOuterHelper(ContainerWidget* cw, QLayout* l, const Intern
 		else
 		{
 			sp->addWidget(sw);
-			auto li = l->replaceWidget(oldsp, sp);
+			QLayoutItem* li = l->replaceWidget(oldsp, sp);
 			sp->addWidget(oldsp);
 			delete li;
 		}
@@ -153,17 +153,17 @@ void ContainerWidget::dropContent(const InternalContentData& data, SectionWidget
 	}
 	case BottomDropArea:
 	{
-		auto sw = new SectionWidget(this);
+		SectionWidget* sw = new SectionWidget(this);
 		sw->addContent(data, true);
 		if (targetSectionSplitter->orientation() == Qt::Vertical)
 		{
-			auto index = targetSectionSplitter->indexOf(targetSection);
+			int index = targetSectionSplitter->indexOf(targetSection);
 			targetSectionSplitter->insertWidget(index + 1, sw);
 		}
 		else
 		{
-			auto index = targetSectionSplitter->indexOf(targetSection);
-			auto s = newSplitter(Qt::Vertical);
+			int index = targetSectionSplitter->indexOf(targetSection);
+			QSplitter* s = newSplitter(Qt::Vertical);
 			s->addWidget(targetSection);
 			s->addWidget(sw);
 			targetSectionSplitter->insertWidget(index, s);
@@ -172,18 +172,18 @@ void ContainerWidget::dropContent(const InternalContentData& data, SectionWidget
 	}
 	case LeftDropArea:
 	{
-		auto sw = new SectionWidget(this);
+		SectionWidget* sw = new SectionWidget(this);
 		sw->addContent(data, true);
 		if (targetSectionSplitter->orientation() == Qt::Horizontal)
 		{
-			auto index = targetSectionSplitter->indexOf(targetSection);
+			int index = targetSectionSplitter->indexOf(targetSection);
 			targetSectionSplitter->insertWidget(index, sw);
 		}
 		else
 		{
-			auto s = newSplitter(Qt::Horizontal);
+			QSplitter* s = newSplitter(Qt::Horizontal);
 			s->addWidget(sw);
-			auto index = targetSectionSplitter->indexOf(targetSection);
+			int index = targetSectionSplitter->indexOf(targetSection);
 			targetSectionSplitter->insertWidget(index, s);
 			s->addWidget(targetSection);
 		}
@@ -236,7 +236,7 @@ SectionWidget* ContainerWidget::sectionAt(const QPoint& pos) const
 	const QPoint gpos = mapToGlobal(pos);
 	for (int i = 0; i < _sections.size(); ++i)
 	{
-		auto sw = _sections[i];
+		SectionWidget* sw = _sections[i];
 		if (sw->rect().contains(sw->mapFromGlobal(gpos)))
 		{
 			return sw;
@@ -247,29 +247,29 @@ SectionWidget* ContainerWidget::sectionAt(const QPoint& pos) const
 
 QRect ContainerWidget::outerTopDropRect() const
 {
-	auto r = rect();
-	auto h = r.height() / 100 * 5;
+	QRect r = rect();
+	int h = r.height() / 100 * 5;
 	return QRect(r.left(), r.top(), r.width(), h);
 }
 
 QRect ContainerWidget::outerRightDropRect() const
 {
-	auto r = rect();
-	auto w = r.width() / 100 * 5;
+	QRect r = rect();
+	int w = r.width() / 100 * 5;
 	return QRect(r.right() - w, r.top(), w, r.height());
 }
 
 QRect ContainerWidget::outerBottomDropRect() const
 {
-	auto r = rect();
-	auto h = r.height() / 100 * 5;
+	QRect r = rect();
+	int h = r.height() / 100 * 5;
 	return QRect(r.left(), r.bottom() - h, r.width(), h);
 }
 
 QRect ContainerWidget::outerLeftDropRect() const
 {
-	auto r = rect();
-	auto w = r.width() / 100 * 5;
+	QRect r = rect();
+	int w = r.width() / 100 * 5;
 	return QRect(r.left(), r.top(), w, r.height());
 }
 

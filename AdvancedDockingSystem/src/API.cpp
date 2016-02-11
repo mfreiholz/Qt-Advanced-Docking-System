@@ -5,16 +5,14 @@
 
 #include "ads/ContainerWidget.h"
 
-//const QString DragData::MIMETYPE = QString("qt/ads-dragdata");
-
 ADS_NAMESPACE_BEGIN
 
 void deleteEmptySplitter(ContainerWidget* container)
 {
-	auto splitters = container->findChildren<QSplitter*>();
-	for (auto i = 0; i < splitters.count(); ++i)
+	QList<QSplitter*> splitters = container->findChildren<QSplitter*>();
+	for (int i = 0; i < splitters.count(); ++i)
 	{
-		auto sp = splitters.at(i);
+		QSplitter* sp = splitters.at(i);
 		if (sp->count() == 0)
 			delete splitters[i];
 	}
