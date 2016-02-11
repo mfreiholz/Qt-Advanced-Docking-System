@@ -42,6 +42,7 @@ public:
 	int indexOfContent(SectionContent::RefPtr c) const;
 	int indexOfContentByTitlePos(const QPoint& pos, QWidget* exclude = NULL) const;
 
+	int currentIndex() const;
 	void moveContent(int from, int to);
 
 public slots:

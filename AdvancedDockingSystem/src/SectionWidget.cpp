@@ -206,6 +206,11 @@ int SectionWidget::indexOfContentByTitlePos(const QPoint& p, QWidget* exclude) c
 	return index;
 }
 
+int SectionWidget::currentIndex() const
+{
+	return _contentsLayout->currentIndex();
+}
+
 void SectionWidget::moveContent(int from, int to)
 {
 	if (from >= _contents.size() || from < 0 || to >= _contents.size() || to < 0 || from == to)

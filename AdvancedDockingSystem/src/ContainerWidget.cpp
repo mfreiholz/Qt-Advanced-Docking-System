@@ -379,7 +379,7 @@ void ContainerWidget::saveGeometryWalk(QDataStream& out, QWidget* widget) const
 	else if ((sw = dynamic_cast<SectionWidget*>(widget)) != NULL)
 	{
 		out << 2; // Type = SectionWidget
-		out << sw->geometry();
+		out << sw->currentIndex();
 		out << sw->contents().count();
 		const QList<SectionContent::RefPtr>& contents = sw->contents();
 		for (int i = 0; i < contents.count(); ++i)
@@ -422,9 +422,9 @@ bool ContainerWidget::restoreGeometryWalk(QDataStream& in, QSplitter* currentSpl
 			qWarning() << "Missing splitter object for section";
 			return false;
 		}
-		QRect geom;
-		int count;
-		in >> geom >> count;
+
+		int currentIndex, count;
+		in >> currentIndex >> count;
 
 		SectionWidget* sw = new SectionWidget(this);
 //		sw->setGeometry(geom);
@@ -436,6 +436,7 @@ bool ContainerWidget::restoreGeometryWalk(QDataStream& in, QSplitter* currentSpl
 			if (sc)
 				sw->addContent(sc);
 		}
+		sw->setCurrentIndex(currentIndex);
 		currentSplitter->addWidget(sw);
 	}
 	// Unknown
