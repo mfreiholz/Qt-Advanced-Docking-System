@@ -50,6 +50,10 @@ public:
 
 	QMenu* createContextMenu() const;
 
+private:
+	void saveGeometryWalk(QDataStream& out, QWidget* widget) const;
+	bool restoreGeometryWalk(QDataStream& in, QSplitter* currentSplitter = NULL);
+
 signals:
 	void orientationChanged();
 
@@ -63,8 +67,8 @@ public:
 
 	// Layout stuff
 	QGridLayout* _mainLayout;
-	Qt::Orientation _orientation;   ///< Default orientation of new sections.
-	QPointer<QSplitter> _splitter;           ///< Default/main splitter.
+	Qt::Orientation _orientation;
+	QPointer<QSplitter> _splitter;
 };
 
 ADS_NAMESPACE_END

@@ -5,6 +5,8 @@
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QSplitter>
+#include <QDataStream>
+#include <QtGlobal>
 
 ADS_NAMESPACE_BEGIN
 
@@ -25,7 +27,7 @@ static void dropContentOuterHelper(ContainerWidget* cw, QLayout* l, const Intern
 
 	QSplitter* oldsp = findImmediateSplitter(cw);
 	if (oldsp->orientation() == orientation
-		|| oldsp->count() == 1)
+			|| oldsp->count() == 1)
 	{
 		oldsp->setOrientation(orientation);
 		if (append)
@@ -276,8 +278,18 @@ QByteArray ContainerWidget::saveGeometry() const
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);
 	out.setVersion(QDataStream::Qt_4_5);
-	out << (int) 0x00001337;
-	out << _sections.size();
+	out << (quint32) 0x00001337; // Magic
+	out << (quint32) 1; // Version
+
+	// Walk through layout for splitters
+	// Well.. there actually shouldn't be more than one
+	for (int i = 0; i < _mainLayout->count(); ++i)
+	{
+		QLayoutItem* li = _mainLayout->itemAt(i);
+		if (!li->widget())
+			continue;
+		saveGeometryWalk(out, li->widget());
+	}
 	return ba;
 }
 
@@ -286,10 +298,28 @@ bool ContainerWidget::restoreGeometry(const QByteArray& data)
 	QDataStream in(data);
 	in.setVersion(QDataStream::Qt_4_5);
 
-	int magic = 0;
+	quint32 magic = 0;
 	in >> magic;
+	if (magic != 0x00001337)
+		return false;
 
-	return false;
+	quint32 version = 0;
+	in >> version;
+	if (version != 1)
+		return false;
+
+	QList<SectionWidget*> currentSections = _sections;
+	_sections.clear();
+
+	const bool success = restoreGeometryWalk(in, NULL);
+	if (success)
+	{
+		QLayoutItem* old = _mainLayout->takeAt(0);
+		_mainLayout->addWidget(_splitter);
+		delete old;
+		qDeleteAll(currentSections);
+	}
+	return success;
 }
 
 QMenu* ContainerWidget::createContextMenu() const
@@ -324,6 +354,93 @@ QMenu* ContainerWidget::createContextMenu() const
 	}
 
 	return m;
+}
+
+void ContainerWidget::saveGeometryWalk(QDataStream& out, QWidget* widget) const
+{
+	QSplitter* sp = NULL;
+	SectionWidget* sw = NULL;
+
+	if (!widget)
+	{
+		out << 0;
+	}
+	else if ((sp = dynamic_cast<QSplitter*>(widget)) != NULL)
+	{
+		out << 1; // Type = QSplitter
+		out << ((sp->orientation() == Qt::Horizontal) ? (int) 1 : (int) 2);
+		out << sp->count();
+		for (int i = 0; i < sp->count(); ++i)
+		{
+			saveGeometryWalk(out, sp->widget(i));
+		}
+	}
+	else if ((sw = dynamic_cast<SectionWidget*>(widget)) != NULL)
+	{
+		out << 2; // Type = SectionWidget
+		out << sw->geometry();
+		out << sw->contents().count();
+		const QList<SectionContent::RefPtr>& contents = sw->contents();
+		for (int i = 0; i < contents.count(); ++i)
+		{
+			out << contents[i]->uniqueName();
+		}
+	}
+}
+
+bool ContainerWidget::restoreGeometryWalk(QDataStream& in, QSplitter* currentSplitter)
+{
+	int type;
+	in >> type;
+
+	// Splitter
+	if (type == 1)
+	{
+		int orientation, count;
+		in >> orientation >> count;
+
+		QSplitter* sp = newSplitter((Qt::Orientation) orientation);
+		for (int i = 0; i < count; ++i)
+		{
+			if (!restoreGeometryWalk(in, sp))
+				return false;
+		}
+		if (!currentSplitter)
+			_splitter = sp;
+		else
+			currentSplitter->addWidget(sp);
+	}
+	// Section
+	else if (type == 2)
+	{
+		if (!currentSplitter)
+		{
+			qWarning() << "Missing splitter object for section";
+			return false;
+		}
+		QRect geom;
+		int count;
+		in >> geom >> count;
+
+		SectionWidget* sw = new SectionWidget(this);
+		sw->setGeometry(geom);
+		for (int i = 0; i < count; ++i)
+		{
+			QString name;
+			in >> name;
+			SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(name).toStrongRef();
+			if (sc)
+				sw->addContent(sc);
+		}
+		currentSplitter->addWidget(sw);
+	}
+	// Unknown
+	else
+	{
+		qDebug() << QString("");
+	}
+
+	return true;
 }
 
 ADS_NAMESPACE_END

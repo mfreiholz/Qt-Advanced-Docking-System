@@ -35,7 +35,7 @@ public:
 	QRect titleAreaGeometry() const;
 	QRect contentAreaGeometry() const;
 
-	QList<SectionContent::RefPtr> contents() const { return _contents; }
+	const QList<SectionContent::RefPtr>& contents() const { return _contents; }
 	void addContent(SectionContent::RefPtr c);
 	void addContent(const InternalContentData& data, bool autoActivate);
 	InternalContentData take(int uid, bool del = true);

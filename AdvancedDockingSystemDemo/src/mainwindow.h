@@ -25,6 +25,7 @@ private slots:
 
 protected:
 	virtual void contextMenuEvent(QContextMenuEvent* e);
+	virtual void closeEvent(QCloseEvent* e);
 
 private:
 	Ui::MainWindow *ui;
