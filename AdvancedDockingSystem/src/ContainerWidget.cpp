@@ -370,6 +370,7 @@ void ContainerWidget::saveGeometryWalk(QDataStream& out, QWidget* widget) const
 		out << 1; // Type = QSplitter
 		out << ((sp->orientation() == Qt::Horizontal) ? (int) 1 : (int) 2);
 		out << sp->count();
+		out << sp->sizes();
 		for (int i = 0; i < sp->count(); ++i)
 		{
 			saveGeometryWalk(out, sp->widget(i));
@@ -397,7 +398,8 @@ bool ContainerWidget::restoreGeometryWalk(QDataStream& in, QSplitter* currentSpl
 	if (type == 1)
 	{
 		int orientation, count;
-		in >> orientation >> count;
+		QList<int> sizes;
+		in >> orientation >> count >> sizes;
 
 		QSplitter* sp = newSplitter((Qt::Orientation) orientation);
 		for (int i = 0; i < count; ++i)
@@ -405,6 +407,8 @@ bool ContainerWidget::restoreGeometryWalk(QDataStream& in, QSplitter* currentSpl
 			if (!restoreGeometryWalk(in, sp))
 				return false;
 		}
+		sp->setSizes(sizes);
+
 		if (!currentSplitter)
 			_splitter = sp;
 		else
@@ -423,7 +427,7 @@ bool ContainerWidget::restoreGeometryWalk(QDataStream& in, QSplitter* currentSpl
 		in >> geom >> count;
 
 		SectionWidget* sw = new SectionWidget(this);
-		sw->setGeometry(geom);
+//		sw->setGeometry(geom);
 		for (int i = 0; i < count; ++i)
 		{
 			QString name;
