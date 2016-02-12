@@ -22,9 +22,9 @@ Open the `build.pro` with QtCreator and start the build, that's it.
 ## TODOs
 Sorted by priority
 - Improve FloatingWidget (Remove maximize button, only support close-button which hides the widget)
-- Serialize state/size/positions of dockings
-- Deserialize state/size/positions of dockings
-- Make compatible with Qt 4.5 (\*ROFL!\*)
+- **[DONE]** Serialize and Deserialize state/size/positions of dockings
+- Serialize FloatingWidget states
+- **[90%]** Make compatible with Qt 4.5 (\*ROFL!\*)
 - Drop indicator images should be fully visible over the DropOverlay rectangle
 - Pin contents: Pins a content and its title widget to the edge and opens on click/hover as long as it has focus
 
