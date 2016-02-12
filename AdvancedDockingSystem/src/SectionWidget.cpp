@@ -31,7 +31,7 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	_uid(NextUid++),
 	_container(parent)
 {
-	auto l = new QBoxLayout(QBoxLayout::TopToBottom);
+	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
 	setLayout(l);
@@ -48,7 +48,7 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	l->addLayout(_contentsLayout, 1);
 
 #if defined(ADS_ANIMATIONS_ENABLED)
-	auto shadow = new QGraphicsDropShadowEffect(this);
+	QGraphicsDropShadowEffect* shadow = new QGraphicsDropShadowEffect(this);
 	shadow->setOffset(0, 0);
 	shadow->setBlurRadius(8);
 	setGraphicsEffect(shadow);
@@ -65,7 +65,7 @@ SectionWidget::~SectionWidget()
 	_container->_sections.removeAll(this);
 
 	// Delete empty QSplitter.
-	auto splitter = findParentSplitter(this);
+	QSplitter* splitter = findParentSplitter(this);
 	if (splitter && splitter->count() == 0)
 	{
 		splitter->deleteLater();
@@ -97,12 +97,12 @@ void SectionWidget::addContent(SectionContent::RefPtr c)
 {
 	_contents.append(c);
 
-	auto title = new SectionTitleWidget(c, nullptr);
+	SectionTitleWidget* title = new SectionTitleWidget(c, NULL);
 	_sectionTitles.append(title);
 	_tabsLayout->insertWidget(_tabsLayout->count() - 1, title);
 	QObject::connect(title, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
 
-	auto content = new SectionContentWidget(c, nullptr);
+	SectionContentWidget* content = new SectionContentWidget(c, NULL);
 	_sectionContents.append(content);
 	_contentsLayout->addWidget(content);
 
@@ -153,7 +153,7 @@ InternalContentData SectionWidget::take(int uid, bool del)
 	}
 
 	// Title wrapper widget (TAB)
-	auto title = _sectionTitles.takeAt(index);
+	SectionTitleWidget* title = _sectionTitles.takeAt(index);
 	if (title)
 	{
 		_tabsLayout->removeWidget(title);
@@ -163,7 +163,7 @@ InternalContentData SectionWidget::take(int uid, bool del)
 	}
 
 	// Content wrapper widget (CONTENT)
-	auto content = _sectionContents.takeAt(index);
+	SectionContentWidget* content = _sectionContents.takeAt(index);
 	if (content)
 	{
 		_contentsLayout->removeWidget(content);
@@ -240,10 +240,10 @@ void SectionWidget::setCurrentIndex(int index)
 	qDebug() << Q_FUNC_INFO << index;
 	for (int i = 0; i < _tabsLayout->count(); ++i)
 	{
-		auto item = _tabsLayout->itemAt(i);
+		QLayoutItem* item = _tabsLayout->itemAt(i);
 		if (item->widget())
 		{
-			auto stw = dynamic_cast<SectionTitleWidget*>(item->widget());
+			SectionTitleWidget* stw = dynamic_cast<SectionTitleWidget*>(item->widget());
 			if (i == index)
 				stw->setActiveTab(true);
 			else
@@ -266,10 +266,10 @@ void SectionWidget::paintEvent(QPaintEvent* e)
 
 void SectionWidget::onSectionTitleClicked()
 {
-	auto stw = qobject_cast<SectionTitleWidget*>(sender());
+	SectionTitleWidget* stw = qobject_cast<SectionTitleWidget*>(sender());
 	if (stw)
 	{
-		auto index = _tabsLayout->indexOf(stw);
+		int index = _tabsLayout->indexOf(stw);
 		setCurrentIndex(index);
 	}
 }

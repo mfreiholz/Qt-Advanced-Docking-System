@@ -88,14 +88,17 @@ MainWindow::MainWindow(QWidget *parent) :
 	section->addContent(createCalendarSC());
 	_container->addSection(section);
 
-	QByteArray ba;
-	QFile f("test.dat");
-	if (f.open(QFile::ReadOnly))
+	if (true)
 	{
-		ba = f.readAll();
-		f.close();
+		QByteArray ba;
+		QFile f("test.dat");
+		if (f.open(QFile::ReadOnly))
+		{
+			ba = f.readAll();
+			f.close();
+		}
+		_container->restoreGeometry(ba);
 	}
-	_container->restoreGeometry(ba);
 }
 
 MainWindow::~MainWindow()
@@ -118,6 +121,7 @@ void MainWindow::onActionAddSectionContentTriggered()
 
 void MainWindow::contextMenuEvent(QContextMenuEvent* e)
 {
+	Q_UNUSED(e);
 	QMenu* m = _container->createContextMenu();
 	m->exec(QCursor::pos());
 	delete m;
@@ -125,11 +129,15 @@ void MainWindow::contextMenuEvent(QContextMenuEvent* e)
 
 void MainWindow::closeEvent(QCloseEvent* e)
 {
-	QByteArray ba = _container->saveGeometry();
-	QFile f("test.dat");
-	if (f.open(QFile::WriteOnly))
+	Q_UNUSED(e);
+	if (true)
 	{
-		f.write(ba);
-		f.close();
+		QByteArray ba = _container->saveGeometry();
+		QFile f("test.dat");
+		if (f.open(QFile::WriteOnly))
+		{
+			f.write(ba);
+			f.close();
+		}
 	}
 }

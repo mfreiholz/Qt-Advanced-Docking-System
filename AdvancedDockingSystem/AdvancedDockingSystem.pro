@@ -14,17 +14,19 @@ windows {
 	# MinGW
 	*-g++* {
 		QMAKE_CXXFLAGS += -std=c++11
+		QMAKE_CXXFLAGS += -Wall -Wextra -pedantic
 	}
 	# MSVC
 	*-msvc* {
+		QMAKE_CXXFLAGS += /Za
 	}
 }
 
 SOURCES += \
 	src/API.cpp \
-  src/ContainerWidget.cpp \
-  src/SectionWidget.cpp \
-  src/SectionContent.cpp \
+	src/ContainerWidget.cpp \
+	src/SectionWidget.cpp \
+	src/SectionContent.cpp \
 	src/SectionTitleWidget.cpp \
 	src/SectionContentWidget.cpp \
 	src/DropOverlay.cpp \

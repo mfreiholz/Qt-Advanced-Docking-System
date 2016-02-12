@@ -21,7 +21,7 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 	_titleWidget(titleWidget),
 	_contentWidget(contentWidget)
 {
-	auto l = new QBoxLayout(QBoxLayout::TopToBottom, this);
+	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom, this);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
 	setLayout(l);
@@ -38,7 +38,7 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 //	maximizeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 //	_titleLayout->addWidget(maximizeButton);
 
-	auto closeButton = new QPushButton();
+	QPushButton* closeButton = new QPushButton();
 	closeButton->setObjectName("closeButton");
 	closeButton->setFlat(true);
 	closeButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarCloseButton));

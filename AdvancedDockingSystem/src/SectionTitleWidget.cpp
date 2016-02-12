@@ -30,7 +30,7 @@ SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* 
 	_tabMoving(false),
 	_activeTab(false)
 {
-	auto l = new QBoxLayout(QBoxLayout::LeftToRight);
+	QBoxLayout* l = new QBoxLayout(QBoxLayout::LeftToRight);
 	l->addWidget(content->titleWidget());
 	setLayout(l);
 }
@@ -74,33 +74,33 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 	// Drop contents of FloatingWidget into SectionWidget.
 	if (_fw)
 	{
-		auto cw = findParentContainerWidget(this);
-		auto sw = cw->sectionAt(cw->mapFromGlobal(ev->globalPos()));
+		ContainerWidget* cw = findParentContainerWidget(this);
+		SectionWidget* sw = cw->sectionAt(cw->mapFromGlobal(ev->globalPos()));
 		if (sw)
 		{
-			auto loc = showDropOverlay(sw);
+			DropArea loc = showDropOverlay(sw);
 			if (loc != InvalidDropArea)
 			{
 #if !defined(ADS_ANIMATIONS_ENABLED)
-				auto data = _fw->takeContent();
+				InternalContentData data = _fw->takeContent();
 				_fw->deleteLater();
 				_fw.clear();
 				cw->dropContent(data, sw, loc);
 #else
-				auto moveAnim = new QPropertyAnimation(_fw, "pos", this);
+				QPropertyAnimation* moveAnim = new QPropertyAnimation(_fw, "pos", this);
 				moveAnim->setStartValue(_fw->pos());
 				moveAnim->setEndValue(sw->mapToGlobal(sw->rect().topLeft()));
 				moveAnim->setDuration(ADS_ANIMATION_DURATION);
 
-				auto resizeAnim = new QPropertyAnimation(_fw, "size", this);
+				QPropertyAnimation* resizeAnim = new QPropertyAnimation(_fw, "size", this);
 				resizeAnim->setStartValue(_fw->size());
 				resizeAnim->setEndValue(sw->size());
 				resizeAnim->setDuration(ADS_ANIMATION_DURATION);
 
-				auto animGroup = new QParallelAnimationGroup(this);
+				QParallelAnimationGroup* animGroup = new QParallelAnimationGroup(this);
 				QObject::connect(animGroup, &QPropertyAnimation::finished, [this, data, sw, loc]()
 				{
-					auto data = _fw->takeContent();
+					InternalContentData data = _fw->takeContent();
 					_fw->deleteLater();
 					_fw.clear();
 					cw->dropContent(data, sw, loc);
@@ -127,7 +127,7 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 			if (dropArea != DropArea::InvalidDropArea)
 			{
 #if !defined(ADS_ANIMATIONS_ENABLED)
-				auto data = _fw->takeContent();
+				InternalContentData data = _fw->takeContent();
 				_fw->deleteLater();
 				_fw.clear();
 				cw->dropContent(data, NULL, dropArea);
@@ -215,7 +215,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 			&& !section->titleAreaGeometry().contains(section->mapFromGlobal(ev->globalPos())))
 	{
 		// Create floating widget.
-		auto data = section->take(_content->uid(), false);
+		InternalContentData data = section->take(_content->uid(), false);
 
 		_fw = new FloatingWidget(cw, data.content, data.titleWidget, data.contentWidget, cw);
 		_fw->resize(section->size());

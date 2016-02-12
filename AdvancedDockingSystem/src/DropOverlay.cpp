@@ -17,7 +17,7 @@ ADS_NAMESPACE_BEGIN
 
 static QWidget* createDropWidget(const QString& img)
 {
-	auto label = new QLabel();
+	QLabel* label = new QLabel();
 	label->setObjectName("DropAreaLabel");
 	label->setPixmap(QPixmap(img));
 	return label;
@@ -57,7 +57,7 @@ DropOverlay::~DropOverlay()
 
 DropArea DropOverlay::cursorLocation() const
 {
-	auto loc = InvalidDropArea;
+	DropArea loc = InvalidDropArea;
 	if (_splitAreas)
 	{
 		loc = _splitAreas->cursorLocation();
@@ -201,8 +201,8 @@ DropSplitAreas::DropSplitAreas(DropAreas areas, QWidget* parent) :
 
 DropArea DropSplitAreas::cursorLocation() const
 {
-	auto loc = InvalidDropArea;
-	auto pos = mapFromGlobal(QCursor::pos());
+	DropArea loc = InvalidDropArea;
+	QPoint pos = mapFromGlobal(QCursor::pos());
 	if (_top && _top->geometry().contains(pos))
 	{
 		loc = TopDropArea;
