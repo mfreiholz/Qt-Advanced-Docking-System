@@ -290,7 +290,7 @@ QRect ContainerWidget::outerLeftDropRect() const
 	return QRect(r.left(), r.top(), w, r.height());
 }
 
-QByteArray ContainerWidget::saveGeometry() const
+QByteArray ContainerWidget::saveState() const
 {
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);
@@ -310,7 +310,7 @@ QByteArray ContainerWidget::saveGeometry() const
 	return ba;
 }
 
-bool ContainerWidget::restoreGeometry(const QByteArray& data)
+bool ContainerWidget::restoreState(const QByteArray& data)
 {
 	QDataStream in(data);
 	in.setVersion(QDataStream::Qt_4_5);

@@ -47,8 +47,8 @@ public:
 	QRect outerLeftDropRect() const;
 
 	// Geometry and state serialization
-	QByteArray saveGeometry() const;
-	bool restoreGeometry(const QByteArray& data);
+	QByteArray saveState() const;
+	bool restoreState(const QByteArray& data);
 
 	QMenu* createContextMenu() const;
 

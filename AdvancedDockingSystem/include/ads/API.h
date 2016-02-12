@@ -12,7 +12,7 @@ class QSplitter;
  * Developed by Manuel Freiholz
  */
 
-#if 0
+#if 1
 	#define ADS_NAMESPACE_BEGIN namespace ads {
 	#define ADS_NAMESPACE_END }
 	#define ADS_NS ads

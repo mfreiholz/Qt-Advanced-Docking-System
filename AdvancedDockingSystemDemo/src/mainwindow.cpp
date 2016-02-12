@@ -54,6 +54,28 @@ static ADS_NS::SectionContent::RefPtr createFileSystemTreeSC()
 	return ADS_NS::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Filesystem %1").arg(index)), w, QString("uname-%1").arg(index));
 }
 
+static void storeDataHelper(const QString& fname, const QByteArray& ba)
+{
+	QFile f(fname + QString(".dat"));
+	if (f.open(QFile::WriteOnly))
+	{
+		f.write(ba);
+		f.close();
+	}
+}
+
+static QByteArray loadDataHelper(const QString& fname)
+{
+	QFile f(fname + QString(".dat"));
+	if (f.open(QFile::ReadOnly))
+	{
+		QByteArray ba = f.readAll();
+		f.close();
+		return ba;
+	}
+	return QByteArray();
+}
+
 ///////////////////////////////////////////////////////////////////////
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -92,17 +114,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	section->addContent(createCalendarSC());
 	_container->addSection(section);
 
-	if (true)
-	{
-		QByteArray ba;
-		QFile f("test.dat");
-		if (f.open(QFile::ReadOnly))
-		{
-			ba = f.readAll();
-			f.close();
-		}
-		_container->restoreGeometry(ba);
-	}
+	restoreGeometry(loadDataHelper("MainWindow"));
+	_container->restoreState(loadDataHelper("ContainerWidget"));
 }
 
 MainWindow::~MainWindow()
@@ -134,14 +147,6 @@ void MainWindow::contextMenuEvent(QContextMenuEvent* e)
 void MainWindow::closeEvent(QCloseEvent* e)
 {
 	Q_UNUSED(e);
-	if (true)
-	{
-		QByteArray ba = _container->saveGeometry();
-		QFile f("test.dat");
-		if (f.open(QFile::WriteOnly))
-		{
-			f.write(ba);
-			f.close();
-		}
-	}
+	storeDataHelper("MainWindow", saveGeometry());
+	storeDataHelper("ContainerWidget", _container->saveState());
 }

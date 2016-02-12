@@ -73,8 +73,8 @@ int main(int argc, char *argv[])
 //	);
 
 	MainWindow mw;
-	resizeWidgetPerCent(&mw, 60, 80);
-	centerWidget(&mw);
+//	resizeWidgetPerCent(&mw, 60, 80);
+//	centerWidget(&mw);
 	mw.show();
 
 	return a.exec();
