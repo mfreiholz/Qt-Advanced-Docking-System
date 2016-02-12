@@ -12,8 +12,15 @@ class QSplitter;
  * Developed by Manuel Freiholz
  */
 
-#define ADS_NAMESPACE_BEGIN namespace ads {
-#define ADS_NAMESPACE_END }
+#if 0
+	#define ADS_NAMESPACE_BEGIN namespace ads {
+	#define ADS_NAMESPACE_END }
+	#define ADS_NS ads
+#else
+	#define ADS_NAMESPACE_BEGIN
+	#define ADS_NAMESPACE_END
+	#define ADS_NS
+#endif
 
 // Width of the native window frame border (based on OS).
 #define ADS_WINDOW_FRAME_BORDER_WIDTH 7

@@ -19,7 +19,7 @@
 
 static int CONTENT_COUNT = 0;
 
-static ads::SectionContent::RefPtr createLongTextLabelSC()
+static ADS_NS::SectionContent::RefPtr createLongTextLabelSC()
 {
 	QWidget* w = new QWidget();
 	QBoxLayout* bl = new QBoxLayout(QBoxLayout::TopToBottom);
@@ -32,18 +32,18 @@ static ads::SectionContent::RefPtr createLongTextLabelSC()
 	bl->addWidget(l);
 
 	const int index = ++CONTENT_COUNT;
-	return ads::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Label %1").arg(index)), w, QString("uname-%1").arg(index));
+	return ADS_NS::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Label %1").arg(index)), w, QString("uname-%1").arg(index));
 }
 
-static ads::SectionContent::RefPtr createCalendarSC()
+static ADS_NS::SectionContent::RefPtr createCalendarSC()
 {
 	QCalendarWidget* w = new QCalendarWidget();
 
 	const int index = ++CONTENT_COUNT;
-	return ads::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Calendar %1").arg(index)), w, QString("uname-%1").arg(index));
+	return ADS_NS::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Calendar %1").arg(index)), w, QString("uname-%1").arg(index));
 }
 
-static ads::SectionContent::RefPtr createFileSystemTreeSC()
+static ADS_NS::SectionContent::RefPtr createFileSystemTreeSC()
 {
 	QTreeView* w = new QTreeView();
 //	QFileSystemModel* m = new QFileSystemModel(w);
@@ -51,7 +51,7 @@ static ads::SectionContent::RefPtr createFileSystemTreeSC()
 //	w->setModel(m);
 
 	const int index = ++CONTENT_COUNT;
-	return ads::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Filesystem %1").arg(index)), w, QString("uname-%1").arg(index));
+	return ADS_NS::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Filesystem %1").arg(index)), w, QString("uname-%1").arg(index));
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -63,28 +63,32 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 	ui->mainToolBar->hide();
 	ui->statusBar->hide();
+#if QT_VERSION >= 0x050000
 	QObject::connect(ui->actionAddSectionContent, &QAction::triggered, this, &MainWindow::onActionAddSectionContentTriggered);
+#else
+	QObject::connect(ui->actionAddSectionContent, SIGNAL(triggered(bool)), this, SLOT(onActionAddSectionContentTriggered()));
+#endif
 
 	// CREATE SOME TESTING DOCKS
-	_container = new ads::ContainerWidget();
+	_container = new ADS_NS::ContainerWidget();
 	_container->setOrientation(Qt::Vertical);
 	setCentralWidget(_container);
 
-	ads::SectionWidget* section = NULL;
+	ADS_NS::SectionWidget* section = NULL;
 
-	section = new ads::SectionWidget(_container);
+	section = new ADS_NS::SectionWidget(_container);
 	section->addContent(createLongTextLabelSC());
 	_container->addSection(section);
 
-	section = new ads::SectionWidget(_container);
+	section = new ADS_NS::SectionWidget(_container);
 	section->addContent(createCalendarSC());
 	_container->addSection(section);
 
-	section = new ads::SectionWidget(_container);
+	section = new ADS_NS::SectionWidget(_container);
 	section->addContent(createFileSystemTreeSC());
 	_container->addSection(section);
 
-	section = new ads::SectionWidget(_container);
+	section = new ADS_NS::SectionWidget(_container);
 	section->addContent(createCalendarSC());
 	_container->addSection(section);
 
@@ -112,9 +116,9 @@ void MainWindow::onActionAddSectionContentTriggered()
 
 //	auto titleWidget = new IconTitleWidget(QIcon(), QString("Title"));
 //	auto contentWidget = createRandomWidget(-1, -1);
-//	auto content = ads::SectionContent::newSectionContent(titleWidget, contentWidget);
+//	auto content = ADS_NS::SectionContent::newSectionContent(titleWidget, contentWidget);
 
-//	auto section = new ads::SectionWidget(_container);
+//	auto section = new ADS_NS::SectionWidget(_container);
 //	_container->addSection(section);
 //	section->addContent(content);
 }

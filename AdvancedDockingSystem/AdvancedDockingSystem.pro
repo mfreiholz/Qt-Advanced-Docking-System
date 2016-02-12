@@ -19,7 +19,7 @@ windows {
 	# MSVC
 	*-msvc* {
 		#QMAKE_CXXFLAGS += /Za
-		QMAKE_CXXFLAGS += /FS
+		#QMAKE_CXXFLAGS += /FS
 	}
 }
 

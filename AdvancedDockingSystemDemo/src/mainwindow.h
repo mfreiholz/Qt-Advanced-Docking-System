@@ -29,7 +29,7 @@ protected:
 
 private:
 	Ui::MainWindow *ui;
-	ads::ContainerWidget* _container;
+	ADS_NS::ContainerWidget* _container;
 };
 
 #endif // MAINWINDOW_H

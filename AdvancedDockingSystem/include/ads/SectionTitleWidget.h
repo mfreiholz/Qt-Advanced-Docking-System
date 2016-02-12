@@ -15,7 +15,7 @@ class FloatingWidget;
 class SectionTitleWidget : public QFrame
 {
 	Q_OBJECT
-	Q_PROPERTY(bool activeTab MEMBER _activeTab NOTIFY activeTabChanged)
+	//Q_PROPERTY(bool activeTab MEMBER _activeTab NOTIFY activeTabChanged)
 
 	friend class SectionWidget;
 
