@@ -37,15 +37,6 @@ enum DropArea
 };
 Q_DECLARE_FLAGS(DropAreas, DropArea)
 
-class InternalContentData
-{
-public:
-	InternalContentData() : titleWidget(0), contentWidget(0) {}
-	QSharedPointer<class SectionContent> content;
-	class SectionTitleWidget* titleWidget;
-	class SectionContentWidget* contentWidget;
-};
-
 void deleteEmptySplitter(class ContainerWidget* container);
 class ContainerWidget* findParentContainerWidget(class QWidget* w);
 class SectionWidget* findParentSectionWidget(class QWidget* w);

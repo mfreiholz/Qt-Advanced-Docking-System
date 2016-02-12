@@ -16,6 +16,7 @@
 #include <QParallelAnimationGroup>
 #endif
 
+#include "ads/Internal.h"
 #include "ads/DropOverlay.h"
 #include "ads/SectionContent.h"
 #include "ads/SectionWidget.h"
@@ -84,7 +85,11 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 #if !defined(ADS_ANIMATIONS_ENABLED)
 				InternalContentData data = _fw->takeContent();
 				_fw->deleteLater();
+#if QT_VERSION >= 0x050000
 				_fw.clear();
+#else
+				_fw = 0;
+#endif
 				cw->dropContent(data, sw, loc);
 #else
 				QPropertyAnimation* moveAnim = new QPropertyAnimation(_fw, "pos", this);
@@ -129,7 +134,11 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 #if !defined(ADS_ANIMATIONS_ENABLED)
 				InternalContentData data = _fw->takeContent();
 				_fw->deleteLater();
+#if QT_VERSION >= 0x050000
 				_fw.clear();
+#else
+				_fw = 0;
+#endif
 				cw->dropContent(data, NULL, dropArea);
 #else
 #endif

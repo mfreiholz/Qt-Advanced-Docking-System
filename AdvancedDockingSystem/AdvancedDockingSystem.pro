@@ -18,7 +18,8 @@ windows {
 	}
 	# MSVC
 	*-msvc* {
-		QMAKE_CXXFLAGS += /Za
+		#QMAKE_CXXFLAGS += /Za
+		QMAKE_CXXFLAGS += /FS
 	}
 }
 
@@ -30,7 +31,8 @@ SOURCES += \
 	src/SectionTitleWidget.cpp \
 	src/SectionContentWidget.cpp \
 	src/DropOverlay.cpp \
-	src/FloatingWidget.cpp
+	src/FloatingWidget.cpp \
+	src/Internal.cpp
 
 HEADERS += \
 	include/ads/API.h \
@@ -40,7 +42,8 @@ HEADERS += \
 	include/ads/SectionTitleWidget.h \
 	include/ads/SectionContentWidget.h \
 	include/ads/DropOverlay.h \
-	include/ads/FloatingWidget.h
+	include/ads/FloatingWidget.h \
+	include/ads/Internal.h
 
 RESOURCES += \
 	res/ads.qrc

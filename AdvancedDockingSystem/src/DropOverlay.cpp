@@ -8,8 +8,8 @@
 #include <QPainter>
 #include <QGridLayout>
 #include <QCursor>
-#include <QtGui/QIcon>
-#include <QtWidgets/QLabel>
+#include <QIcon>
+#include <QLabel>
 
 ADS_NAMESPACE_BEGIN
 
@@ -288,7 +288,11 @@ void hideDropOverlay()
 	{
 		MyOverlay->hide();
 		delete MyOverlay;
+#if QT_VERSION >= 0x050000
 		MyOverlayParent.clear();
+#else
+		MyOverlayParent = 0;
+#endif
 		MyOverlayParentRect = QRect();
 		MyOverlayLastLocation = InvalidDropArea;
 	}

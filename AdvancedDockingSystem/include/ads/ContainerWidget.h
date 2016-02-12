@@ -16,6 +16,8 @@ class QMenu;
 
 ADS_NAMESPACE_BEGIN
 
+class InternalContentData;
+
 // ContainerWidget is the main container to provide the docking
 // functionality. It manages mulitple Sections and all possible areas.
 class ContainerWidget : public QFrame

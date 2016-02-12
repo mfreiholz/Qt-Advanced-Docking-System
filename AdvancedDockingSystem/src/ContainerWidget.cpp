@@ -1,4 +1,5 @@
 #include "ads/ContainerWidget.h"
+#include "ads/Internal.h"
 
 #include <QPaintEvent>
 #include <QPainter>
@@ -40,17 +41,33 @@ static void dropContentOuterHelper(ContainerWidget* cw, QLayout* l, const Intern
 		QSplitter* sp = newSplitter(orientation);
 		if (append)
 		{
+#if QT_VERSION >= 0x050000
 			QLayoutItem* li = l->replaceWidget(oldsp, sp);
 			sp->addWidget(oldsp);
 			sp->addWidget(sw);
 			delete li;
+#else
+			int index = l->indexOf(oldsp);
+			QLayoutItem* li = l->takeAt(index);
+			sp->addWidget(oldsp);
+			sp->addWidget(sw);
+			delete li;
+#endif
 		}
 		else
 		{
+#if QT_VERSION >= 0x050000
 			sp->addWidget(sw);
 			QLayoutItem* li = l->replaceWidget(oldsp, sp);
 			sp->addWidget(oldsp);
 			delete li;
+#else
+			sp->addWidget(sw);
+			int index = l->indexOf(oldsp);
+			QLayoutItem* li = l->takeAt(index);
+			sp->addWidget(oldsp);
+			delete li;
+#endif
 		}
 	}
 }
@@ -349,7 +366,11 @@ QMenu* ContainerWidget::createContextMenu() const
 			QAction* a = m->addAction(QIcon(), QString("Floating %1").arg(c->uid()));
 			a->setCheckable(true);
 			a->setChecked(fw->isVisible());
+#if QT_VERSION >= 0x050000
 			QObject::connect(a, &QAction::toggled, fw, &FloatingWidget::setVisible);
+#else
+			QObject::connect(a, SIGNAL(toggled(bool)), fw, SLOT(setVisible(bool)));
+#endif
 		}
 	}
 

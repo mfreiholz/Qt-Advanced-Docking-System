@@ -17,6 +17,7 @@ ADS_NAMESPACE_BEGIN
 class ContainerWidget;
 class SectionTitleWidget;
 class SectionContentWidget;
+class InternalContentData;
 
 // SectionWidget manages multiple instances of SectionContent.
 // It displays a title TAB, which is clickable and will switch to

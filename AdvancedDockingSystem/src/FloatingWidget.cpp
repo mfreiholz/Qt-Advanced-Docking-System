@@ -11,6 +11,7 @@
 #include "ads/ContainerWidget.h"
 #include "ads/SectionTitleWidget.h"
 #include "ads/SectionContentWidget.h"
+#include "ads/Internal.h"
 
 ADS_NAMESPACE_BEGIN
 
@@ -45,7 +46,8 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 	closeButton->setToolTip(tr("Close"));
 	closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	_titleLayout->addWidget(closeButton);
-	QObject::connect(closeButton, &QPushButton::clicked, this, &FloatingWidget::close);
+	//QObject::connect(closeButton, &QPushButton::clicked, this, &FloatingWidget::close);
+	QObject::connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
 	// Content
 	l->addWidget(contentWidget, 1);

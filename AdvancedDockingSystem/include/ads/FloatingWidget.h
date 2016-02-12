@@ -14,6 +14,7 @@ ADS_NAMESPACE_BEGIN
 class ContainerWidget;
 class SectionTitleWidget;
 class SectionContentWidget;
+class InternalContentData;
 
 // FloatingWidget holds and displays SectionContent as a floating window.
 // It can be resized, moved and dropped back into a SectionWidget.

@@ -8,12 +8,13 @@
 #include <QMimeData>
 #include <QPainter>
 #include <QStyle>
-#include <QtWidgets/QSplitter>
+#include <QSplitter>
 
 #if defined(ADS_ANIMATIONS_ENABLED)
 #include <QGraphicsDropShadowEffect>
 #endif
 
+#include "ads/Internal.h"
 #include "ads/DropOverlay.h"
 #include "ads/SectionContent.h"
 #include "ads/SectionTitleWidget.h"
@@ -100,7 +101,11 @@ void SectionWidget::addContent(SectionContent::RefPtr c)
 	SectionTitleWidget* title = new SectionTitleWidget(c, NULL);
 	_sectionTitles.append(title);
 	_tabsLayout->insertWidget(_tabsLayout->count() - 1, title);
+#if QT_VERSION >= 0x050000
 	QObject::connect(title, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
+#else
+	QObject::connect(title, SIGNAL(clicked()), this, SLOT(onSectionTitleClicked()));
+#endif
 
 	SectionContentWidget* content = new SectionContentWidget(c, NULL);
 	_sectionContents.append(content);
@@ -120,7 +125,11 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 
 	_sectionTitles.append(data.titleWidget);
 	_tabsLayout->insertWidget(_tabsLayout->count() - 1, data.titleWidget);
+#if QT_VERSION >= 0x050000
 	QObject::connect(data.titleWidget, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
+#else
+	QObject::connect(data.titleWidget, SIGNAL(clicked()), this, SLOT(onSectionTitleClicked()));
+#endif
 
 	_sectionContents.append(data.contentWidget);
 	_contentsLayout->addWidget(data.contentWidget);
@@ -227,7 +236,13 @@ void SectionWidget::moveContent(int from, int to)
 	QLayoutItem* liFrom = NULL;
 
 	liFrom = _tabsLayout->takeAt(from);
+#if QT_VERSION >= 0x050000
 	_tabsLayout->insertItem(to, liFrom);
+#else
+	_tabsLayout->insertWidget(to, liFrom->widget());
+	delete liFrom;
+	liFrom = NULL;
+#endif
 
 	liFrom = _contentsLayout->takeAt(from);
 	_contentsLayout->insertWidget(to, liFrom->widget());
