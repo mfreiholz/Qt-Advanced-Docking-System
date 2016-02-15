@@ -41,11 +41,11 @@ int main(int argc, char *argv[])
 	// Default style.
 	a.setStyleSheet(""
 		" QSplitter::handle { background: palette(dark); } "
-		" ads--ContainerWidget { background: palette(dark); } "
-		" ads--SectionWidget { background: palette(window); } "
-		" ads--SectionTitleWidget { background: palette(window); } "
-		" ads--SectionTitleWidget[activeTab=\"true\"] { background: palette(light); } "
-		" ads--SectionContentWidget { border: 1px solid palette(light); } "
+		" ads--ContainerWidget, ContainerWidget { background: palette(dark); } "
+		" ads--SectionWidget, SectionWidget { background: palette(window); } "
+		" ads--SectionTitleWidget, SectionTitleWidget { background: palette(window); } "
+		" ads--SectionTitleWidget[activeTab=\"true\"], SectionTitleWidget[activeTab=\"true\"] { background: palette(light); } "
+		" ads--SectionContentWidget, SectionContentWidget { border: 1px solid palette(light); } "
 		"  "
 	);
 

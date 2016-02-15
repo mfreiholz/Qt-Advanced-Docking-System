@@ -7,7 +7,6 @@
 #include "ads/SectionContent.h"
 
 ADS_NAMESPACE_BEGIN
-
 class ContainerWidget;
 class SectionWidget;
 

@@ -3,14 +3,12 @@
 
 #include <QWidget>
 #include <QFrame>
+class QBoxLayout;
 
 #include "ads/API.h"
 #include "ads/SectionContent.h"
 
-class QBoxLayout;
-
 ADS_NAMESPACE_BEGIN
-
 class ContainerWidget;
 class SectionTitleWidget;
 class SectionContentWidget;

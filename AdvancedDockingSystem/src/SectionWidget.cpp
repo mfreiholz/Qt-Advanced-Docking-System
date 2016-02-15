@@ -79,11 +79,6 @@ int SectionWidget::uid() const
 	return _uid;
 }
 
-ContainerWidget* SectionWidget::containerWidget() const
-{
-	return _container;
-}
-
 QRect SectionWidget::titleAreaGeometry() const
 {
 	return _tabsLayout->geometry();
@@ -167,8 +162,6 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 	{
 		_tabsLayout->removeWidget(title);
 		title->disconnect(this);
-//		if (del)
-//			title->deleteLater();
 	}
 
 	// Content wrapper widget (CONTENT)
@@ -177,8 +170,6 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 	{
 		_contentsLayout->removeWidget(content);
 		content->disconnect(this);
-//		if (del)
-//			content->deleteLater();
 	}
 
 	// Select the previous tab as activeTab.

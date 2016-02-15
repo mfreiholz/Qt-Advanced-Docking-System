@@ -1,12 +1,12 @@
 # Advanced Docking System
-Manages content widgets a lot like Visual Studio or similar programs.
+Manages content widgets more like Visual Studio or similar programs.
 I also try to get everything done with basic Qt functionality.
 Basic usage of QWidgets an QLayouts and using basic styles as much as possible.
 
-## Requirements (Tested!)
+## Tested with - Requirements
 **Windows**
-- \>= Qt 5.5
-- VC12 or MinGW (-std=c++11)
+- \>= Qt 5.5, VC12 or MinGW
+- \>= Qt 4.5.3 VC9 - *not as good...*
 
 **Linux**
 - Not yet tested
@@ -21,10 +21,10 @@ Open the `build.pro` with QtCreator and start the build, that's it.
 
 ## TODOs
 Sorted by priority
-- Improve FloatingWidget (Remove maximize button, only support close-button which hides the widget)
+- **[DONE]** Improve FloatingWidget (Remove maximize button, only support close-button which hides the widget)
 - **[DONE]** Serialize and Deserialize state/size/positions of dockings
-- Serialize FloatingWidget states
 - **[90%]** Make compatible with Qt 4.5 (\*ROFL!\*)
+- Save and restore FloatingWidget states
 - Drop indicator images should be fully visible over the DropOverlay rectangle
 - Pin contents: Pins a content and its title widget to the edge and opens on click/hover as long as it has focus
 

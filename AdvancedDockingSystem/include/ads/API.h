@@ -7,12 +7,9 @@
 #include <QSharedPointer>
 class QSplitter;
 
-/*
- * ADS - Advanced Docking System for Qt
- * Developed by Manuel Freiholz
- */
-
-#if 1
+// Use namespace
+// Disabled with Qt4!
+#ifdef ADS_NAMESPACE_ENABLED
 	#define ADS_NAMESPACE_BEGIN namespace ads {
 	#define ADS_NAMESPACE_END }
 	#define ADS_NS ads

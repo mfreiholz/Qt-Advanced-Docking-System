@@ -431,6 +431,7 @@ SectionWidget* ContainerWidget::dropContentOuterHelper(QLayout* l, const Interna
 #else
 			int index = l->indexOf(oldsp);
 			QLayoutItem* li = l->takeAt(index);
+			l->addWidget(sp);
 			sp->addWidget(oldsp);
 			sp->addWidget(sw);
 			delete li;
@@ -447,6 +448,7 @@ SectionWidget* ContainerWidget::dropContentOuterHelper(QLayout* l, const Interna
 			sp->addWidget(sw);
 			int index = l->indexOf(oldsp);
 			QLayoutItem* li = l->takeAt(index);
+			l->addWidget(sp);
 			sp->addWidget(oldsp);
 			delete li;
 #endif

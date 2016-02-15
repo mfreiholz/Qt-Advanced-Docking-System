@@ -5,15 +5,13 @@
 #include <QList>
 #include <QHash>
 #include <QFrame>
+class QBoxLayout;
+class QStackedLayout;
 
 #include "ads/API.h"
 #include "ads/SectionContent.h"
 
-class QBoxLayout;
-class QStackedLayout;
-
 ADS_NAMESPACE_BEGIN
-
 class ContainerWidget;
 class SectionTitleWidget;
 class SectionContentWidget;
@@ -33,7 +31,6 @@ public:
 	virtual ~SectionWidget();
 
 	int uid() const;
-	ContainerWidget* containerWidget() const;
 
 	QRect titleAreaGeometry() const;
 	QRect contentAreaGeometry() const;

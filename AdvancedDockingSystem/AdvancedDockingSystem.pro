@@ -10,6 +10,8 @@ CONFIG += staticlib
 INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/include
 
+greaterThan(QT_MAJOR_VERSION, 4): DEFINES += ADS_NAMESPACE_ENABLED
+
 windows {
 	# MinGW
 	*-g++* {
