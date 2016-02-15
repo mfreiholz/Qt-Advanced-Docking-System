@@ -15,11 +15,13 @@ class QMenu;
 #include "ads/FloatingWidget.h"
 
 ADS_NAMESPACE_BEGIN
-
 class InternalContentData;
 
-// ContainerWidget is the main container to provide the docking
-// functionality. It manages mulitple Sections and all possible areas.
+
+/*!
+ * ContainerWidget is the main container to provide the docking
+ * functionality. It manages mulitple Sections and all possible areas.
+ */
 class ContainerWidget : public QFrame
 {
 	Q_OBJECT
@@ -27,6 +29,8 @@ class ContainerWidget : public QFrame
 
 	friend class SectionWidget;
 	friend class FloatingWidget;
+	friend class SectionTitleWidget;
+	friend class SectionContentWidget;
 
 public:
 	explicit ContainerWidget(QWidget *parent = NULL);
@@ -48,7 +52,7 @@ public:
 
 	/*!
 	 * Creates a QMenu based on available SectionContents.
-	 * The ownership is needs to be handled by the caller.
+	 * The caller is responsible to delete the menu.
 	 */
 	QMenu* createContextMenu() const;
 
@@ -65,30 +69,27 @@ public:
 	bool restoreState(const QByteArray& data);
 
 	//
-	// Internal Stuff Begins Here
+	// Advanced Public API
+	// You usually should not need access to this methods
 	//
 
-	// splitSections splits "section1" and "section2" with given "orientation".
-	// The "section2" element is moved to the "section1" element.
-	void splitSections(SectionWidget* section1, SectionWidget* section2, Qt::Orientation orientation = Qt::Horizontal);
-
-	SectionWidget* dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive = true);
-	void addSection(SectionWidget* section);
-	SectionWidget* sectionAt(const QPoint& pos) const;
-
-	// Drop areas for the ContainerWidget
+	// Outer DropAreas
 	QRect outerTopDropRect() const;
 	QRect outerRightDropRect() const;
 	QRect outerBottomDropRect() const;
 	QRect outerLeftDropRect() const;
 
 private:
+	//
+	// Internal Stuff Begins Here
+	//
+
+	SectionWidget* dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive = true);
+	void addSection(SectionWidget* section);
+	SectionWidget* sectionAt(const QPoint& pos) const;
 	SectionWidget* dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append);
 	void saveGeometryWalk(QDataStream& out, QWidget* widget) const;
 	bool restoreGeometryWalk(QDataStream& in, QSplitter* currentSplitter = NULL);
-
-	// takeContent searches all section-widgets and floating-widgets for "sc" and takes
-	// the ownership of it and passes it to "data" object.
 	bool takeContent(const SectionContent::RefPtr& sc, InternalContentData& data);
 
 private slots:
@@ -97,7 +98,7 @@ private slots:
 signals:
 	void orientationChanged();
 
-public:
+private:
 	// Existing sections.
 	// SectionWidgets are always visible.
 	QList<SectionWidget*> _sections;

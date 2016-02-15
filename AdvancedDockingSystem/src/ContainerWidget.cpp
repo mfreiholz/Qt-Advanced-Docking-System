@@ -216,28 +216,37 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 	return success;
 }
 
+QRect ContainerWidget::outerTopDropRect() const
+{
+	QRect r = rect();
+	int h = r.height() / 100 * 5;
+	return QRect(r.left(), r.top(), r.width(), h);
+}
+
+QRect ContainerWidget::outerRightDropRect() const
+{
+	QRect r = rect();
+	int w = r.width() / 100 * 5;
+	return QRect(r.right() - w, r.top(), w, r.height());
+}
+
+QRect ContainerWidget::outerBottomDropRect() const
+{
+	QRect r = rect();
+	int h = r.height() / 100 * 5;
+	return QRect(r.left(), r.bottom() - h, r.width(), h);
+}
+
+QRect ContainerWidget::outerLeftDropRect() const
+{
+	QRect r = rect();
+	int w = r.width() / 100 * 5;
+	return QRect(r.left(), r.top(), w, r.height());
+}
+
 ///////////////////////////////////////////////////////////////////////
 // PRIVATE API BEGINS HERE
 ///////////////////////////////////////////////////////////////////////
-
-void ContainerWidget::splitSections(SectionWidget* s1, SectionWidget* s2, Qt::Orientation orientation)
-{
-	addSection(s1);
-
-	if (!s2)
-		s2 = new SectionWidget(this);
-	addSection(s2);
-
-	QSplitter* currentSplitter = findParentSplitter(s1);
-	if (currentSplitter)
-	{
-		const int index = currentSplitter->indexOf(s1);
-		QSplitter* splitter = newSplitter(orientation, this);
-		splitter->addWidget(s1);
-		splitter->addWidget(s2);
-		currentSplitter->insertWidget(index, splitter);
-	}
-}
 
 SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive)
 {
@@ -391,34 +400,6 @@ SectionWidget* ContainerWidget::sectionAt(const QPoint& pos) const
 		}
 	}
 	return 0;
-}
-
-QRect ContainerWidget::outerTopDropRect() const
-{
-	QRect r = rect();
-	int h = r.height() / 100 * 5;
-	return QRect(r.left(), r.top(), r.width(), h);
-}
-
-QRect ContainerWidget::outerRightDropRect() const
-{
-	QRect r = rect();
-	int w = r.width() / 100 * 5;
-	return QRect(r.right() - w, r.top(), w, r.height());
-}
-
-QRect ContainerWidget::outerBottomDropRect() const
-{
-	QRect r = rect();
-	int h = r.height() / 100 * 5;
-	return QRect(r.left(), r.bottom() - h, r.width(), h);
-}
-
-QRect ContainerWidget::outerLeftDropRect() const
-{
-	QRect r = rect();
-	int w = r.width() / 100 * 5;
-	return QRect(r.left(), r.top(), w, r.height());
 }
 
 SectionWidget* ContainerWidget::dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append)
