@@ -227,7 +227,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 	{
 		// Create floating widget.
 		InternalContentData data;
-		if (!section->take(_content->uid(), data))
+		if (!section->takeContent(_content->uid(), data))
 		{
 			qWarning() << "THIS SHOULD NOT HAPPEN!!" << _content->uid() << _content->uniqueName();
 			return;

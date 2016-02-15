@@ -52,6 +52,18 @@ public:
 	 */
 	QMenu* createContextMenu() const;
 
+	/*!
+	 * Serializes the current state of contents and returns it as a plain byte array.
+	 * \see restoreState(const QByteArray&)
+	 */
+	QByteArray saveState() const;
+
+	/*!
+	 * Deserilizes the state of contents from <em>data</em>, which was written with <em>saveState()</em>.
+	 * \see saveState()
+	 */
+	bool restoreState(const QByteArray& data);
+
 	//
 	// Internal Stuff Begins Here
 	//
@@ -70,11 +82,8 @@ public:
 	QRect outerBottomDropRect() const;
 	QRect outerLeftDropRect() const;
 
-	// Geometry and state serialization
-	QByteArray saveState() const;
-	bool restoreState(const QByteArray& data);
-
 private:
+	SectionWidget* dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append);
 	void saveGeometryWalk(QDataStream& out, QWidget* widget) const;
 	bool restoreGeometryWalk(QDataStream& in, QSplitter* currentSplitter = NULL);
 

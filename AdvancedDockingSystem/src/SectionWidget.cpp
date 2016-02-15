@@ -145,7 +145,7 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 // take removes a widget from the SectionWidget but does not delete
 // the used SectionTitle- and SectionContent-Widget. Instead it returns
 // these objects.
-bool SectionWidget::take(int uid, InternalContentData& data)
+bool SectionWidget::takeContent(int uid, InternalContentData& data)
 {
 	// Find SectionContent.
 	SectionContent::RefPtr sc;

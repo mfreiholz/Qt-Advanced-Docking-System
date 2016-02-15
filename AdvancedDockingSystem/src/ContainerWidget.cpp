@@ -23,58 +23,6 @@ static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal, QWid
 	return s;
 }
 
-static SectionWidget* dropContentOuterHelper(ContainerWidget* cw, QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append)
-{
-	SectionWidget* sw = new SectionWidget(cw);
-	sw->addContent(data, true);
-
-	QSplitter* oldsp = findImmediateSplitter(cw);
-	if (oldsp->orientation() == orientation
-			|| oldsp->count() == 1)
-	{
-		oldsp->setOrientation(orientation);
-		if (append)
-			oldsp->addWidget(sw);
-		else
-			oldsp->insertWidget(0, sw);
-	}
-	else
-	{
-		QSplitter* sp = newSplitter(orientation);
-		if (append)
-		{
-#if QT_VERSION >= 0x050000
-			QLayoutItem* li = l->replaceWidget(oldsp, sp);
-			sp->addWidget(oldsp);
-			sp->addWidget(sw);
-			delete li;
-#else
-			int index = l->indexOf(oldsp);
-			QLayoutItem* li = l->takeAt(index);
-			sp->addWidget(oldsp);
-			sp->addWidget(sw);
-			delete li;
-#endif
-		}
-		else
-		{
-#if QT_VERSION >= 0x050000
-			sp->addWidget(sw);
-			QLayoutItem* li = l->replaceWidget(oldsp, sp);
-			sp->addWidget(oldsp);
-			delete li;
-#else
-			sp->addWidget(sw);
-			int index = l->indexOf(oldsp);
-			QLayoutItem* li = l->takeAt(index);
-			sp->addWidget(oldsp);
-			delete li;
-#endif
-		}
-	}
-	return sw;
-}
-
 ///////////////////////////////////////////////////////////////////////
 
 ContainerWidget::ContainerWidget(QWidget *parent) :
@@ -174,6 +122,100 @@ QMenu* ContainerWidget::createContextMenu() const
 	return m;
 }
 
+QByteArray ContainerWidget::saveState() const
+{
+	QByteArray ba;
+	QDataStream out(&ba, QIODevice::WriteOnly);
+	out.setVersion(QDataStream::Qt_4_5);
+	out << (quint32) 0x00001337; // Magic
+	out << (quint32) 1; // Version
+
+	// Save state of floating contents
+	out << _floatingWidgets.count();
+	for (int i = 0; i < _floatingWidgets.count(); ++i)
+	{
+		FloatingWidget* fw = _floatingWidgets.at(i);
+		out << fw->content()->uniqueName();
+		out << fw->saveGeometry();
+	}
+
+	// Walk through layout for splitters
+	// Well.. there actually shouldn't be more than one
+	for (int i = 0; i < _mainLayout->count(); ++i)
+	{
+		QLayoutItem* li = _mainLayout->itemAt(i);
+		if (!li->widget())
+			continue;
+		saveGeometryWalk(out, li->widget());
+	}
+
+	return ba;
+}
+
+bool ContainerWidget::restoreState(const QByteArray& data)
+{
+	QDataStream in(data);
+	in.setVersion(QDataStream::Qt_4_5);
+
+	quint32 magic = 0;
+	in >> magic;
+	if (magic != 0x00001337)
+		return false;
+
+	quint32 version = 0;
+	in >> version;
+	if (version != 1)
+		return false;
+
+	QList<FloatingWidget*> oldFloatings = _floatingWidgets;
+	QList<SectionWidget*> oldSections = _sections;
+
+	// Restore floating widgets
+	int fwCount = 0;
+	in >> fwCount;
+	if (fwCount > 0)
+	{
+		for (int i = 0; i < fwCount; ++i)
+		{
+			QString uname;
+			in >> uname;
+			QByteArray geom;
+			in >> geom;
+
+			SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(uname).toStrongRef();
+			if (!sc)
+			{
+				qWarning() << "Can not find floating widget section-content" << uname;
+				continue;
+			}
+			InternalContentData data;
+			if (!this->takeContent(sc, data))
+				continue;
+
+			FloatingWidget* fw = new FloatingWidget(this, sc, data.titleWidget, data.contentWidget, this);
+			fw->restoreGeometry(geom);
+		}
+	}
+
+	_sections.clear();
+
+	// Restore splitters and section widgets
+	const bool success = restoreGeometryWalk(in, NULL);
+	if (success)
+	{
+		QLayoutItem* old = _mainLayout->takeAt(0);
+		_mainLayout->addWidget(_splitter);
+		delete old;
+		qDeleteAll(oldFloatings);
+		qDeleteAll(oldSections);
+	}
+
+	// TODO Handle contents which are not mentioned by deserialized data
+	// ...
+
+	return success;
+}
+
 ///////////////////////////////////////////////////////////////////////
 // PRIVATE API BEGINS HERE
 ///////////////////////////////////////////////////////////////////////
@@ -207,16 +249,16 @@ SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, Sec
 		switch (area)
 		{
 		case TopDropArea:
-			ret = dropContentOuterHelper(this, _mainLayout, data, Qt::Vertical, false);
+			ret = dropContentOuterHelper(_mainLayout, data, Qt::Vertical, false);
 			break;
 		case RightDropArea:
-			ret = dropContentOuterHelper(this, _mainLayout, data, Qt::Horizontal, true);
+			ret = dropContentOuterHelper(_mainLayout, data, Qt::Horizontal, true);
 			break;
 		case BottomDropArea:
-			ret = dropContentOuterHelper(this, _mainLayout, data, Qt::Vertical, true);
+			ret = dropContentOuterHelper(_mainLayout, data, Qt::Vertical, true);
 			break;
 		case LeftDropArea:
-			ret = dropContentOuterHelper(this, _mainLayout, data, Qt::Horizontal, false);
+			ret = dropContentOuterHelper(_mainLayout, data, Qt::Horizontal, false);
 			break;
 		default:
 			return NULL;
@@ -379,86 +421,57 @@ QRect ContainerWidget::outerLeftDropRect() const
 	return QRect(r.left(), r.top(), w, r.height());
 }
 
-QByteArray ContainerWidget::saveState() const
+SectionWidget* ContainerWidget::dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append)
 {
-	QByteArray ba;
-	QDataStream out(&ba, QIODevice::WriteOnly);
-	out.setVersion(QDataStream::Qt_4_5);
-	out << (quint32) 0x00001337; // Magic
-	out << (quint32) 1; // Version
+	ContainerWidget* cw = this;
+	SectionWidget* sw = new SectionWidget(cw);
+	sw->addContent(data, true);
 
-	// Walk through layout for splitters
-	// Well.. there actually shouldn't be more than one
-	for (int i = 0; i < _mainLayout->count(); ++i)
+	QSplitter* oldsp = findImmediateSplitter(cw);
+	if (oldsp->orientation() == orientation
+			|| oldsp->count() == 1)
 	{
-		QLayoutItem* li = _mainLayout->itemAt(i);
-		if (!li->widget())
-			continue;
-		saveGeometryWalk(out, li->widget());
+		oldsp->setOrientation(orientation);
+		if (append)
+			oldsp->addWidget(sw);
+		else
+			oldsp->insertWidget(0, sw);
 	}
-
-	// Save state of FloatingWidgets
-	out << _floatingWidgets.count();
-	for (int i = 0; i < _floatingWidgets.count(); ++i)
+	else
 	{
-		FloatingWidget* fw = _floatingWidgets.at(i);
-		out << fw->content()->uniqueName();
-		out << fw->isVisible();
-		out << fw->saveGeometry();
-	}
-
-	return ba;
-}
-
-bool ContainerWidget::restoreState(const QByteArray& data)
-{
-	QDataStream in(data);
-	in.setVersion(QDataStream::Qt_4_5);
-
-	quint32 magic = 0;
-	in >> magic;
-	if (magic != 0x00001337)
-		return false;
-
-	quint32 version = 0;
-	in >> version;
-	if (version != 1)
-		return false;
-
-	QList<SectionWidget*> currentSections = _sections;
-	_sections.clear();
-
-	// Restore splitters and section widgets
-	const bool success = restoreGeometryWalk(in, NULL);
-	if (success)
-	{
-		QLayoutItem* old = _mainLayout->takeAt(0);
-		_mainLayout->addWidget(_splitter);
-		delete old;
-		qDeleteAll(currentSections);
-	}
-
-	// Restore floating widgets
-	int fwCount = 0;
-	in >> fwCount;
-	for (int i = 0; i < fwCount; ++i)
-	{
-		QString uname;
-		bool visible = false;
-		QRect geom;
-		in >> uname >> visible >> geom;
-
-		SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(uname).toStrongRef();
-		if (!sc)
+		QSplitter* sp = newSplitter(orientation);
+		if (append)
 		{
-			qWarning() << "Can not find floating widget section-content" << uname;
-			continue;
+#if QT_VERSION >= 0x050000
+			QLayoutItem* li = l->replaceWidget(oldsp, sp);
+			sp->addWidget(oldsp);
+			sp->addWidget(sw);
+			delete li;
+#else
+			int index = l->indexOf(oldsp);
+			QLayoutItem* li = l->takeAt(index);
+			sp->addWidget(oldsp);
+			sp->addWidget(sw);
+			delete li;
+#endif
 		}
-
-//		FloatingWidget* fw = new FloatingWidget(this, sc,)
+		else
+		{
+#if QT_VERSION >= 0x050000
+			sp->addWidget(sw);
+			QLayoutItem* li = l->replaceWidget(oldsp, sp);
+			sp->addWidget(oldsp);
+			delete li;
+#else
+			sp->addWidget(sw);
+			int index = l->indexOf(oldsp);
+			QLayoutItem* li = l->takeAt(index);
+			sp->addWidget(oldsp);
+			delete li;
+#endif
+		}
 	}
-
-	return success;
+	return sw;
 }
 
 void ContainerWidget::saveGeometryWalk(QDataStream& out, QWidget* widget) const
@@ -532,7 +545,6 @@ bool ContainerWidget::restoreGeometryWalk(QDataStream& in, QSplitter* currentSpl
 		in >> currentIndex >> count;
 
 		SectionWidget* sw = new SectionWidget(this);
-		//		sw->setGeometry(geom);
 		for (int i = 0; i < count; ++i)
 		{
 			QString name;
@@ -547,7 +559,7 @@ bool ContainerWidget::restoreGeometryWalk(QDataStream& in, QSplitter* currentSpl
 	// Unknown
 	else
 	{
-		qDebug() << QString("");
+		qDebug() << QString();
 	}
 
 	return true;
@@ -559,7 +571,7 @@ bool ContainerWidget::takeContent(const SectionContent::RefPtr& sc, InternalCont
 	bool found = false;
 	for (int i = 0; i < _sections.count() && !found; ++i)
 	{
-		found = _sections.at(i)->take(sc->uid(), data);
+		found = _sections.at(i)->takeContent(sc->uid(), data);
 	}
 
 	// Search in floating widgets

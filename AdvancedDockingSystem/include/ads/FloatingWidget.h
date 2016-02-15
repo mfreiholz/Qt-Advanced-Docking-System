@@ -22,6 +22,8 @@ class FloatingWidget : public QWidget
 {
 	Q_OBJECT
 
+	friend class ContainerWidget;
+
 public:
 	FloatingWidget(ContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent = NULL);
 	virtual ~FloatingWidget();

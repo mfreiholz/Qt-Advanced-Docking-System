@@ -8,7 +8,7 @@
 #include "ads/SectionContent.h"
 
 ADS_NAMESPACE_BEGIN
-
+class ContainerWidget;
 class SectionWidget;
 class FloatingWidget;
 
@@ -17,6 +17,7 @@ class SectionTitleWidget : public QFrame
 	Q_OBJECT
 	Q_PROPERTY(bool activeTab MEMBER _activeTab NOTIFY activeTabChanged)
 
+	friend class ContainerWidget;
 	friend class SectionWidget;
 
 	SectionContent::RefPtr _content;

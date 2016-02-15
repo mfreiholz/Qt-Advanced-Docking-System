@@ -95,29 +95,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_container->setOrientation(Qt::Vertical);
 	setCentralWidget(_container);
 
-	// Test #1: Use low-level API
-	//	if (true)
-	//	{
-	//		ADS_NS::SectionWidget* section = NULL;
-
-	//		section = new ADS_NS::SectionWidget(_container);
-	//		section->addContent(createLongTextLabelSC());
-	//		_container->addSection(section);
-
-	//		section = new ADS_NS::SectionWidget(_container);
-	//		section->addContent(createCalendarSC());
-	//		_container->addSection(section);
-
-	//		section = new ADS_NS::SectionWidget(_container);
-	//		section->addContent(createFileSystemTreeSC());
-	//		_container->addSection(section);
-
-	//		section = new ADS_NS::SectionWidget(_container);
-	//		section->addContent(createCalendarSC());
-	//		_container->addSection(section);
-	//	}
-
-	// Test #2: Use high-level public API
+	// Test #1: Use high-level public API
 	if (true)
 	{
 		ADS_NS::SectionWidget* sw1 = _container->addSectionContent(createLongTextLabelSC());
@@ -130,8 +108,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	resize(800, 600);
 
 	// Restore window geometry and ContainerWidget state from last session
-	//	restoreGeometry(loadDataHelper("MainWindow"));
-	//	_container->restoreState(loadDataHelper("ContainerWidget"));
+	restoreGeometry(loadDataHelper("MainWindow"));
+	_container->restoreState(loadDataHelper("ContainerWidget"));
 }
 
 MainWindow::~MainWindow()

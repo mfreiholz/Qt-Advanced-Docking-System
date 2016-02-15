@@ -25,9 +25,11 @@ class InternalContentData;
 class SectionWidget : public QFrame
 {
 	Q_OBJECT
+	friend class ContainerWidget;
+
+	explicit SectionWidget(ContainerWidget* parent);
 
 public:
-	explicit SectionWidget(ContainerWidget* parent);
 	virtual ~SectionWidget();
 
 	int uid() const;
@@ -39,7 +41,7 @@ public:
 	const QList<SectionContent::RefPtr>& contents() const { return _contents; }
 	void addContent(SectionContent::RefPtr c);
 	void addContent(const InternalContentData& data, bool autoActivate);
-	bool take(int uid, InternalContentData& data);
+	bool takeContent(int uid, InternalContentData& data);
 	int indexOfContent(SectionContent::RefPtr c) const;
 	int indexOfContentByTitlePos(const QPoint& pos, QWidget* exclude = NULL) const;
 

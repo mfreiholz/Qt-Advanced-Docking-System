@@ -8,11 +8,14 @@
 
 ADS_NAMESPACE_BEGIN
 
+class ContainerWidget;
 class SectionWidget;
 
 class SectionContentWidget : public QFrame
 {
 	Q_OBJECT
+
+	friend class ContainerWidget;
 
 public:
 	SectionContentWidget(SectionContent::RefPtr c, QWidget* parent = 0);
