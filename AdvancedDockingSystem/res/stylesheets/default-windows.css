@@ -1,0 +1,28 @@
+/*
+ * Default style sheet on Windows Platforms
+ * Note: Always use CSS-classes with and without "ads--" namespace to support Qt4 & Qt5
+ */
+
+QSplitter::handle {
+	background: palette(dark);
+}
+
+ads--ContainerWidget, ContainerWidget {
+	background: palette(dark);
+}
+
+ads--SectionWidget, SectionWidget {
+	background: palette(window);
+}
+
+ads--SectionTitleWidget, SectionTitleWidget {
+	background: palette(window);
+}
+
+ads--SectionTitleWidget[activeTab="true"], SectionTitleWidget[activeTab="true"] {
+	background: palette(light);
+}
+
+ads--SectionContentWidget, SectionContentWidget {
+	border: 1px solid palette(light);
+}

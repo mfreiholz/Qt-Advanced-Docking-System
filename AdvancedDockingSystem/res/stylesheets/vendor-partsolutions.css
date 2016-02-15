@@ -1,0 +1,47 @@
+/*
+ * Style sheet used by CADENAS PARTsolutions product line
+ * Requires Qt4 compatibility
+ */
+
+QSplitter::handle:vertical {
+	image: url(:/img/splitter-horizontal.png);
+}
+
+QSplitter::handle:horizontal {
+	image: url(:/img/splitter-vertical.png);
+}
+
+ads--ContainerWidget, ContainerWidget {
+	background: #9ab6ca;
+	border: 0;
+}
+
+ads--SectionWidget, SectionWidget {
+	background: #7c9eb3;
+	border-color: #ffffff;
+	border-style: solid;
+	border-width: 1px;
+	margin: 0;
+	padding: 0;
+}
+
+ads--SectionTitleWidget, SectionTitleWidget {
+	background: #7c9eb3;
+	border-right: 1px solid #E7F3F8;
+}
+
+ads--SectionTitleWidget[activeTab="true"], SectionTitleWidget[activeTab="true"] {
+	background: #E7F3F8;
+	border: 1px solid #E7F3F8;
+}
+
+ads--SectionContentWidget, SectionContentWidget {
+	background: #ffffff;
+	border: 0px solid #E7F3F8;
+}
+
+/* Special */
+/*
+ads--SectionTitleWidget IconTitleWidget QLabel { color: #000000; }
+ads--FloatingWidget QPushButton { background: #E7F3F8; }
+*/
