@@ -32,6 +32,8 @@ SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* 
 	_activeTab(false)
 {
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::LeftToRight);
+	l->setContentsMargins(0, 0, 0, 0);
+	l->setSpacing(0);
 	l->addWidget(content->titleWidget());
 	setLayout(l);
 }
@@ -261,7 +263,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 		int left, top, right, bottom;
 		getContentsMargins(&left, &top, &right, &bottom);
 		QPoint moveToPos = mapToParent(ev->pos()) - _dragStartPos;
-		moveToPos.setY(0 + top);
+		moveToPos.setY(0/* + top*/);
 		move(moveToPos);
 		ev->accept();
 	}

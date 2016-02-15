@@ -17,6 +17,7 @@ ads--SectionWidget, SectionWidget {
 
 ads--SectionTitleWidget, SectionTitleWidget {
 	background: palette(window);
+	padding: 9px;
 }
 
 ads--SectionTitleWidget[activeTab="true"], SectionTitleWidget[activeTab="true"] {

@@ -16,9 +16,9 @@ IconTitleWidget::IconTitleWidget(const QIcon& icon, const QString& title, QWidge
 	// Icon label
 	if (icon.isNull())
 	{
-		QLabel* titleIcon = new QLabel();
-		titleIcon->setPixmap(style()->standardIcon(QStyle::SP_MessageBoxInformation).pixmap(16, 16));
-		l->addWidget(titleIcon);
+//		QLabel* titleIcon = new QLabel();
+//		titleIcon->setPixmap(style()->standardIcon(QStyle::SP_MessageBoxInformation).pixmap(16, 16));
+//		l->addWidget(titleIcon);
 	}
 	else
 	{
@@ -30,7 +30,6 @@ IconTitleWidget::IconTitleWidget(const QIcon& icon, const QString& title, QWidge
 	// Title label
 	QLabel* titleText = new QLabel(title);
 	QFont titleFont = titleText->font();
-	titleFont.setBold(true);
 	titleText->setFont(titleFont);
 	l->addWidget(titleText, 1);
 }
