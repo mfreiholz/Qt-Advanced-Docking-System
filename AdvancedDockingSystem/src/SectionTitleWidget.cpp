@@ -120,17 +120,17 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 		// Mouse is over a outer-edge drop area
 		else
 		{
-			DropArea dropArea = DropArea::InvalidDropArea;
+			DropArea dropArea = ADS_NS::InvalidDropArea;
 			if (cw->outerTopDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
-				dropArea = DropArea::TopDropArea;
+				dropArea = ADS_NS::TopDropArea;
 			if (cw->outerRightDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
-				dropArea = DropArea::RightDropArea;
+				dropArea = ADS_NS::RightDropArea;
 			if (cw->outerBottomDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
-				dropArea = DropArea::BottomDropArea;
+				dropArea = ADS_NS::BottomDropArea;
 			if (cw->outerLeftDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
-				dropArea = DropArea::LeftDropArea;
+				dropArea = ADS_NS::LeftDropArea;
 
-			if (dropArea != DropArea::InvalidDropArea)
+			if (dropArea != ADS_NS::InvalidDropArea)
 			{
 #if !defined(ADS_ANIMATIONS_ENABLED)
 				InternalContentData data;
@@ -197,19 +197,19 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 			// Top, Right, Bottom, Left
 			else if (cw->outerTopDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				showDropOverlay(cw, cw->outerTopDropRect(), DropArea::TopDropArea);
+				showDropOverlay(cw, cw->outerTopDropRect(), ADS_NS::TopDropArea);
 			}
 			else if (cw->outerRightDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				showDropOverlay(cw, cw->outerRightDropRect(), DropArea::RightDropArea);
+				showDropOverlay(cw, cw->outerRightDropRect(), ADS_NS::RightDropArea);
 			}
 			else if (cw->outerBottomDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				showDropOverlay(cw, cw->outerBottomDropRect(), DropArea::BottomDropArea);
+				showDropOverlay(cw, cw->outerBottomDropRect(), ADS_NS::BottomDropArea);
 			}
 			else if (cw->outerLeftDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				showDropOverlay(cw, cw->outerLeftDropRect(), DropArea::LeftDropArea);
+				showDropOverlay(cw, cw->outerLeftDropRect(), ADS_NS::LeftDropArea);
 			}
 			else
 			{

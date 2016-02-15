@@ -83,19 +83,19 @@ void DropOverlay::paintEvent(QPaintEvent*)
 	const DropArea da = cursorLocation();
 	switch (da)
 	{
-	case DropArea::TopDropArea:
+	case ADS_NS::TopDropArea:
 		r.setHeight(r.height() / 2);
 		break;
-	case DropArea::RightDropArea:
+	case ADS_NS::RightDropArea:
 		r.setX(r.width() / 2);
 		break;
-	case DropArea::BottomDropArea:
+	case ADS_NS::BottomDropArea:
 		r.setY(r.height() / 2);
 		break;
-	case DropArea::LeftDropArea:
+	case ADS_NS::LeftDropArea:
 		r.setWidth(r.width() / 2);
 		break;
-	case DropArea::CenterDropArea:
+	case ADS_NS::CenterDropArea:
 		r = rect();
 		break;
 	default:
@@ -155,27 +155,27 @@ DropSplitAreas::DropSplitAreas(DropAreas areas, QWidget* parent) :
 	grid->setContentsMargins(0, 0, 0, 0);
 	grid->setSpacing(6);
 
-	if (areas.testFlag(DropArea::TopDropArea))
+	if (areas.testFlag(ADS_NS::TopDropArea))
 	{
 		_top = createDropWidget(":/img/split-top.png");
 		grid->addWidget(_top, 0, 1, Qt::AlignHCenter | Qt::AlignBottom);
 	}
-	if (areas.testFlag(DropArea::RightDropArea))
+	if (areas.testFlag(ADS_NS::RightDropArea))
 	{
 		_right = createDropWidget(":/img/split-right.png");
 		grid->addWidget(_right, 1, 2, Qt::AlignLeft | Qt::AlignVCenter);
 	}
-	if (areas.testFlag(DropArea::BottomDropArea))
+	if (areas.testFlag(ADS_NS::BottomDropArea))
 	{
 		_bottom = createDropWidget(":/img/split-bottom.png");
 		grid->addWidget(_bottom, 2, 1, Qt::AlignHCenter | Qt::AlignTop);
 	}
-	if (areas.testFlag(DropArea::LeftDropArea))
+	if (areas.testFlag(ADS_NS::LeftDropArea))
 	{
 		_left = createDropWidget(":/img/split-left.png");
 		grid->addWidget(_left, 1, 0, Qt::AlignRight | Qt::AlignVCenter);
 	}
-	if (areas.testFlag(DropArea::CenterDropArea))
+	if (areas.testFlag(ADS_NS::CenterDropArea))
 	{
 		_center = createDropWidget(":/img/dock-center.png");
 		grid->addWidget(_center, 1, 1, Qt::AlignCenter);

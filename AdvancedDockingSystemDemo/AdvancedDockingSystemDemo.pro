@@ -7,6 +7,8 @@ TEMPLATE = app
 
 INCLUDEPATH += $$PWD/src
 
+greaterThan(QT_MAJOR_VERSION, 4): DEFINES += ADS_NAMESPACE_ENABLED
+
 windows {
 	# MinGW
 	*-g++* {

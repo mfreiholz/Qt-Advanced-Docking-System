@@ -12,7 +12,7 @@ class QSplitter;
 #ifdef ADS_NAMESPACE_ENABLED
 	#define ADS_NAMESPACE_BEGIN namespace ads {
 	#define ADS_NAMESPACE_END }
-	#define ADS_NS ads
+	#define ADS_NS ::ads
 #else
 	#define ADS_NAMESPACE_BEGIN
 	#define ADS_NAMESPACE_END

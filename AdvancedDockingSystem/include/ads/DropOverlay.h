@@ -56,8 +56,8 @@ private:
 };
 
 
-DropArea showDropOverlay(QWidget* parent, DropAreas areas = DropArea::AllAreas);
-void showDropOverlay(QWidget* parent, const QRect& areaRect, DropAreas areas = DropArea::AllAreas);
+DropArea showDropOverlay(QWidget* parent, DropAreas areas = AllAreas);
+void showDropOverlay(QWidget* parent, const QRect& areaRect, DropAreas areas = AllAreas);
 void hideDropOverlay();
 
 ADS_NAMESPACE_END
