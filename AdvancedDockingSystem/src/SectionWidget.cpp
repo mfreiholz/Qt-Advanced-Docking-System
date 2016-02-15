@@ -145,10 +145,8 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 // take removes a widget from the SectionWidget but does not delete
 // the used SectionTitle- and SectionContent-Widget. Instead it returns
 // these objects.
-InternalContentData SectionWidget::take(int uid, bool del)
+bool SectionWidget::take(int uid, InternalContentData& data)
 {
-	InternalContentData data;
-
 	// Find SectionContent.
 	SectionContent::RefPtr sc;
 	int index = -1;
@@ -160,6 +158,8 @@ InternalContentData SectionWidget::take(int uid, bool del)
 		sc = _contents.takeAt(i);
 		break;
 	}
+	if (!sc)
+		return false;
 
 	// Title wrapper widget (TAB)
 	SectionTitleWidget* title = _sectionTitles.takeAt(index);
@@ -167,8 +167,8 @@ InternalContentData SectionWidget::take(int uid, bool del)
 	{
 		_tabsLayout->removeWidget(title);
 		title->disconnect(this);
-		if (del)
-			title->deleteLater();
+//		if (del)
+//			title->deleteLater();
 	}
 
 	// Content wrapper widget (CONTENT)
@@ -177,8 +177,8 @@ InternalContentData SectionWidget::take(int uid, bool del)
 	{
 		_contentsLayout->removeWidget(content);
 		content->disconnect(this);
-		if (del)
-			content->deleteLater();
+//		if (del)
+//			content->deleteLater();
 	}
 
 	// Select the previous tab as activeTab.
@@ -193,7 +193,7 @@ InternalContentData SectionWidget::take(int uid, bool del)
 	data.content = sc;
 	data.titleWidget = title;
 	data.contentWidget = content;
-	return data;
+	return !data.content.isNull();
 }
 
 int SectionWidget::indexOfContent(SectionContent::RefPtr c) const

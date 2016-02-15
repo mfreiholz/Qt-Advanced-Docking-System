@@ -31,13 +31,37 @@ class ContainerWidget : public QFrame
 public:
 	explicit ContainerWidget(QWidget *parent = NULL);
 
+	//
+	// Public API
+	//
+
 	Qt::Orientation orientation() const;
 	void setOrientation(Qt::Orientation orientation);
 
-	void dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area);
+	/*!
+	 * Adds the section-content <em>sc</em> to this container-widget into the section-widget <em>sw</em>.
+	 * If <em>sw</em> is not NULL, the <em>area</em> is used to indicate how the content should be arranged.
+	 * Returns a pointer to the SectionWidget of the added SectionContent. Do not use it for anything else than adding more
+	 * SectionContent elements with this method.
+	 */
+	SectionWidget* addSectionContent(const SectionContent::RefPtr& sc, SectionWidget* sw = NULL, DropArea area = CenterDropArea);
 
-	void addSection(SectionWidget* section);
+	/*!
+	 * Creates a QMenu based on available SectionContents.
+	 * The ownership is needs to be handled by the caller.
+	 */
+	QMenu* createContextMenu() const;
+
+	//
+	// Internal Stuff Begins Here
+	//
+
+	// splitSections splits "section1" and "section2" with given "orientation".
+	// The "section2" element is moved to the "section1" element.
 	void splitSections(SectionWidget* section1, SectionWidget* section2, Qt::Orientation orientation = Qt::Horizontal);
+
+	SectionWidget* dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive = true);
+	void addSection(SectionWidget* section);
 	SectionWidget* sectionAt(const QPoint& pos) const;
 
 	// Drop areas for the ContainerWidget
@@ -50,11 +74,16 @@ public:
 	QByteArray saveState() const;
 	bool restoreState(const QByteArray& data);
 
-	QMenu* createContextMenu() const;
-
 private:
 	void saveGeometryWalk(QDataStream& out, QWidget* widget) const;
 	bool restoreGeometryWalk(QDataStream& in, QSplitter* currentSplitter = NULL);
+
+	// takeContent searches all section-widgets and floating-widgets for "sc" and takes
+	// the ownership of it and passes it to "data" object.
+	bool takeContent(const SectionContent::RefPtr& sc, InternalContentData& data);
+
+private slots:
+	void onActionToggleSectionContentVisibility(bool visible);
 
 signals:
 	void orientationChanged();

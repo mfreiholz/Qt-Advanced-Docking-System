@@ -46,9 +46,9 @@ static ADS_NS::SectionContent::RefPtr createCalendarSC()
 static ADS_NS::SectionContent::RefPtr createFileSystemTreeSC()
 {
 	QTreeView* w = new QTreeView();
-//	QFileSystemModel* m = new QFileSystemModel(w);
-//	m->setRootPath(QDir::currentPath());
-//	w->setModel(m);
+	//	QFileSystemModel* m = new QFileSystemModel(w);
+	//	m->setRootPath(QDir::currentPath());
+	//	w->setModel(m);
 
 	const int index = ++CONTENT_COUNT;
 	return ADS_NS::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Filesystem %1").arg(index)), w, QString("uname-%1").arg(index));
@@ -91,31 +91,47 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(ui->actionAddSectionContent, SIGNAL(triggered(bool)), this, SLOT(onActionAddSectionContentTriggered()));
 #endif
 
-	// CREATE SOME TESTING DOCKS
 	_container = new ADS_NS::ContainerWidget();
 	_container->setOrientation(Qt::Vertical);
 	setCentralWidget(_container);
 
-	ADS_NS::SectionWidget* section = NULL;
+	// Test #1: Use low-level API
+	//	if (true)
+	//	{
+	//		ADS_NS::SectionWidget* section = NULL;
 
-	section = new ADS_NS::SectionWidget(_container);
-	section->addContent(createLongTextLabelSC());
-	_container->addSection(section);
+	//		section = new ADS_NS::SectionWidget(_container);
+	//		section->addContent(createLongTextLabelSC());
+	//		_container->addSection(section);
 
-	section = new ADS_NS::SectionWidget(_container);
-	section->addContent(createCalendarSC());
-	_container->addSection(section);
+	//		section = new ADS_NS::SectionWidget(_container);
+	//		section->addContent(createCalendarSC());
+	//		_container->addSection(section);
 
-	section = new ADS_NS::SectionWidget(_container);
-	section->addContent(createFileSystemTreeSC());
-	_container->addSection(section);
+	//		section = new ADS_NS::SectionWidget(_container);
+	//		section->addContent(createFileSystemTreeSC());
+	//		_container->addSection(section);
 
-	section = new ADS_NS::SectionWidget(_container);
-	section->addContent(createCalendarSC());
-	_container->addSection(section);
+	//		section = new ADS_NS::SectionWidget(_container);
+	//		section->addContent(createCalendarSC());
+	//		_container->addSection(section);
+	//	}
 
-	restoreGeometry(loadDataHelper("MainWindow"));
-	_container->restoreState(loadDataHelper("ContainerWidget"));
+	// Test #2: Use high-level public API
+	if (true)
+	{
+		ADS_NS::SectionWidget* sw1 = _container->addSectionContent(createLongTextLabelSC());
+		ADS_NS::SectionWidget* sw2 = _container->addSectionContent(createCalendarSC(), sw1, ADS_NS::BottomDropArea);
+		ADS_NS::SectionWidget* sw3 = _container->addSectionContent(createFileSystemTreeSC(), NULL, ADS_NS::RightDropArea);
+		ADS_NS::SectionWidget* sw4 = _container->addSectionContent(createCalendarSC());
+	}
+
+	// Default window geometry
+	resize(800, 600);
+
+	// Restore window geometry and ContainerWidget state from last session
+	//	restoreGeometry(loadDataHelper("MainWindow"));
+	//	_container->restoreState(loadDataHelper("ContainerWidget"));
 }
 
 MainWindow::~MainWindow()
@@ -126,14 +142,6 @@ MainWindow::~MainWindow()
 void MainWindow::onActionAddSectionContentTriggered()
 {
 	return;
-
-//	auto titleWidget = new IconTitleWidget(QIcon(), QString("Title"));
-//	auto contentWidget = createRandomWidget(-1, -1);
-//	auto content = ADS_NS::SectionContent::newSectionContent(titleWidget, contentWidget);
-
-//	auto section = new ADS_NS::SectionWidget(_container);
-//	_container->addSection(section);
-//	section->addContent(content);
 }
 
 void MainWindow::contextMenuEvent(QContextMenuEvent* e)

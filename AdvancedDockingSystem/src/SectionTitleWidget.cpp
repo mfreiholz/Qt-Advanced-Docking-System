@@ -83,14 +83,15 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 			if (loc != InvalidDropArea)
 			{
 #if !defined(ADS_ANIMATIONS_ENABLED)
-				InternalContentData data = _fw->takeContent();
+				InternalContentData data;
+				_fw->takeContent(data);
 				_fw->deleteLater();
 #if QT_VERSION >= 0x050000
 				_fw.clear();
 #else
 				_fw = 0;
 #endif
-				cw->dropContent(data, sw, loc);
+				cw->dropContent(data, sw, loc, true);
 #else
 				QPropertyAnimation* moveAnim = new QPropertyAnimation(_fw, "pos", this);
 				moveAnim->setStartValue(_fw->pos());
@@ -132,14 +133,15 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 			if (dropArea != DropArea::InvalidDropArea)
 			{
 #if !defined(ADS_ANIMATIONS_ENABLED)
-				InternalContentData data = _fw->takeContent();
+				InternalContentData data;
+				_fw->takeContent(data);
 				_fw->deleteLater();
 #if QT_VERSION >= 0x050000
 				_fw.clear();
 #else
 				_fw = 0;
 #endif
-				cw->dropContent(data, NULL, dropArea);
+				cw->dropContent(data, NULL, dropArea, true);
 #else
 #endif
 			}
@@ -224,7 +226,12 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 			&& !section->titleAreaGeometry().contains(section->mapFromGlobal(ev->globalPos())))
 	{
 		// Create floating widget.
-		InternalContentData data = section->take(_content->uid(), false);
+		InternalContentData data;
+		if (!section->take(_content->uid(), data))
+		{
+			qWarning() << "THIS SHOULD NOT HAPPEN!!" << _content->uid() << _content->uniqueName();
+			return;
+		}
 
 		_fw = new FloatingWidget(cw, data.content, data.titleWidget, data.contentWidget, cw);
 		_fw->resize(section->size());

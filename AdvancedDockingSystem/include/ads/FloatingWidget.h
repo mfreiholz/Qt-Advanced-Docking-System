@@ -26,11 +26,10 @@ public:
 	FloatingWidget(ContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent = NULL);
 	virtual ~FloatingWidget();
 
-	InternalContentData takeContent();
 	SectionContent::RefPtr content() const { return _content; }
 
-protected:
-	virtual void closeEvent(QCloseEvent* e);
+public://private:
+	bool takeContent(InternalContentData& data);
 
 private:
 	ContainerWidget* _container;

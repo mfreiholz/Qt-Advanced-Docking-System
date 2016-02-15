@@ -22,13 +22,13 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 	_titleWidget(titleWidget),
 	_contentWidget(contentWidget)
 {
-	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom, this);
+	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
 	setLayout(l);
 
 	// Title + Controls
-	_titleLayout = new QBoxLayout(QBoxLayout::LeftToRight, this);
+	_titleLayout = new QBoxLayout(QBoxLayout::LeftToRight);
 	_titleLayout->addWidget(titleWidget, 1);
 	l->addLayout(_titleLayout, 0);
 
@@ -62,9 +62,8 @@ FloatingWidget::~FloatingWidget()
 	_container->_floatingWidgets.removeAll(this);
 }
 
-InternalContentData FloatingWidget::takeContent()
+bool FloatingWidget::takeContent(InternalContentData& data)
 {
-	InternalContentData data;
 	data.content = _content;
 	data.titleWidget = _titleWidget;
 	data.contentWidget = _contentWidget;
@@ -75,11 +74,7 @@ InternalContentData FloatingWidget::takeContent()
 	layout()->removeWidget(_contentWidget);
 	_contentWidget = NULL;
 
-	return data;
-}
-
-void FloatingWidget::closeEvent(QCloseEvent*)
-{
+	return true;
 }
 
 ADS_NAMESPACE_END

@@ -39,7 +39,7 @@ public:
 	const QList<SectionContent::RefPtr>& contents() const { return _contents; }
 	void addContent(SectionContent::RefPtr c);
 	void addContent(const InternalContentData& data, bool autoActivate);
-	InternalContentData take(int uid, bool del = true);
+	bool take(int uid, InternalContentData& data);
 	int indexOfContent(SectionContent::RefPtr c) const;
 	int indexOfContentByTitlePos(const QPoint& pos, QWidget* exclude = NULL) const;
 

@@ -1,5 +1,7 @@
 #include "ads/ContainerWidget.h"
 #include "ads/Internal.h"
+#include "ads/SectionTitleWidget.h"
+#include "ads/SectionContentWidget.h"
 
 #include <QPaintEvent>
 #include <QPainter>
@@ -21,7 +23,7 @@ static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal, QWid
 	return s;
 }
 
-static void dropContentOuterHelper(ContainerWidget* cw, QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append)
+static SectionWidget* dropContentOuterHelper(ContainerWidget* cw, QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append)
 {
 	SectionWidget* sw = new SectionWidget(cw);
 	sw->addContent(data, true);
@@ -70,6 +72,7 @@ static void dropContentOuterHelper(ContainerWidget* cw, QLayout* l, const Intern
 #endif
 		}
 	}
+	return sw;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -100,29 +103,125 @@ void ContainerWidget::setOrientation(Qt::Orientation orientation)
 	}
 }
 
-void ContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area)
+SectionWidget* ContainerWidget::addSectionContent(const SectionContent::RefPtr& sc, SectionWidget* sw, DropArea area)
 {
+	if (!sw)
+	{
+		if (_sections.isEmpty())
+		{	// Create default section
+			sw = new SectionWidget(this);
+			addSection(sw);
+		}
+		else if (area == CenterDropArea)
+			// Use existing default section
+			sw = _sections.first();
+	}
+
+	// Drop it based on "area"
+	InternalContentData data;
+	data.content = sc;
+	data.titleWidget = new SectionTitleWidget(sc, NULL);
+	data.contentWidget = new SectionContentWidget(sc, NULL);
+	return dropContent(data, sw, area, false);
+}
+
+QMenu* ContainerWidget::createContextMenu() const
+{
+	QMenu* m = new QMenu(NULL);
+
+	// Contents of SectionWidgets
+	for (int i = 0; i < _sections.size(); ++i)
+	{
+		SectionWidget* sw = _sections.at(i);
+		QList<SectionContent::RefPtr> contents = sw->contents();
+		foreach (const SectionContent::RefPtr& c, contents)
+		{
+			QAction* a = m->addAction(QIcon(), c->uniqueName());
+			a->setProperty("uid", c->uid());
+			a->setProperty("type", "section");
+			a->setCheckable(true);
+			a->setChecked(c->titleWidget()->isVisible());
+#if QT_VERSION >= 0x050000
+			QObject::connect(a, &QAction::toggled, this, &ContainerWidget::onActionToggleSectionContentVisibility);
+#else
+			QObject::connect(a, SIGNAL(toggled(bool)), this, SLOT(onActionToggleSectionContentVisibility(bool)));
+#endif
+		}
+	}
+
+	// Contents of FloatingWidgets
+	if (_floatingWidgets.size())
+	{
+		if (m->actions().size())
+			m->addSeparator();
+		for (int i = 0; i < _floatingWidgets.size(); ++i)
+		{
+			FloatingWidget* fw = _floatingWidgets.at(i);
+			SectionContent::RefPtr c = fw->content();
+			QAction* a = m->addAction(QIcon(), c->uniqueName());
+			a->setProperty("uid", c->uid());
+			a->setProperty("type", "floating");
+			a->setCheckable(true);
+			a->setChecked(fw->isVisible());
+#if QT_VERSION >= 0x050000
+			QObject::connect(a, &QAction::toggled, fw, &FloatingWidget::setVisible);
+#else
+			QObject::connect(a, SIGNAL(toggled(bool)), fw, SLOT(setVisible(bool)));
+#endif
+		}
+	}
+
+	return m;
+}
+
+///////////////////////////////////////////////////////////////////////
+// PRIVATE API BEGINS HERE
+///////////////////////////////////////////////////////////////////////
+
+void ContainerWidget::splitSections(SectionWidget* s1, SectionWidget* s2, Qt::Orientation orientation)
+{
+	addSection(s1);
+
+	if (!s2)
+		s2 = new SectionWidget(this);
+	addSection(s2);
+
+	QSplitter* currentSplitter = findParentSplitter(s1);
+	if (currentSplitter)
+	{
+		const int index = currentSplitter->indexOf(s1);
+		QSplitter* splitter = newSplitter(orientation, this);
+		splitter->addWidget(s1);
+		splitter->addWidget(s2);
+		currentSplitter->insertWidget(index, splitter);
+	}
+}
+
+SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive)
+{
+	SectionWidget* ret = NULL;
+
 	// Drop on outer area
 	if (!targetSection)
 	{
 		switch (area)
 		{
 		case TopDropArea:
-			dropContentOuterHelper(this, _mainLayout, data, Qt::Vertical, false);
+			ret = dropContentOuterHelper(this, _mainLayout, data, Qt::Vertical, false);
 			break;
 		case RightDropArea:
-			dropContentOuterHelper(this, _mainLayout, data, Qt::Horizontal, true);
+			ret = dropContentOuterHelper(this, _mainLayout, data, Qt::Horizontal, true);
 			break;
 		case BottomDropArea:
-			dropContentOuterHelper(this, _mainLayout, data, Qt::Vertical, true);
+			ret = dropContentOuterHelper(this, _mainLayout, data, Qt::Vertical, true);
 			break;
 		case LeftDropArea:
-			dropContentOuterHelper(this, _mainLayout, data, Qt::Horizontal, false);
+			ret = dropContentOuterHelper(this, _mainLayout, data, Qt::Horizontal, false);
 			break;
 		default:
-			return;
+			return NULL;
 		}
-		return;
+		return NULL;
 	}
 
 	QSplitter* targetSectionSplitter = findParentSplitter(targetSection);
@@ -147,6 +246,7 @@ void ContainerWidget::dropContent(const InternalContentData& data, SectionWidget
 			s->addWidget(targetSection);
 			targetSectionSplitter->insertWidget(index, s);
 		}
+		ret = sw;
 		break;
 	}
 	case RightDropArea:
@@ -166,6 +266,7 @@ void ContainerWidget::dropContent(const InternalContentData& data, SectionWidget
 			s->addWidget(sw);
 			targetSectionSplitter->insertWidget(index, s);
 		}
+		ret = sw;
 		break;
 	}
 	case BottomDropArea:
@@ -185,6 +286,7 @@ void ContainerWidget::dropContent(const InternalContentData& data, SectionWidget
 			s->addWidget(sw);
 			targetSectionSplitter->insertWidget(index, s);
 		}
+		ret = sw;
 		break;
 	}
 	case LeftDropArea:
@@ -204,16 +306,19 @@ void ContainerWidget::dropContent(const InternalContentData& data, SectionWidget
 			targetSectionSplitter->insertWidget(index, s);
 			s->addWidget(targetSection);
 		}
+		ret = sw;
 		break;
 	}
 	case CenterDropArea:
 	{
-		targetSection->addContent(data, true);
+		targetSection->addContent(data, autoActive);
+		ret = targetSection;
 		break;
 	}
 	default:
 		break;
 	}
+	return ret;
 }
 
 void ContainerWidget::addSection(SectionWidget* section)
@@ -230,22 +335,6 @@ void ContainerWidget::addSection(SectionWidget* section)
 		return;
 	}
 	_splitter->addWidget(section);
-}
-
-void ContainerWidget::splitSections(SectionWidget* s1, SectionWidget* s2, Qt::Orientation orientation)
-{
-	addSection(s1);
-	addSection(s2);
-
-	QSplitter* currentSplitter = findParentSplitter(s1);
-	if (currentSplitter)
-	{
-		const int index = currentSplitter->indexOf(s1);
-		QSplitter* splitter = newSplitter(orientation, this);
-		splitter->addWidget(s1);
-		splitter->addWidget(s2);
-		currentSplitter->insertWidget(index, splitter);
-	}
 }
 
 SectionWidget* ContainerWidget::sectionAt(const QPoint& pos) const
@@ -307,6 +396,17 @@ QByteArray ContainerWidget::saveState() const
 			continue;
 		saveGeometryWalk(out, li->widget());
 	}
+
+	// Save state of FloatingWidgets
+	out << _floatingWidgets.count();
+	for (int i = 0; i < _floatingWidgets.count(); ++i)
+	{
+		FloatingWidget* fw = _floatingWidgets.at(i);
+		out << fw->content()->uniqueName();
+		out << fw->isVisible();
+		out << fw->saveGeometry();
+	}
+
 	return ba;
 }
 
@@ -328,6 +428,7 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 	QList<SectionWidget*> currentSections = _sections;
 	_sections.clear();
 
+	// Restore splitters and section widgets
 	const bool success = restoreGeometryWalk(in, NULL);
 	if (success)
 	{
@@ -336,45 +437,28 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 		delete old;
 		qDeleteAll(currentSections);
 	}
+
+	// Restore floating widgets
+	int fwCount = 0;
+	in >> fwCount;
+	for (int i = 0; i < fwCount; ++i)
+	{
+		QString uname;
+		bool visible = false;
+		QRect geom;
+		in >> uname >> visible >> geom;
+
+		SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(uname).toStrongRef();
+		if (!sc)
+		{
+			qWarning() << "Can not find floating widget section-content" << uname;
+			continue;
+		}
+
+//		FloatingWidget* fw = new FloatingWidget(this, sc,)
+	}
+
 	return success;
-}
-
-QMenu* ContainerWidget::createContextMenu() const
-{
-	QMenu* m = new QMenu(const_cast<ContainerWidget*>(this));
-
-	// Contents of SectionWidgets
-	for (int i = 0; i < _sections.size(); ++i)
-	{
-		SectionWidget* sw = _sections.at(i);
-		QList<SectionContent::RefPtr> contents = sw->contents();
-		foreach (const SectionContent::RefPtr& c, contents)
-		{
-			m->addAction(QIcon(), QString("Content %1").arg(c->uid()));
-		}
-	}
-
-	// Contents of FloatingWidgets
-	if (_floatingWidgets.size())
-	{
-		if (m->actions().size())
-			m->addSeparator();
-		for (int i = 0; i < _floatingWidgets.size(); ++i)
-		{
-			FloatingWidget* fw = _floatingWidgets.at(i);
-			SectionContent::RefPtr c = fw->content();
-			QAction* a = m->addAction(QIcon(), QString("Floating %1").arg(c->uid()));
-			a->setCheckable(true);
-			a->setChecked(fw->isVisible());
-#if QT_VERSION >= 0x050000
-			QObject::connect(a, &QAction::toggled, fw, &FloatingWidget::setVisible);
-#else
-			QObject::connect(a, SIGNAL(toggled(bool)), fw, SLOT(setVisible(bool)));
-#endif
-		}
-	}
-
-	return m;
 }
 
 void ContainerWidget::saveGeometryWalk(QDataStream& out, QWidget* widget) const
@@ -448,7 +532,7 @@ bool ContainerWidget::restoreGeometryWalk(QDataStream& in, QSplitter* currentSpl
 		in >> currentIndex >> count;
 
 		SectionWidget* sw = new SectionWidget(this);
-//		sw->setGeometry(geom);
+		//		sw->setGeometry(geom);
 		for (int i = 0; i < count; ++i)
 		{
 			QString name;
@@ -467,6 +551,34 @@ bool ContainerWidget::restoreGeometryWalk(QDataStream& in, QSplitter* currentSpl
 	}
 
 	return true;
+}
+
+bool ContainerWidget::takeContent(const SectionContent::RefPtr& sc, InternalContentData& data)
+{
+	// Search in sections
+	bool found = false;
+	for (int i = 0; i < _sections.count() && !found; ++i)
+	{
+		found = _sections.at(i)->take(sc->uid(), data);
+	}
+
+	// Search in floating widgets
+	for (int i = 0; i < _floatingWidgets.count() && !found; ++i)
+	{
+		found = _floatingWidgets.at(i)->content()->uid() == sc->uid();
+		_floatingWidgets.at(i)->takeContent(data);
+	}
+
+	return found;
+}
+
+void ContainerWidget::onActionToggleSectionContentVisibility(bool visible)
+{
+	QAction* a = qobject_cast<QAction*>(sender());
+	if (!a)
+		return;
+	const int uid = a->property("uid").toInt();
+	qDebug() << "Change visibility of" << uid << visible;
 }
 
 ADS_NAMESPACE_END
