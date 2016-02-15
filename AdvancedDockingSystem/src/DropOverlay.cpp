@@ -30,10 +30,9 @@ DropOverlay::DropOverlay(DropAreas areas, QWidget *parent) :
 	_splitAreas(NULL),
 	_fullAreaDrop(false)
 {
-	//setAttribute(Qt::WA_TransparentForMouseEvents);
-	setWindowFlags(windowFlags() | Qt::Tool);
-	setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
+	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 	setWindowOpacity(0.2);
+	setWindowTitle("DropOverlay");
 
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
 	l->setContentsMargins(0, 0, 0, 0);
@@ -147,10 +146,10 @@ DropSplitAreas::DropSplitAreas(DropAreas areas, QWidget* parent) :
 	_left(0),
 	_center(0)
 {
-	//setAttribute(Qt::WA_TransparentForMouseEvents);
+	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+	setWindowTitle("DropSplitAreas");
+
 	setAttribute(Qt::WA_TranslucentBackground);
-	setWindowFlags(windowFlags() | Qt::Tool);
-	setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
 
 	QGridLayout* grid = new QGridLayout();
 	grid->setContentsMargins(0, 0, 0, 0);
