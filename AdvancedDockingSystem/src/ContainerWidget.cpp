@@ -560,11 +560,20 @@ bool ContainerWidget::restoreSectionWidgets(QDataStream& in, QSplitter* currentS
 		SectionWidget* sw = new SectionWidget(this);
 		for (int i = 0; i < count; ++i)
 		{
-			QString name;
-			in >> name;
-			const SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(name).toStrongRef();
-			if (sc)
-				sw->addContent(sc);
+			QString uname;
+			in >> uname;
+			const SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(uname).toStrongRef();
+			if (!sc)
+			{
+				qWarning() << "Can not find SectionContent:" << uname;
+				continue;
+			}
+
+			InternalContentData data;
+			if (!this->takeContent(sc, data))
+				continue;
+
+			sw->addContent(sc);
 		}
 		sw->setCurrentIndex(currentIndex);
 		currentSplitter->addWidget(sw);
