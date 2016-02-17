@@ -24,19 +24,21 @@ Open the `build.pro` with QtCreator and start the build, that's it.
 
 ## TODOs
 Sorted by priority
+
+### Beta 0.1
 - [x] Improve FloatingWidget (Remove maximize button, only support close-button which hides the widget)
 - [x] Serialize and Deserialize state/size/positions of dockings
 - [x] Make compatible with Qt 4.5 (\*ROFL!\*)
 - [x] Save and restore FloatingWidget states
 - [x] Restore: Manage new or deleted SectionContent objects, which are not available
-- [ ] Show close button on right corner of SectionWidget
+- [x] Working with outer-edge-drops sometimes leaves empty splitters #BUG
+- [x] Clean up of unused e.g. count()<=1 QSplitters doesn't work well #BUG
+- [ ] Show close button on right corner of SectionWidget. How to safe last section position?
+- [ ] Empty splitters, if only 2 or 1 items are in container
+
+### Some day...
 - [ ] Drop indicator images should be fully visible over the DropOverlay rectangle
 - [ ] Pin contents: Pins a content and its title widget to the edge and opens on click/hover as long as it has focus
-
-## Bugs
-- [x] Working with outer-edge-drops sometimes leaves empty splitters
-- [x] Clean up of unused e.g. count()<=1 QSplitters doesn't work well
-- [ ] Empty splitters, if only 2 or 1 items are in container
 
 ## Credits
 - Drop indicator images from:
