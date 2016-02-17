@@ -137,6 +137,7 @@ QByteArray ContainerWidget::saveState() const
 		FloatingWidget* fw = _floatings.at(i);
 		out << fw->content()->uniqueName();
 		out << fw->saveGeometry();
+		out << fw->isVisible();
 	}
 
 	// Walk through layout for splitters
@@ -495,7 +496,9 @@ bool ContainerWidget::restoreFloatingWidgets(QDataStream& in, QList<FloatingWidg
 		in >> uname;
 		QByteArray geom;
 		in >> geom;
-		qDebug() << "Restore FloatingWidget" << uname << geom;
+		bool visible = false;
+		in >> visible;
+		qDebug() << "Restore FloatingWidget" << uname << geom << visible;
 
 		const SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(uname).toStrongRef();
 		if (!sc)
@@ -510,9 +513,9 @@ bool ContainerWidget::restoreFloatingWidgets(QDataStream& in, QList<FloatingWidg
 
 		FloatingWidget* fw = new FloatingWidget(this, sc, data.titleWidget, data.contentWidget, this);
 		fw->restoreGeometry(geom);
-		fw->setVisible(true);
-		data.titleWidget->_fw = fw; // $mfreiholz: Don't look at it :-< It's more than ugly...
+		fw->setVisible(visible);
 		floatings.append(fw);
+		data.titleWidget->_fw = fw; // $mfreiholz: Don't look at it :-< It's more than ugly...
 	}
 	return true;
 }
