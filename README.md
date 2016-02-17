@@ -39,6 +39,8 @@ Sorted by priority
 ### Some day...
 - [ ] Drop indicator images should be fully visible over the DropOverlay rectangle
 - [ ] Pin contents: Pins a content and its title widget to the edge and opens on click/hover as long as it has focus
+- [ ] API: Make it possible to use custom drop images
+- [ ] API: Add possibility to make a SectionContent element floatable (`ContainerWidget::setFloating(SectionContent*)`?)
 
 ## Credits
 - Drop indicator images from:
