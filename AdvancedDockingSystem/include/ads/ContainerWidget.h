@@ -84,12 +84,14 @@ private:
 	// Internal Stuff Begins Here
 	//
 
+	SectionWidget* newSectionWidget();
 	SectionWidget* dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive = true);
 	void addSection(SectionWidget* section);
 	SectionWidget* sectionAt(const QPoint& pos) const;
 	SectionWidget* dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append);
 	void saveGeometryWalk(QDataStream& out, QWidget* widget) const;
-	bool restoreGeometryWalk(QDataStream& in, QSplitter* currentSplitter = NULL);
+	bool restoreFloatingWidgets(QDataStream& in, QList<FloatingWidget*>& floatings);
+	bool restoreSectionWidgets(QDataStream& in, QSplitter* currentSplitter, QList<SectionWidget*>& sections);
 	bool takeContent(const SectionContent::RefPtr& sc, InternalContentData& data);
 
 private slots:
@@ -99,17 +101,16 @@ signals:
 	void orientationChanged();
 
 private:
-	// Existing sections.
-	// SectionWidgets are always visible.
+	// Sections of this container
 	QList<SectionWidget*> _sections;
 
-	// All currently active Floatingwidgets.
-	QList<FloatingWidget*> _floatingWidgets;
+	//Floatings of this container
+	QList<FloatingWidget*> _floatings;
 
 	// Layout stuff
 	QGridLayout* _mainLayout;
 	Qt::Orientation _orientation;
-	QPointer<QSplitter> _splitter;
+	QPointer<QSplitter> _splitter; // $mfreiholz: I'd like to remove this variable entirely.
 };
 
 ADS_NAMESPACE_END

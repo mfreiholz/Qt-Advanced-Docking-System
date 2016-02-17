@@ -237,7 +237,8 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 
 		_fw = new FloatingWidget(cw, data.content, data.titleWidget, data.contentWidget, cw);
 		_fw->resize(section->size());
-		setActiveTab(false);
+		cw->_floatings.append(_fw); // Note: I don't like this...
+		//setActiveTab(false);
 
 		const QPoint moveToPos = ev->globalPos() - (_dragStartPos + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
 		_fw->move(moveToPos);

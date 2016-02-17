@@ -57,7 +57,7 @@ SectionWidget* ContainerWidget::addSectionContent(const SectionContent::RefPtr& 
 	{
 		if (_sections.isEmpty())
 		{	// Create default section
-			sw = new SectionWidget(this);
+			sw = newSectionWidget();
 			addSection(sw);
 		}
 		else if (area == CenterDropArea)
@@ -98,13 +98,13 @@ QMenu* ContainerWidget::createContextMenu() const
 	}
 
 	// Contents of FloatingWidgets
-	if (_floatingWidgets.size())
+	if (_floatings.size())
 	{
 		if (m->actions().size())
 			m->addSeparator();
-		for (int i = 0; i < _floatingWidgets.size(); ++i)
+		for (int i = 0; i < _floatings.size(); ++i)
 		{
-			FloatingWidget* fw = _floatingWidgets.at(i);
+			FloatingWidget* fw = _floatings.at(i);
 			SectionContent::RefPtr c = fw->content();
 			QAction* a = m->addAction(QIcon(), c->uniqueName());
 			a->setProperty("uid", c->uid());
@@ -131,10 +131,10 @@ QByteArray ContainerWidget::saveState() const
 	out << (quint32) 1; // Version
 
 	// Save state of floating contents
-	out << _floatingWidgets.count();
-	for (int i = 0; i < _floatingWidgets.count(); ++i)
+	out << _floatings.count();
+	for (int i = 0; i < _floatings.count(); ++i)
 	{
-		FloatingWidget* fw = _floatingWidgets.at(i);
+		FloatingWidget* fw = _floatings.at(i);
 		out << fw->content()->uniqueName();
 		out << fw->saveGeometry();
 	}
@@ -167,51 +167,37 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 	if (version != 1)
 		return false;
 
-	QList<FloatingWidget*> oldFloatings = _floatingWidgets;
+	QList<FloatingWidget*> oldFloatings = _floatings;
 	QList<SectionWidget*> oldSections = _sections;
 
 	// Restore floating widgets
-	int fwCount = 0;
-	in >> fwCount;
-	if (fwCount > 0)
+	QList<FloatingWidget*> floatings;
+	bool success = restoreFloatingWidgets(in, floatings);
+	if (!success)
 	{
-		for (int i = 0; i < fwCount; ++i)
-		{
-			QString uname;
-			in >> uname;
-			QByteArray geom;
-			in >> geom;
-
-			SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(uname).toStrongRef();
-			if (!sc)
-			{
-				qWarning() << "Can not find floating widget section-content" << uname;
-				continue;
-			}
-			InternalContentData data;
-			if (!this->takeContent(sc, data))
-				continue;
-
-			FloatingWidget* fw = new FloatingWidget(this, sc, data.titleWidget, data.contentWidget, this);
-			fw->restoreGeometry(geom);
-		}
+		qWarning() << "Could not restore floatings completely";
 	}
-
-	_sections.clear();
 
 	// Restore splitters and section widgets
-	const bool success = restoreGeometryWalk(in, NULL);
-	if (success)
+	QList<SectionWidget*> sections;
+	success = restoreSectionWidgets(in, NULL, sections);
+	if (!success)
 	{
-		QLayoutItem* old = _mainLayout->takeAt(0);
-		_mainLayout->addWidget(_splitter);
-		delete old;
-		qDeleteAll(oldFloatings);
-		qDeleteAll(oldSections);
+		qWarning() << "Could not restore sections completely";
 	}
+
+	_floatings = floatings;
+	_sections = sections;
 
 	// TODO Handle contents which are not mentioned by deserialized data
 	// ...
+
+	// Delete old objects
+	QLayoutItem* old = _mainLayout->takeAt(0);
+	_mainLayout->addWidget(_splitter);
+	delete old;
+	qDeleteAll(oldFloatings);
+	qDeleteAll(oldSections);
 
 	return success;
 }
@@ -248,6 +234,13 @@ QRect ContainerWidget::outerLeftDropRect() const
 // PRIVATE API BEGINS HERE
 ///////////////////////////////////////////////////////////////////////
 
+SectionWidget* ContainerWidget::newSectionWidget()
+{
+	SectionWidget* sw = new SectionWidget(this);
+	_sections.append(sw);
+	return sw;
+}
+
 SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive)
 {
 	SectionWidget* ret = NULL;
@@ -282,7 +275,7 @@ SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, Sec
 	{
 	case TopDropArea:
 	{
-		SectionWidget* sw = new SectionWidget(this);
+		SectionWidget* sw = newSectionWidget();
 		sw->addContent(data, true);
 		if (targetSectionSplitter->orientation() == Qt::Vertical)
 		{
@@ -302,7 +295,7 @@ SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, Sec
 	}
 	case RightDropArea:
 	{
-		SectionWidget* sw = new SectionWidget(this);
+		SectionWidget* sw = newSectionWidget();
 		sw->addContent(data, true);
 		if (targetSectionSplitter->orientation() == Qt::Horizontal)
 		{
@@ -322,7 +315,7 @@ SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, Sec
 	}
 	case BottomDropArea:
 	{
-		SectionWidget* sw = new SectionWidget(this);
+		SectionWidget* sw = newSectionWidget();
 		sw->addContent(data, true);
 		if (targetSectionSplitter->orientation() == Qt::Vertical)
 		{
@@ -342,7 +335,7 @@ SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, Sec
 	}
 	case LeftDropArea:
 	{
-		SectionWidget* sw = new SectionWidget(this);
+		SectionWidget* sw = newSectionWidget();
 		sw->addContent(data, true);
 		if (targetSectionSplitter->orientation() == Qt::Horizontal)
 		{
@@ -404,11 +397,10 @@ SectionWidget* ContainerWidget::sectionAt(const QPoint& pos) const
 
 SectionWidget* ContainerWidget::dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append)
 {
-	ContainerWidget* cw = this;
-	SectionWidget* sw = new SectionWidget(cw);
+	SectionWidget* sw = newSectionWidget();
 	sw->addContent(data, true);
 
-	QSplitter* oldsp = findImmediateSplitter(cw);
+	QSplitter* oldsp = findImmediateSplitter(this);
 	if (oldsp->orientation() == orientation
 			|| oldsp->count() == 1)
 	{
@@ -490,7 +482,42 @@ void ContainerWidget::saveGeometryWalk(QDataStream& out, QWidget* widget) const
 	}
 }
 
-bool ContainerWidget::restoreGeometryWalk(QDataStream& in, QSplitter* currentSplitter)
+bool ContainerWidget::restoreFloatingWidgets(QDataStream& in, QList<FloatingWidget*>& floatings)
+{
+	int fwCount = 0;
+	in >> fwCount;
+	if (fwCount <= 0)
+		return true;
+
+	for (int i = 0; i < fwCount; ++i)
+	{
+		QString uname;
+		in >> uname;
+		QByteArray geom;
+		in >> geom;
+		qDebug() << "Restore FloatingWidget" << uname << geom;
+
+		const SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(uname).toStrongRef();
+		if (!sc)
+		{
+			qWarning() << "Can not find SectionContent:" << uname;
+			continue;
+		}
+
+		InternalContentData data;
+		if (!this->takeContent(sc, data))
+			continue;
+
+		FloatingWidget* fw = new FloatingWidget(this, sc, data.titleWidget, data.contentWidget, this);
+		fw->restoreGeometry(geom);
+		fw->setVisible(true);
+		data.titleWidget->_fw = fw; // $mfreiholz: Don't look at it :-< It's more than ugly...
+		floatings.append(fw);
+	}
+	return true;
+}
+
+bool ContainerWidget::restoreSectionWidgets(QDataStream& in, QSplitter* currentSplitter, QList<SectionWidget*>& sections)
 {
 	int type;
 	in >> type;
@@ -505,7 +532,7 @@ bool ContainerWidget::restoreGeometryWalk(QDataStream& in, QSplitter* currentSpl
 		QSplitter* sp = newSplitter((Qt::Orientation) orientation);
 		for (int i = 0; i < count; ++i)
 		{
-			if (!restoreGeometryWalk(in, sp))
+			if (!restoreSectionWidgets(in, sp, sections))
 				return false;
 		}
 		sp->setSizes(sizes);
@@ -532,12 +559,13 @@ bool ContainerWidget::restoreGeometryWalk(QDataStream& in, QSplitter* currentSpl
 		{
 			QString name;
 			in >> name;
-			SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(name).toStrongRef();
+			const SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(name).toStrongRef();
 			if (sc)
 				sw->addContent(sc);
 		}
 		sw->setCurrentIndex(currentIndex);
 		currentSplitter->addWidget(sw);
+		sections.append(sw);
 	}
 	// Unknown
 	else
@@ -558,10 +586,10 @@ bool ContainerWidget::takeContent(const SectionContent::RefPtr& sc, InternalCont
 	}
 
 	// Search in floating widgets
-	for (int i = 0; i < _floatingWidgets.count() && !found; ++i)
+	for (int i = 0; i < _floatings.count() && !found; ++i)
 	{
-		found = _floatingWidgets.at(i)->content()->uid() == sc->uid();
-		_floatingWidgets.at(i)->takeContent(data);
+		found = _floatings.at(i)->content()->uid() == sc->uid();
+		_floatings.at(i)->takeContent(data);
 	}
 
 	return found;

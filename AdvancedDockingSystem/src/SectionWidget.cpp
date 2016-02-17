@@ -26,6 +26,7 @@ ADS_NAMESPACE_BEGIN
 
 int SectionWidget::NextUid = 1;
 QHash<int, SectionWidget*> SectionWidget::LookupMap;
+QHash<ContainerWidget*, QHash<int, SectionWidget*> > SectionWidget::LookupMapByContainer;
 
 SectionWidget::SectionWidget(ContainerWidget* parent) :
 	QFrame(parent),
@@ -56,14 +57,16 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 #endif
 
 	LookupMap.insert(_uid, this);
-	_container->_sections.append(this);
+	LookupMapByContainer[_container].insert(_uid, this);
+//	_container->_sections.append(this);
 }
 
 SectionWidget::~SectionWidget()
 {
 	qDebug() << Q_FUNC_INFO;
 	LookupMap.remove(_uid);
-	_container->_sections.removeAll(this);
+	LookupMapByContainer[_container].remove(_uid);
+	_container->_sections.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
 
 	// Delete empty QSplitter.
 	QSplitter* splitter = findParentSplitter(this);
@@ -77,6 +80,11 @@ SectionWidget::~SectionWidget()
 int SectionWidget::uid() const
 {
 	return _uid;
+}
+
+ContainerWidget* SectionWidget::containerWidget() const
+{
+	return _container;
 }
 
 QRect SectionWidget::titleAreaGeometry() const

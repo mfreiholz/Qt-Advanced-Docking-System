@@ -31,6 +31,7 @@ public:
 	virtual ~SectionWidget();
 
 	int uid() const;
+	ContainerWidget* containerWidget() const;
 
 	QRect titleAreaGeometry() const;
 	QRect contentAreaGeometry() const;
@@ -71,6 +72,7 @@ private:
 
 	static int NextUid;
 	static QHash<int, SectionWidget*> LookupMap;
+	static QHash<ContainerWidget*, QHash<int, SectionWidget*> > LookupMapByContainer;
 };
 
 ADS_NAMESPACE_END

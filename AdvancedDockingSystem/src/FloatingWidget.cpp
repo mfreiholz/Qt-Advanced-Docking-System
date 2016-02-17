@@ -31,13 +31,7 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 	_titleLayout = new QBoxLayout(QBoxLayout::LeftToRight);
 	_titleLayout->addWidget(titleWidget, 1);
 	l->addLayout(_titleLayout, 0);
-
-//	auto maximizeButton = new QPushButton();
-//	maximizeButton->setObjectName("maximizeButton");
-//	maximizeButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarMaxButton));
-//	maximizeButton->setToolTip(tr("Maximize"));
-//	maximizeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-//	_titleLayout->addWidget(maximizeButton);
+	titleWidget->setActiveTab(false);
 
 	QPushButton* closeButton = new QPushButton();
 	closeButton->setObjectName("closeButton");
@@ -53,13 +47,13 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 	l->addWidget(contentWidget, 1);
 	contentWidget->show();
 
-	_container->_floatingWidgets.append(this);
+//	_container->_floatingWidgets.append(this);
 }
 
 FloatingWidget::~FloatingWidget()
 {
 	qDebug() << Q_FUNC_INFO;
-	_container->_floatingWidgets.removeAll(this);
+	_container->_floatings.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
 }
 
 bool FloatingWidget::takeContent(InternalContentData& data)
