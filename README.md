@@ -3,6 +3,9 @@ Manages content widgets more like Visual Studio or similar programs.
 I also try to get everything done with basic Qt functionality.
 Basic usage of QWidgets an QLayouts and using basic styles as much as possible.
 
+![Layout of widgets](preview01.png)
+![Dropping widgets](preview02.png)
+
 ## Tested with - Requirements
 **Windows**
 - \>= Qt 5.5, VC12 or MinGW
@@ -21,18 +24,19 @@ Open the `build.pro` with QtCreator and start the build, that's it.
 
 ## TODOs
 Sorted by priority
-- **[DONE]** Improve FloatingWidget (Remove maximize button, only support close-button which hides the widget)
-- **[DONE]** Serialize and Deserialize state/size/positions of dockings
-- **[DONE]** Make compatible with Qt 4.5 (\*ROFL!\*)
-- **[DONE]** Save and restore FloatingWidget states
-- Restore: Manage new or deleted SectionContent objects, which are not available
-- Show close button on right corner of SectionWidget
-- Drop indicator images should be fully visible over the DropOverlay rectangle
-- Pin contents: Pins a content and its title widget to the edge and opens on click/hover as long as it has focus
+- [x] Improve FloatingWidget (Remove maximize button, only support close-button which hides the widget)
+- [x] Serialize and Deserialize state/size/positions of dockings
+- [x] Make compatible with Qt 4.5 (\*ROFL!\*)
+- [x] Save and restore FloatingWidget states
+- [ ] Restore: Manage new or deleted SectionContent objects, which are not available
+- [ ] Show close button on right corner of SectionWidget
+- [ ] Drop indicator images should be fully visible over the DropOverlay rectangle
+- [ ] Pin contents: Pins a content and its title widget to the edge and opens on click/hover as long as it has focus
 
 ## Bugs
-- **[DONE]** Working with outer-edge-drops sometimes leaves empty splitters
-- **[DONE]** Clean up of unused e.g. count()<=1 QSplitters doesn't work well
+- [x] Working with outer-edge-drops sometimes leaves empty splitters
+- [x] Clean up of unused e.g. count()<=1 QSplitters doesn't work well
+- [ ] Empty splitters, if only 2 or 1 items are in container
 
 ## Credits
 - Drop indicator images from:
