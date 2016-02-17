@@ -28,7 +28,7 @@ Sorted by priority
 - [x] Serialize and Deserialize state/size/positions of dockings
 - [x] Make compatible with Qt 4.5 (\*ROFL!\*)
 - [x] Save and restore FloatingWidget states
-- [ ] Restore: Manage new or deleted SectionContent objects, which are not available
+- [x] Restore: Manage new or deleted SectionContent objects, which are not available
 - [ ] Show close button on right corner of SectionWidget
 - [ ] Drop indicator images should be fully visible over the DropOverlay rectangle
 - [ ] Pin contents: Pins a content and its title widget to the edge and opens on click/hover as long as it has focus

@@ -131,14 +131,7 @@ QByteArray ContainerWidget::saveState() const
 	out << (quint32) 1; // Version
 
 	// Save state of floating contents
-	out << _floatings.count();
-	for (int i = 0; i < _floatings.count(); ++i)
-	{
-		FloatingWidget* fw = _floatings.at(i);
-		out << fw->content()->uniqueName();
-		out << fw->saveGeometry();
-		out << fw->isVisible();
-	}
+	saveFloatingWidgets(out);
 
 	// Walk through layout for splitters
 	// Well.. there actually shouldn't be more than one
@@ -147,7 +140,7 @@ QByteArray ContainerWidget::saveState() const
 		QLayoutItem* li = _mainLayout->itemAt(i);
 		if (!li->widget())
 			continue;
-		saveGeometryWalk(out, li->widget());
+		saveSectionWidgets(out, li->widget());
 	}
 
 	return ba;
@@ -187,11 +180,48 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 		qWarning() << "Could not restore sections completely";
 	}
 
+	// Handle SectionContent which is not mentioned by deserialized data.
+	// What shall we do with it? For now: Simply drop them into the first SectionWidget.
+	if (true)
+	{
+		QList<SectionContent::RefPtr> leftContents;
+
+		// Collect all contents which has been restored
+		QList<SectionContent::RefPtr> contents;
+		for (int i = 0; i < floatings.count(); ++i)
+			contents.append(floatings.at(i)->content());
+		for (int i = 0; i < sections.count(); ++i)
+			for (int j = 0; j < sections.at(i)->contents().count(); ++j)
+				contents.append(sections.at(i)->contents().at(j));
+
+		// Compare restored contents with available contents
+		const QList<SectionContent::WeakPtr> allContents = SectionContent::LookupMap.values();
+		for (int i = 0; i < allContents.count(); ++i)
+		{
+			const SectionContent::RefPtr sc = allContents.at(i).toStrongRef();
+			if (sc.isNull() || sc->containerWidget() != this)
+				continue;
+			if (contents.contains(sc))
+				continue;
+			leftContents.append(sc);
+		}
+
+		// What should we do with a drunken sailor.. what should.. erm..
+		// .. we do with the left-contents?
+		if (!_sections.isEmpty())
+		{
+			for (int i = 0; i < leftContents.count(); ++i)
+			{
+				const SectionContent::RefPtr sc = leftContents.at(i);
+				InternalContentData data;
+				this->takeContent(sc, data);
+				sections.first()->addContent(sc);
+			}
+		}
+	}
+
 	_floatings = floatings;
 	_sections = sections;
-
-	// TODO Handle contents which are not mentioned by deserialized data
-	// ...
 
 	// Delete old objects
 	QLayoutItem* old = _mainLayout->takeAt(0);
@@ -450,7 +480,19 @@ SectionWidget* ContainerWidget::dropContentOuterHelper(QLayout* l, const Interna
 	return sw;
 }
 
-void ContainerWidget::saveGeometryWalk(QDataStream& out, QWidget* widget) const
+void ContainerWidget::saveFloatingWidgets(QDataStream& out) const
+{
+	out << _floatings.count();
+	for (int i = 0; i < _floatings.count(); ++i)
+	{
+		FloatingWidget* fw = _floatings.at(i);
+		out << fw->content()->uniqueName();
+		out << fw->saveGeometry();
+		out << fw->isVisible();
+	}
+}
+
+void ContainerWidget::saveSectionWidgets(QDataStream& out, QWidget* widget) const
 {
 	QSplitter* sp = NULL;
 	SectionWidget* sw = NULL;
@@ -467,7 +509,7 @@ void ContainerWidget::saveGeometryWalk(QDataStream& out, QWidget* widget) const
 		out << sp->sizes();
 		for (int i = 0; i < sp->count(); ++i)
 		{
-			saveGeometryWalk(out, sp->widget(i));
+			saveSectionWidgets(out, sp->widget(i));
 		}
 	}
 	else if ((sw = dynamic_cast<SectionWidget*>(widget)) != NULL)
@@ -538,12 +580,20 @@ bool ContainerWidget::restoreSectionWidgets(QDataStream& in, QSplitter* currentS
 			if (!restoreSectionWidgets(in, sp, sections))
 				return false;
 		}
-		sp->setSizes(sizes);
+		if (sp->count() <= 0)
+		{
+			delete sp;
+			sp = NULL;
+		}
+		else if (sp)
+		{
+			sp->setSizes(sizes);
 
-		if (!currentSplitter)
-			_splitter = sp;
-		else
-			currentSplitter->addWidget(sp);
+			if (!currentSplitter)
+				_splitter = sp;
+			else
+				currentSplitter->addWidget(sp);
+		}
 	}
 	// Section
 	else if (type == 2)
@@ -575,9 +625,17 @@ bool ContainerWidget::restoreSectionWidgets(QDataStream& in, QSplitter* currentS
 
 			sw->addContent(sc);
 		}
-		sw->setCurrentIndex(currentIndex);
-		currentSplitter->addWidget(sw);
-		sections.append(sw);
+		if (sw->contents().isEmpty())
+		{
+			delete sw;
+			sw = NULL;
+		}
+		else if (sw)
+		{
+			sw->setCurrentIndex(currentIndex);
+			currentSplitter->addWidget(sw);
+			sections.append(sw);
+		}
 	}
 	// Unknown
 	else
@@ -601,7 +659,8 @@ bool ContainerWidget::takeContent(const SectionContent::RefPtr& sc, InternalCont
 	for (int i = 0; i < _floatings.count() && !found; ++i)
 	{
 		found = _floatings.at(i)->content()->uid() == sc->uid();
-		_floatings.at(i)->takeContent(data);
+		if (found)
+			_floatings.at(i)->takeContent(data);
 	}
 
 	return found;

@@ -19,7 +19,7 @@
 
 static int CONTENT_COUNT = 0;
 
-static ADS_NS::SectionContent::RefPtr createLongTextLabelSC()
+static ADS_NS::SectionContent::RefPtr createLongTextLabelSC(ADS_NS::ContainerWidget* container)
 {
 	QWidget* w = new QWidget();
 	QBoxLayout* bl = new QBoxLayout(QBoxLayout::TopToBottom);
@@ -32,18 +32,18 @@ static ADS_NS::SectionContent::RefPtr createLongTextLabelSC()
 	bl->addWidget(l);
 
 	const int index = ++CONTENT_COUNT;
-	return ADS_NS::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Label %1").arg(index)), w, QString("uname-%1").arg(index));
+	return ADS_NS::SectionContent::newSectionContent(QString("uname-%1").arg(index), container, new IconTitleWidget(QIcon(), QString("Label %1").arg(index)), w);
 }
 
-static ADS_NS::SectionContent::RefPtr createCalendarSC()
+static ADS_NS::SectionContent::RefPtr createCalendarSC(ADS_NS::ContainerWidget* container)
 {
 	QCalendarWidget* w = new QCalendarWidget();
 
 	const int index = ++CONTENT_COUNT;
-	return ADS_NS::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Calendar %1").arg(index)), w, QString("uname-%1").arg(index));
+	return ADS_NS::SectionContent::newSectionContent(QString("uname-%1").arg(index), container, new IconTitleWidget(QIcon(), QString("Calendar %1").arg(index)), w);
 }
 
-static ADS_NS::SectionContent::RefPtr createFileSystemTreeSC()
+static ADS_NS::SectionContent::RefPtr createFileSystemTreeSC(ADS_NS::ContainerWidget* container)
 {
 	QTreeView* w = new QTreeView();
 	//	QFileSystemModel* m = new QFileSystemModel(w);
@@ -51,7 +51,7 @@ static ADS_NS::SectionContent::RefPtr createFileSystemTreeSC()
 	//	w->setModel(m);
 
 	const int index = ++CONTENT_COUNT;
-	return ADS_NS::SectionContent::newSectionContent(new IconTitleWidget(QIcon(), QString("Filesystem %1").arg(index)), w, QString("uname-%1").arg(index));
+	return ADS_NS::SectionContent::newSectionContent(QString("uname-%1").arg(index), container, new IconTitleWidget(QIcon(), QString("Filesystem %1").arg(index)), w);
 }
 
 static void storeDataHelper(const QString& fname, const QByteArray& ba)
@@ -98,10 +98,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	// Test #1: Use high-level public API
 	if (true)
 	{
-		ADS_NS::SectionWidget* sw1 = _container->addSectionContent(createLongTextLabelSC());
-		ADS_NS::SectionWidget* sw2 = _container->addSectionContent(createCalendarSC(), sw1, ADS_NS::BottomDropArea);
-		ADS_NS::SectionWidget* sw3 = _container->addSectionContent(createFileSystemTreeSC(), NULL, ADS_NS::RightDropArea);
-		ADS_NS::SectionWidget* sw4 = _container->addSectionContent(createCalendarSC());
+		ADS_NS::SectionWidget* sw1 = _container->addSectionContent(createLongTextLabelSC(_container));
+		_container->addSectionContent(createCalendarSC(_container), sw1, ADS_NS::BottomDropArea);
+		_container->addSectionContent(createFileSystemTreeSC(_container), NULL, ADS_NS::RightDropArea);
+		_container->addSectionContent(createCalendarSC(_container));
+//		_container->addSectionContent(createLongTextLabelSC(_container));
+//		_container->addSectionContent(createLongTextLabelSC(_container));
+//		_container->addSectionContent(createLongTextLabelSC(_container));
 	}
 
 	// Default window geometry

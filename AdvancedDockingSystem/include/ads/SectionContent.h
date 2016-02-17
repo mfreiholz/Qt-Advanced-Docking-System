@@ -10,29 +10,43 @@
 #include "ads/API.h"
 
 ADS_NAMESPACE_BEGIN
+class ContainerWidget;
 
 class SectionContent
 {
 	friend class ContainerWidget;
 
 private:
-	SectionContent(QWidget* title, QWidget* content, const QString& uniqueName = QString()); ///< Do not use!
+	SectionContent();
+	SectionContent(const SectionContent&);
+	SectionContent& operator=(const SectionContent&);
 
 public:
 	typedef QSharedPointer<SectionContent> RefPtr;
 	typedef QWeakPointer<SectionContent> WeakPtr;
 
+	/*!
+	 * Creates new content, associates it to <em>container</em> and takes ownership of
+	 * <em>title</em>- and <em>content</em>- widgets.
+	 * \param uniqueName An unique identifier across the entire process.
+	 * \param container The parent ContainerWidget in which this content will be active.
+	 * \param title The widget to use as title.
+	 * \param content The widget to use as content.
+	 * \return May return a invalid ref-pointer in case of invalid parameters.
+	 */
+	static RefPtr newSectionContent(const QString& uniqueName, ContainerWidget* container, QWidget* title, QWidget* content);
+
 	virtual ~SectionContent();
 	int uid() const;
 	QString uniqueName() const;
+	ContainerWidget* containerWidget() const;
 	QWidget* titleWidget() const;
 	QWidget* contentWidget() const;
 
-	static RefPtr newSectionContent(QWidget* title, QWidget* content, const QString& uniqueName = QString());
-
 private:
 	const int _uid;
-	const QString _uniqueName;
+	QString _uniqueName;
+	ContainerWidget* _container;
 	QPointer<QWidget> _title;
 	QPointer<QWidget> _content;
 

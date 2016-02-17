@@ -89,7 +89,8 @@ private:
 	void addSection(SectionWidget* section);
 	SectionWidget* sectionAt(const QPoint& pos) const;
 	SectionWidget* dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append);
-	void saveGeometryWalk(QDataStream& out, QWidget* widget) const;
+	void saveFloatingWidgets(QDataStream& out) const;
+	void saveSectionWidgets(QDataStream& out, QWidget* widget) const;
 	bool restoreFloatingWidgets(QDataStream& in, QList<FloatingWidget*>& floatings);
 	bool restoreSectionWidgets(QDataStream& in, QSplitter* currentSplitter, QList<SectionWidget*>& sections);
 	bool takeContent(const SectionContent::RefPtr& sc, InternalContentData& data);
