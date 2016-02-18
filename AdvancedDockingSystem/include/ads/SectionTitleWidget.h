@@ -34,6 +34,7 @@ class SectionTitleWidget : public QFrame
 
 public:
 	SectionTitleWidget(SectionContent::RefPtr content, QWidget* parent);
+	virtual ~SectionTitleWidget();
 
 	bool isActiveTab() const;
 	void setActiveTab(bool active);

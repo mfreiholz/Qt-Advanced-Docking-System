@@ -10,6 +10,7 @@ class QSplitter;
 class QMenu;
 
 #include "ads/API.h"
+#include "ads/Internal.h"
 #include "ads/SectionContent.h"
 #include "ads/SectionWidget.h"
 #include "ads/FloatingWidget.h"
@@ -49,6 +50,18 @@ public:
 	 * SectionContent elements with this method.
 	 */
 	SectionWidget* addSectionContent(const SectionContent::RefPtr& sc, SectionWidget* sw = NULL, DropArea area = CenterDropArea);
+
+	/*!
+	 * Shows the specific SectionContent in UI.
+	 * Independed of the current state, whether it is used inside a section or is floating.
+	 */
+	bool showSectionContent(const SectionContent::RefPtr& sc);
+
+	/*!
+	 * Closes the specified SectionContent from UI.
+	 * Independed of the current state, whether it is used inside a section or is floating.
+	 */
+	bool hideSectionContent(const SectionContent::RefPtr& sc);
 
 	/*!
 	 * Creates a QMenu based on available SectionContents.
@@ -102,16 +115,17 @@ signals:
 	void orientationChanged();
 
 private:
-	// Sections of this container
 	QList<SectionWidget*> _sections;
-
-	//Floatings of this container
 	QList<FloatingWidget*> _floatings;
+
+	QHash<int, HiddenSectionItem> _hiddenSectionContents;
+
 
 	// Layout stuff
 	QGridLayout* _mainLayout;
 	Qt::Orientation _orientation;
-	QPointer<QSplitter> _splitter; // $mfreiholz: I'd like to remove this variable entirely.
+	QPointer<QSplitter> _splitter; // $mfreiholz: I'd like to remove this variable entirely,
+								   // because it changes during user interaction anyway.
 };
 
 ADS_NAMESPACE_END

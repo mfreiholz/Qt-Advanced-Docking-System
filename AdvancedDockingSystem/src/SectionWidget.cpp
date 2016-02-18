@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QStyle>
 #include <QSplitter>
+#include <QPushButton>
 
 #if defined(ADS_ANIMATIONS_ENABLED)
 #include <QGraphicsDropShadowEffect>
@@ -31,7 +32,10 @@ QHash<ContainerWidget*, QHash<int, SectionWidget*> > SectionWidget::LookupMapByC
 SectionWidget::SectionWidget(ContainerWidget* parent) :
 	QFrame(parent),
 	_uid(NextUid++),
-	_container(parent)
+	_container(parent),
+	_tabsLayout(NULL),
+	_contentsLayout(NULL),
+	_mousePressTitleWidget(NULL)
 {
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
 	l->setContentsMargins(0, 0, 0, 0);
@@ -43,6 +47,19 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	_tabsLayout->setSpacing(0);
 	_tabsLayout->addStretch(1);
 	l->addLayout(_tabsLayout);
+
+	QPushButton* closeButton = new QPushButton();
+	closeButton->setObjectName("closeButton");
+	closeButton->setFlat(true);
+	closeButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarCloseButton));
+	closeButton->setToolTip(tr("Close"));
+	closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	_tabsLayout->addWidget(closeButton);
+#if QT_VERSION >= 0x050000
+	QObject::connect(closeButton, &QPushButton::clicked, this, &SectionWidget::onCloseButtonClicked);
+#else
+	QObject::connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
+#endif
 
 	_contentsLayout = new QStackedLayout();
 	_contentsLayout->setContentsMargins(0, 0, 0, 0);
@@ -58,7 +75,6 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 
 	LookupMap.insert(_uid, this);
 	LookupMapByContainer[_container].insert(_uid, this);
-//	_container->_sections.append(this);
 }
 
 SectionWidget::~SectionWidget()
@@ -97,13 +113,13 @@ QRect SectionWidget::contentAreaGeometry() const
 	return _contentsLayout->geometry();
 }
 
-void SectionWidget::addContent(SectionContent::RefPtr c)
+void SectionWidget::addContent(const SectionContent::RefPtr& c)
 {
 	_contents.append(c);
 
 	SectionTitleWidget* title = new SectionTitleWidget(c, NULL);
 	_sectionTitles.append(title);
-	_tabsLayout->insertWidget(_tabsLayout->count() - 1, title);
+	_tabsLayout->insertWidget(_tabsLayout->count() - 2, title);
 #if QT_VERSION >= 0x050000
 	QObject::connect(title, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
 #else
@@ -127,7 +143,7 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 	_contents.append(data.content);
 
 	_sectionTitles.append(data.titleWidget);
-	_tabsLayout->insertWidget(_tabsLayout->count() - 1, data.titleWidget);
+	_tabsLayout->insertWidget(_tabsLayout->count() - 2, data.titleWidget);
 #if QT_VERSION >= 0x050000
 	QObject::connect(data.titleWidget, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
 #else
@@ -142,12 +158,9 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 		setCurrentIndex(0);
 	// Switch to newest.
 	else if (autoActivate)
-		setCurrentIndex(_contentsLayout->count() - 1);
+		setCurrentIndex(_contents.count() - 1);
 }
 
-// take removes a widget from the SectionWidget but does not delete
-// the used SectionTitle- and SectionContent-Widget. Instead it returns
-// these objects.
 bool SectionWidget::takeContent(int uid, InternalContentData& data)
 {
 	// Find SectionContent.
@@ -170,6 +183,7 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 	{
 		_tabsLayout->removeWidget(title);
 		title->disconnect(this);
+		title->setParent(_container);
 	}
 
 	// Content wrapper widget (CONTENT)
@@ -178,6 +192,7 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 	{
 		_contentsLayout->removeWidget(content);
 		content->disconnect(this);
+		content->setParent(_container);
 	}
 
 	// Select the previous tab as activeTab.
@@ -195,7 +210,7 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 	return !data.content.isNull();
 }
 
-int SectionWidget::indexOfContent(SectionContent::RefPtr c) const
+int SectionWidget::indexOfContent(const SectionContent::RefPtr& c) const
 {
 	return _contents.indexOf(c);
 }
@@ -258,24 +273,18 @@ void SectionWidget::setCurrentIndex(int index)
 		if (item->widget())
 		{
 			SectionTitleWidget* stw = dynamic_cast<SectionTitleWidget*>(item->widget());
-			if (i == index)
-				stw->setActiveTab(true);
-			else
-				stw->setActiveTab(false);
+			if (stw)
+			{
+				if (i == index)
+					stw->setActiveTab(true);
+				else
+					stw->setActiveTab(false);
+			}
 		}
 	}
 
 	// Set active CONTENT.
 	_contentsLayout->setCurrentIndex(index);
-}
-
-void SectionWidget::paintEvent(QPaintEvent* e)
-{
-	QFrame::paintEvent(e);
-
-//	QPainter p(this);
-//	auto r = rect();
-//	p.drawText(rect(), Qt::AlignCenter | Qt::AlignVCenter, QString("x=%1; y=%2; w=%3; h=%4").arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
 }
 
 void SectionWidget::onSectionTitleClicked()
@@ -286,6 +295,18 @@ void SectionWidget::onSectionTitleClicked()
 		int index = _tabsLayout->indexOf(stw);
 		setCurrentIndex(index);
 	}
+}
+
+void SectionWidget::onCloseButtonClicked()
+{
+	qDebug() << Q_FUNC_INFO << currentIndex();
+	const int index = currentIndex();
+	if (index < 0 || index > _contents.size() - 1)
+		return;
+	SectionContent::RefPtr sc = _contents.at(index);
+	if (sc.isNull())
+		return;
+	_container->hideSectionContent(sc);
 }
 
 ADS_NAMESPACE_END

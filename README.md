@@ -17,6 +17,10 @@ Basic usage of QWidgets an QLayouts and using basic styles as much as possible.
 ## Build
 Open the `build.pro` with QtCreator and start the build, that's it.
 
+## Release & Development
+The master branch is not guaranteed to be stable or does even build, since it is the main working branch.
+If you want a version that builds you should always use a release/beta tag.
+
 ## Notes
 - *SectionContent* class may safe a "size-type" property, which defines how the size of the widget should be handled.
 	- PerCent: Resize in proportion to other widgets.
@@ -34,6 +38,8 @@ Sorted by priority
 - [x] Working with outer-edge-drops sometimes leaves empty splitters #BUG
 - [x] Clean up of unused e.g. count()<=1 QSplitters doesn't work well #BUG
 - [ ] Show close button on right corner of SectionWidget. How to safe last section position?
+- [ ] Serialize state of `_hiddenSectionContents`
+- [ ] `ContainerWidget::showSectionContent` needs to insert the SC at the correct preferred position of SW
 - [ ] Empty splitters, if only 2 or 1 items are in container
 
 ### Some day...

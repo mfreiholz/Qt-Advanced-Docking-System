@@ -73,52 +73,164 @@ SectionWidget* ContainerWidget::addSectionContent(const SectionContent::RefPtr& 
 	return dropContent(data, sw, area, false);
 }
 
-QMenu* ContainerWidget::createContextMenu() const
+bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 {
-	QMenu* m = new QMenu(NULL);
+	// Search SC in floatings
+	for (int i = 0; i < _floatings.count(); ++i)
+	{
+		const bool found = _floatings.at(i)->content()->uid() == sc->uid();
+		if (!found)
+			continue;
+		_floatings.at(i)->setVisible(true);
+		return true;
+	}
 
-	// Contents of SectionWidgets
-	for (int i = 0; i < _sections.size(); ++i)
+	// Search SC in hidden sections
+	// Try to show them in the last position, otherwise simply append
+	// it to the first section (or create a new section?)
+	if (_hiddenSectionContents.contains(sc->uid()))
+	{
+		const HiddenSectionItem hsi = _hiddenSectionContents.take(sc->uid());
+		hsi.data.titleWidget->setVisible(true);
+		hsi.data.contentWidget->setVisible(true);
+		SectionWidget* sw = NULL;
+		if (hsi.preferredSectionId > 0 && (sw = SectionWidget::LookupMap.value(hsi.preferredSectionId)) != NULL)
+		{
+			sw->addContent(hsi.data, true);
+			return true;
+		}
+		else if (_sections.size() > 0 && (sw = _sections.first()) != NULL)
+		{
+			sw->addContent(hsi.data, true);
+			return true;
+		}
+		else
+		{
+			qDebug() << "TODO Create new SW here and add SC";
+			return true;
+		}
+	}
+	qFatal("Unable to show SectionContent, don't know where 8-/");
+	return false;
+}
+
+bool ContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
+{
+	// Search SC in floatings
+	// We can simply hide floatings, nothing else required.
+	for (int i = 0; i < _floatings.count(); ++i)
+	{
+		const bool found = _floatings.at(i)->content()->uid() == sc->uid();
+		if (!found)
+			continue;
+		_floatings.at(i)->setVisible(false);
+		return true;
+	}
+
+	// Search SC in sections
+	// It's required to remove the SC from SW completely and hold it in a
+	// separate list as long as a "showSectionContent" gets called for the SC again.
+	// In case that the SW does not have any other SCs, we need to delete it.
+	for (int i = 0; i < _sections.count(); ++i)
 	{
 		SectionWidget* sw = _sections.at(i);
-		QList<SectionContent::RefPtr> contents = sw->contents();
-		foreach (const SectionContent::RefPtr& c, contents)
+		const bool found = sw->indexOfContent(sc) >= 0;
+		if (!found)
+			continue;
+
+		HiddenSectionItem hsi;
+		hsi.preferredSectionId = sw->uid();
+		hsi.preferredSectionIndex = sw->indexOfContent(sc);
+		if (!sw->takeContent(sc->uid(), hsi.data))
+			return false;
+
+		hsi.data.titleWidget->setVisible(false);
+		hsi.data.contentWidget->setVisible(false);
+		_hiddenSectionContents.insert(sc->uid(), hsi);
+
+		if (sw->contents().isEmpty())
 		{
-			QAction* a = m->addAction(QIcon(), c->uniqueName());
-			a->setProperty("uid", c->uid());
+			delete sw;
+			sw = NULL;
+			deleteEmptySplitter(this);
+		}
+		return true;
+	}
+	qFatal("Unable to hide SectionContent, don't know this one 8-/");
+	return false;
+}
+
+QMenu* ContainerWidget::createContextMenu() const
+{
+	// Fill map with actions (sorted by key!)
+	QMap<QString, QAction*> actions;
+
+	// Visible contents of sections
+	for (int i = 0; i < _sections.size(); ++i)
+	{
+		const SectionWidget* sw = _sections.at(i);
+		const QList<SectionContent::RefPtr>& contents = sw->contents();
+		foreach (const SectionContent::RefPtr& sc, contents)
+		{
+			QAction* a = new QAction(QIcon(), sc->uniqueName(), NULL);
+			a->setObjectName(QString("ads-action-sc-%1").arg(QString::number(sc->uid())));
+			a->setProperty("uid", sc->uid());
 			a->setProperty("type", "section");
 			a->setCheckable(true);
-			a->setChecked(c->titleWidget()->isVisible());
+			a->setChecked(true);
 #if QT_VERSION >= 0x050000
 			QObject::connect(a, &QAction::toggled, this, &ContainerWidget::onActionToggleSectionContentVisibility);
 #else
 			QObject::connect(a, SIGNAL(toggled(bool)), this, SLOT(onActionToggleSectionContentVisibility(bool)));
 #endif
+			actions.insert(a->text(), a);
 		}
 	}
 
-	// Contents of FloatingWidgets
-	if (_floatings.size())
+	// Hidden contents of sections
+	QHashIterator<int, HiddenSectionItem> hiddenIter(_hiddenSectionContents);
+	while (hiddenIter.hasNext())
 	{
-		if (m->actions().size())
-			m->addSeparator();
-		for (int i = 0; i < _floatings.size(); ++i)
-		{
-			FloatingWidget* fw = _floatings.at(i);
-			SectionContent::RefPtr c = fw->content();
-			QAction* a = m->addAction(QIcon(), c->uniqueName());
-			a->setProperty("uid", c->uid());
-			a->setProperty("type", "floating");
-			a->setCheckable(true);
-			a->setChecked(fw->isVisible());
+		hiddenIter.next();
+		const SectionContent::RefPtr sc = hiddenIter.value().data.content;
+
+		QAction* a = new QAction(QIcon(), sc->uniqueName(), NULL);
+		a->setObjectName(QString("ads-action-sc-%1").arg(QString::number(sc->uid())));
+		a->setProperty("uid", sc->uid());
+		a->setProperty("type", "section");
+		a->setCheckable(true);
+		a->setChecked(false);
 #if QT_VERSION >= 0x050000
-			QObject::connect(a, &QAction::toggled, fw, &FloatingWidget::setVisible);
+			QObject::connect(a, &QAction::toggled, this, &ContainerWidget::onActionToggleSectionContentVisibility);
 #else
-			QObject::connect(a, SIGNAL(toggled(bool)), fw, SLOT(setVisible(bool)));
+			QObject::connect(a, SIGNAL(toggled(bool)), this, SLOT(onActionToggleSectionContentVisibility(bool)));
 #endif
-		}
+		actions.insert(a->text(), a);
 	}
 
+	// Floating contents
+	for (int i = 0; i < _floatings.size(); ++i)
+	{
+		const FloatingWidget* fw = _floatings.at(i);
+		const SectionContent::RefPtr sc = fw->content();
+
+		QAction* a = new QAction(QIcon(), sc->uniqueName(), NULL);
+		a->setObjectName(QString("ads-action-sc-%1").arg(QString::number(sc->uid())));
+		a->setProperty("uid", sc->uid());
+		a->setProperty("type", "floating");
+		a->setCheckable(true);
+		a->setChecked(fw->isVisible());
+#if QT_VERSION >= 0x050000
+		QObject::connect(a, &QAction::toggled, fw, &FloatingWidget::setVisible);
+#else
+		QObject::connect(a, SIGNAL(toggled(bool)), fw, SLOT(setVisible(bool)));
+#endif
+		actions.insert(a->text(), a);
+	}
+
+	// Create menu from "actions"
+	QMenu* m = new QMenu(NULL);
+	m->addActions(actions.values());
 	return m;
 }
 
@@ -208,15 +320,21 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 
 		// What should we do with a drunken sailor.. what should.. erm..
 		// .. we do with the left-contents?
-		if (!_sections.isEmpty())
+		// We might need to add them into the hidden-list, if no other sections are available
+		for (int i = 0; i < leftContents.count(); ++i)
 		{
-			for (int i = 0; i < leftContents.count(); ++i)
+			const SectionContent::RefPtr sc = leftContents.at(i);
+			InternalContentData data;
+			this->takeContent(sc, data);
+
+			if (sections.isEmpty())
 			{
-				const SectionContent::RefPtr sc = leftContents.at(i);
-				InternalContentData data;
-				this->takeContent(sc, data);
-				sections.first()->addContent(sc);
+				HiddenSectionItem hsi;
+				hsi.data = data;
+				_hiddenSectionContents.insert(sc->uid(), hsi);
 			}
+			else
+				sections.first()->addContent(sc);
 		}
 	}
 
@@ -514,13 +632,34 @@ void ContainerWidget::saveSectionWidgets(QDataStream& out, QWidget* widget) cons
 	}
 	else if ((sw = dynamic_cast<SectionWidget*>(widget)) != NULL)
 	{
+		const QList<SectionContent::RefPtr>& contents = sw->contents();
+		QList<HiddenSectionItem> hiddenContents;
+
+		QHashIterator<int, HiddenSectionItem> iter(_hiddenSectionContents);
+		while (iter.hasNext())
+		{
+			iter.next();
+			const HiddenSectionItem& hsi = iter.value();
+			if (hsi.preferredSectionId != sw->uid())
+				continue;
+			hiddenContents.append(hsi);
+		}
+
 		out << 2; // Type = SectionWidget
 		out << sw->currentIndex();
-		out << sw->contents().count();
-		const QList<SectionContent::RefPtr>& contents = sw->contents();
+		out << contents.count() + hiddenContents.count();
+
 		for (int i = 0; i < contents.count(); ++i)
 		{
-			out << contents[i]->uniqueName();
+			out << contents[i]->uniqueName(); // Unique name
+			out << (bool) true; // Visiblity
+			out << i; // Index
+		}
+		for (int i = 0; i < hiddenContents.count(); ++i)
+		{
+			out << hiddenContents.at(i).data.content->uniqueName();
+			out << (bool) false;
+			out << hiddenContents.at(i).preferredSectionIndex;
 		}
 	}
 }
@@ -612,18 +751,30 @@ bool ContainerWidget::restoreSectionWidgets(QDataStream& in, QSplitter* currentS
 		{
 			QString uname;
 			in >> uname;
+			bool visible = false;
+			in >> visible;
+			int preferredIndex = -1;
+			in >> preferredIndex;
+
 			const SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(uname).toStrongRef();
 			if (!sc)
 			{
 				qWarning() << "Can not find SectionContent:" << uname;
 				continue;
 			}
-
 			InternalContentData data;
-			if (!this->takeContent(sc, data))
-				continue;
+			this->takeContent(sc, data);
 
-			sw->addContent(sc);
+			if (visible)
+				sw->addContent(sc);
+			else
+			{
+				HiddenSectionItem hsi;
+				hsi.preferredSectionId = sw->uid();
+				hsi.preferredSectionIndex = preferredIndex;
+				hsi.data = data;
+				_hiddenSectionContents.insert(sc->uid(), hsi);
+			}
 		}
 		if (sw->contents().isEmpty())
 		{
@@ -672,7 +823,16 @@ void ContainerWidget::onActionToggleSectionContentVisibility(bool visible)
 	if (!a)
 		return;
 	const int uid = a->property("uid").toInt();
-	qDebug() << "Change visibility of" << uid << visible;
+	const SectionContent::RefPtr sc = SectionContent::LookupMap.value(uid).toStrongRef();
+	if (sc.isNull())
+	{
+		qCritical() << "Can not find content by ID" << uid;
+		return;
+	}
+	if (visible)
+		showSectionContent(sc);
+	else
+		hideSectionContent(sc);
 }
 
 ADS_NAMESPACE_END

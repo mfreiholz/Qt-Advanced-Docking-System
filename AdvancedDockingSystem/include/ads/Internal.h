@@ -28,5 +28,19 @@ public:
 };
 
 
+class HiddenSectionItem
+{
+public:
+	HiddenSectionItem() :
+		preferredSectionId(-1),
+		preferredSectionIndex(-1)
+	{}
+
+	int preferredSectionId;
+	int preferredSectionIndex;
+	InternalContentData data;
+};
+
+
 ADS_NAMESPACE_END
 #endif

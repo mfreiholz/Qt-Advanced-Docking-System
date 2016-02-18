@@ -9,13 +9,13 @@ class QBoxLayout;
 class QStackedLayout;
 
 #include "ads/API.h"
+#include "ads/Internal.h"
 #include "ads/SectionContent.h"
 
 ADS_NAMESPACE_BEGIN
 class ContainerWidget;
 class SectionTitleWidget;
 class SectionContentWidget;
-class InternalContentData;
 
 // SectionWidget manages multiple instances of SectionContent.
 // It displays a title TAB, which is clickable and will switch to
@@ -37,10 +37,10 @@ public:
 	QRect contentAreaGeometry() const;
 
 	const QList<SectionContent::RefPtr>& contents() const { return _contents; }
-	void addContent(SectionContent::RefPtr c);
+	void addContent(const SectionContent::RefPtr& c);
 	void addContent(const InternalContentData& data, bool autoActivate);
 	bool takeContent(int uid, InternalContentData& data);
-	int indexOfContent(SectionContent::RefPtr c) const;
+	int indexOfContent(const SectionContent::RefPtr& c) const;
 	int indexOfContentByTitlePos(const QPoint& pos, QWidget* exclude = NULL) const;
 
 	int currentIndex() const;
@@ -49,11 +49,9 @@ public:
 public slots:
 	void setCurrentIndex(int index);
 
-protected:
-	virtual void paintEvent(QPaintEvent*);
-
 private slots:
 	void onSectionTitleClicked();
+	void onCloseButtonClicked();
 
 private:
 	const int _uid;

@@ -7,6 +7,8 @@ TEMPLATE = lib
 
 CONFIG += staticlib
 
+VERSION = 0.1.0
+
 INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/include
 

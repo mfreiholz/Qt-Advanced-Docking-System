@@ -18,6 +18,7 @@ class SectionContentWidget : public QFrame
 
 public:
 	SectionContentWidget(SectionContent::RefPtr c, QWidget* parent = 0);
+	virtual ~SectionContentWidget();
 
 private:
 	SectionContent::RefPtr _content;
