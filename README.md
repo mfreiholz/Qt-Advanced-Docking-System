@@ -6,28 +6,43 @@ Basic usage of QWidgets an QLayouts and using basic styles as much as possible.
 ![Layout of widgets](preview01.png)
 ![Dropping widgets](preview02.png)
 
-## Tested with - Requirements
-**Windows**
-- \>= Qt 5.5, VC12 or MinGW
-- \>= Qt 4.5.3 VC9 - *not as good...*
-
-**Linux**
-- Not yet tested
+## Tested Compatible Environments
+- Windows 10 / Qt 5.5.1 / VC12
+- Windows 10 / Qt 5.5.1 / MinGW
+- Windows 10 / Qt 4.5.3 / VC9
+- Ubuntu 15.10
 
 ## Build
 Open the `build.pro` with QtCreator and start the build, that's it.
+You can run the demo project and test it yourself.
 
 ## Release & Development
-The master branch is not guaranteed to be stable or does even build, since it is the main working branch.
-If you want a version that builds you should always use a release/beta tag.
+The `master` branch is not guaranteed to be stable or does not even build, since it is the main working branch.
+If you want a version that builds, you should always use a release/beta tag.
 
-## Notes
-- *SectionContent* class may safe a "size-type" property, which defines how the size of the widget should be handled.
-	- PerCent: Resize in proportion to other widgets.
-	- Fixed: Width or height are fixed (based on orientation).
+## Developers
+[Manuel Freiholz](https://mfreiholz.de), Project Maintainer
 
-## TODOs
-Sorted by priority
+## License information
+![WTFPL](license.png)
+
+This projects uses the [WTFPL license](http://www.wtfpl.net/)
+(Do **W**hat **T**he **F**uck You Want To **P**ublic **L**icense)
+
+Using it? Let us know by creating a [new issue](https://github.com/mfreiholz/qt-docks/issues/new) (You don't have to, of course).
+
+## Credits
+- Drop indicator images from [Code Project Article](http://www.codeproject.com/Articles/140209/Building-a-Docking-Window-Management-Solution-in-W)
+
+## ToDo List & Changelog
+Items sorted by priority
+
+### Beta 0.2
+- [ ] It would be easier when the SectionTitleWidget and SectionContentWidget are created inside the "SectionContent::newSectionContent(..)" method.
+  This would make sure, that those two objects always exists.
+- [ ] `ContainerWidget::showSectionContent` needs to insert the SC at the correct preferred position of SW
+- [ ] Empty splitters, if only 2 or 1 items are in container
+- [ ] Restore: Handle out-of-screen geometry for floating widgets
 
 ### Beta 0.1
 - [x] Improve FloatingWidget (Remove maximize button, only support close-button which hides the widget)
@@ -39,11 +54,6 @@ Sorted by priority
 - [x] Clean up of unused e.g. count()<=1 QSplitters doesn't work well #BUG
 - [x] Show close button on right corner of SectionWidget. How to safe last section position?
 - [x] Serialize state of `_hiddenSectionContents`
-- [ ] It would be easier when the SectionTitleWidget and SectionContentWidget are created inside the "SectionContent::newSectionContent(..)" method.
-  This would make sure, that those two objects always exists.
-- [ ] `ContainerWidget::showSectionContent` needs to insert the SC at the correct preferred position of SW
-- [ ] Empty splitters, if only 2 or 1 items are in container
-- [ ] Restore: Handle out-of-screen geometry for floating widgets
 
 ### Some day...
 - [ ] Drop indicator images should be fully visible over the DropOverlay rectangle
@@ -51,9 +61,7 @@ Sorted by priority
 - [ ] API: Make it possible to use custom drop images
 - [ ] API: Add possibility to make a SectionContent element floatable (`ContainerWidget::setFloating(SectionContent*)`?)
 
-## Credits
-- Drop indicator images from:
-	http://www.codeproject.com/Articles/140209/Building-a-Docking-Window-Management-Solution-in-W
-
-## License
-Not sure yet... It's in development status anyway.
+## Notes
+- *SectionContent* class may safe a "size-type" property, which defines how the size of the widget should be handled.
+	- PerCent: Resize in proportion to other widgets.
+	- Fixed: Width or height are fixed (based on orientation).
