@@ -9,6 +9,8 @@ SectionContentWidget::SectionContentWidget(SectionContent::RefPtr c, QWidget* pa
 	QFrame(parent),
 	_content(c)
 {
+	qDebug() << Q_FUNC_INFO;
+
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);

@@ -159,6 +159,9 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 	// Switch to newest.
 	else if (autoActivate)
 		setCurrentIndex(_contents.count() - 1);
+	// Mark is as inactive tab.
+	else
+		data.titleWidget->setActiveTab(false); // or: setCurrentIndex(currentIndex())
 }
 
 bool SectionWidget::takeContent(int uid, InternalContentData& data)
@@ -265,8 +268,14 @@ void SectionWidget::moveContent(int from, int to)
 
 void SectionWidget::setCurrentIndex(int index)
 {
-	// Set active TAB.
-	qDebug() << Q_FUNC_INFO << index;
+	if (index < 0 || index > _contents.count() - 1)
+	{
+		qWarning() << Q_FUNC_INFO << "Invalid index" << index;
+		return;
+	}
+	qDebug() << Q_FUNC_INFO << index << QString("section=%1; content=%2").arg(_uid).arg(_contents.at(index)->uniqueName());
+
+	// Set active TAB
 	for (int i = 0; i < _tabsLayout->count(); ++i)
 	{
 		QLayoutItem* item = _tabsLayout->itemAt(i);
@@ -283,7 +292,7 @@ void SectionWidget::setCurrentIndex(int index)
 		}
 	}
 
-	// Set active CONTENT.
+	// Set active CONTENT
 	_contentsLayout->setCurrentIndex(index);
 }
 

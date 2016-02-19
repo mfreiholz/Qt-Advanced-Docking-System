@@ -63,9 +63,11 @@ bool FloatingWidget::takeContent(InternalContentData& data)
 	data.contentWidget = _contentWidget;
 
 	_titleLayout->removeWidget(_titleWidget);
+	_titleWidget->setParent(_container);
 	_titleWidget = NULL;
 
 	layout()->removeWidget(_contentWidget);
+	_contentWidget->setParent(_container);
 	_contentWidget = NULL;
 
 	return true;

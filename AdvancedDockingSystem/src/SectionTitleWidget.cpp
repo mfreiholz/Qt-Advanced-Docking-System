@@ -31,6 +31,8 @@ SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* 
 	_tabMoving(false),
 	_activeTab(false)
 {
+	qDebug() << Q_FUNC_INFO;
+
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::LeftToRight);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);

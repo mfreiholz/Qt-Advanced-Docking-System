@@ -102,10 +102,13 @@ private:
 	void addSection(SectionWidget* section);
 	SectionWidget* sectionAt(const QPoint& pos) const;
 	SectionWidget* dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append);
+
+	// Serialization
 	void saveFloatingWidgets(QDataStream& out) const;
 	void saveSectionWidgets(QDataStream& out, QWidget* widget) const;
-	bool restoreFloatingWidgets(QDataStream& in, QList<FloatingWidget*>& floatings);
-	bool restoreSectionWidgets(QDataStream& in, QSplitter* currentSplitter, QList<SectionWidget*>& sections);
+	bool restoreFloatingWidgets(QDataStream& in, int version, QList<FloatingWidget*>& floatings);
+	bool restoreSectionWidgets(QDataStream& in, int version, QSplitter* currentSplitter, QList<SectionWidget*>& sections, QList<SectionContent::RefPtr>& contentsToHide);
+
 	bool takeContent(const SectionContent::RefPtr& sc, InternalContentData& data);
 
 private slots:

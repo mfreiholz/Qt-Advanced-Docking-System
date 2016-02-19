@@ -37,10 +37,13 @@ Sorted by priority
 - [x] Restore: Manage new or deleted SectionContent objects, which are not available
 - [x] Working with outer-edge-drops sometimes leaves empty splitters #BUG
 - [x] Clean up of unused e.g. count()<=1 QSplitters doesn't work well #BUG
-- [ ] Show close button on right corner of SectionWidget. How to safe last section position?
-- [ ] Serialize state of `_hiddenSectionContents`
+- [x] Show close button on right corner of SectionWidget. How to safe last section position?
+- [x] Serialize state of `_hiddenSectionContents`
+- [ ] It would be easier when the SectionTitleWidget and SectionContentWidget are created inside the "SectionContent::newSectionContent(..)" method.
+  This would make sure, that those two objects always exists.
 - [ ] `ContainerWidget::showSectionContent` needs to insert the SC at the correct preferred position of SW
 - [ ] Empty splitters, if only 2 or 1 items are in container
+- [ ] Restore: Handle out-of-screen geometry for floating widgets
 
 ### Some day...
 - [ ] Drop indicator images should be fully visible over the DropOverlay rectangle
