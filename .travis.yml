@@ -13,4 +13,4 @@ before_install:
 
 script:
     - qmake -r build.pro
-    - nmake
+    - make
