@@ -21,6 +21,7 @@ public:
 	virtual ~MainWindow();
 
 private slots:
+	void showLayoutManager();
 	void onActionAddSectionContentTriggered();
 
 protected:

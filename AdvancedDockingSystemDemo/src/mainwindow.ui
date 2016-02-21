@@ -21,6 +21,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionLayoutManager"/>
    <addaction name="actionAddSectionContent"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -37,6 +38,11 @@
   <action name="actionAddSectionContent">
    <property name="text">
     <string>Add SectionContent</string>
+   </property>
+  </action>
+  <action name="actionLayoutManager">
+   <property name="text">
+    <string>Layout Manager</string>
    </property>
   </action>
  </widget>

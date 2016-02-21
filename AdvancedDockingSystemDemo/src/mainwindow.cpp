@@ -13,6 +13,8 @@
 #include "ads/SectionWidget.h"
 #include "ads/SectionContent.h"
 
+#include "LayoutManagerWidget.h"
+
 #include "icontitlewidget.h"
 
 ///////////////////////////////////////////////////////////////////////
@@ -83,11 +85,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
-	ui->mainToolBar->hide();
+//	ui->mainToolBar->hide();
 	ui->statusBar->hide();
 #if QT_VERSION >= 0x050000
+	QObject::connect(ui->actionLayoutManager, &QAction::triggered, this, &MainWindow::showLayoutManager);
 	QObject::connect(ui->actionAddSectionContent, &QAction::triggered, this, &MainWindow::onActionAddSectionContentTriggered);
 #else
+	QObject::connect(ui->actionLayoutManager, SIGNAL(triggered(bool)), this, SLOT(showLayoutManager()));
 	QObject::connect(ui->actionAddSectionContent, SIGNAL(triggered(bool)), this, SLOT(onActionAddSectionContentTriggered()));
 #endif
 
@@ -118,6 +122,14 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
 	delete ui;
+}
+
+void MainWindow::showLayoutManager()
+{
+	LayoutManagerWidget* w = new LayoutManagerWidget(NULL);
+	w->setAttribute(Qt::WA_DeleteOnClose, true);
+	w->resize(500, 350);
+	w->show();
 }
 
 void MainWindow::onActionAddSectionContentTriggered()
