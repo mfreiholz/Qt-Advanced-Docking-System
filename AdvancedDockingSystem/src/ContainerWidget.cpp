@@ -690,7 +690,19 @@ SectionWidget* ContainerWidget::dropContentOuterHelper(QLayout* l, const Interna
 	sw->addContent(data, true);
 
 	QSplitter* oldsp = findImmediateSplitter(this);
-	if (oldsp->orientation() == orientation
+	if (!oldsp)
+	{
+		QSplitter* sp = newSplitter(orientation);
+		if (l->count() > 0)
+		{
+			qWarning() << "Still items in layout. This should never happen.";
+			QLayoutItem* li = l->takeAt(0);
+			delete li;
+		}
+		l->addWidget(sp);
+		sp->addWidget(sw);
+	}
+	else if (oldsp->orientation() == orientation
 			|| oldsp->count() == 1)
 	{
 		oldsp->setOrientation(orientation);
