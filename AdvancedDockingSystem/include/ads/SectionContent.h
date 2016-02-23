@@ -12,7 +12,7 @@
 ADS_NAMESPACE_BEGIN
 class ContainerWidget;
 
-class SectionContent
+class ADS_EXPORT_API SectionContent
 {
 	friend class ContainerWidget;
 

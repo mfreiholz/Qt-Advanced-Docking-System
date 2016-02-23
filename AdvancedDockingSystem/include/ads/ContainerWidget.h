@@ -23,7 +23,7 @@ class InternalContentData;
  * ContainerWidget is the main container to provide the docking
  * functionality. It manages mulitple Sections and all possible areas.
  */
-class ContainerWidget : public QFrame
+class ADS_EXPORT_API ContainerWidget : public QFrame
 {
 	Q_OBJECT
 	Q_PROPERTY(Qt::Orientation orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
