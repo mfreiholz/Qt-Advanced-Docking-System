@@ -45,3 +45,11 @@ IconTitleWidget {
 	padding: 0;
 	margin: 0;
 }
+
+ads--SectionTitleWidget QLabel, SectionTitleWidget QLabel {
+	color: #ffffff;
+}
+
+ads--SectionTitleWidget[activeTab="true"] QLabel, SectionTitleWidget[activeTab="true"] QLabel {
+	color: #ffffff;
+}
