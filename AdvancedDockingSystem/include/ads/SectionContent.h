@@ -50,9 +50,12 @@ private:
 	QPointer<QWidget> _title;
 	QPointer<QWidget> _content;
 
-	static int NextUid;
-	static QHash<int, SectionContent::WeakPtr> LookupMap;
-	static QHash<QString, SectionContent::WeakPtr> LookupMapByName;
+	static int GetNextUid();
+	static QHash<int, SectionContent::WeakPtr>& GetLookupMap();
+	static QHash<QString, SectionContent::WeakPtr>& GetLookupMapByName();
+
+	//static QHash<int, SectionContent::WeakPtr> LookupMap;
+	//static QHash<QString, SectionContent::WeakPtr> LookupMapByName;
 };
 
 ADS_NAMESPACE_END

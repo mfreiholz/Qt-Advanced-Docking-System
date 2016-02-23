@@ -68,9 +68,13 @@ private:
 	SectionContent::RefPtr _mousePressContent;
 	SectionTitleWidget* _mousePressTitleWidget;
 
-	static int NextUid;
-	static QHash<int, SectionWidget*> LookupMap;
-	static QHash<ContainerWidget*, QHash<int, SectionWidget*> > LookupMapByContainer;
+	static int GetNextUid();
+	static QHash<int, SectionWidget*>& GetLookupMap();
+	static QHash<ContainerWidget*, QHash<int, SectionWidget*> >& GetLookupMapByContainer();
+
+//	static int NextUid;
+//	static QHash<int, SectionWidget*> LookupMap;
+//	static QHash<ContainerWidget*, QHash<int, SectionWidget*> > LookupMapByContainer;
 };
 
 ADS_NAMESPACE_END

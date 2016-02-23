@@ -25,13 +25,13 @@
 
 ADS_NAMESPACE_BEGIN
 
-int SectionWidget::NextUid = 1;
-QHash<int, SectionWidget*> SectionWidget::LookupMap;
-QHash<ContainerWidget*, QHash<int, SectionWidget*> > SectionWidget::LookupMapByContainer;
+//int SectionWidget::NextUid = 1;
+//QHash<int, SectionWidget*> SectionWidget::LookupMap;
+//QHash<ContainerWidget*, QHash<int, SectionWidget*> > SectionWidget::LookupMapByContainer;
 
 SectionWidget::SectionWidget(ContainerWidget* parent) :
 	QFrame(parent),
-	_uid(NextUid++),
+	_uid(GetNextUid()),
 	_container(parent),
 	_tabsLayout(NULL),
 	_contentsLayout(NULL),
@@ -73,15 +73,15 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	setGraphicsEffect(shadow);
 #endif
 
-	LookupMap.insert(_uid, this);
-	LookupMapByContainer[_container].insert(_uid, this);
+	GetLookupMap().insert(_uid, this);
+	GetLookupMapByContainer()[_container].insert(_uid, this);
 }
 
 SectionWidget::~SectionWidget()
 {
 	qDebug() << Q_FUNC_INFO;
-	LookupMap.remove(_uid);
-	LookupMapByContainer[_container].remove(_uid);
+	GetLookupMap().remove(_uid);
+	GetLookupMapByContainer()[_container].remove(_uid);
 	_container->_sections.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
 
 	// Delete empty QSplitter.
@@ -316,6 +316,25 @@ void SectionWidget::onCloseButtonClicked()
 	if (sc.isNull())
 		return;
 	_container->hideSectionContent(sc);
+}
+
+int SectionWidget::GetNextUid()
+{
+	static int NextUid = 0;
+	return ++NextUid;
+}
+
+QHash<int, SectionWidget*>& SectionWidget::GetLookupMap()
+{
+	static QHash<int, SectionWidget*> LookupMap;
+	return LookupMap;
+
+}
+
+QHash<ContainerWidget*, QHash<int, SectionWidget*> >& SectionWidget::GetLookupMapByContainer()
+{
+	static QHash<ContainerWidget*, QHash<int, SectionWidget*> > LookupMapByContainer;
+	return LookupMapByContainer;
 }
 
 ADS_NAMESPACE_END

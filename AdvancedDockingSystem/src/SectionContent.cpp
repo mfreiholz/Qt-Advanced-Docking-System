@@ -5,12 +5,8 @@
 
 ADS_NAMESPACE_BEGIN
 
-int SectionContent::NextUid = 1;
-QHash<int, SectionContent::WeakPtr> SectionContent::LookupMap;
-QHash<QString, SectionContent::WeakPtr> SectionContent::LookupMapByName;
-
 SectionContent::SectionContent() :
-	_uid(NextUid++)
+	_uid(GetNextUid())
 {
 }
 
@@ -21,7 +17,7 @@ SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueNa
 		qFatal("Can not create SectionContent with empty uniqueName");
 		return RefPtr();
 	}
-	else if (LookupMapByName.contains(uniqueName))
+	else if (GetLookupMapByName().contains(uniqueName))
 	{
 		qFatal("Can not create SectionContent with already used uniqueName");
 		return RefPtr();
@@ -38,17 +34,17 @@ SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueNa
 	sc->_title = title;
 	sc->_content = content;
 
-	LookupMap.insert(sc->uid(), sc);
+	GetLookupMap().insert(sc->uid(), sc);
 	if (!sc->uniqueName().isEmpty())
-		LookupMapByName.insert(sc->uniqueName(), sc);
+		GetLookupMapByName().insert(sc->uniqueName(), sc);
 
 	return sc;
 }
 
 SectionContent::~SectionContent()
 {
-	LookupMap.remove(_uid);
-	LookupMapByName.remove(_uniqueName);
+	GetLookupMap().remove(_uid);
+	GetLookupMapByName().remove(_uniqueName);
 	delete _title;
 	delete _content;
 }
@@ -76,6 +72,24 @@ QWidget* SectionContent::titleWidget() const
 QWidget* SectionContent::contentWidget() const
 {
 	return _content;
+}
+
+int SectionContent::GetNextUid()
+{
+	static int NextUid = 0;
+	return ++NextUid;
+}
+
+QHash<int, SectionContent::WeakPtr>& SectionContent::GetLookupMap()
+{
+	static QHash<int, SectionContent::WeakPtr> LookupMap;
+	return LookupMap;
+}
+
+QHash<QString, SectionContent::WeakPtr>& SectionContent::GetLookupMapByName()
+{
+	static QHash<QString, SectionContent::WeakPtr> LookupMapByName;
+	return LookupMapByName;
 }
 
 ADS_NAMESPACE_END

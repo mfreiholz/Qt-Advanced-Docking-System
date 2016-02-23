@@ -94,7 +94,7 @@ bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 		hsi.data.titleWidget->setVisible(true);
 		hsi.data.contentWidget->setVisible(true);
 		SectionWidget* sw = NULL;
-		if (hsi.preferredSectionId > 0 && (sw = SectionWidget::LookupMap.value(hsi.preferredSectionId)) != NULL)
+		if (hsi.preferredSectionId > 0 && (sw = SectionWidget::GetLookupMap().value(hsi.preferredSectionId)) != NULL)
 		{
 			sw->addContent(hsi.data, true);
 			return true;
@@ -302,7 +302,7 @@ QByteArray ContainerWidget::saveState() const
 		while (iter.hasNext())
 		{
 			iter.next();
-			if (iter.value().preferredSectionId <= 0 || !SectionWidget::LookupMap.contains(iter.value().preferredSectionId))
+			if (iter.value().preferredSectionId <= 0 || !SectionWidget::GetLookupMap().contains(iter.value().preferredSectionId))
 				cnt++;
 		}
 		out << cnt;
@@ -310,7 +310,7 @@ QByteArray ContainerWidget::saveState() const
 		while (iter.hasNext())
 		{
 			iter.next();
-			if (iter.value().preferredSectionId <= 0 || !SectionWidget::LookupMap.contains(iter.value().preferredSectionId))
+			if (iter.value().preferredSectionId <= 0 || !SectionWidget::GetLookupMap().contains(iter.value().preferredSectionId))
 				out << iter.value().data.content->uniqueName();
 		}
 	}
@@ -376,7 +376,7 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 			QString uname;
 			in >> uname;
 
-			const SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(uname);
+			const SectionContent::RefPtr sc = SectionContent::GetLookupMapByName().value(uname);
 			if (!sc)
 				continue;
 
@@ -401,7 +401,7 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 		{
 			QString uname;
 			in >> uname;
-			const SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(uname);
+			const SectionContent::RefPtr sc = SectionContent::GetLookupMapByName().value(uname);
 			if (!sc)
 				continue;
 
@@ -437,7 +437,7 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 			contents.append(contentsToHide.at(i));
 
 		// Compare restored contents with available contents
-		const QList<SectionContent::WeakPtr> allContents = SectionContent::LookupMap.values();
+		const QList<SectionContent::WeakPtr> allContents = SectionContent::GetLookupMap().values();
 		for (int i = 0; i < allContents.count(); ++i)
 		{
 			const SectionContent::RefPtr sc = allContents.at(i).toStrongRef();
@@ -844,7 +844,7 @@ bool ContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, QList
 		in >> visible;
 		qDebug() << "Restore FloatingWidget" << uname << geom << visible;
 
-		const SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(uname).toStrongRef();
+		const SectionContent::RefPtr sc = SectionContent::GetLookupMapByName().value(uname).toStrongRef();
 		if (!sc)
 		{
 			qWarning() << "Can not find SectionContent:" << uname;
@@ -922,7 +922,7 @@ bool ContainerWidget::restoreSectionWidgets(QDataStream& in, int version, QSplit
 			int preferredIndex = -1;
 			in >> preferredIndex;
 
-			const SectionContent::RefPtr sc = SectionContent::LookupMapByName.value(uname).toStrongRef();
+			const SectionContent::RefPtr sc = SectionContent::GetLookupMapByName().value(uname).toStrongRef();
 			if (!sc)
 			{
 				qWarning() << "Can not find SectionContent:" << uname;
@@ -988,7 +988,7 @@ void ContainerWidget::onActionToggleSectionContentVisibility(bool visible)
 	if (!a)
 		return;
 	const int uid = a->property("uid").toInt();
-	const SectionContent::RefPtr sc = SectionContent::LookupMap.value(uid).toStrongRef();
+	const SectionContent::RefPtr sc = SectionContent::GetLookupMap().value(uid).toStrongRef();
 	if (sc.isNull())
 	{
 		qCritical() << "Can not find content by ID" << uid;
