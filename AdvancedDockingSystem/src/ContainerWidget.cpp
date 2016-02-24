@@ -112,7 +112,10 @@ bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 			return true;
 		}
 	}
-	qFatal("Unable to show SectionContent, don't know where 8-/");
+
+	// Already visible?
+	// TODO
+	qDebug("Unable to show SectionContent, don't know where 8-/ (already visible?)");
 	return false;
 }
 
@@ -158,7 +161,43 @@ bool ContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
 		}
 		return true;
 	}
+
+	// Search SC in hidden elements
+	// The content may already be hidden
+	if (_hiddenSectionContents.contains(sc->uid()))
+		return true;
+
 	qFatal("Unable to hide SectionContent, don't know this one 8-/");
+	return false;
+}
+
+bool ContainerWidget::raiseSectionContent(const SectionContent::RefPtr& sc)
+{
+	// Search SC in sections
+	for (int i = 0; i < _sections.count(); ++i)
+	{
+		SectionWidget* sw = _sections.at(i);
+		int index = sw->indexOfContent(sc);
+		if (index < 0)
+			continue;
+		sw->setCurrentIndex(index);
+		return true;
+	}
+
+	// Search SC in floatings
+	for (int i = 0; i < _floatings.size(); ++i)
+	{
+		FloatingWidget* fw = _floatings.at(i);
+		if (fw->content()->uid() != sc->uid())
+			continue;
+		fw->setVisible(true);
+		fw->raise();
+		return true;
+	}
+
+	// Search SC in hidden
+	// TODO
+
 	return false;
 }
 

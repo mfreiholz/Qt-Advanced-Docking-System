@@ -64,6 +64,12 @@ public:
 	bool hideSectionContent(const SectionContent::RefPtr& sc);
 
 	/*!
+	 * Selects the specific SectionContent as current, if it is part of a SectionWidget.
+	 * If SC is floating, it does nothing (or should we show it?)
+	 */
+	bool raiseSectionContent(const SectionContent::RefPtr& sc);
+
+	/*!
 	 * Creates a QMenu based on available SectionContents.
 	 * The caller is responsible to delete the menu.
 	 */
