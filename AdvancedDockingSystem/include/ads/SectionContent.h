@@ -43,19 +43,24 @@ public:
 	QWidget* titleWidget() const;
 	QWidget* contentWidget() const;
 
+	QString visibleTitle() const;
+	QString title() const;
+	void setTitle(const QString& title);
+
 private:
 	const int _uid;
 	QString _uniqueName;
-	ContainerWidget* _container;
-	QPointer<QWidget> _title;
-	QPointer<QWidget> _content;
+
+	ContainerWidget* _containerWidget;
+	QPointer<QWidget> _titleWidget;
+	QPointer<QWidget> _contentWidget;
+
+	// Optional attributes
+	QString _title;
 
 	static int GetNextUid();
 	static QHash<int, SectionContent::WeakPtr>& GetLookupMap();
 	static QHash<QString, SectionContent::WeakPtr>& GetLookupMapByName();
-
-	//static QHash<int, SectionContent::WeakPtr> LookupMap;
-	//static QHash<QString, SectionContent::WeakPtr> LookupMapByName;
 };
 
 ADS_NAMESPACE_END

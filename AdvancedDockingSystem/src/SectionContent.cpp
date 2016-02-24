@@ -30,9 +30,9 @@ SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueNa
 
 	QSharedPointer<SectionContent> sc(new SectionContent());
 	sc->_uniqueName = uniqueName;
-	sc->_container = container;
-	sc->_title = title;
-	sc->_content = content;
+	sc->_containerWidget = container;
+	sc->_titleWidget = title;
+	sc->_contentWidget = content;
 
 	GetLookupMap().insert(sc->uid(), sc);
 	if (!sc->uniqueName().isEmpty())
@@ -45,8 +45,8 @@ SectionContent::~SectionContent()
 {
 	GetLookupMap().remove(_uid);
 	GetLookupMapByName().remove(_uniqueName);
-	delete _title;
-	delete _content;
+	delete _titleWidget;
+	delete _contentWidget;
 }
 
 int SectionContent::uid() const
@@ -61,17 +61,34 @@ QString SectionContent::uniqueName() const
 
 ContainerWidget* SectionContent::containerWidget() const
 {
-	return _container;
+	return _containerWidget;
 }
 
 QWidget* SectionContent::titleWidget() const
 {
-	return _title;
+	return _titleWidget;
 }
 
 QWidget* SectionContent::contentWidget() const
 {
-	return _content;
+	return _contentWidget;
+}
+
+QString SectionContent::visibleTitle() const
+{
+	if (_title.isEmpty())
+		return _uniqueName;
+	return _title;
+}
+
+QString SectionContent::title() const
+{
+	return _title;
+}
+
+void SectionContent::setTitle(const QString& title)
+{
+	_title = title;
 }
 
 int SectionContent::GetNextUid()

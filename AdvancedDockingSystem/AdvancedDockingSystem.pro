@@ -1,6 +1,6 @@
 TARGET = AdvancedDockingSystem
 #VERSION = 0.1.0
-#CONFIG += adsBuildShared
+CONFIG += adsBuildShared
 
 QT += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets

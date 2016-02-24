@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 	a.setQuitOnLastWindowClosed(true);
 
-	Q_INIT_RESOURCE(ads);
+	//Q_INIT_RESOURCE(ads);
 
 	// Load style sheet
 	QFile f(":/stylesheets/default-windows.css");

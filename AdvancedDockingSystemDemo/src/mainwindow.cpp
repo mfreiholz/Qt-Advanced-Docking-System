@@ -32,7 +32,9 @@ static ADS_NS::SectionContent::RefPtr createLongTextLabelSC(ADS_NS::ContainerWid
 	bl->addWidget(l);
 
 	const int index = ++CONTENT_COUNT;
-	return ADS_NS::SectionContent::newSectionContent(QString("uname-%1").arg(index), container, new IconTitleWidget(QIcon(), QString("Label %1").arg(index)), w);
+	ADS_NS::SectionContent::RefPtr sc = ADS_NS::SectionContent::newSectionContent(QString("uname-%1").arg(index), container, new IconTitleWidget(QIcon(), QString("Label %1").arg(index)), w);
+	sc->setTitle("Ein Label " + QString::number(index));
+	return sc;
 }
 
 static ADS_NS::SectionContent::RefPtr createCalendarSC(ADS_NS::ContainerWidget* container)

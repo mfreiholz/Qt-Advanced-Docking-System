@@ -213,7 +213,7 @@ QMenu* ContainerWidget::createContextMenu() const
 		const QList<SectionContent::RefPtr>& contents = sw->contents();
 		foreach (const SectionContent::RefPtr& sc, contents)
 		{
-			QAction* a = new QAction(QIcon(), sc->uniqueName(), NULL);
+			QAction* a = new QAction(QIcon(), sc->visibleTitle(), NULL);
 			a->setObjectName(QString("ads-action-sc-%1").arg(QString::number(sc->uid())));
 			a->setProperty("uid", sc->uid());
 			a->setProperty("type", "section");
@@ -235,7 +235,7 @@ QMenu* ContainerWidget::createContextMenu() const
 		hiddenIter.next();
 		const SectionContent::RefPtr sc = hiddenIter.value().data.content;
 
-		QAction* a = new QAction(QIcon(), sc->uniqueName(), NULL);
+		QAction* a = new QAction(QIcon(), sc->visibleTitle(), NULL);
 		a->setObjectName(QString("ads-action-sc-%1").arg(QString::number(sc->uid())));
 		a->setProperty("uid", sc->uid());
 		a->setProperty("type", "section");
@@ -255,7 +255,7 @@ QMenu* ContainerWidget::createContextMenu() const
 		const FloatingWidget* fw = _floatings.at(i);
 		const SectionContent::RefPtr sc = fw->content();
 
-		QAction* a = new QAction(QIcon(), sc->uniqueName(), NULL);
+		QAction* a = new QAction(QIcon(), sc->visibleTitle(), NULL);
 		a->setObjectName(QString("ads-action-sc-%1").arg(QString::number(sc->uid())));
 		a->setProperty("uid", sc->uid());
 		a->setProperty("type", "floating");

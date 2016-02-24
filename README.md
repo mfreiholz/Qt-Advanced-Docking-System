@@ -43,6 +43,8 @@ Items sorted by priority
 - [ ] `ContainerWidget::showSectionContent` needs to insert the SC at the correct preferred position of SW
 - [ ] Empty splitters, if only 2 or 1 items are in container
 - [ ] Restore: Handle out-of-screen geometry for floating widgets
+- [ ] Find an alternative impl for current static QHash, e.g. `SectionContent::GetLookupMap`.
+      It does not work, if linking from DLL AND EXE
 
 ### Beta 0.1
 - [x] Improve FloatingWidget (Remove maximize button, only support close-button which hides the widget)
@@ -54,6 +56,10 @@ Items sorted by priority
 - [x] Clean up of unused e.g. count()<=1 QSplitters doesn't work well #BUG
 - [x] Show close button on right corner of SectionWidget. How to safe last section position?
 - [x] Serialize state of `_hiddenSectionContents`
+- [x] Add "title" to SectionContent object, which will be used in visible areas to display contents name.
+- [ ] It should be possible to catch the "activeTabChanged" signal for EXTERN_API users
+- [x] Add API function to set an SC as active-tab
+- [ ] Use scrolling for SectionWidget tabs?
 
 ### Some day...
 - [ ] Drop indicator images should be fully visible over the DropOverlay rectangle
