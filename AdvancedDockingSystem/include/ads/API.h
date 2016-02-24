@@ -14,6 +14,8 @@ class QSplitter;
 	#else
 		#define ADS_EXPORT_API __declspec(dllimport)
 	#endif
+#else
+  #define ADS_EXPORT_API
 #endif
 
 // Use namespace
