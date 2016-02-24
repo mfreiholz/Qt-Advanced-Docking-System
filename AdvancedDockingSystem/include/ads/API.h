@@ -12,7 +12,7 @@ class QSplitter;
 	#ifdef ADS_EXPORT
 		#define ADS_EXPORT_API __declspec(dllexport)
 	#else
-		#define ADS_EXPORT_API
+		#define ADS_EXPORT_API __declspec(dllimport)
 	#endif
 #endif
 
