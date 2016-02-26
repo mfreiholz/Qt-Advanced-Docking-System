@@ -3,14 +3,12 @@
 
 #include <QMainWindow>
 #include "ads/API.h"
+#include "ads/ContainerWidget.h"
+#include "ads/SectionContent.h"
 
 namespace Ui {
 class MainWindow;
 }
-
-ADS_NAMESPACE_BEGIN
-class ContainerWidget;
-ADS_NAMESPACE_END
 
 class MainWindow : public QMainWindow
 {
@@ -21,6 +19,7 @@ public:
 	virtual ~MainWindow();
 
 private slots:
+	void onActiveTabChanged(const ADS_NS::SectionContent::RefPtr& sc, bool active);
 	void onActionAddSectionContentTriggered();
 
 protected:

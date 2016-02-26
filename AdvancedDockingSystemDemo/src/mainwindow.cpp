@@ -9,9 +9,7 @@
 #include <QTreeView>
 #include <QFileSystemModel>
 
-#include "ads/ContainerWidget.h"
 #include "ads/SectionWidget.h"
-#include "ads/SectionContent.h"
 
 #include "icontitlewidget.h"
 
@@ -95,6 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_container = new ADS_NS::ContainerWidget();
 	_container->setOrientation(Qt::Vertical);
+	QObject::connect(_container, &ADS_NS::ContainerWidget::activeTabChanged, this, &MainWindow::onActiveTabChanged);
 	setCentralWidget(_container);
 
 	// Test #1: Use high-level public API
@@ -120,6 +119,15 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
 	delete ui;
+}
+
+void MainWindow::onActiveTabChanged(const ADS_NS::SectionContent::RefPtr& sc, bool active)
+{
+	IconTitleWidget* itw = dynamic_cast<IconTitleWidget*>(sc->titleWidget());
+	if (itw)
+	{
+		itw->polishUpdate();
+	}
 }
 
 void MainWindow::onActionAddSectionContentTriggered()

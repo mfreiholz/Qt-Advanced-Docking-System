@@ -70,6 +70,8 @@ SectionWidget* ContainerWidget::addSectionContent(const SectionContent::RefPtr& 
 	data.content = sc;
 	data.titleWidget = new SectionTitleWidget(sc, NULL);
 	data.contentWidget = new SectionContentWidget(sc, NULL);
+	QObject::connect(data.titleWidget, &SectionTitleWidget::activeTabChanged, this, &ContainerWidget::onActiveTabChanged);
+
 	return dropContent(data, sw, area, false);
 }
 
@@ -1019,6 +1021,16 @@ bool ContainerWidget::takeContent(const SectionContent::RefPtr& sc, InternalCont
 	}
 
 	return found;
+}
+
+void ContainerWidget::onActiveTabChanged()
+{
+	SectionTitleWidget* stw = qobject_cast<SectionTitleWidget*>(sender());
+	if (stw)
+	{
+		qDebug() << "Active tab changed" << stw->_content->uid() << stw->isActiveTab();
+		emit activeTabChanged(stw->_content, stw->isActiveTab());
+	}
 }
 
 void ContainerWidget::onActionToggleSectionContentVisibility(bool visible)

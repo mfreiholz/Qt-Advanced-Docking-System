@@ -118,10 +118,18 @@ private:
 	bool takeContent(const SectionContent::RefPtr& sc, InternalContentData& data);
 
 private slots:
+	void onActiveTabChanged();
 	void onActionToggleSectionContentVisibility(bool visible);
 
 signals:
 	void orientationChanged();
+
+	/*!
+	 * Emits whenever the "isActiveTab" state of a SectionContent changes.
+	 * Whenever the users sets another tab as active, this signal gets invoked
+	 * for the old now inactive tab and the new active tab (the order is unspecified).
+	 */
+	void activeTabChanged(const SectionContent::RefPtr& sc, bool active);
 
 private:
 	QList<SectionWidget*> _sections;

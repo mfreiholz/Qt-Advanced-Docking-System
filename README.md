@@ -57,7 +57,7 @@ Items sorted by priority
 - [x] Show close button on right corner of SectionWidget. How to safe last section position?
 - [x] Serialize state of `_hiddenSectionContents`
 - [x] Add "title" to SectionContent object, which will be used in visible areas to display contents name.
-- [ ] It should be possible to catch the "activeTabChanged" signal for EXTERN_API users
+- [x] It should be possible to catch the "activeTabChanged" signal for EXTERN_API users
 - [x] Add API function to set an SC as active-tab
 - [ ] Use scrolling for SectionWidget tabs?
 

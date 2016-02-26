@@ -4,16 +4,19 @@
 #include <QFrame>
 class QIcon;
 class QString;
+class QLabel;
 
 class IconTitleWidget : public QFrame
 {
 	Q_OBJECT
+
 public:
 	explicit IconTitleWidget(const QIcon& icon, const QString& title, QWidget *parent = 0);
+	void polishUpdate();
 
-signals:
-
-public slots:
+public:
+	QLabel* _iconLabel;
+	QLabel* _titleLabel;
 };
 
 #endif // ICONTITLEWIDGET_H

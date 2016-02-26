@@ -13,23 +13,25 @@ IconTitleWidget::IconTitleWidget(const QIcon& icon, const QString& title, QWidge
 	l->setContentsMargins(0, 0, 0, 0);
 	setLayout(l);
 
-	// Icon label
-	if (icon.isNull())
-	{
-//		QLabel* titleIcon = new QLabel();
-//		titleIcon->setPixmap(style()->standardIcon(QStyle::SP_MessageBoxInformation).pixmap(16, 16));
-//		l->addWidget(titleIcon);
-	}
-	else
-	{
-		QLabel* titleIcon = new QLabel();
-		titleIcon->setPixmap(icon.pixmap(16, 16));
-		l->addWidget(titleIcon);
-	}
+	_iconLabel = new QLabel();
+	if (!icon.isNull())
+		_iconLabel->setPixmap(icon.pixmap(16, 16));
+	l->addWidget(_iconLabel);
 
-	// Title label
-	QLabel* titleText = new QLabel(title);
-	QFont titleFont = titleText->font();
-	titleText->setFont(titleFont);
-	l->addWidget(titleText, 1);
+	_titleLabel = new QLabel();
+	_titleLabel->setText(title);
+	l->addWidget(_titleLabel, 1);
+}
+
+void IconTitleWidget::polishUpdate()
+{
+	QList<QWidget*> widgets;
+	widgets.append(_iconLabel);
+	widgets.append(_titleLabel);
+	foreach (QWidget* w, widgets)
+	{
+		w->style()->unpolish(w);
+		w->style()->polish(w);
+		w->update();
+	}
 }

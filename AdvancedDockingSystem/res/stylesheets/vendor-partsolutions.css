@@ -48,8 +48,10 @@ IconTitleWidget {
 
 ads--SectionTitleWidget QLabel, SectionTitleWidget QLabel {
 	color: #ffffff;
+	background: #7c9eb3;
 }
 
 ads--SectionTitleWidget[activeTab="true"] QLabel, SectionTitleWidget[activeTab="true"] QLabel {
-	color: #ffffff;
+	color: #000000;
+	background: #E7F3F8;
 }

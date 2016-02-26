@@ -12,8 +12,8 @@ int main(int argc, char *argv[])
 	//Q_INIT_RESOURCE(ads);
 
 	// Load style sheet
-	QFile f(":/stylesheets/default-windows.css");
-//	QFile f(":/stylesheets/vendor-partsolutions.css");
+//	QFile f(":/stylesheets/default-windows.css");
+	QFile f(":/stylesheets/vendor-partsolutions.css");
 	if (f.open(QFile::ReadOnly))
 	{
 		QByteArray ba = f.readAll();
