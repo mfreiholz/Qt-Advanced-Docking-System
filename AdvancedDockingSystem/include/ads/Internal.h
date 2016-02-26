@@ -6,6 +6,11 @@
 
 #include "ads/API.h"
 
+#if QT_VERSION >= 0x050000
+#else
+#include "ads/SectionContent.h"
+#endif
+
 #define SCLookupMapById(X)   X->_scLookupMapById
 #define SCLookupMapByName(X) X->_scLookupMapByName
 #define SWLookupMapById(X)   X->_swLookupMapById

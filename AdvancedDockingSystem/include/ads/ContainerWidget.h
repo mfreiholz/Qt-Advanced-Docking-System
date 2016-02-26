@@ -2,6 +2,7 @@
 #define ADS_CONTAINERWIDGET_H
 
 #include <QList>
+#include <QHash>
 #include <QPointer>
 #include <QFrame>
 class QPoint;
@@ -143,9 +144,7 @@ private:
 	// Helper lookup maps, restricted to this container.
 	QHash<int, SectionContent::WeakPtr> _scLookupMapById;
 	QHash<QString, SectionContent::WeakPtr> _scLookupMapByName;
-
 	QHash<int, SectionWidget*> _swLookupMapById;
-	//QHash<ContainerWidget*, QHash<int, SectionWidget*> > _swLookupMapByContainer; // TODO Do we really need it?
 
 
 	// Layout stuff
