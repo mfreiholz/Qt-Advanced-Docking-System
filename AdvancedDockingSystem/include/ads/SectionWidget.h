@@ -2,8 +2,8 @@
 #define SECTION_WIDGET_H
 
 #include <QDebug>
+#include <QPointer>
 #include <QList>
-#include <QHash>
 #include <QFrame>
 class QBoxLayout;
 class QStackedLayout;
@@ -56,7 +56,7 @@ private slots:
 private:
 	const int _uid;
 
-	ContainerWidget* _container;
+	QPointer<ContainerWidget> _container;
 	QList<SectionContent::RefPtr> _contents;
 	QList<SectionTitleWidget*> _sectionTitles;
 	QList<SectionContentWidget*> _sectionContents;
@@ -69,12 +69,6 @@ private:
 	SectionTitleWidget* _mousePressTitleWidget;
 
 	static int GetNextUid();
-	static QHash<int, SectionWidget*>& GetLookupMap();
-	static QHash<ContainerWidget*, QHash<int, SectionWidget*> >& GetLookupMapByContainer();
-
-//	static int NextUid;
-//	static QHash<int, SectionWidget*> LookupMap;
-//	static QHash<ContainerWidget*, QHash<int, SectionWidget*> > LookupMapByContainer;
 };
 
 ADS_NAMESPACE_END

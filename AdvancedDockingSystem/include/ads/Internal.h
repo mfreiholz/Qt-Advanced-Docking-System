@@ -5,7 +5,10 @@
 #include <QWeakPointer>
 
 #include "ads/API.h"
-#include "ads/SectionContent.h"
+
+#define SCLookupMapById(X)   X->_scLookupMapById
+#define SCLookupMapByName(X) X->_scLookupMapByName
+#define SWLookupMapById(X)   X->_swLookupMapById
 
 ADS_NAMESPACE_BEGIN
 class SectionContent;
@@ -22,7 +25,7 @@ public:
 	InternalContentData();
 	~InternalContentData();
 
-	SectionContent::RefPtr content;
+	QSharedPointer<SectionContent> content;
 	SectionTitleWidget* titleWidget;
 	SectionContentWidget* contentWidget;
 };

@@ -59,6 +59,8 @@ Items sorted by priority
 - [x] Add "title" to SectionContent object, which will be used in visible areas to display contents name.
 - [x] It should be possible to catch the "activeTabChanged" signal for EXTERN_API users
 - [x] Add API function to set an SC as active-tab
+- [ ] Move all lookup maps into ContainterWidget as non-static members, otherwise we can not have the same SC name inside another ContainerWidget instance.
+      The uniqueness of a SectionContainer needs to be restricted to its parent ContainerWidget, not global!
 - [ ] Use scrolling for SectionWidget tabs?
 
 ### Some day...

@@ -2,7 +2,6 @@
 #define FLOATINGWIDGET_H
 
 #include <QWidget>
-#include <QFrame>
 class QBoxLayout;
 
 #include "ads/API.h"

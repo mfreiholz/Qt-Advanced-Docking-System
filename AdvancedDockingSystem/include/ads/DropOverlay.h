@@ -1,12 +1,13 @@
 #ifndef DROP_OVERLAY_H
 #define DROP_OVERLAY_H
 
-#include <QFrame>
 #include <QRect>
+#include <QFrame>
 
 #include "ads/API.h"
 
 ADS_NAMESPACE_BEGIN
+class DropSplitAreas;
 
 // DropOverlay paints a translucent rectangle over another widget.
 // It can also show different types of drop area indicators.
@@ -26,7 +27,7 @@ protected:
 	virtual void moveEvent(QMoveEvent* e);
 
 private:
-	class DropSplitAreas* _splitAreas;
+	DropSplitAreas* _splitAreas;
 	bool _fullAreaDrop;
 };
 

@@ -1,10 +1,8 @@
 #ifndef ADS_API_H
 #define ADS_API_H
 
-#include <QByteArray>
-#include <QDataStream>
-#include <QIODevice>
-#include <QSharedPointer>
+#include <QFlags>
+class QWidget;
 class QSplitter;
 
 // DLL Export API
@@ -38,6 +36,8 @@ class QSplitter;
 //#define ADS_ANIMATION_DURATION 150
 
 ADS_NAMESPACE_BEGIN
+class ContainerWidget;
+class SectionWidget;
 
 enum DropArea
 {
@@ -52,11 +52,11 @@ enum DropArea
 };
 Q_DECLARE_FLAGS(DropAreas, DropArea)
 
-void deleteEmptySplitter(class ContainerWidget* container);
-class ContainerWidget* findParentContainerWidget(class QWidget* w);
-class SectionWidget* findParentSectionWidget(class QWidget* w);
-QSplitter* findParentSplitter(class QWidget* w);
-QSplitter* findImmediateSplitter(class QWidget* w);
+void deleteEmptySplitter(ContainerWidget* container);
+ContainerWidget* findParentContainerWidget(QWidget* w);
+SectionWidget* findParentSectionWidget(QWidget* w);
+QSplitter* findParentSplitter(QWidget* w);
+QSplitter* findImmediateSplitter(QWidget* w);
 
 ADS_NAMESPACE_END
 #endif

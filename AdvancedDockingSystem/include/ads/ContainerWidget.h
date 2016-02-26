@@ -1,21 +1,21 @@
 #ifndef ADS_CONTAINERWIDGET_H
 #define ADS_CONTAINERWIDGET_H
 
+#include <QList>
 #include <QPointer>
 #include <QFrame>
-#include <QGridLayout>
-#include <QPoint>
-#include <QList>
+class QPoint;
 class QSplitter;
 class QMenu;
+class QGridLayout;
 
 #include "ads/API.h"
 #include "ads/Internal.h"
 #include "ads/SectionContent.h"
-#include "ads/SectionWidget.h"
 #include "ads/FloatingWidget.h"
 
 ADS_NAMESPACE_BEGIN
+class SectionWidget;
 class InternalContentData;
 
 
@@ -28,6 +28,7 @@ class ADS_EXPORT_API ContainerWidget : public QFrame
 	Q_OBJECT
 	Q_PROPERTY(Qt::Orientation orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
 
+	friend class SectionContent;
 	friend class SectionWidget;
 	friend class FloatingWidget;
 	friend class SectionTitleWidget;
@@ -35,6 +36,7 @@ class ADS_EXPORT_API ContainerWidget : public QFrame
 
 public:
 	explicit ContainerWidget(QWidget *parent = NULL);
+	virtual ~ContainerWidget();
 
 	//
 	// Public API
@@ -132,10 +134,18 @@ signals:
 	void activeTabChanged(const SectionContent::RefPtr& sc, bool active);
 
 private:
+	// Elements inside container.
 	QList<SectionWidget*> _sections;
 	QList<FloatingWidget*> _floatings;
-
 	QHash<int, HiddenSectionItem> _hiddenSectionContents;
+
+
+	// Helper lookup maps, restricted to this container.
+	QHash<int, SectionContent::WeakPtr> _scLookupMapById;
+	QHash<QString, SectionContent::WeakPtr> _scLookupMapByName;
+
+	QHash<int, SectionWidget*> _swLookupMapById;
+	//QHash<ContainerWidget*, QHash<int, SectionWidget*> > _swLookupMapByContainer; // TODO Do we really need it?
 
 
 	// Layout stuff

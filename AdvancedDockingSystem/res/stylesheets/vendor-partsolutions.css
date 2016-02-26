@@ -34,6 +34,12 @@ ads--SectionTitleWidget[activeTab="true"], SectionTitleWidget[activeTab="true"] 
 	border: 1px solid #E7F3F8;
 }
 
+ads--SectionWidget QPushButton#closeButton, SectionWidget QPushButton#closeButton,
+ads--FloatingWidget QPushButton#closeButton, FloatingWidget QPushButton#closeButton {
+	background: #ff0000;
+	border: 1px solid red;
+}
+
 ads--SectionContentWidget, SectionContentWidget {
 	background: #ffffff;
 	border: 0px solid #E7F3F8;

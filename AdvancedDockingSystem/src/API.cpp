@@ -2,8 +2,10 @@
 
 #include <QWidget>
 #include <QSplitter>
+#include <QLayout>
 
 #include "ads/ContainerWidget.h"
+#include "ads/SectionWidget.h"
 
 ADS_NAMESPACE_BEGIN
 

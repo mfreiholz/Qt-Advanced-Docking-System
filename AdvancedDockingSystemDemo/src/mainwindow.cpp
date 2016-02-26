@@ -8,6 +8,7 @@
 #include <QFrame>
 #include <QTreeView>
 #include <QFileSystemModel>
+#include <QBoxLayout>
 
 #include "ads/SectionWidget.h"
 
@@ -93,7 +94,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_container = new ADS_NS::ContainerWidget();
 	_container->setOrientation(Qt::Vertical);
+#if QT_VERSION >= 0x050000
 	QObject::connect(_container, &ADS_NS::ContainerWidget::activeTabChanged, this, &MainWindow::onActiveTabChanged);
+#else
+	QObject::connect(_container, SIGNAL(activeTabChanged(SectionContent::RefPtr,bool)), this, SLOT(onActiveTabChanged(const::ads::SectionContent::RefPtr&,bool)));
+#endif
 	setCentralWidget(_container);
 
 	// Test #1: Use high-level public API
@@ -123,6 +128,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::onActiveTabChanged(const ADS_NS::SectionContent::RefPtr& sc, bool active)
 {
+	Q_UNUSED(active);
 	IconTitleWidget* itw = dynamic_cast<IconTitleWidget*>(sc->titleWidget());
 	if (itw)
 	{

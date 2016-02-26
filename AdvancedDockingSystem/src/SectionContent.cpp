@@ -1,7 +1,11 @@
 #include "ads/SectionContent.h"
 
 #include <QDebug>
+#include <QWidget>
 #include <QLabel>
+
+#include "ads/Internal.h"
+#include "ads/ContainerWidget.h"
 
 ADS_NAMESPACE_BEGIN
 
@@ -17,7 +21,7 @@ SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueNa
 		qFatal("Can not create SectionContent with empty uniqueName");
 		return RefPtr();
 	}
-	else if (GetLookupMapByName().contains(uniqueName))
+	else if (SCLookupMapByName(container).contains(uniqueName))
 	{
 		qFatal("Can not create SectionContent with already used uniqueName");
 		return RefPtr();
@@ -34,17 +38,18 @@ SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueNa
 	sc->_titleWidget = title;
 	sc->_contentWidget = content;
 
-	GetLookupMap().insert(sc->uid(), sc);
-	if (!sc->uniqueName().isEmpty())
-		GetLookupMapByName().insert(sc->uniqueName(), sc);
-
+	SCLookupMapById(container).insert(sc->uid(), sc);
+	SCLookupMapByName(container).insert(sc->uniqueName(), sc);
 	return sc;
 }
 
 SectionContent::~SectionContent()
 {
-	GetLookupMap().remove(_uid);
-	GetLookupMapByName().remove(_uniqueName);
+	if (_containerWidget)
+	{
+		SCLookupMapById(_containerWidget).remove(_uid);
+		SCLookupMapByName(_containerWidget).remove(_uniqueName);
+	}
 	delete _titleWidget;
 	delete _contentWidget;
 }
@@ -95,18 +100,6 @@ int SectionContent::GetNextUid()
 {
 	static int NextUid = 0;
 	return ++NextUid;
-}
-
-QHash<int, SectionContent::WeakPtr>& SectionContent::GetLookupMap()
-{
-	static QHash<int, SectionContent::WeakPtr> LookupMap;
-	return LookupMap;
-}
-
-QHash<QString, SectionContent::WeakPtr>& SectionContent::GetLookupMapByName()
-{
-	static QHash<QString, SectionContent::WeakPtr> LookupMapByName;
-	return LookupMapByName;
 }
 
 ADS_NAMESPACE_END

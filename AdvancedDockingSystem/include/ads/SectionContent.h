@@ -1,11 +1,10 @@
 #ifndef SECTIONCONTENT_H
 #define SECTIONCONTENT_H
 
-#include <QPointer>
-#include <QWidget>
-#include <QHash>
 #include <QSharedPointer>
 #include <QWeakPointer>
+#include <QPointer>
+class QWidget;
 
 #include "ads/API.h"
 
@@ -51,7 +50,7 @@ private:
 	const int _uid;
 	QString _uniqueName;
 
-	ContainerWidget* _containerWidget;
+	QPointer<ContainerWidget> _containerWidget;
 	QPointer<QWidget> _titleWidget;
 	QPointer<QWidget> _contentWidget;
 
@@ -59,8 +58,6 @@ private:
 	QString _title;
 
 	static int GetNextUid();
-	static QHash<int, SectionContent::WeakPtr>& GetLookupMap();
-	static QHash<QString, SectionContent::WeakPtr>& GetLookupMapByName();
 };
 
 ADS_NAMESPACE_END

@@ -73,16 +73,17 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	setGraphicsEffect(shadow);
 #endif
 
-	GetLookupMap().insert(_uid, this);
-	GetLookupMapByContainer()[_container].insert(_uid, this);
+	SWLookupMapById(_container).insert(_uid, this);
 }
 
 SectionWidget::~SectionWidget()
 {
 	qDebug() << Q_FUNC_INFO;
-	GetLookupMap().remove(_uid);
-	GetLookupMapByContainer()[_container].remove(_uid);
-	_container->_sections.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
+	if (_container)
+	{
+		SWLookupMapById(_container).remove(_uid);
+		_container->_sections.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
+	}
 
 	// Delete empty QSplitter.
 	QSplitter* splitter = findParentSplitter(this);
@@ -324,17 +325,17 @@ int SectionWidget::GetNextUid()
 	return ++NextUid;
 }
 
-QHash<int, SectionWidget*>& SectionWidget::GetLookupMap()
-{
-	static QHash<int, SectionWidget*> LookupMap;
-	return LookupMap;
+//QHash<int, SectionWidget*>& SectionWidget::GetLookupMap()
+//{
+//	static QHash<int, SectionWidget*> LookupMap;
+//	return LookupMap;
 
-}
+//}
 
-QHash<ContainerWidget*, QHash<int, SectionWidget*> >& SectionWidget::GetLookupMapByContainer()
-{
-	static QHash<ContainerWidget*, QHash<int, SectionWidget*> > LookupMapByContainer;
-	return LookupMapByContainer;
-}
+//QHash<ContainerWidget*, QHash<int, SectionWidget*> >& SectionWidget::GetLookupMapByContainer()
+//{
+//	static QHash<ContainerWidget*, QHash<int, SectionWidget*> > LookupMapByContainer;
+//	return LookupMapByContainer;
+//}
 
 ADS_NAMESPACE_END

@@ -1,8 +1,9 @@
 #ifndef SECTION_TITLE_WIDGET_H
 #define SECTION_TITLE_WIDGET_H
 
-#include <QFrame>
+#include <QPointer>
 #include <QPoint>
+#include <QFrame>
 
 #include "ads/API.h"
 #include "ads/SectionContent.h"
