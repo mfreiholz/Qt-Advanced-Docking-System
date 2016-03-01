@@ -1050,6 +1050,14 @@ bool ContainerWidget::takeContent(const SectionContent::RefPtr& sc, InternalCont
 			_floatings.at(i)->takeContent(data);
 	}
 
+	// Search in hidden items
+	if (!found && _hiddenSectionContents.contains(sc->uid()))
+	{
+		const HiddenSectionItem hsi = _hiddenSectionContents.take(sc->uid());
+		data = hsi.data;
+		found = true;
+	}
+
 	return found;
 }
 
