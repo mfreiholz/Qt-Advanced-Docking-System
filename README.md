@@ -38,13 +38,15 @@ Using it? Let us know by creating a [new issue](https://github.com/mfreiholz/qt-
 Items sorted by priority
 
 ### Beta 0.2
+- [ ] Use scrolling for SectionWidget tabs?
 - [ ] It would be easier when the SectionTitleWidget and SectionContentWidget are created inside the "SectionContent::newSectionContent(..)" method.
   This would make sure, that those two objects always exists.
 - [ ] `ContainerWidget::showSectionContent` needs to insert the SC at the correct preferred position of SW
 - [ ] Empty splitters, if only 2 or 1 items are in container
 - [ ] Restore: Handle out-of-screen geometry for floating widgets
-- [ ] Find an alternative impl for current static QHash, e.g. `SectionContent::GetLookupMap`.
-      It does not work, if linking from DLL AND EXE
+- [ ] Better handling of sizes when dropping contents. Currently it's unpredictable.
+	It might be good to use the same width/height as the parent content, if dropped on existing content.
+	In case of outer-drop we might use the preferred size of the content.
 
 ### Beta 0.1
 - [x] Improve FloatingWidget (Remove maximize button, only support close-button which hides the widget)
@@ -59,9 +61,8 @@ Items sorted by priority
 - [x] Add "title" to SectionContent object, which will be used in visible areas to display contents name.
 - [x] It should be possible to catch the "activeTabChanged" signal for EXTERN_API users
 - [x] Add API function to set an SC as active-tab
-- [ ] Move all lookup maps into ContainterWidget as non-static members, otherwise we can not have the same SC name inside another ContainerWidget instance.
-      The uniqueness of a SectionContainer needs to be restricted to its parent ContainerWidget, not global!
-- [ ] Use scrolling for SectionWidget tabs?
+- [x] Move all lookup maps into ContainterWidget as non-static members, otherwise we can not have the same SC name inside another ContainerWidget instance.
+	The uniqueness of a SectionContainer needs to be restricted to its parent ContainerWidget, not global!
 
 ### Some day...
 - [ ] Drop indicator images should be fully visible over the DropOverlay rectangle
