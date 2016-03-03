@@ -228,8 +228,10 @@ bool ContainerWidget::raiseSectionContent(const SectionContent::RefPtr& sc)
 	}
 
 	// Search SC in hidden
-	// TODO
+	if (_hiddenSectionContents.contains(sc->uid()))
+		return showSectionContent(sc);
 
+	qFatal("Unable to hide SectionContent, don't know this one 8-/");
 	return false;
 }
 
