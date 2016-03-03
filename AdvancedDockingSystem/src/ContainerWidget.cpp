@@ -364,7 +364,7 @@ QByteArray ContainerWidget::saveState() const
 		out << 1;
 		QLayoutItem* li = _mainLayout->itemAt(0);
 		if (!li->widget())
-			qWarning() << "Not a widget in _mainLayout, this shouldn't happen.";
+			qFatal("Not a widget in _mainLayout, this shouldn't happen.");
 		else
 			saveSectionWidgets(out, li->widget());
 
@@ -480,7 +480,10 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 
 			InternalContentData data;
 			if (!takeContent(sc, data))
-				qFatal("This should never happen!!!");
+			{
+				qWarning("This should never happen! Looks like a bug during serialization, since the content is already being used in SWs.");
+				continue;
+			}
 
 			SectionWidget* sw = NULL;
 			if (sections.size() <= 0)
