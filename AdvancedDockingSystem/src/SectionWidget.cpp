@@ -143,24 +143,29 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 {
 	_contents.append(data.content);
 
+	// Add title-widget to tab-bar
+	// #FIX: Make it visible, since it is possible that it was hidden previously.
 	_sectionTitles.append(data.titleWidget);
 	_tabsLayout->insertWidget(_tabsLayout->count() - 2, data.titleWidget);
+	data.titleWidget->setVisible(true);
 #if QT_VERSION >= 0x050000
 	QObject::connect(data.titleWidget, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
 #else
 	QObject::connect(data.titleWidget, SIGNAL(clicked()), this, SLOT(onSectionTitleClicked()));
 #endif
 
+	// Add content-widget to stack.
+	// Visibility is managed by QStackedWidget.
 	_sectionContents.append(data.contentWidget);
 	_contentsLayout->addWidget(data.contentWidget);
 
-	// Active first TAB.
+	// Activate first TAB.
 	if (_contents.size() == 1)
 		setCurrentIndex(0);
-	// Switch to newest.
+	// Switch to just added TAB.
 	else if (autoActivate)
 		setCurrentIndex(_contents.count() - 1);
-	// Mark is as inactive tab.
+	// Mark it as inactive tab.
 	else
 		data.titleWidget->setActiveTab(false); // or: setCurrentIndex(currentIndex())
 }
