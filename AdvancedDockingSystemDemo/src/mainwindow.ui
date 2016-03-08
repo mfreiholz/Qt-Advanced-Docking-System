@@ -14,15 +14,6 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget"/>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionAddSectionContent"/>
-  </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -33,10 +24,52 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionDemo_1"/>
+    <addaction name="actionDemo_2"/>
+    <addaction name="actionDemo_3"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuAbout"/>
   </widget>
   <action name="actionAddSectionContent">
    <property name="text">
     <string>Add SectionContent</string>
+   </property>
+  </action>
+  <action name="actionDemo_1">
+   <property name="text">
+    <string>Demo 1</string>
+   </property>
+  </action>
+  <action name="actionDemo_2">
+   <property name="text">
+    <string>Demo 2</string>
+   </property>
+  </action>
+  <action name="actionDemo_3">
+   <property name="text">
+    <string>Demo 3</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
    </property>
   </action>
  </widget>

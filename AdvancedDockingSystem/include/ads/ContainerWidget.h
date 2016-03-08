@@ -22,7 +22,7 @@ class InternalContentData;
 
 /*!
  * ContainerWidget is the main container to provide the docking
- * functionality. It manages mulitple Sections and all possible areas.
+ * functionality. It manages multiple sections with all possible areas.
  */
 class ADS_EXPORT_API ContainerWidget : public QFrame
 {
@@ -130,7 +130,7 @@ signals:
 	/*!
 	 * Emits whenever the "isActiveTab" state of a SectionContent changes.
 	 * Whenever the users sets another tab as active, this signal gets invoked
-	 * for the old now inactive tab and the new active tab (the order is unspecified).
+	 * for the old tab and the new active tab (the order is unspecified).
 	 */
 	void activeTabChanged(const SectionContent::RefPtr& sc, bool active);
 

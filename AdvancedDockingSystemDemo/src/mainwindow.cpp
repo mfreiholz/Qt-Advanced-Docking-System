@@ -47,6 +47,7 @@ static ADS_NS::SectionContent::RefPtr createCalendarSC(ADS_NS::ContainerWidget* 
 static ADS_NS::SectionContent::RefPtr createFileSystemTreeSC(ADS_NS::ContainerWidget* container)
 {
 	QTreeView* w = new QTreeView();
+	w->setFrameShape(QFrame::NoFrame);
 	//	QFileSystemModel* m = new QFileSystemModel(w);
 	//	m->setRootPath(QDir::currentPath());
 	//	w->setModel(m);
@@ -84,14 +85,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
-	ui->mainToolBar->hide();
-	ui->statusBar->hide();
-#if QT_VERSION >= 0x050000
-	QObject::connect(ui->actionAddSectionContent, &QAction::triggered, this, &MainWindow::onActionAddSectionContentTriggered);
-#else
-	QObject::connect(ui->actionAddSectionContent, SIGNAL(triggered(bool)), this, SLOT(onActionAddSectionContentTriggered()));
-#endif
 
+	// ADS - Create main container (ContainerWidget).
 	_container = new ADS_NS::ContainerWidget();
 	_container->setOrientation(Qt::Vertical);
 #if QT_VERSION >= 0x050000
@@ -101,6 +96,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 	setCentralWidget(_container);
 
+	// ADS - Adding some contents.
 	// Test #1: Use high-level public API
 	if (true)
 	{
@@ -111,17 +107,17 @@ MainWindow::MainWindow(QWidget *parent) :
 		sw = _container->addSectionContent(createCalendarSC(cw), sw, ADS_NS::RightDropArea);
 		sw = _container->addSectionContent(createFileSystemTreeSC(cw), sw, ADS_NS::CenterDropArea);
 
-//		_container->addSectionContent(createCalendarSC(_container));
-//		_container->addSectionContent(createLongTextLabelSC(_container));
-//		_container->addSectionContent(createLongTextLabelSC(_container));
-//		_container->addSectionContent(createLongTextLabelSC(_container));
+		_container->addSectionContent(createCalendarSC(_container));
+		_container->addSectionContent(createLongTextLabelSC(_container));
+		_container->addSectionContent(createLongTextLabelSC(_container));
+		_container->addSectionContent(createLongTextLabelSC(_container));
 	}
 
 	// Default window geometry
 	resize(800, 600);
-
-	// Restore window geometry and ContainerWidget state from last session
 	restoreGeometry(loadDataHelper("MainWindow"));
+
+	// ADS - Restore geometries and states of contents.
 	_container->restoreState(loadDataHelper("ContainerWidget"));
 }
 

@@ -3,8 +3,8 @@ Manages content widgets more like Visual Studio or similar programs.
 I also try to get everything done with basic Qt functionality.
 Basic usage of QWidgets an QLayouts and using basic styles as much as possible.
 
-![Layout of widgets](preview01.png)
-![Dropping widgets](preview02.png)
+![Layout of widgets](preview.png)
+![Dropping widgets](preview-dragndrop.png)
 
 ## Tested Compatible Environments
 - Windows 10 / Qt 5.5.1 / VC12
