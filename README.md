@@ -40,13 +40,15 @@ Items sorted by priority
 ### Beta 0.2
 - [ ] Use scrolling for SectionWidget tabs?
 - [ ] It would be easier when the SectionTitleWidget and SectionContentWidget are created inside the "SectionContent::newSectionContent(..)" method.
-  This would make sure, that those two objects always exists.
+	This would make sure, that those two objects always exists.
 - [ ] `ContainerWidget::showSectionContent` needs to insert the SC at the correct preferred position of SW
+- [ ] It should be possible to drop a floating widget directly into the SW's tab-bar.
 - [ ] Empty splitters, if only 2 or 1 items are in container
 - [ ] Restore: Handle out-of-screen geometry for floating widgets
 - [ ] Better handling of sizes when dropping contents. Currently it's unpredictable.
 	It might be good to use the same width/height as the parent content, if dropped on existing content.
 	In case of outer-drop we might use the preferred size of the content.
+- [ ] Floating widget should be a real window with all of its functionality (maximize and split by moving it to the edge of the screen)
 
 ### Beta 0.1
 - [x] Improve FloatingWidget (Remove maximize button, only support close-button which hides the widget)

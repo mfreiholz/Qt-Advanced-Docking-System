@@ -97,17 +97,21 @@ MainWindow::MainWindow(QWidget *parent) :
 #if QT_VERSION >= 0x050000
 	QObject::connect(_container, &ADS_NS::ContainerWidget::activeTabChanged, this, &MainWindow::onActiveTabChanged);
 #else
-	QObject::connect(_container, SIGNAL(activeTabChanged(SectionContent::RefPtr,bool)), this, SLOT(onActiveTabChanged(const::ads::SectionContent::RefPtr&,bool)));
+	QObject::connect(_container, SIGNAL(activeTabChanged(const SectionContent::RefPtr&, bool)), this, SLOT(onActiveTabChanged(const SectionContent::RefPtr&, bool)));
 #endif
 	setCentralWidget(_container);
 
 	// Test #1: Use high-level public API
 	if (true)
 	{
-		ADS_NS::SectionWidget* sw1 = _container->addSectionContent(createLongTextLabelSC(_container));
-		_container->addSectionContent(createCalendarSC(_container), sw1, ADS_NS::BottomDropArea);
-		_container->addSectionContent(createFileSystemTreeSC(_container), NULL, ADS_NS::RightDropArea);
-		_container->addSectionContent(createCalendarSC(_container));
+		ADS_NS::ContainerWidget* cw = _container;
+		ADS_NS::SectionWidget* sw = NULL;
+
+		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
+		sw = _container->addSectionContent(createCalendarSC(cw), sw, ADS_NS::RightDropArea);
+		sw = _container->addSectionContent(createFileSystemTreeSC(cw), sw, ADS_NS::CenterDropArea);
+
+//		_container->addSectionContent(createCalendarSC(_container));
 //		_container->addSectionContent(createLongTextLabelSC(_container));
 //		_container->addSectionContent(createLongTextLabelSC(_container));
 //		_container->addSectionContent(createLongTextLabelSC(_container));

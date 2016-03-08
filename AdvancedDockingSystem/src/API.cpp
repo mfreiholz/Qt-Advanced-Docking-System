@@ -3,21 +3,48 @@
 #include <QWidget>
 #include <QSplitter>
 #include <QLayout>
+#include <QVariant>
 
 #include "ads/ContainerWidget.h"
 #include "ads/SectionWidget.h"
 
 ADS_NAMESPACE_BEGIN
 
+static bool splitterContainsSectionWidget(QSplitter* splitter)
+{
+	for (int i = 0; i < splitter->count(); ++i)
+	{
+		QWidget* w = splitter->widget(i);
+		QSplitter* sp = qobject_cast<QSplitter*>(w);
+		SectionWidget* sw = NULL;
+		if (sp && splitterContainsSectionWidget(sp))
+			return true;
+		else if ((sw = qobject_cast<SectionWidget*>(w)) != NULL)
+			return true;
+	}
+	return false;
+}
+
 void deleteEmptySplitter(ContainerWidget* container)
 {
-	QList<QSplitter*> splitters = container->findChildren<QSplitter*>();
-	for (int i = 0; i < splitters.count(); ++i)
+	bool doAgain = false;
+	do
 	{
-		QSplitter* sp = splitters.at(i);
-		if (sp->count() == 0)
+		doAgain = false;
+		QList<QSplitter*> splitters = container->findChildren<QSplitter*>();
+		for (int i = 0; i < splitters.count(); ++i)
+		{
+			QSplitter* sp = splitters.at(i);
+			if (!sp->property("ads-splitter").toBool())
+				continue;
+			if (sp->count() > 0 && splitterContainsSectionWidget(sp))
+				continue;
 			delete splitters[i];
+			doAgain = true;
+			break;
+		}
 	}
+	while (doAgain);
 }
 
 ContainerWidget* findParentContainerWidget(QWidget* w)

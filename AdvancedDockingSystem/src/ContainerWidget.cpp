@@ -22,6 +22,7 @@ ADS_NAMESPACE_BEGIN
 static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = 0)
 {
 	QSplitter* s = new QSplitter(orientation, parent);
+	s->setProperty("ads-splitter", QVariant(true));
 	s->setChildrenCollapsible(false);
 	s->setOpaqueResize(false);
 	return s;
@@ -348,9 +349,9 @@ QByteArray ContainerWidget::saveState() const
 	{
 		// Looks like the user has hidden all contents and no more sections
 		// are available. We can simply write a list of all hidden contents.
-		out << 0;
-		out << _hiddenSectionContents.count();
+		out << 0; // Mode
 
+		out << _hiddenSectionContents.count();
 		QHashIterator<int, HiddenSectionItem> iter(_hiddenSectionContents);
 		while (iter.hasNext())
 		{
@@ -360,13 +361,15 @@ QByteArray ContainerWidget::saveState() const
 	}
 	else if (_mainLayout->count() == 1)
 	{
+		out << 1; // Mode
+
 		// There should only be one!
-		out << 1;
 		QLayoutItem* li = _mainLayout->itemAt(0);
 		if (!li->widget())
 			qFatal("Not a widget in _mainLayout, this shouldn't happen.");
-		else
-			saveSectionWidgets(out, li->widget());
+
+		// Save sections beginning with the first QSplitter (li->widget()).
+		saveSectionWidgets(out, li->widget());
 
 		// Safe state of hidden contents, which doesn't have an section association
 		// or the section association points to a no longer existing section.
@@ -562,6 +565,8 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 	// Hide all as "hidden" marked contents
 	for (int i = 0; i < contentsToHide.count(); ++i)
 		hideSectionContent(contentsToHide.at(i));
+
+	deleteEmptySplitter(this);
 
 	qDebug() << "End of restore state" << success;
 	return success;

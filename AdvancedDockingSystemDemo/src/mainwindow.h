@@ -19,7 +19,11 @@ public:
 	virtual ~MainWindow();
 
 private slots:
+#if QT_VERSION >= 0x050000
 	void onActiveTabChanged(const ADS_NS::SectionContent::RefPtr& sc, bool active);
+#else
+	void onActiveTabChanged(const SectionContent::RefPtr& sc, bool active);
+#endif
 	void onActionAddSectionContentTriggered();
 
 protected:
