@@ -111,10 +111,13 @@ bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 	// Search SC in floatings
 	for (int i = 0; i < _floatings.count(); ++i)
 	{
-		const bool found = _floatings.at(i)->content()->uid() == sc->uid();
+		FloatingWidget* fw = _floatings.at(i);
+		const bool found = fw->content()->uid() == sc->uid();
 		if (!found)
 			continue;
-		_floatings.at(i)->setVisible(true);
+		fw->setVisible(true);
+		fw->_titleWidget->setVisible(true);
+		fw->_contentWidget->setVisible(true);
 		return true;
 	}
 
@@ -297,9 +300,9 @@ QMenu* ContainerWidget::createContextMenu() const
 		a->setCheckable(true);
 		a->setChecked(fw->isVisible());
 #if QT_VERSION >= 0x050000
-		QObject::connect(a, &QAction::toggled, fw, &FloatingWidget::setVisible);
+		QObject::connect(a, &QAction::toggled, this, &ContainerWidget::onActionToggleSectionContentVisibility);
 #else
-		QObject::connect(a, SIGNAL(toggled(bool)), fw, SLOT(setVisible(bool)));
+		QObject::connect(a, SIGNAL(toggled(bool)), this, SLOT(onActionToggleSectionContentVisibility(bool)));
 #endif
 		actions.insert(a->text(), a);
 	}
