@@ -76,3 +76,16 @@ Items sorted by priority
 - *SectionContent* class may safe a "size-type" property, which defines how the size of the widget should be handled.
 	- PerCent: Resize in proportion to other widgets.
 	- Fixed: Width or height are fixed (based on orientation).
+
+### Handle content drops (Sizing)
+- Case: Dropping A to the bottom or top of B (vertical split):
+	- A will use the width of B
+	- A will use it's own height, if it is not greater than the half height of B. Otherwise it will use the half height of B.
+- Case: Dropping A to the left or right of B (horizontal split)
+	- ... Same as before, but swap the words "height" with "width" :-)
+
+- Case: Dropping A to the outer top or bottom edge (full vertical split):
+	- A will use the full width of the container
+	- A will use it's own height, if it is not greater than the half height of the entire container. Otherwise it will use the half height of the container.
+- Case: Dropping A to the outer left or right edge (full horizontal split):
+	- ... Same as before, but swap the words "height" with "width" :-)
