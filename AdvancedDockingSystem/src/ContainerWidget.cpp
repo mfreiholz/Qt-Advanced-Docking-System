@@ -942,6 +942,11 @@ bool ContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, QList
 		FloatingWidget* fw = new FloatingWidget(this, sc, data.titleWidget, data.contentWidget, this);
 		fw->restoreGeometry(geom);
 		fw->setVisible(visible);
+		if (visible)
+		{
+			fw->_titleWidget->setVisible(visible);
+			fw->_contentWidget->setVisible(visible);
+		}
 		floatings.append(fw);
 		data.titleWidget->_fw = fw; // $mfreiholz: Don't look at it :-< It's more than ugly...
 	}
