@@ -55,6 +55,13 @@ public:
 	SectionWidget* addSectionContent(const SectionContent::RefPtr& sc, SectionWidget* sw = NULL, DropArea area = CenterDropArea);
 
 	/*!
+	 * Completely removes the <em>sc</em> from this ContainerWidget.
+	 * This container will no longer hold a reference to the content.
+	 * The content can be safely deleted.
+	 */
+	bool removeSectionContent(const SectionContent::RefPtr& sc);
+
+	/*!
 	 * Shows the specific SectionContent in UI.
 	 * Independed of the current state, whether it is used inside a section or is floating.
 	 */
@@ -100,6 +107,12 @@ public:
 	QRect outerRightDropRect() const;
 	QRect outerBottomDropRect() const;
 	QRect outerLeftDropRect() const;
+
+	/*!
+	 * \brief contents
+	 * \return List of known SectionContent for this ContainerWidget.
+	 */
+	QList<SectionContent::RefPtr> contents() const;
 
 private:
 	//

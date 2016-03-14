@@ -21,6 +21,7 @@ SectionContentWidget::SectionContentWidget(SectionContent::RefPtr c, QWidget* pa
 SectionContentWidget::~SectionContentWidget()
 {
 	qDebug() << Q_FUNC_INFO;
+	layout()->removeWidget(_content->contentWidget());
 }
 
 ADS_NAMESPACE_END

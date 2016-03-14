@@ -12,6 +12,8 @@
 
 #include "ads/SectionWidget.h"
 
+#include "dialogs/SectionContentListWidget.h"
+
 #include "icontitlewidget.h"
 
 ///////////////////////////////////////////////////////////////////////
@@ -86,6 +88,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	// Setup actions.
+	QObject::connect(ui->actionContentList, SIGNAL(triggered()), this, SLOT(showSectionContentListDialog()));
+
 	// ADS - Create main container (ContainerWidget).
 	_container = new ADS_NS::ContainerWidget();
 	_container->setOrientation(Qt::Vertical);
@@ -124,6 +129,16 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
 	delete ui;
+}
+
+void MainWindow::showSectionContentListDialog()
+{
+	SectionContentListWidget::Values v;
+	v.cw = _container;
+
+	SectionContentListWidget w(this);
+	w.setValues(v);
+	w.exec();
 }
 
 void MainWindow::onActiveTabChanged(const ADS_NS::SectionContent::RefPtr& sc, bool active)

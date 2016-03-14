@@ -43,6 +43,7 @@ SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* 
 SectionTitleWidget::~SectionTitleWidget()
 {
 	qDebug() << Q_FUNC_INFO;
+	layout()->removeWidget(_content->titleWidget());
 }
 
 bool SectionTitleWidget::isActiveTab() const

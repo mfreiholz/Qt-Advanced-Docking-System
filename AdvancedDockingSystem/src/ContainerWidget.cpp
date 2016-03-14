@@ -106,6 +106,49 @@ SectionWidget* ContainerWidget::addSectionContent(const SectionContent::RefPtr& 
 	return dropContent(data, sw, area, false);
 }
 
+bool ContainerWidget::removeSectionContent(const SectionContent::RefPtr& sc)
+{
+	// Hide the content.
+	// The hideSectionContent() automatically deletes no longer required SectionWidget objects.
+	if (!hideSectionContent(sc))
+		return false;
+
+	// Begin of ugly work arround.
+	// TODO The hideSectionContent() method should take care of deleting FloatingWidgets and SectionWidgets,
+	// but only cares about SectionWidgets right now. So we need to check whether it was a FloatingWidget
+	// and delete it.
+	bool found = false;
+	for (int i = 0; i < _floatings.count(); ++i)
+	{
+		FloatingWidget* fw = _floatings.at(i);
+		InternalContentData data;
+		if (!(found = fw->takeContent(data)))
+			continue;
+		_floatings.removeAll(fw);
+		delete fw;
+		delete data.titleWidget;
+		delete data.contentWidget;
+		break;
+	} // End of ugly work arround.
+
+	// Get from hidden contents and delete associated internal stuff.
+	if (!_hiddenSectionContents.contains(sc->uid()))
+	{
+		qFatal("Something went wrong... The content should have been there :-/");
+		return false;
+	}
+
+	// Delete internal objects.
+	HiddenSectionItem hsi = _hiddenSectionContents.take(sc->uid());
+	delete hsi.data.titleWidget;
+	delete hsi.data.contentWidget;
+
+	// Hide the custom widgets of SectionContent.
+	// ... should we? ...
+
+	return true;
+}
+
 bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 {
 	// Search SC in floatings
@@ -601,6 +644,19 @@ QRect ContainerWidget::outerLeftDropRect() const
 	QRect r = rect();
 	int w = r.width() / 100 * 5;
 	return QRect(r.left(), r.top(), w, r.height());
+}
+
+QList<SectionContent::RefPtr> ContainerWidget::contents() const
+{
+	QList<SectionContent::WeakPtr> wl = _scLookupMapById.values();
+	QList<SectionContent::RefPtr> sl;
+	for (int i = 0; i < wl.count(); ++i)
+	{
+		const SectionContent::RefPtr sc = wl.at(i).toStrongRef();
+		if (sc)
+			sl.append(sc);
+	}
+	return sl;
 }
 
 ///////////////////////////////////////////////////////////////////////

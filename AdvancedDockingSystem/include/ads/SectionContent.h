@@ -57,6 +57,9 @@ private:
 	// Optional attributes
 	QString _title;
 
+	/* Note: This method could be a problem in static build environment
+	 * since it may begin with 0 for every module which uses ADS.
+	 */
 	static int GetNextUid();
 };
 

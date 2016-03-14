@@ -22,14 +22,19 @@ windows {
 SOURCES += \
 	src/main.cpp \
 	src/mainwindow.cpp \
-	src/icontitlewidget.cpp
+	src/icontitlewidget.cpp \
+	src/dialogs/SectionContentListModel.cpp \
+	src/dialogs/SectionContentListWidget.cpp
 
 HEADERS += \
 	src/mainwindow.h \
-	src/icontitlewidget.h
+	src/icontitlewidget.h \
+	src/dialogs/SectionContentListModel.h \
+	src/dialogs/SectionContentListWidget.h
 
 FORMS += \
-	src/mainwindow.ui
+	src/mainwindow.ui \
+	src/dialogs/SectionContentListWidget.ui
 
 
 # Dependency: AdvancedDockingSystem (staticlib)
