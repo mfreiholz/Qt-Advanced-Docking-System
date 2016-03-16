@@ -49,6 +49,7 @@ Items sorted by priority
 	It might be good to use the same width/height as the parent content, if dropped on existing content.
 	In case of outer-drop we might use the preferred size of the content.
 - [ ] Floating widget should be a real window with all of its functionality (maximize and split by moving it to the edge of the screen)
+- [ ] Dropping floating-widgets on the edge should be possible even if there is no margin/padding.
 
 ### Beta 0.1
 - [x] Improve FloatingWidget (Remove maximize button, only support close-button which hides the widget)
