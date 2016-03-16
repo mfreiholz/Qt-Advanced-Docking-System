@@ -189,7 +189,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 	SectionWidget* section = NULL;
 
 	// Move already existing FloatingWidget
-	if (_fw)
+	if (_fw && (ev->buttons() & Qt::LeftButton))
 	{
 		const QPoint moveToPos = ev->globalPos() - (_dragStartPos + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
 		_fw->move(moveToPos);
