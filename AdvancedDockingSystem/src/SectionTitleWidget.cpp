@@ -68,6 +68,7 @@ void SectionTitleWidget::setActiveTab(bool active)
 void SectionTitleWidget::mousePressEvent(QMouseEvent* ev)
 {
 //	qDebug() << Q_FUNC_INFO << ev->pos();
+	this->grabMouse();
 	if (ev->button() == Qt::LeftButton)
 	{
 		_dragStartPos = ev->pos();
@@ -80,6 +81,8 @@ void SectionTitleWidget::mousePressEvent(QMouseEvent* ev)
 void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 {
 //	qDebug() << Q_FUNC_INFO << ev->pos();
+	if(QWidget::mouseGrabber() == this)
+		this->releaseMouse();
 	SectionWidget* section = NULL;
 
 	// Drop contents of FloatingWidget into SectionWidget.
@@ -189,7 +192,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 	SectionWidget* section = NULL;
 
 	// Move already existing FloatingWidget
-	if (_fw)
+	if (_fw && (ev->buttons() & Qt::LeftButton))
 	{
 		const QPoint moveToPos = ev->globalPos() - (_dragStartPos + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
 		_fw->move(moveToPos);

@@ -489,25 +489,28 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 		int cnt = 0;
 		in >> cnt;
 
-		// Create dummy section, required to call hideSectionContent() later.
-		SectionWidget* sw = new SectionWidget(this);
-		sections.append(sw);
-
-		for (int i = 0; i < cnt; ++i)
+		if(cnt > 0)
 		{
-			QString uname;
-			in >> uname;
+			// Create dummy section, required to call hideSectionContent() later.
+			SectionWidget* sw = new SectionWidget(this);
+			sections.append(sw);
 
-			const SectionContent::RefPtr sc = SCLookupMapByName(this).value(uname);
-			if (!sc)
-				continue;
+			for (int i = 0; i < cnt; ++i)
+			{
+				QString uname;
+				in >> uname;
 
-			InternalContentData data;
-			if (!takeContent(sc, data))
-				qFatal("This should never happen!!!");
+				const SectionContent::RefPtr sc = SCLookupMapByName(this).value(uname);
+				if (!sc)
+					continue;
 
-			sw->addContent(data, false);
-			contentsToHide.append(sc);
+				InternalContentData data;
+				if (!takeContent(sc, data))
+					qFatal("This should never happen!!!");
+
+				sw->addContent(data, false);
+				contentsToHide.append(sc);
+			}
 		}
 	}
 	else if (mode == 1)
