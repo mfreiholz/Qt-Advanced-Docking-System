@@ -17,7 +17,7 @@ class QSplitter;
 #endif
 
 // Use namespace
-// Disabled with Qt4!
+// Disabled with Qt4, it makes problems with signals and slots.
 #ifdef ADS_NAMESPACE_ENABLED
 	#define ADS_NAMESPACE_BEGIN namespace ads {
 	#define ADS_NAMESPACE_END }
@@ -27,6 +27,12 @@ class QSplitter;
 	#define ADS_NAMESPACE_END
 	#define ADS_NS
 #endif
+
+// Always enable "serialization" namespace.
+// It is not required for signals and slots.
+#define ADS_NAMESPACE_SER_BEGIN namespace ads { namespace serialization {
+#define ADS_NAMESPACE_SER_END }}
+#define ADS_NS_SER ::ads::serialization
 
 // Width of the native window frame border (based on OS).
 #define ADS_WINDOW_FRAME_BORDER_WIDTH 7

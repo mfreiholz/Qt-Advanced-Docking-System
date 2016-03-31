@@ -22,6 +22,7 @@ void SectionContentListModel::init(ADS_NS::ContainerWidget* cw)
 
 int SectionContentListModel::columnCount(const QModelIndex& parent) const
 {
+	Q_UNUSED(parent)
 	return _headers.count();
 }
 
@@ -34,6 +35,7 @@ QVariant SectionContentListModel::headerData(int section, Qt::Orientation orient
 
 int SectionContentListModel::rowCount(const QModelIndex& parent) const
 {
+	Q_UNUSED(parent)
 	return _contents.count();
 }
 

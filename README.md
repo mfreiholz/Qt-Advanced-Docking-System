@@ -20,6 +20,25 @@ You can run the demo project and test it yourself.
 The `master` branch is not guaranteed to be stable or does not even build, since it is the main working branch.
 If you want a version that builds, you should always use a release/beta tag.
 
+## Getting started / Example
+
+_MyWindow.h_
+```cpp
+#include <QMainWindow>
+#include "ads/API.h"
+#include "ads/ContainerWidget.h"
+#include "ads/SectionContent.h"
+class MyWindow : public QMainWindow
+{
+	Q_OBJECT
+public:
+	QMainWindow(QWidget* parent);
+	
+private:
+	ADS_NS::ContainerWidget _container;
+};
+```
+
 ## Developers
 [Manuel Freiholz](https://mfreiholz.de), Project Maintainer
 

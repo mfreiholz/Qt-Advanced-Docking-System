@@ -8,11 +8,11 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = lib
 
 adsBuildShared {
-    CONFIG += shared
-    DEFINES += ADS_EXPORT
+	CONFIG += shared
+	DEFINES += ADS_EXPORT
 }
 !adsBuildShared {
-    CONFIG += staticlib
+	CONFIG += staticlib
 }
 
 INCLUDEPATH += $$PWD/src
@@ -40,7 +40,8 @@ SOURCES += \
 	src/SectionContentWidget.cpp \
 	src/DropOverlay.cpp \
 	src/FloatingWidget.cpp \
-	src/Internal.cpp
+	src/Internal.cpp \
+	src/Serialization.cpp
 
 HEADERS += \
 	include/ads/API.h \
@@ -51,7 +52,8 @@ HEADERS += \
 	include/ads/SectionContentWidget.h \
 	include/ads/DropOverlay.h \
 	include/ads/FloatingWidget.h \
-	include/ads/Internal.h
+	include/ads/Internal.h \
+	include/ads/Serialization.h
 
 RESOURCES += \
 	res/ads.qrc
