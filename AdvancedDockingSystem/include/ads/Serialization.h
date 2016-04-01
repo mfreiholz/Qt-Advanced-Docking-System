@@ -146,7 +146,7 @@ class InMemoryReader
 public:
 	InMemoryReader(const QByteArray& data);
 	bool initReadHeader();
-	bool read(OffsetsHeaderEntry::Type type, QByteArray &data) const;
+	bool read(OffsetsHeaderEntry::Type type, QByteArray &data);
 
 private:
 	QByteArray _data;

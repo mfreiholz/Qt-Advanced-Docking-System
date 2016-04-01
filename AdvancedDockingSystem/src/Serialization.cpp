@@ -388,7 +388,7 @@ bool InMemoryReader::initReadHeader()
 	return !in.atEnd();
 }
 
-bool InMemoryReader::read(OffsetsHeaderEntry::Type type, QByteArray& data) const
+bool InMemoryReader::read(OffsetsHeaderEntry::Type type, QByteArray& data)
 {
 	// Find offset for "type".
 	int index = -1;
