@@ -61,16 +61,16 @@ ADS_NAMESPACE_SER_BEGIN
 
 ///////////////////////////////////////////////////////////////////////////////
 
-qint32 Header::MAGIC = 0x00001337;
-qint32 Header::MAJOR_VERSION = 2;
-qint32 Header::MINOR_VERSION = 0;
+qint32 HeaderEntity::MAGIC = 0x00001337;
+qint32 HeaderEntity::MAJOR_VERSION = 2;
+qint32 HeaderEntity::MINOR_VERSION = 0;
 
-Header::Header() :
+HeaderEntity::HeaderEntity() :
 	magic(0), majorVersion(0), minorVersion(0)
 {
 }
 
-QDataStream& operator<<(QDataStream& out, const Header& data)
+QDataStream& operator<<(QDataStream& out, const HeaderEntity& data)
 {
 	out << data.magic;
 	out << data.majorVersion;
@@ -78,7 +78,7 @@ QDataStream& operator<<(QDataStream& out, const Header& data)
 	return out;
 }
 
-QDataStream& operator>>(QDataStream& in, Header& data)
+QDataStream& operator>>(QDataStream& in, HeaderEntity& data)
 {
 	in >> data.magic;
 	in >> data.majorVersion;
@@ -88,12 +88,12 @@ QDataStream& operator>>(QDataStream& in, Header& data)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-OffsetsHeader::OffsetsHeader() :
+OffsetsHeaderEntity::OffsetsHeaderEntity() :
 	entriesCount(0)
 {
 }
 
-QDataStream& operator<<(QDataStream& out, const OffsetsHeader& data)
+QDataStream& operator<<(QDataStream& out, const OffsetsHeaderEntity& data)
 {
 	out << data.entriesCount;
 	for (int i = 0; i < data.entriesCount; ++i)
@@ -103,12 +103,12 @@ QDataStream& operator<<(QDataStream& out, const OffsetsHeader& data)
 	return out;
 }
 
-QDataStream& operator>>(QDataStream& in, OffsetsHeader& data)
+QDataStream& operator>>(QDataStream& in, OffsetsHeaderEntity& data)
 {
 	in >> data.entriesCount;
 	for (int i = 0; i < data.entriesCount; ++i)
 	{
-		OffsetsHeaderEntry entry;
+		OffsetsHeaderEntryEntity entry;
 		in >> entry;
 		data.entries.append(entry);
 	}
@@ -117,12 +117,12 @@ QDataStream& operator>>(QDataStream& in, OffsetsHeader& data)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-OffsetsHeaderEntry::OffsetsHeaderEntry() :
+OffsetsHeaderEntryEntity::OffsetsHeaderEntryEntity() :
 	type(ET_Unknown), offset(0), contentSize(0)
 {
 }
 
-QDataStream& operator<<(QDataStream& out, const OffsetsHeaderEntry& data)
+QDataStream& operator<<(QDataStream& out, const OffsetsHeaderEntryEntity& data)
 {
 	out << data.type;
 	out << data.offset;
@@ -130,7 +130,7 @@ QDataStream& operator<<(QDataStream& out, const OffsetsHeaderEntry& data)
 	return out;
 }
 
-QDataStream& operator>>(QDataStream& in, OffsetsHeaderEntry& data)
+QDataStream& operator>>(QDataStream& in, OffsetsHeaderEntryEntity& data)
 {
 	in >> data.type;
 	in >> data.offset;
@@ -140,12 +140,12 @@ QDataStream& operator>>(QDataStream& in, OffsetsHeaderEntry& data)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Section::Section() :
+SectionEntity::SectionEntity() :
 	width(0), height(0), currentIndex(0), sectionContentsCount(0)
 {
 }
 
-QDataStream& operator<<(QDataStream& out, const Section& data)
+QDataStream& operator<<(QDataStream& out, const SectionEntity& data)
 {
 	out << data.width;
 	out << data.height;
@@ -158,7 +158,7 @@ QDataStream& operator<<(QDataStream& out, const Section& data)
 	return out;
 }
 
-QDataStream& operator>>(QDataStream& in, Section& data)
+QDataStream& operator>>(QDataStream& in, SectionEntity& data)
 {
 	in >> data.width;
 	in >> data.height;
@@ -166,7 +166,7 @@ QDataStream& operator>>(QDataStream& in, Section& data)
 	in >> data.sectionContentsCount;
 	for (int i = 0; i < data.sectionContentsCount; ++i)
 	{
-		SectionContent sc;
+		SectionContentEntity sc;
 		in >> sc;
 		data.sectionContents.append(sc);
 	}
@@ -175,12 +175,12 @@ QDataStream& operator>>(QDataStream& in, Section& data)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-SectionContent::SectionContent() :
+SectionContentEntity::SectionContentEntity() :
 	visible(false), preferredIndex(0)
 {
 }
 
-QDataStream& operator<<(QDataStream& out, const SectionContent& data)
+QDataStream& operator<<(QDataStream& out, const SectionContentEntity& data)
 {
 	out << data.uniqueName;
 	out << data.visible;
@@ -188,7 +188,7 @@ QDataStream& operator<<(QDataStream& out, const SectionContent& data)
 	return out;
 }
 
-QDataStream& operator>>(QDataStream& in, SectionContent& data)
+QDataStream& operator>>(QDataStream& in, SectionContentEntity& data)
 {
 	in >> data.uniqueName;
 	in >> data.visible;
@@ -198,12 +198,12 @@ QDataStream& operator>>(QDataStream& in, SectionContent& data)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-FloatingContent::FloatingContent() :
+FloatingContentEntity::FloatingContentEntity() :
 	xpos(0), ypos(0), width(0), height(0), visible(false)
 {
 }
 
-QDataStream& operator<<(QDataStream& out, const FloatingContent& data)
+QDataStream& operator<<(QDataStream& out, const FloatingContentEntity& data)
 {
 	out << data.uniqueName;
 	out << data.xpos;
@@ -214,7 +214,7 @@ QDataStream& operator<<(QDataStream& out, const FloatingContent& data)
 	return out;
 }
 
-QDataStream& operator>>(QDataStream& in, FloatingContent& data)
+QDataStream& operator>>(QDataStream& in, FloatingContentEntity& data)
 {
 	in >> data.uniqueName;
 	in >> data.xpos;
@@ -265,7 +265,7 @@ QDataStream& operator>>(QDataStream& in, SectionIndexData& data)
 	in >> data.sectionsCount;
 	for (int i = 0; i < data.sectionsCount; ++i)
 	{
-		Section s;
+		SectionEntity s;
 		in >> s;
 		data.sections.append(s);
 	}
@@ -281,7 +281,7 @@ InMemoryWriter::InMemoryWriter()
 
 bool InMemoryWriter::write(qint32 entryType, const QByteArray& data)
 {
-	OffsetsHeaderEntry entry;
+	OffsetsHeaderEntryEntity entry;
 	entry.type = entryType;
 	entry.offset = _contentBuffer.pos();                    // Relative offset!
 	entry.contentSize = data.size();
@@ -296,7 +296,7 @@ bool InMemoryWriter::write(qint32 entryType, const QByteArray& data)
 
 bool InMemoryWriter::write(const SectionIndexData& data)
 {
-	OffsetsHeaderEntry entry;
+	OffsetsHeaderEntryEntity entry;
 	entry.type = ET_SectionIndex;
 	entry.offset = _contentBuffer.pos();                    // Relative offset!
 
@@ -319,10 +319,10 @@ QByteArray InMemoryWriter::toByteArray() const
 	out.setVersion(QDataStream::Qt_4_5);
 
 	// Basic format header.
-	Header header;
-	header.magic = Header::MAGIC;
-	header.majorVersion = Header::MAJOR_VERSION;
-	header.minorVersion = Header::MINOR_VERSION;
+	HeaderEntity header;
+	header.magic = HeaderEntity::MAGIC;
+	header.majorVersion = HeaderEntity::MAJOR_VERSION;
+	header.minorVersion = HeaderEntity::MINOR_VERSION;
 	out << header;
 
 	// Offsets-Header
@@ -332,7 +332,7 @@ QByteArray InMemoryWriter::toByteArray() const
 	// - Seek back to begin-pos and write OffsetsHeader again.
 	// Use a copy of OffsetsHeader to keep the _offsetsHeader relative.
 	const qint64 posOffsetHeaders = out.device()->pos();
-	OffsetsHeader offsetsHeader = _offsetsHeader;
+	OffsetsHeaderEntity offsetsHeader = _offsetsHeader;
 	out << offsetsHeader;
 
 	// Now we know the size of the entire header.
@@ -367,14 +367,14 @@ bool InMemoryReader::initReadHeader()
 	in.setVersion(QDataStream::Qt_4_5);
 
 	// Basic format header.
-	Header header;
+	HeaderEntity header;
 	in >> header;
-	if (header.magic != Header::MAGIC)
+	if (header.magic != HeaderEntity::MAGIC)
 	{
 		qWarning() << QString("invalid format (magic=%1)").arg(header.magic);
 		return false;
 	}
-	if (header.majorVersion > Header::MAJOR_VERSION)
+	if (header.majorVersion > HeaderEntity::MAJOR_VERSION)
 	{
 		qWarning() << QString("format is too new (major=%1; minor=%2)")
 					  .arg(header.majorVersion).arg(header.minorVersion);
@@ -404,7 +404,7 @@ bool InMemoryReader::read(qint32 entryType, QByteArray& data)
 	else if (_offsetsHeader.entries.at(index).offset == 0)
 		return false;
 
-	const OffsetsHeaderEntry& entry = _offsetsHeader.entries.at(index);
+	const OffsetsHeaderEntryEntity& entry = _offsetsHeader.entries.at(index);
 
 	QDataStream in(_data);
 	in.setVersion(QDataStream::Qt_4_5);

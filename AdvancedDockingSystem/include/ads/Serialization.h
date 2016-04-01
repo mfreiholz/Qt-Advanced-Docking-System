@@ -21,76 +21,76 @@ enum EntryType
 	ET_Custom        = 0x0000ffff
 };
 
-class ADS_EXPORT_API Header
+class ADS_EXPORT_API HeaderEntity
 {
 public:
 	static qint32 MAGIC;
 	static qint32 MAJOR_VERSION;
 	static qint32 MINOR_VERSION;
 
-	Header();
+	HeaderEntity();
 	qint32 magic;
 	qint32 majorVersion;
 	qint32 minorVersion;
 };
-QDataStream& operator<<(QDataStream& out, const Header& data);
-QDataStream& operator>>(QDataStream& in, Header& data);
+QDataStream& operator<<(QDataStream& out, const HeaderEntity& data);
+QDataStream& operator>>(QDataStream& in, HeaderEntity& data);
 
 
-class ADS_EXPORT_API OffsetsHeader
+class ADS_EXPORT_API OffsetsHeaderEntity
 {
 public:
-	OffsetsHeader();
+	OffsetsHeaderEntity();
 
 	qint64 entriesCount;
-	QList<class OffsetsHeaderEntry> entries;
+	QList<class OffsetsHeaderEntryEntity> entries;
 };
-QDataStream& operator<<(QDataStream& out, const OffsetsHeader& data);
-QDataStream& operator>>(QDataStream& in, OffsetsHeader& data);
+QDataStream& operator<<(QDataStream& out, const OffsetsHeaderEntity& data);
+QDataStream& operator>>(QDataStream& in, OffsetsHeaderEntity& data);
 
 
-class ADS_EXPORT_API OffsetsHeaderEntry
+class ADS_EXPORT_API OffsetsHeaderEntryEntity
 {
 public:
-	OffsetsHeaderEntry();
+	OffsetsHeaderEntryEntity();
 	qint32 type;
 	qint64 offset;
 	qint64 contentSize;
 };
-QDataStream& operator<<(QDataStream& out, const OffsetsHeaderEntry& data);
-QDataStream& operator>>(QDataStream& in, OffsetsHeaderEntry& data);
+QDataStream& operator<<(QDataStream& out, const OffsetsHeaderEntryEntity& data);
+QDataStream& operator>>(QDataStream& in, OffsetsHeaderEntryEntity& data);
 
 
-class ADS_EXPORT_API Section
+class ADS_EXPORT_API SectionEntity
 {
 public:
-	Section();
+	SectionEntity();
 	qint32 width;
 	qint32 height;
 	qint32 currentIndex;
 	qint32 sectionContentsCount;
-	QList<class SectionContent> sectionContents;
+	QList<class SectionContentEntity> sectionContents;
 };
-QDataStream& operator<<(QDataStream& out, const Section& data);
-QDataStream& operator>>(QDataStream& in, Section& data);
+QDataStream& operator<<(QDataStream& out, const SectionEntity& data);
+QDataStream& operator>>(QDataStream& in, SectionEntity& data);
 
 
-class ADS_EXPORT_API SectionContent
+class ADS_EXPORT_API SectionContentEntity
 {
 public:
-	SectionContent();
+	SectionContentEntity();
 	QString uniqueName;
 	bool visible;
 	qint32 preferredIndex;
 };
-QDataStream& operator<<(QDataStream& out, const SectionContent& data);
-QDataStream& operator>>(QDataStream& in, SectionContent& data);
+QDataStream& operator<<(QDataStream& out, const SectionContentEntity& data);
+QDataStream& operator>>(QDataStream& in, SectionContentEntity& data);
 
 
-class ADS_EXPORT_API FloatingContent
+class ADS_EXPORT_API FloatingContentEntity
 {
 public:
-	FloatingContent();
+	FloatingContentEntity();
 	QString uniqueName;
 	qint32 xpos;
 	qint32 ypos;
@@ -98,8 +98,8 @@ public:
 	qint32 height;
 	bool visible;
 };
-QDataStream& operator<<(QDataStream& out, const FloatingContent& data);
-QDataStream& operator>>(QDataStream& in, FloatingContent& data);
+QDataStream& operator<<(QDataStream& out, const FloatingContentEntity& data);
+QDataStream& operator>>(QDataStream& in, FloatingContentEntity& data);
 
 
 // Type: OffsetHeaderEntry::Hierarchy
@@ -119,7 +119,7 @@ class ADS_EXPORT_API SectionIndexData
 public:
 	SectionIndexData();
 	qint32 sectionsCount;
-	QList<Section> sections;
+	QList<SectionEntity> sections;
 };
 QDataStream& operator<<(QDataStream& out, const SectionIndexData& data);
 QDataStream& operator>>(QDataStream& in, SectionIndexData& data);
@@ -139,7 +139,7 @@ public:
 
 private:
 	QBuffer _contentBuffer;
-	OffsetsHeader _offsetsHeader;
+	OffsetsHeaderEntity _offsetsHeader;
 };
 
 /*!
@@ -155,7 +155,7 @@ public:
 
 private:
 	QByteArray _data;
-	OffsetsHeader _offsetsHeader;
+	OffsetsHeaderEntity _offsetsHeader;
 };
 
 ADS_NAMESPACE_SER_END
