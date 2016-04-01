@@ -4,6 +4,7 @@ CONFIG += adsBuildShared
 
 QT += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): DEFINES += ADS_NAMESPACE_ENABLED
 
 TEMPLATE = lib
 
@@ -17,8 +18,6 @@ adsBuildShared {
 
 INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/include
-
-greaterThan(QT_MAJOR_VERSION, 4): DEFINES += ADS_NAMESPACE_ENABLED
 
 windows {
 	# MinGW

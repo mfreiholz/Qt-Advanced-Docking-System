@@ -1,24 +1,24 @@
 
 SOURCES += \
-	src/API.cpp \
-	src/ContainerWidget.cpp \
-	src/SectionWidget.cpp \
-	src/SectionContent.cpp \
-	src/SectionTitleWidget.cpp \
-	src/SectionContentWidget.cpp \
-	src/DropOverlay.cpp \
-	src/FloatingWidget.cpp \
-	src/Internal.cpp \
-	src/Serialization.cpp
+	$$PWD/src/API.cpp \
+	$$PWD/src/ContainerWidget.cpp \
+	$$PWD/src/SectionWidget.cpp \
+	$$PWD/src/SectionContent.cpp \
+	$$PWD/src/SectionTitleWidget.cpp \
+	$$PWD/src/SectionContentWidget.cpp \
+	$$PWD/src/DropOverlay.cpp \
+	$$PWD/src/FloatingWidget.cpp \
+	$$PWD/src/Internal.cpp \
+	$$PWD/src/Serialization.cpp
 
 HEADERS += \
-	include/ads/API.h \
-	include/ads/ContainerWidget.h \
-	include/ads/SectionWidget.h \
-	include/ads/SectionContent.h \
-	include/ads/SectionTitleWidget.h \
-	include/ads/SectionContentWidget.h \
-	include/ads/DropOverlay.h \
-	include/ads/FloatingWidget.h \
-	include/ads/Internal.h \
-	include/ads/Serialization.h
+	$$PWD/include/ads/API.h \
+	$$PWD/include/ads/ContainerWidget.h \
+	$$PWD/include/ads/SectionWidget.h \
+	$$PWD/include/ads/SectionContent.h \
+	$$PWD/include/ads/SectionTitleWidget.h \
+	$$PWD/include/ads/SectionContentWidget.h \
+	$$PWD/include/ads/DropOverlay.h \
+	$$PWD/include/ads/FloatingWidget.h \
+	$$PWD/include/ads/Internal.h \
+	$$PWD/include/ads/Serialization.h

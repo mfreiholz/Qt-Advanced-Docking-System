@@ -7,7 +7,9 @@ class QSplitter;
 
 // DLL Export API
 #ifdef _WIN32
-	#ifdef ADS_EXPORT
+	#if defined(ADS_IMPORT)
+		#define ADS_EXPORT_API
+	#elif defined(ADS_EXPORT)
 		#define ADS_EXPORT_API __declspec(dllexport)
 	#else
 		#define ADS_EXPORT_API __declspec(dllimport)

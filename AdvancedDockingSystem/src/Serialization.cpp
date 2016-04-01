@@ -276,12 +276,13 @@ QDataStream& operator>>(QDataStream& in, SectionIndexData& data)
 
 InMemoryWriter::InMemoryWriter()
 {
+	_contentBuffer.open(QIODevice::ReadWrite);
 }
 
-bool InMemoryWriter::write(OffsetsHeaderEntry::Type type, const QByteArray& data)
+bool InMemoryWriter::write(qint32 entryType, const QByteArray& data)
 {
 	OffsetsHeaderEntry entry;
-	entry.type = type;
+	entry.type = entryType;
 	entry.offset = _contentBuffer.pos();                    // Relative offset!
 	entry.contentSize = data.size();
 
@@ -314,9 +315,7 @@ bool InMemoryWriter::write(const SectionIndexData& data)
 QByteArray InMemoryWriter::toByteArray() const
 {
 	QByteArray data;
-	QBuffer buff(&data);
-
-	QDataStream out(&buff);
+	QDataStream out(&data, QIODevice::ReadWrite);
 	out.setVersion(QDataStream::Qt_4_5);
 
 	// Basic format header.
@@ -332,13 +331,13 @@ QByteArray InMemoryWriter::toByteArray() const
 	// - Convert relative- to absolute-offsets
 	// - Seek back to begin-pos and write OffsetsHeader again.
 	// Use a copy of OffsetsHeader to keep the _offsetsHeader relative.
-	const qint64 posOffsetHeaders = buff.pos();
+	const qint64 posOffsetHeaders = out.device()->pos();
 	OffsetsHeader offsetsHeader = _offsetsHeader;
 	out << offsetsHeader;
 
 	// Now we know the size of the entire header.
 	// We can update the relative- to absolute-offsets now.
-	const qint64 allHeaderSize = buff.pos();
+	const qint64 allHeaderSize = out.device()->pos();
 	for (int i = 0; i < offsetsHeader.entriesCount; ++i)
 	{
 		offsetsHeader.entries[i].offset += allHeaderSize;
@@ -346,11 +345,11 @@ QByteArray InMemoryWriter::toByteArray() const
 
 	// Seek back and write again with absolute offsets.
 	// TODO Thats not nice, but it works...
-	buff.seek(posOffsetHeaders);
+	out.device()->seek(posOffsetHeaders);
 	out << offsetsHeader;
 
 	// Write contents.
-	buff.write(_contentBuffer.data());
+	out.writeRawData(_contentBuffer.data().constData(), _contentBuffer.size());
 
 	return data;
 }
@@ -358,13 +357,13 @@ QByteArray InMemoryWriter::toByteArray() const
 ///////////////////////////////////////////////////////////////////////////////
 
 InMemoryReader::InMemoryReader(const QByteArray& data) :
-	_data(data), _buff(&_data)
+	_data(data)
 {
 }
 
 bool InMemoryReader::initReadHeader()
 {
-	QDataStream in(&_buff);
+	QDataStream in(_data);
 	in.setVersion(QDataStream::Qt_4_5);
 
 	// Basic format header.
@@ -388,13 +387,13 @@ bool InMemoryReader::initReadHeader()
 	return !in.atEnd();
 }
 
-bool InMemoryReader::read(OffsetsHeaderEntry::Type type, QByteArray& data)
+bool InMemoryReader::read(qint32 entryType, QByteArray& data)
 {
 	// Find offset for "type".
 	int index = -1;
 	for (int i = 0; i < _offsetsHeader.entriesCount; ++i)
 	{
-		if (_offsetsHeader.entries.at(index).type == type)
+		if (_offsetsHeader.entries.at(i).type == entryType)
 		{
 			index = i;
 			break;
@@ -406,8 +405,16 @@ bool InMemoryReader::read(OffsetsHeaderEntry::Type type, QByteArray& data)
 		return false;
 
 	const OffsetsHeaderEntry& entry = _offsetsHeader.entries.at(index);
-	_buff.seek(entry.offset);
-	data.append(_buff.read(entry.contentSize));
+
+	QDataStream in(_data);
+	in.setVersion(QDataStream::Qt_4_5);
+	in.device()->seek(entry.offset);
+
+	char* buff = new char[entry.contentSize];
+	in.readRawData(buff, entry.contentSize);
+	data.append(buff, entry.contentSize);
+	delete[] buff;
+
 	return true;
 }
 

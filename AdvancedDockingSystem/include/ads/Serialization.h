@@ -129,9 +129,10 @@ class InMemoryWriter
 {
 public:
 	InMemoryWriter();
-	bool write(OffsetsHeaderEntry::Type type, const QByteArray& data);
+	bool write(qint32 entryType, const QByteArray& data);
 	bool write(const SectionIndexData& data);
 	QByteArray toByteArray() const;
+	qint32 offsetsCount() const { return _offsetsHeader.entriesCount; }
 
 private:
 	QBuffer _contentBuffer;
@@ -146,12 +147,11 @@ class InMemoryReader
 public:
 	InMemoryReader(const QByteArray& data);
 	bool initReadHeader();
-	bool read(OffsetsHeaderEntry::Type type, QByteArray &data);
+	bool read(qint32 entryType, QByteArray &data);
+	qint32 offsetsCount() const { return _offsetsHeader.entriesCount; }
 
 private:
 	QByteArray _data;
-	QBuffer _buff;
-
 	OffsetsHeader _offsetsHeader;
 };
 
