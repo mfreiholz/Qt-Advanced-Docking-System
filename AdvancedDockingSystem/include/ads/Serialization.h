@@ -11,7 +11,17 @@
 
 ADS_NAMESPACE_SER_BEGIN
 
-class Header
+enum EntryType
+{
+	ET_Unknown       = 0x00000000,
+	ET_Hierarchy     = 0x00000001,
+	ET_SectionIndex  = 0x00000002,
+
+	// Begin of custom entry types (e.g. CustomType + 42)
+	ET_Custom        = 0x0000ffff
+};
+
+class ADS_EXPORT_API Header
 {
 public:
 	static qint32 MAGIC;
@@ -27,7 +37,7 @@ QDataStream& operator<<(QDataStream& out, const Header& data);
 QDataStream& operator>>(QDataStream& in, Header& data);
 
 
-class OffsetsHeader
+class ADS_EXPORT_API OffsetsHeader
 {
 public:
 	OffsetsHeader();
@@ -39,16 +49,9 @@ QDataStream& operator<<(QDataStream& out, const OffsetsHeader& data);
 QDataStream& operator>>(QDataStream& in, OffsetsHeader& data);
 
 
-class OffsetsHeaderEntry
+class ADS_EXPORT_API OffsetsHeaderEntry
 {
 public:
-	enum Type
-	{
-		Unknown       = 0x00000001,
-		Hierarchy     = 0x00000002,
-		SectionIndex  = 0x00000003
-	};
-
 	OffsetsHeaderEntry();
 	qint32 type;
 	qint64 offset;
@@ -58,7 +61,7 @@ QDataStream& operator<<(QDataStream& out, const OffsetsHeaderEntry& data);
 QDataStream& operator>>(QDataStream& in, OffsetsHeaderEntry& data);
 
 
-class Section
+class ADS_EXPORT_API Section
 {
 public:
 	Section();
@@ -72,7 +75,7 @@ QDataStream& operator<<(QDataStream& out, const Section& data);
 QDataStream& operator>>(QDataStream& in, Section& data);
 
 
-class SectionContent
+class ADS_EXPORT_API SectionContent
 {
 public:
 	SectionContent();
@@ -84,7 +87,7 @@ QDataStream& operator<<(QDataStream& out, const SectionContent& data);
 QDataStream& operator>>(QDataStream& in, SectionContent& data);
 
 
-class FloatingContent
+class ADS_EXPORT_API FloatingContent
 {
 public:
 	FloatingContent();
@@ -100,7 +103,7 @@ QDataStream& operator>>(QDataStream& in, FloatingContent& data);
 
 
 // Type: OffsetHeaderEntry::Hierarchy
-class HierarchyData
+class ADS_EXPORT_API HierarchyData
 {
 public:
 	HierarchyData();
@@ -111,7 +114,7 @@ QDataStream& operator>>(QDataStream& in, HierarchyData& data);
 
 
 // Type: OffsetHeaderEntry::SectionIndex
-class SectionIndexData
+class ADS_EXPORT_API SectionIndexData
 {
 public:
 	SectionIndexData();
@@ -125,7 +128,7 @@ QDataStream& operator>>(QDataStream& in, SectionIndexData& data);
 /*!
  * \brief The InMemoryWriter class writes into a QByteArray.
  */
-class InMemoryWriter
+class ADS_EXPORT_API InMemoryWriter
 {
 public:
 	InMemoryWriter();
@@ -142,7 +145,7 @@ private:
 /*!
  * \brief The InMemoryReader class
  */
-class InMemoryReader
+class ADS_EXPORT_API InMemoryReader
 {
 public:
 	InMemoryReader(const QByteArray& data);

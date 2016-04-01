@@ -118,7 +118,7 @@ QDataStream& operator>>(QDataStream& in, OffsetsHeader& data)
 ///////////////////////////////////////////////////////////////////////////////
 
 OffsetsHeaderEntry::OffsetsHeaderEntry() :
-	type(Unknown), offset(0), contentSize(0)
+	type(ET_Unknown), offset(0), contentSize(0)
 {
 }
 
@@ -297,7 +297,7 @@ bool InMemoryWriter::write(qint32 entryType, const QByteArray& data)
 bool InMemoryWriter::write(const SectionIndexData& data)
 {
 	OffsetsHeaderEntry entry;
-	entry.type = OffsetsHeaderEntry::SectionIndex;
+	entry.type = ET_SectionIndex;
 	entry.offset = _contentBuffer.pos();                    // Relative offset!
 
 	QDataStream out(&_contentBuffer);
@@ -340,7 +340,7 @@ QByteArray InMemoryWriter::toByteArray() const
 	const qint64 allHeaderSize = out.device()->pos();
 	for (int i = 0; i < offsetsHeader.entriesCount; ++i)
 	{
-		offsetsHeader.entries[i].offset += allHeaderSize;
+		offsetsHeader.entries[i].offset += allHeaderSize;   // Absolute offset!
 	}
 
 	// Seek back and write again with absolute offsets.
