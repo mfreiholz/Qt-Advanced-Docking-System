@@ -5,6 +5,7 @@
 #include <QList>
 #include <QString>
 #include <QDataStream>
+#include <QBuffer>
 
 #include "ads/API.h"
 
@@ -13,26 +14,32 @@ ADS_NAMESPACE_SER_BEGIN
 class Header
 {
 public:
+	static qint32 MAGIC;
+	static qint32 MAJOR_VERSION;
+	static qint32 MINOR_VERSION;
+
 	Header();
 	qint32 magic;
-	qint32 version;
+	qint32 majorVersion;
+	qint32 minorVersion;
 };
 QDataStream& operator<<(QDataStream& out, const Header& data);
 QDataStream& operator>>(QDataStream& in, Header& data);
 
 
-class OffsetHeader
+class OffsetsHeader
 {
 public:
-	OffsetHeader();
-	qint64 length;
-	QList<class OffsetHeaderEntry> entries;
+	OffsetsHeader();
+
+	qint64 entriesCount;
+	QList<class OffsetsHeaderEntry> entries;
 };
-QDataStream& operator<<(QDataStream& out, const OffsetHeader& data);
-QDataStream& operator>>(QDataStream& in, OffsetHeader& data);
+QDataStream& operator<<(QDataStream& out, const OffsetsHeader& data);
+QDataStream& operator>>(QDataStream& in, OffsetsHeader& data);
 
 
-class OffsetHeaderEntry
+class OffsetsHeaderEntry
 {
 public:
 	enum Type
@@ -42,13 +49,13 @@ public:
 		SectionIndex  = 0x00000003
 	};
 
-	OffsetHeaderEntry();
+	OffsetsHeaderEntry();
 	qint32 type;
 	qint64 offset;
-	qint64 length;
+	qint64 contentSize;
 };
-QDataStream& operator<<(QDataStream& out, const OffsetHeaderEntry& data);
-QDataStream& operator>>(QDataStream& in, OffsetHeaderEntry& data);
+QDataStream& operator<<(QDataStream& out, const OffsetsHeaderEntry& data);
+QDataStream& operator>>(QDataStream& in, OffsetsHeaderEntry& data);
 
 
 class Section
@@ -110,6 +117,42 @@ public:
 	SectionIndexData();
 	qint32 sectionsCount;
 	QList<Section> sections;
+};
+QDataStream& operator<<(QDataStream& out, const SectionIndexData& data);
+QDataStream& operator>>(QDataStream& in, SectionIndexData& data);
+
+
+/*!
+ * \brief The InMemoryWriter class writes into a QByteArray.
+ */
+class InMemoryWriter
+{
+public:
+	InMemoryWriter();
+	bool write(OffsetsHeaderEntry::Type type, const QByteArray& data);
+	bool write(const SectionIndexData& data);
+	QByteArray toByteArray() const;
+
+private:
+	QBuffer _contentBuffer;
+	OffsetsHeader _offsetsHeader;
+};
+
+/*!
+ * \brief The InMemoryReader class
+ */
+class InMemoryReader
+{
+public:
+	InMemoryReader(const QByteArray& data);
+	bool initReadHeader();
+	bool read(OffsetsHeaderEntry::Type type, QByteArray &data) const;
+
+private:
+	QByteArray _data;
+	QBuffer _buff;
+
+	OffsetsHeader _offsetsHeader;
 };
 
 ADS_NAMESPACE_SER_END
