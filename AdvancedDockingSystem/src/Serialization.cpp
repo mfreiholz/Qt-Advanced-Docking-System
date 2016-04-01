@@ -374,7 +374,7 @@ bool InMemoryReader::initReadHeader()
 		qWarning() << QString("invalid format (magic=%1)").arg(header.magic);
 		return false;
 	}
-	if (header.majorVersion > HeaderEntity::MAJOR_VERSION)
+	if (header.majorVersion != HeaderEntity::MAJOR_VERSION)
 	{
 		qWarning() << QString("format is too new (major=%1; minor=%2)")
 					  .arg(header.majorVersion).arg(header.minorVersion);

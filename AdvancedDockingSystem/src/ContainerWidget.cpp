@@ -14,6 +14,7 @@
 #include "ads/SectionWidget.h"
 #include "ads/SectionTitleWidget.h"
 #include "ads/SectionContentWidget.h"
+#include "ads/Serialization.h"
 
 ADS_NAMESPACE_BEGIN
 
@@ -358,92 +359,25 @@ QMenu* ContainerWidget::createContextMenu() const
 
 QByteArray ContainerWidget::saveState() const
 {
-	/*
-		# Data Format
+	ADS_NS_SER::InMemoryWriter writer;
 
-		quint32                   Magic
-		quint32                   Version
-
-		int                       Number of floating widgets
-		LOOP                      Floating widgets
-			QString               Unique name of content
-			QByteArray            Geometry of floating widget
-			bool                  Visibility
-
-		int                       Number of layout items (Valid values: 0, 1)
-		IF 0
-			int                   Number of hidden contents
-			LOOP                  Contents
-				QString           Unique name of content
-		ELSEIF 1
-			... todo ...
-		ENDIF
-	*/
-	qDebug() << "Begin save state";
-
-	QByteArray ba;
-	QDataStream out(&ba, QIODevice::WriteOnly);
-	out.setVersion(QDataStream::Qt_4_5);
-	out << (quint32) 0x00001337; // Magic
-	out << (quint32) 1; // Version
-
-	// Save state of floating contents
-	saveFloatingWidgets(out);
-
-	// Save state of sections and contents
-	if (_mainLayout->count() <= 0 || _sections.isEmpty())
+	// Hierarchy data.
+	const QByteArray hierarchyData = saveHierarchy();
+	if (!hierarchyData.isEmpty())
 	{
-		// Looks like the user has hidden all contents and no more sections
-		// are available. We can simply write a list of all hidden contents.
-		out << 0; // Mode
-
-		out << _hiddenSectionContents.count();
-		QHashIterator<int, HiddenSectionItem> iter(_hiddenSectionContents);
-		while (iter.hasNext())
-		{
-			iter.next();
-			out << iter.value().data.content->uniqueName();
-		}
+		writer.write(ADS_NS_SER::ET_Hierarchy, hierarchyData);
 	}
-	else if (_mainLayout->count() == 1)
+
+	// SectionIndex data.
+	const QByteArray sectionIndexData;
+	if (!sectionIndexData.isEmpty())
 	{
-		out << 1; // Mode
-
-		// There should only be one!
-		QLayoutItem* li = _mainLayout->itemAt(0);
-		if (!li->widget())
-			qFatal("Not a widget in _mainLayout, this shouldn't happen.");
-
-		// Save sections beginning with the first QSplitter (li->widget()).
-		saveSectionWidgets(out, li->widget());
-
-		// Safe state of hidden contents, which doesn't have an section association
-		// or the section association points to a no longer existing section.
-		QHashIterator<int, HiddenSectionItem> iter(_hiddenSectionContents);
-		int cnt = 0;
-		while (iter.hasNext())
-		{
-			iter.next();
-			if (iter.value().preferredSectionId <= 0 || !SWLookupMapById(this).contains(iter.value().preferredSectionId))
-				cnt++;
-		}
-		out << cnt;
-		iter.toFront();
-		while (iter.hasNext())
-		{
-			iter.next();
-			if (iter.value().preferredSectionId <= 0 || !SWLookupMapById(this).contains(iter.value().preferredSectionId))
-				out << iter.value().data.content->uniqueName();
-		}
+		writer.write(ADS_NS_SER::ET_SectionIndex, sectionIndexData);
 	}
-	else
-	{
-		// More? Oh oh.. something is wrong :-/
-		out << -1;
-		qWarning() << "Oh noooz.. Something went wrong. There are too many items in _mainLayout.";
-	}
-	qDebug() << "End save state";
-	return ba;
+
+	if (writer.offsetsCount() == 0)
+		return QByteArray();
+	return writer.toByteArray();
 }
 
 bool ContainerWidget::restoreState(const QByteArray& data)
@@ -453,172 +387,24 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 
 	qDebug() << "Begin to restore state";
 
-	QDataStream in(data);
-	in.setVersion(QDataStream::Qt_4_5);
-
-	quint32 magic = 0;
-	in >> magic;
-	if (magic != 0x00001337)
+	ADS_NS_SER::InMemoryReader reader(data);
+	if (!reader.initReadHeader())
 		return false;
 
-	quint32 version = 0;
-	in >> version;
-	if (version != 1)
-		return false;
-
-	QList<FloatingWidget*> oldFloatings = _floatings;
-	QList<SectionWidget*> oldSections = _sections;
-
-	// Restore floating widgets
-	QList<FloatingWidget*> floatings;
-	bool success = restoreFloatingWidgets(in, version, floatings);
-	if (!success)
+	// Basic hierarchy data.
+	QByteArray hierarchyData;
+	if (reader.read(ADS_NS_SER::ET_Hierarchy, hierarchyData))
 	{
-		qWarning() << "Could not restore floatings completely";
+		restoreHierarchy(hierarchyData);
 	}
+//	QByteArray sectionIndexData;
+//	if (reader.read(ADS_NS_SER::ET_SectionIndex, sectionIndexData))
+//	{
+//		// do we need it?
+//	}
 
-	// Restore splitters, sections and contents
-	QList<SectionWidget*> sections;
-	QList<SectionContent::RefPtr> contentsToHide;
-
-	int mode = 0;
-	in >> mode;
-	if (mode == 0)
-	{
-		// List of hidden contents. There are no sections at all.
-		int cnt = 0;
-		in >> cnt;
-
-		if(cnt > 0)
-		{
-			// Create dummy section, required to call hideSectionContent() later.
-			SectionWidget* sw = new SectionWidget(this);
-			sections.append(sw);
-
-			for (int i = 0; i < cnt; ++i)
-			{
-				QString uname;
-				in >> uname;
-
-				const SectionContent::RefPtr sc = SCLookupMapByName(this).value(uname);
-				if (!sc)
-					continue;
-
-				InternalContentData data;
-				if (!takeContent(sc, data))
-					qFatal("This should never happen!!!");
-
-				sw->addContent(data, false);
-				contentsToHide.append(sc);
-			}
-		}
-	}
-	else if (mode == 1)
-	{
-		success = restoreSectionWidgets(in, version, NULL, sections, contentsToHide);
-		if (!success)
-			qWarning() << "Could not restore sections completely";
-
-		// Restore lonely hidden contents
-		int cnt = 0;
-		in >> cnt;
-		for (int i = 0; i < cnt; ++i)
-		{
-			QString uname;
-			in >> uname;
-			const SectionContent::RefPtr sc = SCLookupMapByName(this).value(uname);
-			if (!sc)
-				continue;
-
-			InternalContentData data;
-			if (!takeContent(sc, data))
-			{
-				qWarning("This should never happen! Looks like a bug during serialization, since the content is already being used in SWs.");
-				continue;
-			}
-
-			SectionWidget* sw = NULL;
-			if (sections.size() <= 0)
-				qFatal("This should never happen, because above a section should have been created.");
-			else
-				sw = sections.first();
-
-			sw->addContent(data, false);
-			contentsToHide.append(sc);
-		}
-	}
-
-	// Handle SectionContent which is not mentioned by deserialized data.
-	// What shall we do with it? For now: Simply drop them into the first SectionWidget.
-	if (true)
-	{
-		QList<SectionContent::RefPtr> leftContents;
-
-		// Collect all contents which has been restored
-		QList<SectionContent::RefPtr> contents;
-		for (int i = 0; i < floatings.count(); ++i)
-			contents.append(floatings.at(i)->content());
-		for (int i = 0; i < sections.count(); ++i)
-			for (int j = 0; j < sections.at(i)->contents().count(); ++j)
-				contents.append(sections.at(i)->contents().at(j));
-		for (int i = 0; i < contentsToHide.count(); ++i)
-			contents.append(contentsToHide.at(i));
-
-		// Compare restored contents with available contents
-		const QList<SectionContent::WeakPtr> allContents = SCLookupMapById(this).values();
-		for (int i = 0; i < allContents.count(); ++i)
-		{
-			const SectionContent::RefPtr sc = allContents.at(i).toStrongRef();
-			if (sc.isNull() || sc->containerWidget() != this)
-				continue;
-			if (contents.contains(sc))
-				continue;
-			leftContents.append(sc);
-		}
-
-		// What should we do with a drunken sailor.. what should.. erm..
-		// What should we do with the left-contents?
-		// Lets add them to the first found SW or create one, if no SW is available.
-		for (int i = 0; i < leftContents.count(); ++i)
-		{
-			const SectionContent::RefPtr sc = leftContents.at(i);
-			SectionWidget* sw = NULL;
-
-			if (sections.isEmpty())
-			{
-				sw = new SectionWidget(this);
-				sections.append(sw);
-				addSection(sw);
-			}
-			else
-				sw = sections.first();
-
-			InternalContentData data;
-			if (!takeContent(sc, data))
-				sw->addContent(sc);
-			else
-				sw->addContent(data, false);
-		}
-	}
-
-	_floatings = floatings;
-	_sections = sections;
-
-	// Delete old objects
-	QLayoutItem* old = _mainLayout->takeAt(0);
-	_mainLayout->addWidget(_splitter);
-	delete old;
-	qDeleteAll(oldFloatings);
-	qDeleteAll(oldSections);
-
-	// Hide all as "hidden" marked contents
-	for (int i = 0; i < contentsToHide.count(); ++i)
-		hideSectionContent(contentsToHide.at(i));
-
-	deleteEmptySplitter(this);
-
-	qDebug() << "End of restore state" << success;
-	return success;
+	qDebug() << "End of restore state";
+	return true;
 }
 
 QRect ContainerWidget::outerTopDropRect() const
@@ -893,6 +679,96 @@ SectionWidget* ContainerWidget::dropContentOuterHelper(QLayout* l, const Interna
 	return sw;
 }
 
+QByteArray ContainerWidget::saveHierarchy() const
+{
+	/*
+		# Data Format
+
+		quint32                   Magic
+		quint32                   Version
+
+		int                       Number of floating widgets
+		LOOP                      Floating widgets
+			QString               Unique name of content
+			QByteArray            Geometry of floating widget
+			bool                  Visibility
+
+		int                       Number of layout items (Valid values: 0, 1)
+		IF 0
+			int                   Number of hidden contents
+			LOOP                  Contents
+				QString           Unique name of content
+		ELSEIF 1
+			... todo ...
+		ENDIF
+	*/
+	qDebug() << "Begin save state";
+
+	QByteArray ba;
+	QDataStream out(&ba, QIODevice::WriteOnly);
+	out.setVersion(QDataStream::Qt_4_5);
+	out << (quint32) 0x00001337; // Magic
+	out << (quint32) 1; // Version
+
+	// Save state of floating contents
+	saveFloatingWidgets(out);
+
+	// Save state of sections and contents
+	if (_mainLayout->count() <= 0 || _sections.isEmpty())
+	{
+		// Looks like the user has hidden all contents and no more sections
+		// are available. We can simply write a list of all hidden contents.
+		out << 0; // Mode
+
+		out << _hiddenSectionContents.count();
+		QHashIterator<int, HiddenSectionItem> iter(_hiddenSectionContents);
+		while (iter.hasNext())
+		{
+			iter.next();
+			out << iter.value().data.content->uniqueName();
+		}
+	}
+	else if (_mainLayout->count() == 1)
+	{
+		out << 1; // Mode
+
+		// There should only be one!
+		QLayoutItem* li = _mainLayout->itemAt(0);
+		if (!li->widget())
+			qFatal("Not a widget in _mainLayout, this shouldn't happen.");
+
+		// Save sections beginning with the first QSplitter (li->widget()).
+		saveSectionWidgets(out, li->widget());
+
+		// Safe state of hidden contents, which doesn't have an section association
+		// or the section association points to a no longer existing section.
+		QHashIterator<int, HiddenSectionItem> iter(_hiddenSectionContents);
+		int cnt = 0;
+		while (iter.hasNext())
+		{
+			iter.next();
+			if (iter.value().preferredSectionId <= 0 || !SWLookupMapById(this).contains(iter.value().preferredSectionId))
+				cnt++;
+		}
+		out << cnt;
+		iter.toFront();
+		while (iter.hasNext())
+		{
+			iter.next();
+			if (iter.value().preferredSectionId <= 0 || !SWLookupMapById(this).contains(iter.value().preferredSectionId))
+				out << iter.value().data.content->uniqueName();
+		}
+	}
+	else
+	{
+		// More? Oh oh.. something is wrong :-/
+		out << -1;
+		qWarning() << "Oh noooz.. Something went wrong. There are too many items in _mainLayout.";
+	}
+	qDebug() << "End save state";
+	return ba;
+}
+
 void ContainerWidget::saveFloatingWidgets(QDataStream& out) const
 {
 	out << _floatings.count();
@@ -966,6 +842,174 @@ void ContainerWidget::saveSectionWidgets(QDataStream& out, QWidget* widget) cons
 			out << hiddenContents.at(i).preferredSectionIndex;
 		}
 	}
+}
+
+bool ContainerWidget::restoreHierarchy(const QByteArray& data)
+{
+	QDataStream in(data);
+	in.setVersion(QDataStream::Qt_4_5);
+
+	quint32 magic = 0;
+	in >> magic;
+	if (magic != 0x00001337)
+		return false;
+
+	quint32 version = 0;
+	in >> version;
+	if (version != 1)
+		return false;
+
+	QList<FloatingWidget*> oldFloatings = _floatings;
+	QList<SectionWidget*> oldSections = _sections;
+
+	// Restore floating widgets
+	QList<FloatingWidget*> floatings;
+	bool success = restoreFloatingWidgets(in, version, floatings);
+	if (!success)
+	{
+		qWarning() << "Could not restore floatings completely";
+	}
+
+	// Restore splitters, sections and contents
+	QList<SectionWidget*> sections;
+	QList<SectionContent::RefPtr> contentsToHide;
+
+	int mode = 0;
+	in >> mode;
+	if (mode == 0)
+	{
+		// List of hidden contents. There are no sections at all.
+		int cnt = 0;
+		in >> cnt;
+
+		if(cnt > 0)
+		{
+			// Create dummy section, required to call hideSectionContent() later.
+			SectionWidget* sw = new SectionWidget(this);
+			sections.append(sw);
+
+			for (int i = 0; i < cnt; ++i)
+			{
+				QString uname;
+				in >> uname;
+
+				const SectionContent::RefPtr sc = SCLookupMapByName(this).value(uname);
+				if (!sc)
+					continue;
+
+				InternalContentData data;
+				if (!takeContent(sc, data))
+					qFatal("This should never happen!!!");
+
+				sw->addContent(data, false);
+				contentsToHide.append(sc);
+			}
+		}
+	}
+	else if (mode == 1)
+	{
+		success = restoreSectionWidgets(in, version, NULL, sections, contentsToHide);
+		if (!success)
+			qWarning() << "Could not restore sections completely";
+
+		// Restore lonely hidden contents
+		int cnt = 0;
+		in >> cnt;
+		for (int i = 0; i < cnt; ++i)
+		{
+			QString uname;
+			in >> uname;
+			const SectionContent::RefPtr sc = SCLookupMapByName(this).value(uname);
+			if (!sc)
+				continue;
+
+			InternalContentData data;
+			if (!takeContent(sc, data))
+			{
+				qWarning("This should never happen! Looks like a bug during serialization, since the content is already being used in SWs.");
+				continue;
+			}
+
+			SectionWidget* sw = NULL;
+			if (sections.size() <= 0)
+				qFatal("This should never happen, because above a section should have been created.");
+			else
+				sw = sections.first();
+
+			sw->addContent(data, false);
+			contentsToHide.append(sc);
+		}
+	}
+
+	// Handle SectionContent which is not mentioned by deserialized data.
+	// What shall we do with it? For now: Simply drop them into the first SectionWidget.
+	if (true)
+	{
+		QList<SectionContent::RefPtr> leftContents;
+
+		// Collect all contents which has been restored
+		QList<SectionContent::RefPtr> contents;
+		for (int i = 0; i < floatings.count(); ++i)
+			contents.append(floatings.at(i)->content());
+		for (int i = 0; i < sections.count(); ++i)
+			for (int j = 0; j < sections.at(i)->contents().count(); ++j)
+				contents.append(sections.at(i)->contents().at(j));
+		for (int i = 0; i < contentsToHide.count(); ++i)
+			contents.append(contentsToHide.at(i));
+
+		// Compare restored contents with available contents
+		const QList<SectionContent::WeakPtr> allContents = SCLookupMapById(this).values();
+		for (int i = 0; i < allContents.count(); ++i)
+		{
+			const SectionContent::RefPtr sc = allContents.at(i).toStrongRef();
+			if (sc.isNull() || sc->containerWidget() != this)
+				continue;
+			if (contents.contains(sc))
+				continue;
+			leftContents.append(sc);
+		}
+
+		// What should we do with a drunken sailor.. what should.. erm..
+		// What should we do with the left-contents?
+		// Lets add them to the first found SW or create one, if no SW is available.
+		for (int i = 0; i < leftContents.count(); ++i)
+		{
+			const SectionContent::RefPtr sc = leftContents.at(i);
+			SectionWidget* sw = NULL;
+
+			if (sections.isEmpty())
+			{
+				sw = new SectionWidget(this);
+				sections.append(sw);
+				addSection(sw);
+			}
+			else
+				sw = sections.first();
+
+			InternalContentData data;
+			if (!takeContent(sc, data))
+				sw->addContent(sc);
+			else
+				sw->addContent(data, false);
+		}
+	}
+
+	_floatings = floatings;
+	_sections = sections;
+
+	// Delete old objects
+	QLayoutItem* old = _mainLayout->takeAt(0);
+	_mainLayout->addWidget(_splitter);
+	delete old;
+	qDeleteAll(oldFloatings);
+	qDeleteAll(oldSections);
+
+	// Hide all as "hidden" marked contents
+	for (int i = 0; i < contentsToHide.count(); ++i)
+		hideSectionContent(contentsToHide.at(i));
+
+	deleteEmptySplitter(this);
+	return success;
 }
 
 bool ContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, QList<FloatingWidget*>& floatings)

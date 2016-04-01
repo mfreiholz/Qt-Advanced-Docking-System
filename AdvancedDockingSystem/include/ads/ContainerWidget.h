@@ -126,8 +126,10 @@ private:
 	SectionWidget* dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append);
 
 	// Serialization
+	QByteArray saveHierarchy() const;
 	void saveFloatingWidgets(QDataStream& out) const;
 	void saveSectionWidgets(QDataStream& out, QWidget* widget) const;
+	bool restoreHierarchy(const QByteArray& data);
 	bool restoreFloatingWidgets(QDataStream& in, int version, QList<FloatingWidget*>& floatings);
 	bool restoreSectionWidgets(QDataStream& in, int version, QSplitter* currentSplitter, QList<SectionWidget*>& sections, QList<SectionContent::RefPtr>& contentsToHide);
 
