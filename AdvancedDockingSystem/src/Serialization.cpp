@@ -141,7 +141,7 @@ QDataStream& operator>>(QDataStream& in, OffsetsHeaderEntryEntity& data)
 ///////////////////////////////////////////////////////////////////////////////
 
 SectionEntity::SectionEntity() :
-	width(0), height(0), currentIndex(0), sectionContentsCount(0)
+	x(0), y(0), width(0), height(0), currentIndex(0), sectionContentsCount(0)
 {
 }
 
