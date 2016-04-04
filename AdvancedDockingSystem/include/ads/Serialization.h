@@ -65,6 +65,8 @@ class ADS_EXPORT_API SectionEntity
 {
 public:
 	SectionEntity();
+	qint32 x;
+	qint32 y;
 	qint32 width;
 	qint32 height;
 	qint32 currentIndex;

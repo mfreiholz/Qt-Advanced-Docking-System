@@ -147,6 +147,8 @@ SectionEntity::SectionEntity() :
 
 QDataStream& operator<<(QDataStream& out, const SectionEntity& data)
 {
+	out << data.x;
+	out << data.y;
 	out << data.width;
 	out << data.height;
 	out << data.currentIndex;
@@ -160,6 +162,8 @@ QDataStream& operator<<(QDataStream& out, const SectionEntity& data)
 
 QDataStream& operator>>(QDataStream& in, SectionEntity& data)
 {
+	in >> data.x;
+	in >> data.y;
 	in >> data.width;
 	in >> data.height;
 	in >> data.currentIndex;

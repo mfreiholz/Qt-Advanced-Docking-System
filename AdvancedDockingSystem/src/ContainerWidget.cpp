@@ -369,10 +369,10 @@ QByteArray ContainerWidget::saveState() const
 	}
 
 	// SectionIndex data.
-	const QByteArray sectionIndexData;
-	if (!sectionIndexData.isEmpty())
+	ADS_NS_SER::SectionIndexData sid;
+	if (saveSectionIndex(sid))
 	{
-		writer.write(ADS_NS_SER::ET_SectionIndex, sectionIndexData);
+		writer.write(sid);
 	}
 
 	if (writer.offsetsCount() == 0)
@@ -842,6 +842,34 @@ void ContainerWidget::saveSectionWidgets(QDataStream& out, QWidget* widget) cons
 			out << hiddenContents.at(i).preferredSectionIndex;
 		}
 	}
+}
+
+bool ContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) const
+{
+	if (_sections.count() <= 0)
+		return false;
+
+	sid.sectionsCount = _sections.count();
+	for (int i = 0; i < _sections.count(); ++i)
+	{
+		ADS_NS_SER::SectionEntity se;
+		se.x = _sections[i]->geometry().x();
+		se.y = _sections[i]->geometry().y();
+		se.width = _sections[i]->geometry().width();
+		se.height = _sections[i]->geometry().height();
+		se.currentIndex = _sections[i]->currentIndex();
+		se.sectionContentsCount = _sections[i]->contents().count();
+		foreach (const SectionContent::RefPtr& sc, _sections[i]->contents())
+		{
+			ADS_NS_SER::SectionContentEntity sce;
+			sce.uniqueName = sc->uniqueName();
+			sce.visible = true;
+			sce.preferredIndex = _sections[i]->indexOfContent(sc);
+			se.sectionContents.append(sce); // std::move()?
+		}
+		sid.sections.append(se); // std::move()?
+	}
+	return true;
 }
 
 bool ContainerWidget::restoreHierarchy(const QByteArray& data)

@@ -14,6 +14,7 @@ class QGridLayout;
 #include "ads/Internal.h"
 #include "ads/SectionContent.h"
 #include "ads/FloatingWidget.h"
+#include "ads/Serialization.h"
 
 ADS_NAMESPACE_BEGIN
 class SectionWidget;
@@ -129,6 +130,9 @@ private:
 	QByteArray saveHierarchy() const;
 	void saveFloatingWidgets(QDataStream& out) const;
 	void saveSectionWidgets(QDataStream& out, QWidget* widget) const;
+
+	bool saveSectionIndex(ADS_NS_SER::SectionIndexData &sid) const;
+
 	bool restoreHierarchy(const QByteArray& data);
 	bool restoreFloatingWidgets(QDataStream& in, int version, QList<FloatingWidget*>& floatings);
 	bool restoreSectionWidgets(QDataStream& in, int version, QSplitter* currentSplitter, QList<SectionWidget*>& sections, QList<SectionContent::RefPtr>& contentsToHide);
