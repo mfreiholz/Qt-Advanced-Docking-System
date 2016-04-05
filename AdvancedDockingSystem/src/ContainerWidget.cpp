@@ -853,8 +853,8 @@ bool ContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) const
 	for (int i = 0; i < _sections.count(); ++i)
 	{
 		ADS_NS_SER::SectionEntity se;
-		se.x = _sections[i]->geometry().x();
-		se.y = _sections[i]->geometry().y();
+		se.x = _sections[i]->mapTo(const_cast<ContainerWidget*>(this), _sections[i]->pos()).x();
+		se.y = _sections[i]->mapTo(const_cast<ContainerWidget*>(this), _sections[i]->pos()).y();
 		se.width = _sections[i]->geometry().width();
 		se.height = _sections[i]->geometry().height();
 		se.currentIndex = _sections[i]->currentIndex();
