@@ -645,7 +645,7 @@ SectionWidget* ContainerWidget::dropContentOuterHelper(QLayout* l, const Interna
 		QSplitter* sp = newSplitter(orientation);
 		if (append)
 		{
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
 			QLayoutItem* li = l->replaceWidget(oldsp, sp);
 			sp->addWidget(oldsp);
 			sp->addWidget(sw);
@@ -661,7 +661,7 @@ SectionWidget* ContainerWidget::dropContentOuterHelper(QLayout* l, const Interna
 		}
 		else
 		{
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
 			sp->addWidget(sw);
 			QLayoutItem* li = l->replaceWidget(oldsp, sp);
 			sp->addWidget(oldsp);
