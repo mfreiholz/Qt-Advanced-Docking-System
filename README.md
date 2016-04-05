@@ -1,4 +1,6 @@
 # Advanced Docking System
+![Travis Build](https://travis-ci.org/mfreiholz/Qt-Advanced-Docking-System.svg?branch=master)
+
 Manages content widgets more like Visual Studio or similar programs.
 I also try to get everything done with basic Qt functionality.
 Basic usage of QWidgets an QLayouts and using basic styles as much as possible.

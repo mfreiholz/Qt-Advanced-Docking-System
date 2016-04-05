@@ -2,7 +2,7 @@
 #define SECTIONCONTENTLISTWIDGET
 
 #include <QDialog>
-#include "ui_sectioncontentlistwidget.h"
+#include "ui_SectionContentListWidget.h"
 
 #include "ads/API.h"
 #include "ads/ContainerWidget.h"
