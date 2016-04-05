@@ -21,6 +21,7 @@ The `master` branch is not guaranteed to be stable or does not even build, since
 If you want a version that builds, you should always use a release/beta tag.
 
 ## Getting started / Example
+The following example shows the minimum code required to use ADS.
 
 _MyWindow.h_
 ```cpp
@@ -32,11 +33,30 @@ class MyWindow : public QMainWindow
 {
 	Q_OBJECT
 public:
-	QMainWindow(QWidget* parent);
+	MyWindow(QWidget* parent);
 	
 private:
-	ADS_NS::ContainerWidget _container;
+	// The main container for dockings.
+	ADS_NS::ContainerWidget* _container;
+	
+	// You always want to keep a reference of your content,
+	// in case you need to perform any action on it (show, hide, ...)
+	ADS_NS::SectionContent::RefPtr _sc1; 
 };
+```
+
+_MyWindow.cpp_
+```cpp
+#include "MyWindow.h"
+#include <QLabel>
+MyWindow::MyWindow(QWidget* parent) : QMainWindow(parent)
+{
+	_container = new ADS_NS::ContainerWidget();
+	setCentralWidget(_container);
+	
+	_sc1 = ADS_NS::SectionContent::newSectionContent(QString("Unique-Internal-Name"), _container, new QLabel("Visible Title"), new QLabel("Content Widget"));
+	_container->addSectionContent(_sc1, NULL, ADS_NS::CenterDropArea);
+}
 ```
 
 ## Developers
@@ -52,60 +72,3 @@ Using it? Let us know by creating a [new issue](https://github.com/mfreiholz/qt-
 
 ## Credits
 - Drop indicator images from [Code Project Article](http://www.codeproject.com/Articles/140209/Building-a-Docking-Window-Management-Solution-in-W)
-
-## ToDo List & Changelog
-Items sorted by priority
-
-### Beta 0.2
-- [ ] Use scrolling for SectionWidget tabs?
-- [ ] It would be easier when the SectionTitleWidget and SectionContentWidget are created inside the "SectionContent::newSectionContent(..)" method.
-	This would make sure, that those two objects always exists.
-- [ ] `ContainerWidget::showSectionContent` needs to insert the SC at the correct preferred position of SW
-- [ ] It should be possible to drop a floating widget directly into the SW's tab-bar.
-- [ ] Empty splitters, if only 2 or 1 items are in container
-- [ ] Restore: Handle out-of-screen geometry for floating widgets
-- [ ] Better handling of sizes when dropping contents. Currently it's unpredictable.
-	It might be good to use the same width/height as the parent content, if dropped on existing content.
-	In case of outer-drop we might use the preferred size of the content.
-- [ ] Floating widget should be a real window with all of its functionality (maximize and split by moving it to the edge of the screen)
-- [ ] Dropping floating-widgets on the edge should be possible even if there is no margin/padding.
-
-### Beta 0.1
-- [x] Improve FloatingWidget (Remove maximize button, only support close-button which hides the widget)
-- [x] Serialize and Deserialize state/size/positions of dockings
-- [x] Make compatible with Qt 4.5 (\*ROFL!\*)
-- [x] Save and restore FloatingWidget states
-- [x] Restore: Manage new or deleted SectionContent objects, which are not available
-- [x] Working with outer-edge-drops sometimes leaves empty splitters #BUG
-- [x] Clean up of unused e.g. count()<=1 QSplitters doesn't work well #BUG
-- [x] Show close button on right corner of SectionWidget. How to safe last section position?
-- [x] Serialize state of `_hiddenSectionContents`
-- [x] Add "title" to SectionContent object, which will be used in visible areas to display contents name.
-- [x] It should be possible to catch the "activeTabChanged" signal for EXTERN_API users
-- [x] Add API function to set an SC as active-tab
-- [x] Move all lookup maps into ContainterWidget as non-static members, otherwise we can not have the same SC name inside another ContainerWidget instance.
-	The uniqueness of a SectionContainer needs to be restricted to its parent ContainerWidget, not global!
-
-### Some day...
-- [ ] Drop indicator images should be fully visible over the DropOverlay rectangle
-- [ ] Pin contents: Pins a content and its title widget to the edge and opens on click/hover as long as it has focus
-- [ ] API: Make it possible to use custom drop images
-- [ ] API: Add possibility to make a SectionContent element floatable (`ContainerWidget::setFloating(SectionContent*)`?)
-
-## Notes
-- *SectionContent* class may safe a "size-type" property, which defines how the size of the widget should be handled.
-	- PerCent: Resize in proportion to other widgets.
-	- Fixed: Width or height are fixed (based on orientation).
-
-### Handle content drops (Sizing)
-- Case: Dropping A to the bottom or top of B (vertical split):
-	- A will use the width of B
-	- A will use it's own height, if it is not greater than the half height of B. Otherwise it will use the half height of B.
-- Case: Dropping A to the left or right of B (horizontal split)
-	- ... Same as before, but swap the words "height" with "width" :-)
-
-- Case: Dropping A to the outer top or bottom edge (full vertical split):
-	- A will use the full width of the container
-	- A will use it's own height, if it is not greater than the half height of the entire container. Otherwise it will use the half height of the container.
-- Case: Dropping A to the outer left or right edge (full horizontal split):
-	- ... Same as before, but swap the words "height" with "width" :-)
