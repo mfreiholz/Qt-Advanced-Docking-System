@@ -422,6 +422,19 @@ bool InMemoryReader::read(qint32 entryType, QByteArray& data)
 	return true;
 }
 
+bool InMemoryReader::read(SectionIndexData& sid)
+{
+	QByteArray sidData;
+	if (!read(ET_SectionIndex, sidData) || sidData.isEmpty())
+		return false;
+
+	QDataStream in(sidData);
+	in.setVersion(QDataStream::Qt_4_5);
+	in >> sid;
+
+	return in.atEnd();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 ADS_NAMESPACE_SER_END

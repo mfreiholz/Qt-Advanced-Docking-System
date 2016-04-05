@@ -153,6 +153,7 @@ public:
 	InMemoryReader(const QByteArray& data);
 	bool initReadHeader();
 	bool read(qint32 entryType, QByteArray &data);
+	bool read(SectionIndexData& sid);
 	qint32 offsetsCount() const { return _offsetsHeader.entriesCount; }
 
 private:
