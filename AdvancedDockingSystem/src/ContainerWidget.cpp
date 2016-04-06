@@ -1,5 +1,6 @@
 #include "ads/ContainerWidget.h"
 
+#include <QDebug>
 #include <QPaintEvent>
 #include <QPainter>
 #include <QContextMenuEvent>
@@ -838,11 +839,11 @@ bool ContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) const
 		return false;
 
 	sid.sectionsCount = _sections.count();
-	for (int i = 0; i < _sections.count(); ++i)
+	for (int i = 0; i < sid.sectionsCount; ++i)
 	{
 		ADS_NS_SER::SectionEntity se;
-		se.x = _sections[i]->mapTo(const_cast<ContainerWidget*>(this), _sections[i]->pos()).x();
-		se.y = _sections[i]->mapTo(const_cast<ContainerWidget*>(this), _sections[i]->pos()).y();
+		se.x = mapFromGlobal(_sections[i]->parentWidget()->mapToGlobal(_sections[i]->pos())).x();
+		se.y = mapFromGlobal(_sections[i]->parentWidget()->mapToGlobal(_sections[i]->pos())).y();
 		se.width = _sections[i]->geometry().width();
 		se.height = _sections[i]->geometry().height();
 		se.currentIndex = _sections[i]->currentIndex();
@@ -856,6 +857,7 @@ bool ContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) const
 			se.sectionContents.append(sce); // std::move()?
 		}
 		sid.sections.append(se); // std::move()?
+		qDebug() << "Container section:" << se.x << se.y << se.width << se.height;
 	}
 	return true;
 }
