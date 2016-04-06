@@ -1,6 +1,5 @@
 #include "ads/SectionTitleWidget.h"
 
-#include <QDebug>
 #include <QString>
 #include <QApplication>
 #include <QBoxLayout>
@@ -31,8 +30,6 @@ SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* 
 	_tabMoving(false),
 	_activeTab(false)
 {
-	qDebug() << Q_FUNC_INFO;
-
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::LeftToRight);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
@@ -42,7 +39,6 @@ SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* 
 
 SectionTitleWidget::~SectionTitleWidget()
 {
-	qDebug() << Q_FUNC_INFO;
 	layout()->removeWidget(_content->titleWidget());
 }
 
@@ -67,7 +63,6 @@ void SectionTitleWidget::setActiveTab(bool active)
 
 void SectionTitleWidget::mousePressEvent(QMouseEvent* ev)
 {
-//	qDebug() << Q_FUNC_INFO << ev->pos();
 	if (ev->button() == Qt::LeftButton)
 	{
 		_dragStartPos = ev->pos();
@@ -79,7 +74,6 @@ void SectionTitleWidget::mousePressEvent(QMouseEvent* ev)
 
 void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 {
-//	qDebug() << Q_FUNC_INFO << ev->pos();
 	SectionWidget* section = NULL;
 
 	// Drop contents of FloatingWidget into SectionWidget.
@@ -161,14 +155,11 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 	else if (_tabMoving
 			&& (section = findParentSectionWidget(this)) != NULL)
 	{
-		qDebug() << "Stop tab move";
-
 		// Find tab under mouse
 		QPoint pos = ev->globalPos();
 		pos = section->mapFromGlobal(pos);
 		const int fromIndex = section->indexOfContent(_content);
 		const int toIndex = section->indexOfContentByTitlePos(pos, this);
-		qDebug() << "from" << fromIndex << "to" << toIndex;
 		section->moveContent(fromIndex, toIndex);
 		section->layout()->update();
 	}

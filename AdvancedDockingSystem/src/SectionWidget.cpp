@@ -78,7 +78,6 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 
 SectionWidget::~SectionWidget()
 {
-	qDebug() << Q_FUNC_INFO;
 	if (_container)
 	{
 		SWLookupMapById(_container).remove(_uid);
@@ -90,7 +89,6 @@ SectionWidget::~SectionWidget()
 	if (splitter && splitter->count() == 0)
 	{
 		splitter->deleteLater();
-		qDebug() << "Delete empty splitter";
 	}
 }
 
@@ -279,7 +277,6 @@ void SectionWidget::setCurrentIndex(int index)
 		qWarning() << Q_FUNC_INFO << "Invalid index" << index;
 		return;
 	}
-	qDebug() << Q_FUNC_INFO << index << QString("section=%1; content=%2").arg(_uid).arg(_contents.at(index)->uniqueName());
 
 	// Set active TAB
 	for (int i = 0; i < _tabsLayout->count(); ++i)
@@ -314,7 +311,6 @@ void SectionWidget::onSectionTitleClicked()
 
 void SectionWidget::onCloseButtonClicked()
 {
-	qDebug() << Q_FUNC_INFO << currentIndex();
 	const int index = currentIndex();
 	if (index < 0 || index > _contents.size() - 1)
 		return;

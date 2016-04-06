@@ -1,6 +1,5 @@
 #include "ads/DropOverlay.h"
 
-#include <QDebug>
 #include <QPointer>
 #include <QPaintEvent>
 #include <QResizeEvent>

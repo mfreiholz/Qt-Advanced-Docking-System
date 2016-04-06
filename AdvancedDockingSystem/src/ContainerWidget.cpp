@@ -195,7 +195,7 @@ bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 
 	// Already visible?
 	// TODO
-	qDebug("Unable to show SectionContent, don't know where 8-/ (already visible?)");
+	qWarning("Unable to show SectionContent, don't know where 8-/ (already visible?)");
 	return false;
 }
 
@@ -385,8 +385,6 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 	if (data.isEmpty())
 		return false;
 
-	qDebug() << "Begin to restore state";
-
 	ADS_NS_SER::InMemoryReader reader(data);
 	if (!reader.initReadHeader())
 		return false;
@@ -397,13 +395,6 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 	{
 		restoreHierarchy(hierarchyData);
 	}
-//	QByteArray sectionIndexData;
-//	if (reader.read(ADS_NS_SER::ET_SectionIndex, sectionIndexData))
-//	{
-//		// do we need it?
-//	}
-
-	qDebug() << "End of restore state";
 	return true;
 }
 
@@ -702,8 +693,6 @@ QByteArray ContainerWidget::saveHierarchy() const
 			... todo ...
 		ENDIF
 	*/
-	qDebug() << "Begin save state";
-
 	QByteArray ba;
 	QDataStream out(&ba, QIODevice::WriteOnly);
 	out.setVersion(QDataStream::Qt_4_5);
@@ -765,7 +754,6 @@ QByteArray ContainerWidget::saveHierarchy() const
 		out << -1;
 		qWarning() << "Oh noooz.. Something went wrong. There are too many items in _mainLayout.";
 	}
-	qDebug() << "End save state";
 	return ba;
 }
 
@@ -1057,7 +1045,6 @@ bool ContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, QList
 		in >> geom;
 		bool visible = false;
 		in >> visible;
-		qDebug() << "Restore FloatingWidget" << uname << geom << visible;
 
 		const SectionContent::RefPtr sc = SCLookupMapByName(this).value(uname).toStrongRef();
 		if (!sc)
@@ -1176,7 +1163,7 @@ bool ContainerWidget::restoreSectionWidgets(QDataStream& in, int version, QSplit
 	// Unknown
 	else
 	{
-		qDebug() << QString();
+		qWarning() << "Unknown object type during restore";
 	}
 
 	return true;
@@ -1215,7 +1202,6 @@ void ContainerWidget::onActiveTabChanged()
 	SectionTitleWidget* stw = qobject_cast<SectionTitleWidget*>(sender());
 	if (stw)
 	{
-		qDebug() << "Active tab changed" << stw->_content->uid() << stw->isActiveTab();
 		emit activeTabChanged(stw->_content, stw->isActiveTab());
 	}
 }

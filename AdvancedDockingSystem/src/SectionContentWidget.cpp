@@ -1,6 +1,5 @@
 #include "ads/SectionContentWidget.h"
 
-#include <QDebug>
 #include <QBoxLayout>
 
 ADS_NAMESPACE_BEGIN
@@ -9,8 +8,6 @@ SectionContentWidget::SectionContentWidget(SectionContent::RefPtr c, QWidget* pa
 	QFrame(parent),
 	_content(c)
 {
-	qDebug() << Q_FUNC_INFO;
-
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
@@ -20,7 +17,6 @@ SectionContentWidget::SectionContentWidget(SectionContent::RefPtr c, QWidget* pa
 
 SectionContentWidget::~SectionContentWidget()
 {
-	qDebug() << Q_FUNC_INFO;
 	layout()->removeWidget(_content->contentWidget());
 }
 

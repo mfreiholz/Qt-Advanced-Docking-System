@@ -1,6 +1,5 @@
 #include "ads/SectionContent.h"
 
-#include <QDebug>
 #include <QWidget>
 #include <QLabel>
 

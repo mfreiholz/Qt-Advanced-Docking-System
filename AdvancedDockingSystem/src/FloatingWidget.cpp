@@ -1,7 +1,5 @@
-
 #include "ads/FloatingWidget.h"
 
-#include <QDebug>
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QSizePolicy>
@@ -52,7 +50,6 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 
 FloatingWidget::~FloatingWidget()
 {
-	qDebug() << Q_FUNC_INFO;
 	_container->_floatings.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
 }
 
