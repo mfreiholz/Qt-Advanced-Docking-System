@@ -99,7 +99,7 @@ SectionWidget* ContainerWidget::addSectionContent(const SectionContent::RefPtr& 
 	data.titleWidget = new SectionTitleWidget(sc, NULL);
 	data.contentWidget = new SectionContentWidget(sc, NULL);
 
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QObject::connect(data.titleWidget, &SectionTitleWidget::activeTabChanged, this, &ContainerWidget::onActiveTabChanged);
 #else
 	QObject::connect(data.titleWidget, SIGNAL(activeTabChanged()), this, SLOT(onActiveTabChanged()));
@@ -308,7 +308,7 @@ QMenu* ContainerWidget::createContextMenu() const
 			a->setProperty("type", "section");
 			a->setCheckable(true);
 			a->setChecked(true);
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 			QObject::connect(a, &QAction::toggled, this, &ContainerWidget::onActionToggleSectionContentVisibility);
 #else
 			QObject::connect(a, SIGNAL(toggled(bool)), this, SLOT(onActionToggleSectionContentVisibility(bool)));
@@ -330,7 +330,7 @@ QMenu* ContainerWidget::createContextMenu() const
 		a->setProperty("type", "section");
 		a->setCheckable(true);
 		a->setChecked(false);
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 			QObject::connect(a, &QAction::toggled, this, &ContainerWidget::onActionToggleSectionContentVisibility);
 #else
 			QObject::connect(a, SIGNAL(toggled(bool)), this, SLOT(onActionToggleSectionContentVisibility(bool)));
@@ -350,7 +350,7 @@ QMenu* ContainerWidget::createContextMenu() const
 		a->setProperty("type", "floating");
 		a->setCheckable(true);
 		a->setChecked(fw->isVisible());
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 		QObject::connect(a, &QAction::toggled, this, &ContainerWidget::onActionToggleSectionContentVisibility);
 #else
 		QObject::connect(a, SIGNAL(toggled(bool)), this, SLOT(onActionToggleSectionContentVisibility(bool)));

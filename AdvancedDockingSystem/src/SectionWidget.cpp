@@ -55,7 +55,7 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	closeButton->setToolTip(tr("Close"));
 	closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	_tabsLayout->addWidget(closeButton);
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QObject::connect(closeButton, &QPushButton::clicked, this, &SectionWidget::onCloseButtonClicked);
 #else
 	QObject::connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
@@ -119,7 +119,7 @@ void SectionWidget::addContent(const SectionContent::RefPtr& c)
 	SectionTitleWidget* title = new SectionTitleWidget(c, NULL);
 	_sectionTitles.append(title);
 	_tabsLayout->insertWidget(_tabsLayout->count() - 2, title);
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QObject::connect(title, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
 #else
 	QObject::connect(title, SIGNAL(clicked()), this, SLOT(onSectionTitleClicked()));
@@ -146,7 +146,7 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 	_sectionTitles.append(data.titleWidget);
 	_tabsLayout->insertWidget(_tabsLayout->count() - 2, data.titleWidget);
 	data.titleWidget->setVisible(true);
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QObject::connect(data.titleWidget, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
 #else
 	QObject::connect(data.titleWidget, SIGNAL(clicked()), this, SLOT(onSectionTitleClicked()));
@@ -257,7 +257,7 @@ void SectionWidget::moveContent(int from, int to)
 	QLayoutItem* liFrom = NULL;
 
 	liFrom = _tabsLayout->takeAt(from);
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	_tabsLayout->insertItem(to, liFrom);
 #else
 	_tabsLayout->insertWidget(to, liFrom->widget());

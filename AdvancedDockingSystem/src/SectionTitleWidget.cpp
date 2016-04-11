@@ -90,7 +90,7 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 				InternalContentData data;
 				_fw->takeContent(data);
 				_fw->deleteLater();
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 				_fw.clear();
 #else
 				_fw = 0;
@@ -140,7 +140,7 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 				InternalContentData data;
 				_fw->takeContent(data);
 				_fw->deleteLater();
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 				_fw.clear();
 #else
 				_fw = 0;

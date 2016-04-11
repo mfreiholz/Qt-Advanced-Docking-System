@@ -286,7 +286,7 @@ void hideDropOverlay()
 	{
 		MyOverlay->hide();
 		delete MyOverlay;
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 		MyOverlayParent.clear();
 #else
 		MyOverlayParent = 0;
