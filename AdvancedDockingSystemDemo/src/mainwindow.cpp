@@ -96,8 +96,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	_container->setOrientation(Qt::Vertical);
 #if QT_VERSION >= 0x050000
 	QObject::connect(_container, &ADS_NS::ContainerWidget::activeTabChanged, this, &MainWindow::onActiveTabChanged);
+	QObject::connect(_container, &ADS_NS::ContainerWidget::sectionContentVisibilityChanged, this, &MainWindow::onSectionContentVisibilityChanged);
 #else
 	QObject::connect(_container, SIGNAL(activeTabChanged(const SectionContent::RefPtr&, bool)), this, SLOT(onActiveTabChanged(const SectionContent::RefPtr&, bool)));
+	QObject::connect(_container, SIGNAL(sectionContentVisibilityChanged(SectionContent::RefPtr,bool)), this, SLOT(onSectionContentVisibilityChanged(SectionContent::RefPtr,bool)));
 #endif
 	setCentralWidget(_container);
 
@@ -149,6 +151,11 @@ void MainWindow::onActiveTabChanged(const ADS_NS::SectionContent::RefPtr& sc, bo
 	{
 		itw->polishUpdate();
 	}
+}
+
+void MainWindow::onSectionContentVisibilityChanged(const ADS_NS::SectionContent::RefPtr& sc, bool visible)
+{
+	qDebug() << Q_FUNC_INFO << sc->uniqueName() << visible;
 }
 
 void MainWindow::onActionAddSectionContentTriggered()

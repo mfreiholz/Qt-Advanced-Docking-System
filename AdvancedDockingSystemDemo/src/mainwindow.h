@@ -24,8 +24,10 @@ public slots:
 private slots:
 #if QT_VERSION >= 0x050000
 	void onActiveTabChanged(const ADS_NS::SectionContent::RefPtr& sc, bool active);
+	void onSectionContentVisibilityChanged(const ADS_NS::SectionContent::RefPtr& sc, bool visible);
 #else
 	void onActiveTabChanged(const SectionContent::RefPtr& sc, bool active);
+	void onSectionContentVisibilityChanged(const SectionContent::RefPtr& sc, bool visible);
 #endif
 	void onActionAddSectionContentTriggered();
 

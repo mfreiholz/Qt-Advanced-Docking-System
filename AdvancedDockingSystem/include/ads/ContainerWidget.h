@@ -153,6 +153,13 @@ signals:
 	 */
 	void activeTabChanged(const SectionContent::RefPtr& sc, bool active);
 
+	/*!
+	 * Emits whenever the visibility of a SectionContent changes.
+	 * \see showSectionContent(), hideSectionContent()
+	 * \since 0.2
+	 */
+	void sectionContentVisibilityChanged(const SectionContent::RefPtr& sc, bool visible);
+
 private:
 	// Elements inside container.
 	QList<SectionWidget*> _sections;

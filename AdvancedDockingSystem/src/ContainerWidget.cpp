@@ -163,6 +163,7 @@ bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 		fw->setVisible(true);
 		fw->_titleWidget->setVisible(true);
 		fw->_contentWidget->setVisible(true);
+		emit sectionContentVisibilityChanged(sc, true);
 		return true;
 	}
 
@@ -178,11 +179,13 @@ bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 		if (hsi.preferredSectionId > 0 && (sw = SWLookupMapById(this).value(hsi.preferredSectionId)) != NULL)
 		{
 			sw->addContent(hsi.data, true);
+			emit sectionContentVisibilityChanged(sc, true);
 			return true;
 		}
 		else if (_sections.size() > 0 && (sw = _sections.first()) != NULL)
 		{
 			sw->addContent(hsi.data, true);
+			emit sectionContentVisibilityChanged(sc, true);
 			return true;
 		}
 		else
@@ -190,6 +193,7 @@ bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 			sw = newSectionWidget();
 			addSection(sw);
 			sw->addContent(hsi.data, true);
+			emit sectionContentVisibilityChanged(sc, true);
 			return true;
 		}
 	}
@@ -210,6 +214,7 @@ bool ContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
 		if (!found)
 			continue;
 		_floatings.at(i)->setVisible(false);
+		emit sectionContentVisibilityChanged(sc, false);
 		return true;
 	}
 
@@ -240,6 +245,7 @@ bool ContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
 			sw = NULL;
 			deleteEmptySplitter(this);
 		}
+		emit sectionContentVisibilityChanged(sc, false);
 		return true;
 	}
 
