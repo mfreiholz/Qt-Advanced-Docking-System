@@ -65,8 +65,8 @@ void SectionTitleWidget::mousePressEvent(QMouseEvent* ev)
 {
 	if (ev->button() == Qt::LeftButton)
 	{
-		_dragStartPos = ev->pos();
 		ev->accept();
+		_dragStartPos = ev->pos();
 		return;
 	}
 	QFrame::mousePressEvent(ev);
@@ -182,6 +182,8 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 	// Move already existing FloatingWidget
 	if (_fw && (ev->buttons() & Qt::LeftButton))
 	{
+		ev->accept();
+
 		const QPoint moveToPos = ev->globalPos() - (_dragStartPos + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
 		_fw->move(moveToPos);
 
@@ -217,8 +219,6 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 				hideDropOverlay();
 			}
 		}
-
-		ev->accept();
 		return;
 	}
 	// Begin to drag/float the SectionContent.
@@ -226,6 +226,8 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 			&& (section = findParentSectionWidget(this)) != NULL
 			&& !section->titleAreaGeometry().contains(section->mapFromGlobal(ev->globalPos())))
 	{
+		ev->accept();
+
 		// Create floating widget.
 		InternalContentData data;
 		if (!section->takeContent(_content->uid(), data))
@@ -237,7 +239,6 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 		_fw = new FloatingWidget(cw, data.content, data.titleWidget, data.contentWidget, cw);
 		_fw->resize(section->size());
 		cw->_floatings.append(_fw); // Note: I don't like this...
-		//setActiveTab(false);
 
 		const QPoint moveToPos = ev->globalPos() - (_dragStartPos + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
 		_fw->move(moveToPos);
@@ -249,23 +250,22 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 			delete section;
 			section = NULL;
 		}
-
-		// Delete old splitter, if it is empty now
 		deleteEmptySplitter(cw);
-
-		ev->accept();
 		return;
 	}
 	// Handle movement of this tab
 	else if (_tabMoving
 			&& (section = findParentSectionWidget(this)) != NULL)
 	{
+		ev->accept();
+
 		int left, top, right, bottom;
 		getContentsMargins(&left, &top, &right, &bottom);
 		QPoint moveToPos = mapToParent(ev->pos()) - _dragStartPos;
 		moveToPos.setY(0/* + top*/);
 		move(moveToPos);
-		ev->accept();
+
+		return;
 	}
 	// Begin to drag title inside the title area to switch its position inside the SectionWidget.
 	else if (!_dragStartPos.isNull() && (ev->buttons() & Qt::LeftButton)
@@ -273,10 +273,12 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 			&& (section = findParentSectionWidget(this)) != NULL
 			&& section->titleAreaGeometry().contains(section->mapFromGlobal(ev->globalPos())))
 	{
-		// Raise current title-widget above other tabs
-		_tabMoving = true;
-		raise();
 		ev->accept();
+
+		_tabMoving = true;
+		raise(); // Raise current title-widget above other tabs
+
+		return;
 	}
 	QFrame::mouseMoveEvent(ev);
 }
