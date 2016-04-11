@@ -38,8 +38,11 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 	closeButton->setToolTip(tr("Close"));
 	closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	_titleLayout->addWidget(closeButton);
-	//QObject::connect(closeButton, &QPushButton::clicked, this, &FloatingWidget::close);
-	QObject::connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+	QObject::connect(closeButton, &QPushButton::clicked, this, &FloatingWidget::onCloseButtonClicked);
+#else
+	QObject::connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
+#endif
 
 	// Content
 	l->addWidget(contentWidget, 1);
@@ -68,6 +71,11 @@ bool FloatingWidget::takeContent(InternalContentData& data)
 	_contentWidget = NULL;
 
 	return true;
+}
+
+void FloatingWidget::onCloseButtonClicked()
+{
+	_container->hideSectionContent(_content);
 }
 
 ADS_NAMESPACE_END

@@ -30,6 +30,9 @@ public:
 public://private:
 	bool takeContent(InternalContentData& data);
 
+private slots:
+	void onCloseButtonClicked();
+
 private:
 	ContainerWidget* _container;
 	SectionContent::RefPtr _content;
