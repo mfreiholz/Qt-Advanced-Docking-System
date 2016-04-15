@@ -2,8 +2,10 @@
 #define DROP_OVERLAY_H
 
 #include <QPointer>
+#include <QHash>
 #include <QRect>
 #include <QFrame>
+class QGridLayout;
 
 #include "ads/API.h"
 
@@ -15,28 +17,33 @@ class DropSplitAreas;
 class DropOverlay : public QFrame
 {
 	Q_OBJECT
+	friend class DropSplitAreas;
 
 public:
 	DropOverlay(QWidget* parent);
 	virtual ~DropOverlay();
 
-	void setDropAreas(DropAreas areas);
-	void setFullAreaDropEnabled(bool enabled) { _fullAreaDrop = enabled; }
+	void setAllowedAreas(DropAreas areas);
+	DropAreas allowedAreas() const;
+
 	DropArea cursorLocation() const;
 
-	DropArea showDropOverlay(QWidget* target, DropAreas areas = AllAreas);
-	void showDropOverlay(QWidget* target, const QRect& targetAreaRect, DropAreas areas = AllAreas);
+	DropArea showDropOverlay(QWidget* target);
+	void showDropOverlay(QWidget* target, const QRect& targetAreaRect);
 	void hideDropOverlay();
 
 protected:
 	virtual void paintEvent(QPaintEvent *e);
+	virtual void showEvent(QShowEvent* e);
+	virtual void hideEvent(QHideEvent* e);
 	virtual void resizeEvent(QResizeEvent* e);
 	virtual void moveEvent(QMoveEvent* e);
 
 private:
+	DropAreas _allowedAreas;
 	DropSplitAreas* _splitAreas;
-	bool _fullAreaDrop;
 
+	bool _fullAreaDrop;
 	QPointer<QWidget> _target;
 	QRect _targetRect;
 	DropArea _lastLocation;
@@ -48,15 +55,18 @@ class DropSplitAreas : public QWidget
 	Q_OBJECT
 
 public:
-	DropSplitAreas(DropAreas areas, QWidget* parent);
+	DropSplitAreas(DropOverlay* overlay);
+	void reset();
 	DropArea cursorLocation() const;
+	void setWidgetForArea(QWidget* widget, DropArea area);
+
+protected:
+	virtual void showEvent(QShowEvent* e);
 
 private:
-	QWidget* _top;
-	QWidget* _right;
-	QWidget* _bottom;
-	QWidget* _left;
-	QWidget* _center;
+	DropOverlay* _overlay;
+	QHash<DropArea, QWidget*> _widgets;
+	QGridLayout* _grid;
 };
 
 ADS_NAMESPACE_END

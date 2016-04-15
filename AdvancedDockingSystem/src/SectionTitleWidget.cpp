@@ -83,6 +83,7 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 		SectionWidget* sw = cw->sectionAt(cw->mapFromGlobal(ev->globalPos()));
 		if (sw)
 		{
+			cw->_dropOverlay->setAllowedAreas(ADS_NS::AllAreas);
 			DropArea loc = cw->_dropOverlay->showDropOverlay(sw);
 			if (loc != InvalidDropArea)
 			{
@@ -194,25 +195,30 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 			section = cw->sectionAt(cw->mapFromGlobal(QCursor::pos()));
 			if (section)
 			{
+				cw->_dropOverlay->setAllowedAreas(ADS_NS::AllAreas);
 				cw->_dropOverlay->showDropOverlay(section);
 			}
 			// Mouse is at the edge of the ContainerWidget
 			// Top, Right, Bottom, Left
 			else if (cw->outerTopDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				cw->_dropOverlay->showDropOverlay(cw, cw->outerTopDropRect(), ADS_NS::TopDropArea);
+				cw->_dropOverlay->setAllowedAreas(ADS_NS::TopDropArea);
+				cw->_dropOverlay->showDropOverlay(cw, cw->outerTopDropRect());
 			}
 			else if (cw->outerRightDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				cw->_dropOverlay->showDropOverlay(cw, cw->outerRightDropRect(), ADS_NS::RightDropArea);
+				cw->_dropOverlay->setAllowedAreas(ADS_NS::RightDropArea);
+				cw->_dropOverlay->showDropOverlay(cw, cw->outerRightDropRect());
 			}
 			else if (cw->outerBottomDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				cw->_dropOverlay->showDropOverlay(cw, cw->outerBottomDropRect(), ADS_NS::BottomDropArea);
+				cw->_dropOverlay->setAllowedAreas(ADS_NS::BottomDropArea);
+				cw->_dropOverlay->showDropOverlay(cw, cw->outerBottomDropRect());
 			}
 			else if (cw->outerLeftDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				cw->_dropOverlay->showDropOverlay(cw, cw->outerLeftDropRect(), ADS_NS::LeftDropArea);
+				cw->_dropOverlay->setAllowedAreas(ADS_NS::LeftDropArea);
+				cw->_dropOverlay->showDropOverlay(cw, cw->outerLeftDropRect());
 			}
 			else
 			{

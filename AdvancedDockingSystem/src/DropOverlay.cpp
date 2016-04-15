@@ -26,41 +26,44 @@ static QWidget* createDropWidget(const QString& img)
 
 DropOverlay::DropOverlay(QWidget* parent) :
 	QFrame(parent),
-	_splitAreas(NULL),
+	_allowedAreas(InvalidDropArea),
+	_splitAreas(new DropSplitAreas(this)),
 	_fullAreaDrop(false),
 	_lastLocation(InvalidDropArea)
 {
 	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 	setWindowOpacity(0.2);
 	setWindowTitle("DropOverlay");
-	setVisible(false);
 
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
 	setLayout(l);
+
+	_splitAreas->setVisible(false);
+	setVisible(false);
 }
 
 DropOverlay::~DropOverlay()
 {
-	if (_splitAreas)
-	{
-		delete _splitAreas;
-		_splitAreas = NULL;
-	}
+	delete _splitAreas;
+	_splitAreas = NULL;
 }
 
-void DropOverlay::setDropAreas(DropAreas areas)
+void DropOverlay::setAllowedAreas(DropAreas areas)
 {
-	if (_splitAreas)
-	{
-		delete _splitAreas;
-		_splitAreas = NULL;
-	}
-	_splitAreas = new DropSplitAreas(areas, parentWidget());
+	if (areas == _allowedAreas)
+		return;
+	_allowedAreas = areas;
+
+	_splitAreas->reset();
 	_splitAreas->move(pos());
 	_splitAreas->resize(size());
-	_splitAreas->setVisible(false);
+}
+
+DropAreas DropOverlay::allowedAreas() const
+{
+	return _allowedAreas;
 }
 
 DropArea DropOverlay::cursorLocation() const
@@ -73,7 +76,7 @@ DropArea DropOverlay::cursorLocation() const
 	return loc;
 }
 
-DropArea DropOverlay::showDropOverlay(QWidget* target, DropAreas areas)
+DropArea DropOverlay::showDropOverlay(QWidget* target)
 {
 	if (_target == target)
 	{
@@ -86,54 +89,53 @@ DropArea DropOverlay::showDropOverlay(QWidget* target, DropAreas areas)
 		}
 		return da;
 	}
-	hideDropOverlay();
 
-	// Move directly over the "parent" widget.
-	setDropAreas(areas);
-	setFullAreaDropEnabled(false);
+	hideDropOverlay();
+	_fullAreaDrop = false;
+	_target = target;
+	_targetRect = QRect();
+	_lastLocation = InvalidDropArea;
+
+	// Move it over the target.
 	resize(target->size());
 	move(target->mapToGlobal(target->rect().topLeft()));
+
 	show();
-	_splitAreas->show();
-	_target = target;
+
 	return cursorLocation();
 }
 
-void DropOverlay::showDropOverlay(QWidget* target, const QRect& targetAreaRect, DropAreas areas)
+void DropOverlay::showDropOverlay(QWidget* target, const QRect& targetAreaRect)
 {
 	if (_target == target && _targetRect == targetAreaRect)
 	{
 		return;
 	}
-	hideDropOverlay();
 
-	// Create overlay and move it to the parent's areaRect
-//	MyOverlay = new DropOverlay(areas, parent);
-	setDropAreas(areas);
-	setFullAreaDropEnabled(true);
-	resize(targetAreaRect.size());
-	move(target->mapToGlobal(QPoint(targetAreaRect.x(), targetAreaRect.y())));
-	show();
-	_splitAreas->show();
+	hideDropOverlay();
+	_fullAreaDrop = true;
 	_target = target;
 	_targetRect = targetAreaRect;
+	_lastLocation = InvalidDropArea;
+
+	// Move it over the target's area.
+	resize(targetAreaRect.size());
+	move(target->mapToGlobal(QPoint(targetAreaRect.x(), targetAreaRect.y())));
+
+	show();
+
 	return;
 }
 
 void DropOverlay::hideDropOverlay()
 {
 	hide();
-	if (_splitAreas)
-	{
-		_splitAreas->hide();
-	}
-
+	_fullAreaDrop = false;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	_target.clear();
 #else
 	_target = 0;
 #endif
-
 	_targetRect = QRect();
 	_lastLocation = InvalidDropArea;
 }
@@ -189,70 +191,43 @@ void DropOverlay::paintEvent(QPaintEvent*)
 
 //	p.fillRect(r, QBrush(QColor(0, 100, 255), Qt::Dense4Pattern));
 //	p.setBrush(QBrush(QColor(0, 100, 255)));
-//	p.drawRect(r);
+	//	p.drawRect(r);
+}
+
+void DropOverlay::showEvent(QShowEvent*)
+{
+	_splitAreas->show();
+}
+
+void DropOverlay::hideEvent(QHideEvent*)
+{
+	_splitAreas->hide();
 }
 
 void DropOverlay::resizeEvent(QResizeEvent* e)
 {
-	// Keep it in center of DropOverlay
-	if (_splitAreas)
-	{
-		_splitAreas->resize(e->size());
-	}
+	_splitAreas->resize(e->size());
 }
 
 void DropOverlay::moveEvent(QMoveEvent* e)
 {
-	// Keep it in center of DropOverlay
-	if (_splitAreas)
-	{
-		_splitAreas->move(e->pos());
-	}
+	_splitAreas->move(e->pos());
 }
 
 ///////////////////////////////////////////////////////////////////////
 
-DropSplitAreas::DropSplitAreas(DropAreas areas, QWidget* parent) :
-	QWidget(parent),
-	_top(0),
-	_right(0),
-	_bottom(0),
-	_left(0),
-	_center(0)
+DropSplitAreas::DropSplitAreas(DropOverlay* overlay) :
+	QWidget(overlay->parentWidget()),
+	_overlay(overlay),
+	_widgets()
 {
 	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 	setWindowTitle("DropSplitAreas");
 	setAttribute(Qt::WA_TranslucentBackground);
 
-	QGridLayout* grid = new QGridLayout();
-	grid->setContentsMargins(0, 0, 0, 0);
-	grid->setSpacing(6);
-
-	if (areas.testFlag(ADS_NS::TopDropArea))
-	{
-		_top = createDropWidget(":/img/split-top.png");
-		grid->addWidget(_top, 0, 1, Qt::AlignHCenter | Qt::AlignBottom);
-	}
-	if (areas.testFlag(ADS_NS::RightDropArea))
-	{
-		_right = createDropWidget(":/img/split-right.png");
-		grid->addWidget(_right, 1, 2, Qt::AlignLeft | Qt::AlignVCenter);
-	}
-	if (areas.testFlag(ADS_NS::BottomDropArea))
-	{
-		_bottom = createDropWidget(":/img/split-bottom.png");
-		grid->addWidget(_bottom, 2, 1, Qt::AlignHCenter | Qt::AlignTop);
-	}
-	if (areas.testFlag(ADS_NS::LeftDropArea))
-	{
-		_left = createDropWidget(":/img/split-left.png");
-		grid->addWidget(_left, 1, 0, Qt::AlignRight | Qt::AlignVCenter);
-	}
-	if (areas.testFlag(ADS_NS::CenterDropArea))
-	{
-		_center = createDropWidget(":/img/dock-center.png");
-		grid->addWidget(_center, 1, 1, Qt::AlignCenter);
-	}
+	_grid = new QGridLayout();
+	_grid->setContentsMargins(0, 0, 0, 0);
+	_grid->setSpacing(6);
 
 	QBoxLayout* bl1 = new QBoxLayout(QBoxLayout::TopToBottom);
 	bl1->setContentsMargins(0, 0, 0, 0);
@@ -266,36 +241,125 @@ DropSplitAreas::DropSplitAreas(DropAreas areas, QWidget* parent) :
 	bl1->addStretch(1);
 	bl1->addLayout(bl2);
 	bl2->addStretch(1);
-	bl2->addLayout(grid, 0);
+	bl2->addLayout(_grid, 0);
 	bl2->addStretch(1);
 	bl1->addStretch(1);
 }
 
+void DropSplitAreas::reset()
+{
+	const DropAreas areas = _overlay->allowedAreas();
+
+	if (areas.testFlag(ADS_NS::TopDropArea))
+		setWidgetForArea(createDropWidget(":/img/split-top.png"), ADS_NS::TopDropArea);
+	else
+		setWidgetForArea(NULL, ADS_NS::TopDropArea);
+
+	if (areas.testFlag(ADS_NS::RightDropArea))
+		setWidgetForArea(createDropWidget(":/img/split-right.png"), ADS_NS::RightDropArea);
+	else
+		setWidgetForArea(NULL, ADS_NS::RightDropArea);
+
+	if (areas.testFlag(ADS_NS::BottomDropArea))
+		setWidgetForArea(createDropWidget(":/img/split-bottom.png"), ADS_NS::BottomDropArea);
+	else
+		setWidgetForArea(NULL, ADS_NS::BottomDropArea);
+
+	if (areas.testFlag(ADS_NS::LeftDropArea))
+		setWidgetForArea(createDropWidget(":/img/split-left.png"), ADS_NS::LeftDropArea);
+	else
+		setWidgetForArea(NULL, ADS_NS::LeftDropArea);
+
+	if (areas.testFlag(ADS_NS::CenterDropArea))
+		setWidgetForArea(createDropWidget(":/img/dock-center.png"), ADS_NS::CenterDropArea);
+	else
+		setWidgetForArea(NULL, ADS_NS::CenterDropArea);
+}
+
 DropArea DropSplitAreas::cursorLocation() const
 {
-	DropArea loc = InvalidDropArea;
-	QPoint pos = mapFromGlobal(QCursor::pos());
-	if (_top && _top->geometry().contains(pos))
+	const QPoint pos = mapFromGlobal(QCursor::pos());
+	QHashIterator<DropArea, QWidget*> i(_widgets);
+	while (i.hasNext())
 	{
-		loc = TopDropArea;
+		i.next();
+		if (_overlay->allowedAreas().testFlag(i.key())
+			&& i.value()
+			&& i.value()->isVisible()
+			&& i.value()->geometry().contains(pos))
+		{
+			return i.key();
+		}
 	}
-	else if (_right && _right->geometry().contains(pos))
+	return InvalidDropArea;
+}
+
+void DropSplitAreas::setWidgetForArea(QWidget* widget, DropArea area)
+{
+	QWidget* oldWidget = _widgets.take(area);
+	if (oldWidget)
 	{
-		loc = RightDropArea;
+		_grid->removeWidget(oldWidget);
+		delete oldWidget;
+		oldWidget = NULL;
 	}
-	else if (_bottom && _bottom->geometry().contains(pos))
+	if (!widget)
+		return;
+
+	switch (area)
 	{
-		loc = BottomDropArea;
+		case ADS_NS::TopDropArea:
+			_grid->addWidget(widget, 0, 1, Qt::AlignHCenter | Qt::AlignBottom);
+			break;
+		case ADS_NS::RightDropArea:
+			_grid->addWidget(widget, 1, 2, Qt::AlignLeft | Qt::AlignVCenter);
+			break;
+		case ADS_NS::BottomDropArea:
+			_grid->addWidget(widget, 2, 1, Qt::AlignHCenter | Qt::AlignTop);
+			break;
+		case ADS_NS::LeftDropArea:
+			_grid->addWidget(widget, 1, 0, Qt::AlignRight | Qt::AlignVCenter);
+			break;
+		case ADS_NS::CenterDropArea:
+			_grid->addWidget(widget, 1, 1, Qt::AlignCenter);
+			break;
+		default:
+			return;
 	}
-	else if (_left && _left->geometry().contains(pos))
-	{
-		loc = LeftDropArea;
-	}
-	else if (_center && _center->geometry().contains(pos))
-	{
-		loc = CenterDropArea;
-	}
-	return loc;
+	_widgets.insert(area, widget);
+	_grid->invalidate();
+
+//	if (area == ADS_NS::TopDropArea)
+//	{
+//		_top = createDropWidget(":/img/split-top.png");
+//		_grid->addWidget(_top, 0, 1, Qt::AlignHCenter | Qt::AlignBottom);
+//	}
+//	else if (area ==(ADS_NS::RightDropArea))
+//	{
+//		_right = createDropWidget(":/img/split-right.png");
+//		_grid->addWidget(_right, 1, 2, Qt::AlignLeft | Qt::AlignVCenter);
+//	}
+//	if (areas.testFlag(ADS_NS::BottomDropArea))
+//	{
+//		_bottom = createDropWidget(":/img/split-bottom.png");
+//		_grid->addWidget(_bottom, 2, 1, Qt::AlignHCenter | Qt::AlignTop);
+//	}
+//	if (areas.testFlag(ADS_NS::LeftDropArea))
+//	{
+//		_left = createDropWidget(":/img/split-left.png");
+//		_grid->addWidget(_left, 1, 0, Qt::AlignRight | Qt::AlignVCenter);
+//	}
+//	if (areas.testFlag(ADS_NS::CenterDropArea))
+//	{
+//		_center = createDropWidget(":/img/dock-center.png");
+//		_grid->addWidget(_center, 1, 1, Qt::AlignCenter);
+	//	}
+}
+
+void DropSplitAreas::showEvent(QShowEvent* e)
+{
+	resize(_overlay->size());
+	move(_overlay->pos());
 }
 
 ADS_NAMESPACE_END
