@@ -24,24 +24,21 @@ static QWidget* createDropWidget(const QString& img)
 
 ///////////////////////////////////////////////////////////////////////
 
-DropOverlay::DropOverlay(DropAreas areas, QWidget *parent) :
+DropOverlay::DropOverlay(QWidget* parent) :
 	QFrame(parent),
 	_splitAreas(NULL),
-	_fullAreaDrop(false)
+	_fullAreaDrop(false),
+	_lastLocation(InvalidDropArea)
 {
 	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 	setWindowOpacity(0.2);
 	setWindowTitle("DropOverlay");
+	setVisible(false);
 
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
 	setLayout(l);
-
-	_splitAreas = new DropSplitAreas(areas, parent);
-	_splitAreas->move(pos());
-	_splitAreas->resize(size());
-	_splitAreas->setVisible(true);
 }
 
 DropOverlay::~DropOverlay()
@@ -53,6 +50,19 @@ DropOverlay::~DropOverlay()
 	}
 }
 
+void DropOverlay::setDropAreas(DropAreas areas)
+{
+	if (_splitAreas)
+	{
+		delete _splitAreas;
+		_splitAreas = NULL;
+	}
+	_splitAreas = new DropSplitAreas(areas, parentWidget());
+	_splitAreas->move(pos());
+	_splitAreas->resize(size());
+	_splitAreas->setVisible(false);
+}
+
 DropArea DropOverlay::cursorLocation() const
 {
 	DropArea loc = InvalidDropArea;
@@ -61,6 +71,71 @@ DropArea DropOverlay::cursorLocation() const
 		loc = _splitAreas->cursorLocation();
 	}
 	return loc;
+}
+
+DropArea DropOverlay::showDropOverlay(QWidget* target, DropAreas areas)
+{
+	if (_target == target)
+	{
+		// Hint: We could update geometry of overlay here.
+		DropArea da = cursorLocation();
+		if (da != _lastLocation)
+		{
+			repaint();
+			_lastLocation = da;
+		}
+		return da;
+	}
+	hideDropOverlay();
+
+	// Move directly over the "parent" widget.
+	setDropAreas(areas);
+	setFullAreaDropEnabled(false);
+	resize(target->size());
+	move(target->mapToGlobal(target->rect().topLeft()));
+	show();
+	_splitAreas->show();
+	_target = target;
+	return cursorLocation();
+}
+
+void DropOverlay::showDropOverlay(QWidget* target, const QRect& targetAreaRect, DropAreas areas)
+{
+	if (_target == target && _targetRect == targetAreaRect)
+	{
+		return;
+	}
+	hideDropOverlay();
+
+	// Create overlay and move it to the parent's areaRect
+//	MyOverlay = new DropOverlay(areas, parent);
+	setDropAreas(areas);
+	setFullAreaDropEnabled(true);
+	resize(targetAreaRect.size());
+	move(target->mapToGlobal(QPoint(targetAreaRect.x(), targetAreaRect.y())));
+	show();
+	_splitAreas->show();
+	_target = target;
+	_targetRect = targetAreaRect;
+	return;
+}
+
+void DropOverlay::hideDropOverlay()
+{
+	hide();
+	if (_splitAreas)
+	{
+		_splitAreas->hide();
+	}
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+	_target.clear();
+#else
+	_target = 0;
+#endif
+
+	_targetRect = QRect();
+	_lastLocation = InvalidDropArea;
 }
 
 void DropOverlay::paintEvent(QPaintEvent*)
@@ -138,7 +213,7 @@ void DropOverlay::moveEvent(QMoveEvent* e)
 ///////////////////////////////////////////////////////////////////////
 
 DropSplitAreas::DropSplitAreas(DropAreas areas, QWidget* parent) :
-	AbstractDropAreas(parent),
+	QWidget(parent),
 	_top(0),
 	_right(0),
 	_bottom(0),
@@ -147,7 +222,6 @@ DropSplitAreas::DropSplitAreas(DropAreas areas, QWidget* parent) :
 {
 	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 	setWindowTitle("DropSplitAreas");
-
 	setAttribute(Qt::WA_TranslucentBackground);
 
 	QGridLayout* grid = new QGridLayout();
@@ -222,78 +296,6 @@ DropArea DropSplitAreas::cursorLocation() const
 		loc = CenterDropArea;
 	}
 	return loc;
-}
-
-// Globals ////////////////////////////////////////////////////////////
-
-static QPointer<DropOverlay> MyOverlay;
-static QPointer<QWidget> MyOverlayParent;
-static QRect MyOverlayParentRect;
-static DropArea MyOverlayLastLocation = InvalidDropArea;
-
-DropArea showDropOverlay(QWidget* parent, DropAreas areas)
-{
-	if (MyOverlay)
-	{
-		if (MyOverlayParent == parent)
-		{
-			// Hint: We could update geometry of overlay here.
-			DropArea da = MyOverlay->cursorLocation();
-			if (da != MyOverlayLastLocation)
-			{
-				MyOverlay->repaint();
-				MyOverlayLastLocation = da;
-			}
-			return da;
-		}
-		hideDropOverlay();
-	}
-
-	// Create new overlay and move it directly over the "parent" widget.
-	MyOverlay = new DropOverlay(areas, parent);
-	MyOverlay->resize(parent->size());
-	MyOverlay->move(parent->mapToGlobal(parent->rect().topLeft()));
-	MyOverlay->show();
-	MyOverlayParent = parent;
-	return MyOverlay->cursorLocation();
-}
-
-void showDropOverlay(QWidget* parent, const QRect& areaRect, DropAreas areas)
-{
-	if (MyOverlay)
-	{
-		if (MyOverlayParent == parent && MyOverlayParentRect == areaRect)
-		{
-			return;
-		}
-		hideDropOverlay();
-	}
-
-	// Create overlay and move it to the parent's areaRect
-	MyOverlay = new DropOverlay(areas, parent);
-	MyOverlay->setFullAreaDropEnabled(true);
-	MyOverlay->resize(areaRect.size());
-	MyOverlay->move(parent->mapToGlobal(QPoint(areaRect.x(), areaRect.y())));
-	MyOverlay->show();
-	MyOverlayParent = parent;
-	MyOverlayParentRect = areaRect;
-	return;
-}
-
-void hideDropOverlay()
-{
-	if (MyOverlay)
-	{
-		MyOverlay->hide();
-		delete MyOverlay;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-		MyOverlayParent.clear();
-#else
-		MyOverlayParent = 0;
-#endif
-		MyOverlayParentRect = QRect();
-		MyOverlayLastLocation = InvalidDropArea;
-	}
 }
 
 ADS_NAMESPACE_END

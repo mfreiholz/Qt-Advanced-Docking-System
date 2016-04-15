@@ -18,6 +18,7 @@ class QGridLayout;
 
 ADS_NAMESPACE_BEGIN
 class SectionWidget;
+class DropOverlay;
 class InternalContentData;
 
 
@@ -178,6 +179,9 @@ private:
 	Qt::Orientation _orientation;
 	QPointer<QSplitter> _splitter; // $mfreiholz: I'd like to remove this variable entirely,
 								   // because it changes during user interaction anyway.
+
+	// Drop overlay stuff.
+	QPointer<DropOverlay> _dropOverlay;
 };
 
 ADS_NAMESPACE_END

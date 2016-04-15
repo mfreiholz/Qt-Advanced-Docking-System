@@ -15,6 +15,7 @@
 #include "ads/SectionWidget.h"
 #include "ads/SectionTitleWidget.h"
 #include "ads/SectionContentWidget.h"
+#include "ads/DropOverlay.h"
 #include "ads/Serialization.h"
 
 ADS_NAMESPACE_BEGIN
@@ -36,7 +37,8 @@ ContainerWidget::ContainerWidget(QWidget *parent) :
 	QFrame(parent),
 	_mainLayout(NULL),
 	_orientation(Qt::Horizontal),
-	_splitter(NULL)
+	_splitter(NULL),
+	_dropOverlay(new DropOverlay(this))
 {
 	_mainLayout = new QGridLayout();
 	_mainLayout->setContentsMargins(9, 9, 9, 9);

@@ -1,6 +1,7 @@
 #ifndef DROP_OVERLAY_H
 #define DROP_OVERLAY_H
 
+#include <QPointer>
 #include <QRect>
 #include <QFrame>
 
@@ -16,10 +17,16 @@ class DropOverlay : public QFrame
 	Q_OBJECT
 
 public:
-	DropOverlay(DropAreas areas, QWidget* parent);
+	DropOverlay(QWidget* parent);
 	virtual ~DropOverlay();
+
+	void setDropAreas(DropAreas areas);
 	void setFullAreaDropEnabled(bool enabled) { _fullAreaDrop = enabled; }
 	DropArea cursorLocation() const;
+
+	DropArea showDropOverlay(QWidget* target, DropAreas areas = AllAreas);
+	void showDropOverlay(QWidget* target, const QRect& targetAreaRect, DropAreas areas = AllAreas);
+	void hideDropOverlay();
 
 protected:
 	virtual void paintEvent(QPaintEvent *e);
@@ -29,24 +36,20 @@ protected:
 private:
 	DropSplitAreas* _splitAreas;
 	bool _fullAreaDrop;
-};
 
-// AbstractDropAreas is used as base for drop area indicator widgets.
-class AbstractDropAreas : public QWidget
-{
-public:
-	AbstractDropAreas(QWidget* parent) : QWidget(parent) {}
-	virtual DropArea cursorLocation() const = 0;
+	QPointer<QWidget> _target;
+	QRect _targetRect;
+	DropArea _lastLocation;
 };
 
 // DropSplitAreas shows a cross with 5 different drop area possibilities.
-class DropSplitAreas : public AbstractDropAreas
+class DropSplitAreas : public QWidget
 {
 	Q_OBJECT
 
 public:
 	DropSplitAreas(DropAreas areas, QWidget* parent);
-	virtual DropArea cursorLocation() const;
+	DropArea cursorLocation() const;
 
 private:
 	QWidget* _top;
@@ -56,11 +59,5 @@ private:
 	QWidget* _center;
 };
 
-
-DropArea showDropOverlay(QWidget* parent, DropAreas areas = AllAreas);
-void showDropOverlay(QWidget* parent, const QRect& areaRect, DropAreas areas = AllAreas);
-void hideDropOverlay();
-
 ADS_NAMESPACE_END
 #endif
-

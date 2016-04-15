@@ -75,15 +75,15 @@ void SectionTitleWidget::mousePressEvent(QMouseEvent* ev)
 void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 {
 	SectionWidget* section = NULL;
+	ContainerWidget* cw = findParentContainerWidget(this);
 
 	// Drop contents of FloatingWidget into SectionWidget.
 	if (_fw)
 	{
-		ContainerWidget* cw = findParentContainerWidget(this);
 		SectionWidget* sw = cw->sectionAt(cw->mapFromGlobal(ev->globalPos()));
 		if (sw)
 		{
-			DropArea loc = showDropOverlay(sw);
+			DropArea loc = cw->_dropOverlay->showDropOverlay(sw);
 			if (loc != InvalidDropArea)
 			{
 #if !defined(ADS_ANIMATIONS_ENABLED)
@@ -170,7 +170,7 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 	// Reset
 	_dragStartPos = QPoint();
 	_tabMoving = false;
-	hideDropOverlay();
+	cw->_dropOverlay->hideDropOverlay();
 	QFrame::mouseReleaseEvent(ev);
 }
 
@@ -194,29 +194,29 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 			section = cw->sectionAt(cw->mapFromGlobal(QCursor::pos()));
 			if (section)
 			{
-				showDropOverlay(section);
+				cw->_dropOverlay->showDropOverlay(section);
 			}
 			// Mouse is at the edge of the ContainerWidget
 			// Top, Right, Bottom, Left
 			else if (cw->outerTopDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				showDropOverlay(cw, cw->outerTopDropRect(), ADS_NS::TopDropArea);
+				cw->_dropOverlay->showDropOverlay(cw, cw->outerTopDropRect(), ADS_NS::TopDropArea);
 			}
 			else if (cw->outerRightDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				showDropOverlay(cw, cw->outerRightDropRect(), ADS_NS::RightDropArea);
+				cw->_dropOverlay->showDropOverlay(cw, cw->outerRightDropRect(), ADS_NS::RightDropArea);
 			}
 			else if (cw->outerBottomDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				showDropOverlay(cw, cw->outerBottomDropRect(), ADS_NS::BottomDropArea);
+				cw->_dropOverlay->showDropOverlay(cw, cw->outerBottomDropRect(), ADS_NS::BottomDropArea);
 			}
 			else if (cw->outerLeftDropRect().contains(cw->mapFromGlobal(QCursor::pos())))
 			{
-				showDropOverlay(cw, cw->outerLeftDropRect(), ADS_NS::LeftDropArea);
+				cw->_dropOverlay->showDropOverlay(cw, cw->outerLeftDropRect(), ADS_NS::LeftDropArea);
 			}
 			else
 			{
-				hideDropOverlay();
+				cw->_dropOverlay->hideDropOverlay();
 			}
 		}
 		return;
