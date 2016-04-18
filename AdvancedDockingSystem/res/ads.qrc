@@ -1,17 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>img/dnd-thumbnail.png</file>
-        <file>img/dock-bottom.png</file>
-        <file>img/dock-center.png</file>
-        <file>img/dock-left.png</file>
-        <file>img/dock-right.png</file>
-        <file>img/dock-top.png</file>
-        <file>img/split-bottom.png</file>
-        <file>img/split-left.png</file>
-        <file>img/split-right.png</file>
-        <file>img/split-top.png</file>
-        <file>img/splitter-horizontal.png</file>
-        <file>img/splitter-vertical.png</file>
         <file>stylesheets/default-windows.css</file>
         <file>stylesheets/vendor-partsolutions.css</file>
         <file>stylesheets/modern-windows.css</file>

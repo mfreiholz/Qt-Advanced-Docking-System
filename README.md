@@ -71,6 +71,3 @@ This projects uses the [WTFPL license](http://www.wtfpl.net/)
 (Do **W**hat **T**he **F**uck You Want To **P**ublic **L**icense)
 
 Using it? Let us know by creating a [new issue](https://github.com/mfreiholz/qt-docks/issues/new) (You don't have to, of course).
-
-## Credits
-- Drop indicator images from [Code Project Article](http://www.codeproject.com/Articles/140209/Building-a-Docking-Window-Management-Solution-in-W)

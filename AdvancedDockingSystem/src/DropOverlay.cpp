@@ -14,12 +14,104 @@ ADS_NAMESPACE_BEGIN
 
 // Helper /////////////////////////////////////////////////////////////
 
-static QWidget* createDropWidget(const QString& img)
+static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size, DropArea dropArea)
 {
-	QLabel* label = new QLabel();
-	label->setObjectName("DropAreaLabel");
-	label->setPixmap(QPixmap(img));
-	return label;
+	const QColor borderColor = pal.color(QPalette::Active, QPalette::Highlight);
+	const QColor backgroundColor = pal.color(QPalette::Active, QPalette::Base);
+	const QColor areaBackgroundColor = pal.color(QPalette::Active, QPalette::Highlight).lighter(150);
+
+	QPixmap pm(size.width(), size.height());
+	pm.fill(QColor(0, 0, 0, 0));
+
+	QPainter p(&pm);
+	QPen pen = p.pen();
+	QRectF baseRect(pm.rect());
+
+	// Fill
+	p.fillRect(baseRect, backgroundColor);
+
+	// Drop area rect.
+	if (true)
+	{
+		p.save();
+		QRectF areaRect;
+		QLineF areaLine;
+		QLinearGradient gradient;
+		switch (dropArea)
+		{
+			case TopDropArea:
+				areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width(), baseRect.height() * .5f);
+				areaLine = QLineF(areaRect.bottomLeft(), areaRect.bottomRight());
+				gradient.setStart(areaRect.topLeft());
+				gradient.setFinalStop(areaRect.bottomLeft());
+				gradient.setColorAt(0.f, areaBackgroundColor);
+				gradient.setColorAt(1.f, areaBackgroundColor.lighter(120));
+				break;
+			case RightDropArea:
+				areaRect = QRectF(baseRect.width() * .5f, baseRect.y(), baseRect.width() * .5f, baseRect.height());
+				areaLine = QLineF(areaRect.topLeft(), areaRect.bottomLeft());
+				gradient.setStart(areaRect.topLeft());
+				gradient.setFinalStop(areaRect.topRight());
+				gradient.setColorAt(0.f, areaBackgroundColor.lighter(120));
+				gradient.setColorAt(1.f, areaBackgroundColor);
+				break;
+			case BottomDropArea:
+				areaRect = QRectF(baseRect.x(), baseRect.height() * .5f, baseRect.width(), baseRect.height() * .5f);
+				areaLine = QLineF(areaRect.topLeft(), areaRect.topRight());
+				gradient.setStart(areaRect.topLeft());
+				gradient.setFinalStop(areaRect.bottomLeft());
+				gradient.setColorAt(0.f, areaBackgroundColor.lighter(120));
+				gradient.setColorAt(1.f, areaBackgroundColor);
+				break;
+			case LeftDropArea:
+				areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width() * .5f, baseRect.height());
+				areaLine = QLineF(areaRect.topRight(), areaRect.bottomRight());
+				gradient.setStart(areaRect.topLeft());
+				gradient.setFinalStop(areaRect.topRight());
+				gradient.setColorAt(0.f, areaBackgroundColor);
+				gradient.setColorAt(1.f, areaBackgroundColor.lighter(120));
+				break;
+			case CenterDropArea:
+				break;
+		}
+		if (areaRect.isValid())
+		{
+			p.fillRect(areaRect, gradient);
+
+			pen = p.pen();
+			pen.setColor(borderColor);
+			pen.setStyle(Qt::DashLine);
+			p.setPen(pen);
+			p.drawLine(areaLine);
+		}
+		p.restore();
+	}
+
+	// Border
+	if (true)
+	{
+		p.save();
+		pen = p.pen();
+		pen.setColor(borderColor);
+		pen.setWidth(1);
+
+		p.setPen(pen);
+		p.drawRect(baseRect.adjusted(0, 0, -pen.width(), -pen.width()));
+		p.restore();
+	}
+	return pm;
+}
+
+static QWidget* createDropIndicatorWidget(DropArea dropArea)
+{
+	QLabel* l = new QLabel();
+	l->setObjectName("DropAreaLabel");
+
+	const qreal metric = static_cast<qreal>(l->fontMetrics().height()) * 2.f;
+	const QSizeF size(metric, metric);
+
+	l->setPixmap(createDropIndicatorPixmap(l->palette(), size, dropArea));
+	return l;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -42,11 +134,11 @@ DropOverlay::DropOverlay(QWidget* parent) :
 
 	// Cross with default drop area widgets.
 	QHash<DropArea, QWidget*> areaWidgets;
-	areaWidgets.insert(ADS_NS::TopDropArea, createDropWidget(":/img/split-top.png"));
-	areaWidgets.insert(ADS_NS::RightDropArea, createDropWidget(":/img/split-right.png"));
-	areaWidgets.insert(ADS_NS::BottomDropArea, createDropWidget(":/img/split-bottom.png"));
-	areaWidgets.insert(ADS_NS::LeftDropArea, createDropWidget(":/img/split-left.png"));
-	areaWidgets.insert(ADS_NS::CenterDropArea, createDropWidget(":/img/dock-center.png"));
+	areaWidgets.insert(ADS_NS::TopDropArea, createDropIndicatorWidget(TopDropArea)); //createDropWidget(":/img/split-top.png"));
+	areaWidgets.insert(ADS_NS::RightDropArea, createDropIndicatorWidget(RightDropArea));//createDropWidget(":/img/split-right.png"));
+	areaWidgets.insert(ADS_NS::BottomDropArea, createDropIndicatorWidget(BottomDropArea));//createDropWidget(":/img/split-bottom.png"));
+	areaWidgets.insert(ADS_NS::LeftDropArea, createDropIndicatorWidget(LeftDropArea));//createDropWidget(":/img/split-left.png"));
+	areaWidgets.insert(ADS_NS::CenterDropArea, createDropIndicatorWidget(CenterDropArea));//createDropWidget(":/img/dock-center.png"));
 	_cross->setAreaWidgets(areaWidgets);
 
 	_cross->setVisible(false);
