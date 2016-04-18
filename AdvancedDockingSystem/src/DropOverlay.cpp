@@ -40,6 +40,15 @@ DropOverlay::DropOverlay(QWidget* parent) :
 	l->setSpacing(0);
 	setLayout(l);
 
+	// Cross widget.
+	QHash<DropArea, QWidget*> areaWidgets;
+	areaWidgets.insert(ADS_NS::TopDropArea, createDropWidget(":/img/split-top.png"));
+	areaWidgets.insert(ADS_NS::RightDropArea, createDropWidget(":/img/split-right.png"));
+	areaWidgets.insert(ADS_NS::BottomDropArea, createDropWidget(":/img/split-bottom.png"));
+	areaWidgets.insert(ADS_NS::LeftDropArea, createDropWidget(":/img/split-left.png"));
+	areaWidgets.insert(ADS_NS::CenterDropArea, createDropWidget(":/img/dock-center.png"));
+	_cross->setAreaWidgets(areaWidgets);
+
 	_cross->setVisible(false);
 	setVisible(false);
 }
@@ -55,8 +64,8 @@ void DropOverlay::setAllowedAreas(DropAreas areas)
 	_allowedAreas = areas;
 
 	_cross->reset();
-	_cross->move(pos());
-	_cross->resize(size());
+//	_cross->move(pos());
+//	_cross->resize(size());
 }
 
 DropAreas DropOverlay::allowedAreas() const
@@ -66,12 +75,7 @@ DropAreas DropOverlay::allowedAreas() const
 
 DropArea DropOverlay::cursorLocation() const
 {
-	DropArea loc = InvalidDropArea;
-	if (_cross)
-	{
-		loc = _cross->cursorLocation();
-	}
-	return loc;
+	return _cross->cursorLocation();
 }
 
 DropArea DropOverlay::showDropOverlay(QWidget* target)
@@ -215,6 +219,24 @@ void DropOverlay::moveEvent(QMoveEvent* e)
 
 ///////////////////////////////////////////////////////////////////////
 
+static QPair<QPoint, int> gridPosForArea(const DropArea area)
+{
+	switch (area)
+	{
+		case ADS_NS::TopDropArea:
+			return qMakePair(QPoint(0, 1), (int) Qt::AlignHCenter | Qt::AlignBottom);
+		case ADS_NS::RightDropArea:
+			return qMakePair(QPoint(1, 2), (int) Qt::AlignLeft | Qt::AlignVCenter);
+		case ADS_NS::BottomDropArea:
+			return qMakePair(QPoint(2, 1), (int) Qt::AlignHCenter | Qt::AlignTop);
+		case ADS_NS::LeftDropArea:
+			return qMakePair(QPoint(1, 0), (int) Qt::AlignRight | Qt::AlignVCenter);
+		case ADS_NS::CenterDropArea:
+			return qMakePair(QPoint(1, 1), (int) Qt::AlignCenter);
+	}
+	return QPair<QPoint, int>();
+}
+
 DropOverlayCross::DropOverlayCross(DropOverlay* overlay) :
 	QWidget(overlay->parentWidget()),
 	_overlay(overlay),
@@ -245,34 +267,35 @@ DropOverlayCross::DropOverlayCross(DropOverlay* overlay) :
 	bl1->addStretch(1);
 }
 
-void DropOverlayCross::reset()
+DropOverlayCross::~DropOverlayCross()
 {
-	const DropAreas areas = _overlay->allowedAreas();
+}
 
-	if (areas.testFlag(ADS_NS::TopDropArea))
-		setWidgetForArea(createDropWidget(":/img/split-top.png"), ADS_NS::TopDropArea);
-	else
-		setWidgetForArea(NULL, ADS_NS::TopDropArea);
+void DropOverlayCross::setAreaWidgets(const QHash<DropArea, QWidget*>& widgets)
+{
+	// Delete old widgets.
+	QMutableHashIterator<DropArea, QWidget*> i(_widgets);
+	while (i.hasNext())
+	{
+		i.next();
+		QWidget* widget = i.value();
+		_grid->removeWidget(widget);
+		delete widget;
+		i.remove();
+	}
 
-	if (areas.testFlag(ADS_NS::RightDropArea))
-		setWidgetForArea(createDropWidget(":/img/split-right.png"), ADS_NS::RightDropArea);
-	else
-		setWidgetForArea(NULL, ADS_NS::RightDropArea);
-
-	if (areas.testFlag(ADS_NS::BottomDropArea))
-		setWidgetForArea(createDropWidget(":/img/split-bottom.png"), ADS_NS::BottomDropArea);
-	else
-		setWidgetForArea(NULL, ADS_NS::BottomDropArea);
-
-	if (areas.testFlag(ADS_NS::LeftDropArea))
-		setWidgetForArea(createDropWidget(":/img/split-left.png"), ADS_NS::LeftDropArea);
-	else
-		setWidgetForArea(NULL, ADS_NS::LeftDropArea);
-
-	if (areas.testFlag(ADS_NS::CenterDropArea))
-		setWidgetForArea(createDropWidget(":/img/dock-center.png"), ADS_NS::CenterDropArea);
-	else
-		setWidgetForArea(NULL, ADS_NS::CenterDropArea);
+	// Insert new widgets into grid.
+	_widgets = widgets;
+	QHashIterator<DropArea, QWidget*> i2(_widgets);
+	while (i2.hasNext())
+	{
+		i2.next();
+		const DropArea area = i2.key();
+		QWidget* widget = i2.value();
+		const QPair<QPoint, int> opts = gridPosForArea(area);
+		_grid->addWidget(widget, opts.first.x(), opts.first.y(), (Qt::Alignment) opts.second);
+	}
+	reset();
 }
 
 DropArea DropOverlayCross::cursorLocation() const
@@ -293,71 +316,30 @@ DropArea DropOverlayCross::cursorLocation() const
 	return InvalidDropArea;
 }
 
-void DropOverlayCross::setWidgetForArea(QWidget* widget, DropArea area)
-{
-	QWidget* oldWidget = _widgets.take(area);
-	if (oldWidget)
-	{
-		_grid->removeWidget(oldWidget);
-		delete oldWidget;
-		oldWidget = NULL;
-	}
-	if (!widget)
-		return;
-
-	switch (area)
-	{
-		case ADS_NS::TopDropArea:
-			_grid->addWidget(widget, 0, 1, Qt::AlignHCenter | Qt::AlignBottom);
-			break;
-		case ADS_NS::RightDropArea:
-			_grid->addWidget(widget, 1, 2, Qt::AlignLeft | Qt::AlignVCenter);
-			break;
-		case ADS_NS::BottomDropArea:
-			_grid->addWidget(widget, 2, 1, Qt::AlignHCenter | Qt::AlignTop);
-			break;
-		case ADS_NS::LeftDropArea:
-			_grid->addWidget(widget, 1, 0, Qt::AlignRight | Qt::AlignVCenter);
-			break;
-		case ADS_NS::CenterDropArea:
-			_grid->addWidget(widget, 1, 1, Qt::AlignCenter);
-			break;
-		default:
-			return;
-	}
-	_widgets.insert(area, widget);
-
-//	if (area == ADS_NS::TopDropArea)
-//	{
-//		_top = createDropWidget(":/img/split-top.png");
-//		_grid->addWidget(_top, 0, 1, Qt::AlignHCenter | Qt::AlignBottom);
-//	}
-//	else if (area ==(ADS_NS::RightDropArea))
-//	{
-//		_right = createDropWidget(":/img/split-right.png");
-//		_grid->addWidget(_right, 1, 2, Qt::AlignLeft | Qt::AlignVCenter);
-//	}
-//	if (areas.testFlag(ADS_NS::BottomDropArea))
-//	{
-//		_bottom = createDropWidget(":/img/split-bottom.png");
-//		_grid->addWidget(_bottom, 2, 1, Qt::AlignHCenter | Qt::AlignTop);
-//	}
-//	if (areas.testFlag(ADS_NS::LeftDropArea))
-//	{
-//		_left = createDropWidget(":/img/split-left.png");
-//		_grid->addWidget(_left, 1, 0, Qt::AlignRight | Qt::AlignVCenter);
-//	}
-//	if (areas.testFlag(ADS_NS::CenterDropArea))
-//	{
-//		_center = createDropWidget(":/img/dock-center.png");
-//		_grid->addWidget(_center, 1, 1, Qt::AlignCenter);
-	//	}
-}
-
 void DropOverlayCross::showEvent(QShowEvent*)
 {
 	resize(_overlay->size());
 	move(_overlay->pos());
+}
+
+void DropOverlayCross::reset()
+{
+	QList<DropArea> allAreas;
+	allAreas << ADS_NS::TopDropArea << ADS_NS::RightDropArea << ADS_NS::BottomDropArea << ADS_NS::LeftDropArea << ADS_NS::CenterDropArea;
+	const DropAreas allowedAreas = _overlay->allowedAreas();
+
+	// Update visibility of area widgets based on allowedAreas.
+	for (int i = 0; i < allAreas.count(); ++i)
+	{
+		const QPair<QPoint, int> opts = gridPosForArea(allAreas.at(i));
+
+		QLayoutItem* item = _grid->itemAtPosition(opts.first.x(), opts.first.y());
+		QWidget* w = NULL;
+		if (item && (w = item->widget()) != NULL)
+		{
+			w->setVisible(allowedAreas.testFlag(allAreas.at(i)));
+		}
+	}
 }
 
 ADS_NAMESPACE_END

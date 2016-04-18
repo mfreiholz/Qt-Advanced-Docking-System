@@ -851,7 +851,6 @@ bool ContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) const
 			se.sectionContents.append(sce); // std::move()?
 		}
 		sid.sections.append(se); // std::move()?
-		qDebug() << "Container section:" << se.x << se.y << se.width << se.height;
 	}
 	return true;
 }

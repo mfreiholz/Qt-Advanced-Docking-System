@@ -55,15 +55,20 @@ private:
 class DropOverlayCross : public QWidget
 {
 	Q_OBJECT
+	friend class DropOverlay;
 
 public:
 	DropOverlayCross(DropOverlay* overlay);
-	void reset();
+	virtual ~DropOverlayCross();
+
+	void setAreaWidgets(const QHash<DropArea, QWidget*>& widgets);
 	DropArea cursorLocation() const;
-	void setWidgetForArea(QWidget* widget, DropArea area);
 
 protected:
 	virtual void showEvent(QShowEvent* e);
+
+private:
+	void reset();
 
 private:
 	DropOverlay* _overlay;
