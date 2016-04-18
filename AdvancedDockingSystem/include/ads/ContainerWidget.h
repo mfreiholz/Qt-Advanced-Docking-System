@@ -112,6 +112,8 @@ public:
 	 */
 	QList<SectionContent::RefPtr> contents() const;
 
+	QPointer<DropOverlay> dropOverlay() const;
+
 private:
 	//
 	// Internal Stuff Begins Here

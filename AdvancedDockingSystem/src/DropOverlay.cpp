@@ -40,7 +40,7 @@ DropOverlay::DropOverlay(QWidget* parent) :
 	l->setSpacing(0);
 	setLayout(l);
 
-	// Cross widget.
+	// Cross with default drop area widgets.
 	QHash<DropArea, QWidget*> areaWidgets;
 	areaWidgets.insert(ADS_NS::TopDropArea, createDropWidget(":/img/split-top.png"));
 	areaWidgets.insert(ADS_NS::RightDropArea, createDropWidget(":/img/split-right.png"));
@@ -64,13 +64,16 @@ void DropOverlay::setAllowedAreas(DropAreas areas)
 	_allowedAreas = areas;
 
 	_cross->reset();
-//	_cross->move(pos());
-//	_cross->resize(size());
 }
 
 DropAreas DropOverlay::allowedAreas() const
 {
 	return _allowedAreas;
+}
+
+void DropOverlay::setAreaWidgets(const QHash<DropArea, QWidget*>& widgets)
+{
+	_cross->setAreaWidgets(widgets);
 }
 
 DropArea DropOverlay::cursorLocation() const
@@ -243,7 +246,7 @@ DropOverlayCross::DropOverlayCross(DropOverlay* overlay) :
 	_widgets()
 {
 	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
-	setWindowTitle("DropSplitAreas");
+	setWindowTitle("DropOverlayCross");
 	setAttribute(Qt::WA_TranslucentBackground);
 
 	_grid = new QGridLayout();

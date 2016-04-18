@@ -16,7 +16,7 @@ class DropOverlayCross;
  * DropOverlay paints a translucent rectangle over another widget. The geometry
  * of the rectangle is based on the mouse location.
  */
-class DropOverlay : public QFrame
+class ADS_EXPORT_API DropOverlay : public QFrame
 {
 	Q_OBJECT
 	friend class DropOverlayCross;
@@ -27,6 +27,8 @@ public:
 
 	void setAllowedAreas(DropAreas areas);
 	DropAreas allowedAreas() const;
+
+	void setAreaWidgets(const QHash<DropArea, QWidget*>& widgets);
 
 	DropArea cursorLocation() const;
 
@@ -51,7 +53,11 @@ private:
 	DropArea _lastLocation;
 };
 
-// DropOverlayCross shows a cross with 5 different drop area possibilities.
+/*!
+ * DropOverlayCross shows a cross with 5 different drop area possibilities.
+ * I could have handled everything inside DropOverlay, but because of some
+ * styling issues it's better to have a separate class for the cross.
+ */
 class DropOverlayCross : public QWidget
 {
 	Q_OBJECT

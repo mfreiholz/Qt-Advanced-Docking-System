@@ -11,6 +11,7 @@
 #include <QBoxLayout>
 
 #include "ads/SectionWidget.h"
+#include "ads/DropOverlay.h"
 
 #include "dialogs/SectionContentListWidget.h"
 
@@ -101,6 +102,18 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(_container, SIGNAL(sectionContentVisibilityChanged(SectionContent::RefPtr,bool)), this, SLOT(onSectionContentVisibilityChanged(SectionContent::RefPtr,bool)));
 #endif
 	setCentralWidget(_container);
+
+	// Optional: Use custom drop area widgets.
+	if (false)
+	{
+		QHash<ADS_NS::DropArea, QWidget*> areaWidgets;
+		areaWidgets.insert(ADS_NS::TopDropArea, new QPushButton("TOP"));
+		areaWidgets.insert(ADS_NS::RightDropArea, new QPushButton("RIGHT"));
+		areaWidgets.insert(ADS_NS::BottomDropArea, new QPushButton("BOTTOM"));
+		areaWidgets.insert(ADS_NS::LeftDropArea, new QPushButton("LEFT"));
+		areaWidgets.insert(ADS_NS::CenterDropArea, new QPushButton("CENTER"));
+		_container->dropOverlay()->setAreaWidgets(areaWidgets);
+	}
 
 	// ADS - Adding some contents.
 	// Test #1: Use high-level public API

@@ -434,6 +434,11 @@ QList<SectionContent::RefPtr> ContainerWidget::contents() const
 	return sl;
 }
 
+QPointer<DropOverlay> ContainerWidget::dropOverlay() const
+{
+	return _dropOverlay;
+}
+
 ///////////////////////////////////////////////////////////////////////
 // PRIVATE API BEGINS HERE
 ///////////////////////////////////////////////////////////////////////
