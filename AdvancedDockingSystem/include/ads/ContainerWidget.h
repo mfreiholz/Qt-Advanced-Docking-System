@@ -29,7 +29,6 @@ class InternalContentData;
 class ADS_EXPORT_API ContainerWidget : public QFrame
 {
 	Q_OBJECT
-	Q_PROPERTY(Qt::Orientation orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
 
 	friend class SectionContent;
 	friend class SectionWidget;
@@ -44,9 +43,6 @@ public:
 	//
 	// Public API
 	//
-
-	Qt::Orientation orientation() const;
-	void setOrientation(Qt::Orientation orientation);
 
 	/*!
 	 * Adds the section-content <em>sc</em> to this container-widget into the section-widget <em>sw</em>.

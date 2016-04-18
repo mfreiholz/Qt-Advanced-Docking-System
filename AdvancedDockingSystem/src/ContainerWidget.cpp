@@ -67,20 +67,6 @@ ContainerWidget::~ContainerWidget()
 	_swLookupMapById.clear();
 }
 
-Qt::Orientation ContainerWidget::orientation() const
-{
-	return _orientation;
-}
-
-void ContainerWidget::setOrientation(Qt::Orientation orientation)
-{
-	if (_orientation != orientation)
-	{
-		_orientation = orientation;
-		emit orientationChanged();
-	}
-}
-
 SectionWidget* ContainerWidget::addSectionContent(const SectionContent::RefPtr& sc, SectionWidget* sw, DropArea area)
 {
 	if (!sw)

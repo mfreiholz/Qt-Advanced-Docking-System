@@ -93,7 +93,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	// ADS - Create main container (ContainerWidget).
 	_container = new ADS_NS::ContainerWidget();
-	_container->setOrientation(Qt::Vertical);
 #if QT_VERSION >= 0x050000
 	QObject::connect(_container, &ADS_NS::ContainerWidget::activeTabChanged, this, &MainWindow::onActiveTabChanged);
 	QObject::connect(_container, &ADS_NS::ContainerWidget::sectionContentVisibilityChanged, this, &MainWindow::onSectionContentVisibilityChanged);

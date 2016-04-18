@@ -27,7 +27,7 @@ static QWidget* createDropWidget(const QString& img)
 DropOverlay::DropOverlay(QWidget* parent) :
 	QFrame(parent),
 	_allowedAreas(InvalidDropArea),
-	_splitAreas(new DropOverlayCross(this)),
+	_cross(new DropOverlayCross(this)),
 	_fullAreaDrop(false),
 	_lastLocation(InvalidDropArea)
 {
@@ -40,7 +40,7 @@ DropOverlay::DropOverlay(QWidget* parent) :
 	l->setSpacing(0);
 	setLayout(l);
 
-	_splitAreas->setVisible(false);
+	_cross->setVisible(false);
 	setVisible(false);
 }
 
@@ -54,9 +54,9 @@ void DropOverlay::setAllowedAreas(DropAreas areas)
 		return;
 	_allowedAreas = areas;
 
-	_splitAreas->reset();
-	_splitAreas->move(pos());
-	_splitAreas->resize(size());
+	_cross->reset();
+	_cross->move(pos());
+	_cross->resize(size());
 }
 
 DropAreas DropOverlay::allowedAreas() const
@@ -67,9 +67,9 @@ DropAreas DropOverlay::allowedAreas() const
 DropArea DropOverlay::cursorLocation() const
 {
 	DropArea loc = InvalidDropArea;
-	if (_splitAreas)
+	if (_cross)
 	{
-		loc = _splitAreas->cursorLocation();
+		loc = _cross->cursorLocation();
 	}
 	return loc;
 }
@@ -195,22 +195,22 @@ void DropOverlay::paintEvent(QPaintEvent*)
 
 void DropOverlay::showEvent(QShowEvent*)
 {
-	_splitAreas->show();
+	_cross->show();
 }
 
 void DropOverlay::hideEvent(QHideEvent*)
 {
-	_splitAreas->hide();
+	_cross->hide();
 }
 
 void DropOverlay::resizeEvent(QResizeEvent* e)
 {
-	_splitAreas->resize(e->size());
+	_cross->resize(e->size());
 }
 
 void DropOverlay::moveEvent(QMoveEvent* e)
 {
-	_splitAreas->move(e->pos());
+	_cross->move(e->pos());
 }
 
 ///////////////////////////////////////////////////////////////////////
