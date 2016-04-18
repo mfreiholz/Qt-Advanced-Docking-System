@@ -71,7 +71,7 @@ static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size
 				gradient.setColorAt(0.f, areaBackgroundColor);
 				gradient.setColorAt(1.f, areaBackgroundColor.lighter(120));
 				break;
-			case CenterDropArea:
+			default:
 				break;
 		}
 		if (areaRect.isValid())
@@ -328,8 +328,9 @@ static QPair<QPoint, int> gridPosForArea(const DropArea area)
 			return qMakePair(QPoint(1, 0), (int) Qt::AlignRight | Qt::AlignVCenter);
 		case ADS_NS::CenterDropArea:
 			return qMakePair(QPoint(1, 1), (int) Qt::AlignCenter);
+		default:
+			return QPair<QPoint, int>();
 	}
-	return QPair<QPoint, int>();
 }
 
 DropOverlayCross::DropOverlayCross(DropOverlay* overlay) :
