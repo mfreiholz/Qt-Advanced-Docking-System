@@ -27,7 +27,7 @@ static QWidget* createDropWidget(const QString& img)
 DropOverlay::DropOverlay(QWidget* parent) :
 	QFrame(parent),
 	_allowedAreas(InvalidDropArea),
-	_splitAreas(new DropSplitAreas(this)),
+	_splitAreas(new DropOverlayCross(this)),
 	_fullAreaDrop(false),
 	_lastLocation(InvalidDropArea)
 {
@@ -46,8 +46,6 @@ DropOverlay::DropOverlay(QWidget* parent) :
 
 DropOverlay::~DropOverlay()
 {
-	delete _splitAreas;
-	_splitAreas = NULL;
 }
 
 void DropOverlay::setAllowedAreas(DropAreas areas)
@@ -143,13 +141,14 @@ void DropOverlay::hideDropOverlay()
 void DropOverlay::paintEvent(QPaintEvent*)
 {
 	QPainter p(this);
+	const QColor areaColor = palette().color(QPalette::Active, QPalette::Highlight);//QColor(0, 100, 255)
 
 	// Always draw drop-rect over the entire rect()
 	if (_fullAreaDrop)
 	{
 		QRect r = rect();
-		p.fillRect(r, QBrush(QColor(0, 100, 255), Qt::Dense4Pattern));
-		p.setBrush(QBrush(QColor(0, 100, 255)));
+		p.fillRect(r, QBrush(areaColor, Qt::Dense4Pattern));
+		p.setBrush(QBrush(areaColor));
 		p.drawRect(r);
 		return;
 	}
@@ -179,8 +178,8 @@ void DropOverlay::paintEvent(QPaintEvent*)
 	}
 	if (!r.isNull())
 	{
-		p.fillRect(r, QBrush(QColor(0, 100, 255), Qt::Dense4Pattern));
-		p.setBrush(QBrush(QColor(0, 100, 255)));
+		p.fillRect(r, QBrush(areaColor, Qt::Dense4Pattern));
+		p.setBrush(QBrush(areaColor));
 		p.drawRect(r);
 	}
 
@@ -216,7 +215,7 @@ void DropOverlay::moveEvent(QMoveEvent* e)
 
 ///////////////////////////////////////////////////////////////////////
 
-DropSplitAreas::DropSplitAreas(DropOverlay* overlay) :
+DropOverlayCross::DropOverlayCross(DropOverlay* overlay) :
 	QWidget(overlay->parentWidget()),
 	_overlay(overlay),
 	_widgets()
@@ -246,7 +245,7 @@ DropSplitAreas::DropSplitAreas(DropOverlay* overlay) :
 	bl1->addStretch(1);
 }
 
-void DropSplitAreas::reset()
+void DropOverlayCross::reset()
 {
 	const DropAreas areas = _overlay->allowedAreas();
 
@@ -276,7 +275,7 @@ void DropSplitAreas::reset()
 		setWidgetForArea(NULL, ADS_NS::CenterDropArea);
 }
 
-DropArea DropSplitAreas::cursorLocation() const
+DropArea DropOverlayCross::cursorLocation() const
 {
 	const QPoint pos = mapFromGlobal(QCursor::pos());
 	QHashIterator<DropArea, QWidget*> i(_widgets);
@@ -294,7 +293,7 @@ DropArea DropSplitAreas::cursorLocation() const
 	return InvalidDropArea;
 }
 
-void DropSplitAreas::setWidgetForArea(QWidget* widget, DropArea area)
+void DropOverlayCross::setWidgetForArea(QWidget* widget, DropArea area)
 {
 	QWidget* oldWidget = _widgets.take(area);
 	if (oldWidget)
@@ -327,7 +326,6 @@ void DropSplitAreas::setWidgetForArea(QWidget* widget, DropArea area)
 			return;
 	}
 	_widgets.insert(area, widget);
-	_grid->invalidate();
 
 //	if (area == ADS_NS::TopDropArea)
 //	{
@@ -356,7 +354,7 @@ void DropSplitAreas::setWidgetForArea(QWidget* widget, DropArea area)
 	//	}
 }
 
-void DropSplitAreas::showEvent(QShowEvent* e)
+void DropOverlayCross::showEvent(QShowEvent*)
 {
 	resize(_overlay->size());
 	move(_overlay->pos());

@@ -10,14 +10,14 @@ class QGridLayout;
 #include "ads/API.h"
 
 ADS_NAMESPACE_BEGIN
-class DropSplitAreas;
+class DropOverlayCross;
 
 // DropOverlay paints a translucent rectangle over another widget.
 // It can also show different types of drop area indicators.
 class DropOverlay : public QFrame
 {
 	Q_OBJECT
-	friend class DropSplitAreas;
+	friend class DropOverlayCross;
 
 public:
 	DropOverlay(QWidget* parent);
@@ -41,7 +41,7 @@ protected:
 
 private:
 	DropAreas _allowedAreas;
-	DropSplitAreas* _splitAreas;
+	DropOverlayCross* _splitAreas;
 
 	bool _fullAreaDrop;
 	QPointer<QWidget> _target;
@@ -50,12 +50,12 @@ private:
 };
 
 // DropSplitAreas shows a cross with 5 different drop area possibilities.
-class DropSplitAreas : public QWidget
+class DropOverlayCross : public QWidget
 {
 	Q_OBJECT
 
 public:
-	DropSplitAreas(DropOverlay* overlay);
+	DropOverlayCross(DropOverlay* overlay);
 	void reset();
 	DropArea cursorLocation() const;
 	void setWidgetForArea(QWidget* widget, DropArea area);
