@@ -6,12 +6,11 @@
 
 static void initStyleSheet(QApplication& a)
 {
-	QFile f(":/stylesheets/default-windows.css");
-//	QFile f(":/stylesheets/modern-windows.css");
-//	QFile f(":/stylesheets/vendor-partsolutions.css");
+	//Q_INIT_RESOURCE(ads); // If static linked.
+	QFile f(":ads/stylesheets/default-windows.css");
 	if (f.open(QFile::ReadOnly))
 	{
-		QByteArray ba = f.readAll();
+		const QByteArray ba = f.readAll();
 		f.close();
 		a.setStyleSheet(QString(ba));
 	}
@@ -20,7 +19,6 @@ static void initStyleSheet(QApplication& a)
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	//Q_INIT_RESOURCE(ads);
 	a.setQuitOnLastWindowClosed(true);
 	initStyleSheet(a);
 

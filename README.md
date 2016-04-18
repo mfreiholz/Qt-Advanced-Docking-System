@@ -1,5 +1,5 @@
 # Advanced Docking System
-![Travis Build](https://travis-ci.org/mfreiholz/Qt-Advanced-Docking-System.svg?branch=master)
+[![Travis Build](https://travis-ci.org/mfreiholz/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/mfreiholz/Qt-Advanced-Docking-System)
 
 Manages content widgets more like Visual Studio or similar programs.
 I also try to get everything done with basic Qt functionality.
@@ -58,6 +58,29 @@ MyWindow::MyWindow(QWidget* parent) : QMainWindow(parent)
 	
 	_sc1 = ADS_NS::SectionContent::newSectionContent(QString("Unique-Internal-Name"), _container, new QLabel("Visible Title"), new QLabel("Content Widget"));
 	_container->addSectionContent(_sc1, NULL, ADS_NS::CenterDropArea);
+}
+
+static void initStyleSheet(QApplication& a)
+{
+	//Q_INIT_RESOURCE(ads); // If static linked.
+	QFile f(":ads/stylesheets/default-windows.css");
+	if (f.open(QFile::ReadOnly))
+	{
+		const QByteArray ba = f.readAll();
+		f.close();
+		a.setStyleSheet(QString(ba));
+	}
+}
+
+int main(int argc, char *argv[])
+{
+	QApplication a(argc, argv);
+	a.setQuitOnLastWindowClosed(true);
+	initStyleSheet(a);
+
+	MainWindow mw;
+	mw.show();
+	return a.exec();
 }
 ```
 
