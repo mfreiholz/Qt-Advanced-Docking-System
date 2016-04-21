@@ -69,6 +69,7 @@ ContainerWidget::~ContainerWidget()
 
 SectionWidget* ContainerWidget::addSectionContent(const SectionContent::RefPtr& sc, SectionWidget* sw, DropArea area)
 {
+	ADS_Expects(!sc.isNull());
 	if (!sw)
 	{
 		if (_sections.isEmpty())
@@ -98,6 +99,8 @@ SectionWidget* ContainerWidget::addSectionContent(const SectionContent::RefPtr& 
 
 bool ContainerWidget::removeSectionContent(const SectionContent::RefPtr& sc)
 {
+	ADS_Expects(!sc.isNull());
+
 	// Hide the content.
 	// The hideSectionContent() automatically deletes no longer required SectionWidget objects.
 	if (!hideSectionContent(sc))
@@ -141,6 +144,8 @@ bool ContainerWidget::removeSectionContent(const SectionContent::RefPtr& sc)
 
 bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 {
+	ADS_Expects(!sc.isNull());
+
 	// Search SC in floatings
 	for (int i = 0; i < _floatings.count(); ++i)
 	{
@@ -194,6 +199,8 @@ bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 
 bool ContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
 {
+	ADS_Expects(!sc.isNull());
+
 	// Search SC in floatings
 	// We can simply hide floatings, nothing else required.
 	for (int i = 0; i < _floatings.count(); ++i)
@@ -248,6 +255,8 @@ bool ContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
 
 bool ContainerWidget::raiseSectionContent(const SectionContent::RefPtr& sc)
 {
+	ADS_Expects(!sc.isNull());
+
 	// Search SC in sections
 	for (int i = 0; i < _sections.count(); ++i)
 	{
@@ -280,6 +289,8 @@ bool ContainerWidget::raiseSectionContent(const SectionContent::RefPtr& sc)
 
 bool ContainerWidget::isSectionContentVisible(const SectionContent::RefPtr& sc)
 {
+	ADS_Expects(!sc.isNull());
+
 	// Search SC in floatings
 	for (int i = 0; i < _floatings.count(); ++i)
 	{
@@ -481,6 +492,8 @@ SectionWidget* ContainerWidget::newSectionWidget()
 
 SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive)
 {
+	ADS_Expects(targetSection != NULL);
+
 	SectionWidget* ret = NULL;
 
 	// Drop on outer area
@@ -605,6 +618,8 @@ SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, Sec
 
 void ContainerWidget::addSection(SectionWidget* section)
 {
+	ADS_Expects(section != NULL);
+
 	// Create default splitter.
 	if (!_splitter)
 	{
@@ -635,6 +650,8 @@ SectionWidget* ContainerWidget::sectionAt(const QPoint& pos) const
 
 SectionWidget* ContainerWidget::dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append)
 {
+	ADS_Expects(l != NULL);
+
 	SectionWidget* sw = newSectionWidget();
 	sw->addContent(data, true);
 
@@ -1200,6 +1217,8 @@ bool ContainerWidget::restoreSectionWidgets(QDataStream& in, int version, QSplit
 
 bool ContainerWidget::takeContent(const SectionContent::RefPtr& sc, InternalContentData& data)
 {
+	ADS_Expects(!sc.isNull());
+
 	// Search in sections
 	bool found = false;
 	for (int i = 0; i < _sections.count() && !found; ++i)

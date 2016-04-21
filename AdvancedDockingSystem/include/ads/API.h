@@ -39,6 +39,10 @@ class QSplitter;
 // Width of the native window frame border (based on OS).
 #define ADS_WINDOW_FRAME_BORDER_WIDTH 7
 
+// Beautiful C++ stuff.
+#define ADS_Expects(cond)
+#define ADS_Ensures(cond)
+
 // Indicates whether ADS should include animations.
 //#define ADS_ANIMATIONS_ENABLED 1
 //#define ADS_ANIMATION_DURATION 150
