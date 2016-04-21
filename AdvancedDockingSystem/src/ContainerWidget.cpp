@@ -278,6 +278,35 @@ bool ContainerWidget::raiseSectionContent(const SectionContent::RefPtr& sc)
 	return false;
 }
 
+bool ContainerWidget::isSectionContentVisible(const SectionContent::RefPtr& sc)
+{
+	// Search SC in floatings
+	for (int i = 0; i < _floatings.count(); ++i)
+	{
+		const bool found = _floatings.at(i)->content()->uid() == sc->uid();
+		if (!found)
+			continue;
+		return _floatings.at(i)->isVisible();
+	}
+
+	// Search SC in sections
+	for (int i = 0; i < _sections.count(); ++i)
+	{
+		SectionWidget* sw = _sections.at(i);
+		const int index = sw->indexOfContent(sc);
+		if (index < 0)
+			continue;
+		return true;
+	}
+
+	// Search SC in hidden
+	if (_hiddenSectionContents.contains(sc->uid()))
+		return false;
+
+	qWarning() << "SectionContent is not a part of this ContainerWidget:" << sc->uniqueName();
+	return false;
+}
+
 QMenu* ContainerWidget::createContextMenu() const
 {
 	// Fill map with actions (sorted by key!)

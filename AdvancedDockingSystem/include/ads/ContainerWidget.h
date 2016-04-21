@@ -78,6 +78,11 @@ public:
 	bool raiseSectionContent(const SectionContent::RefPtr& sc);
 
 	/*!
+	 * Indicates whether the SectionContent <em>sc</em> is visible.
+	 */
+	bool isSectionContentVisible(const SectionContent::RefPtr& sc);
+
+	/*!
 	 * Creates a QMenu based on available SectionContents.
 	 * The caller is responsible to delete the menu.
 	 */

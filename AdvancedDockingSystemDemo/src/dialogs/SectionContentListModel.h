@@ -23,6 +23,7 @@ public:
 		UidColumn,
 		UniqueNameColumn,
 		TitleColumn,
+		VisibleColumn
 	};
 
 	SectionContentListModel(QObject* parent);

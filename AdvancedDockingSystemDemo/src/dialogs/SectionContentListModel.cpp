@@ -6,6 +6,7 @@ SectionContentListModel::SectionContentListModel(QObject* parent) :
 	_headers.insert(UidColumn, "UID");
 	_headers.insert(UniqueNameColumn, "Unique Name");
 	_headers.insert(TitleColumn, "Title");
+	_headers.insert(VisibleColumn, "Visible");
 }
 
 SectionContentListModel::~SectionContentListModel()
@@ -66,6 +67,8 @@ QVariant SectionContentListModel::data(const QModelIndex& index, int role) const
 					return sc->uniqueName();
 				case TitleColumn:
 					return sc->title();
+				case VisibleColumn:
+					return _cw->isSectionContentVisible(sc);
 			}
 		}
 	}
