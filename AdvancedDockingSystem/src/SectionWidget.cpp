@@ -194,6 +194,9 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 #endif
 		title->disconnect(this);
 		title->setParent(_container);
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+		title->setAttribute(Qt::WA_WState_Created, true); /* fix: floating rubberband #16 */
+#endif
 	}
 
 	// Content wrapper widget (CONTENT)
@@ -201,9 +204,6 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 	if (content)
 	{
 		_contentsLayout->removeWidget(content);
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-		content->setAttribute(Qt::WA_WState_Created, false); /* fix: floating rubberband #16 */
-#endif
 		content->disconnect(this);
 		content->setParent(_container);
 	}
