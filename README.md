@@ -1,5 +1,6 @@
 # Advanced Docking System
 [![Travis Build](https://travis-ci.org/mfreiholz/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/mfreiholz/Qt-Advanced-Docking-System)
+[![Gitter](https://badges.gitter.im/mfreiholz/Qt-Advanced-Docking-System.svg)](https://gitter.im/mfreiholz/Qt-Advanced-Docking-System?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 Manages content widgets more like Visual Studio or similar programs.
 I also try to get everything done with basic Qt functionality.
