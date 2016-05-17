@@ -7,6 +7,7 @@
 #include <QFrame>
 class QBoxLayout;
 class QStackedLayout;
+class QScrollArea;
 
 #include "ads/API.h"
 #include "ads/Internal.h"
@@ -61,7 +62,12 @@ private:
 	QList<SectionTitleWidget*> _sectionTitles;
 	QList<SectionContentWidget*> _sectionContents;
 
+	QBoxLayout* _topLayout;
+	QScrollArea* _tabsScrollArea;
+	QWidget* _tabsContainerWidget;
 	QBoxLayout *_tabsLayout;
+	int _tabsLayoutInitCount;
+
 	QStackedLayout *_contentsLayout;
 
 	QPoint _mousePressPoint;

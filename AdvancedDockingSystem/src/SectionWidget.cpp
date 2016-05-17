@@ -10,6 +10,7 @@
 #include <QStyle>
 #include <QSplitter>
 #include <QPushButton>
+#include <QScrollArea>
 
 #if defined(ADS_ANIMATIONS_ENABLED)
 #include <QGraphicsDropShadowEffect>
@@ -34,6 +35,7 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	_uid(GetNextUid()),
 	_container(parent),
 	_tabsLayout(NULL),
+	_tabsLayoutInitCount(0),
 	_contentsLayout(NULL),
 	_mousePressTitleWidget(NULL)
 {
@@ -42,11 +44,26 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	l->setSpacing(0);
 	setLayout(l);
 
+	/* top area with tabs and close button */
+
+	_topLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+	_topLayout->setContentsMargins(0, 0, 0, 0);
+	_topLayout->setSpacing(0);
+	l->addLayout(_topLayout);
+
+	_tabsScrollArea = new QScrollArea(this);
+	_tabsScrollArea->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	_tabsScrollArea->setWidgetResizable(true);
+	_topLayout->addWidget(_tabsScrollArea, 1);
+
+	_tabsContainerWidget = new QWidget(_tabsScrollArea);
+	_tabsScrollArea->setWidget(_tabsContainerWidget);
+
 	_tabsLayout = new QBoxLayout(QBoxLayout::LeftToRight);
 	_tabsLayout->setContentsMargins(0, 0, 0, 0);
 	_tabsLayout->setSpacing(0);
 	_tabsLayout->addStretch(1);
-	l->addLayout(_tabsLayout);
+	_tabsContainerWidget->setLayout(_tabsLayout);
 
 	QPushButton* closeButton = new QPushButton();
 	closeButton->setObjectName("closeButton");
@@ -54,12 +71,16 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	closeButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarCloseButton));
 	closeButton->setToolTip(tr("Close"));
 	closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	_tabsLayout->addWidget(closeButton);
+	_topLayout->addWidget(closeButton, 0);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QObject::connect(closeButton, &QPushButton::clicked, this, &SectionWidget::onCloseButtonClicked);
 #else
 	QObject::connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
 #endif
+
+	_tabsLayoutInitCount = _tabsLayout->count();
+
+	/* central area with contents */
 
 	_contentsLayout = new QStackedLayout();
 	_contentsLayout->setContentsMargins(0, 0, 0, 0);
@@ -104,7 +125,7 @@ ContainerWidget* SectionWidget::containerWidget() const
 
 QRect SectionWidget::titleAreaGeometry() const
 {
-	return _tabsLayout->geometry();
+	return _topLayout->geometry();
 }
 
 QRect SectionWidget::contentAreaGeometry() const
@@ -118,7 +139,7 @@ void SectionWidget::addContent(const SectionContent::RefPtr& c)
 
 	SectionTitleWidget* title = new SectionTitleWidget(c, NULL);
 	_sectionTitles.append(title);
-	_tabsLayout->insertWidget(_tabsLayout->count() - 2, title);
+	_tabsLayout->insertWidget(_tabsLayout->count() - 1, title);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QObject::connect(title, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
 #else
@@ -144,7 +165,7 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 	// Add title-widget to tab-bar
 	// #FIX: Make it visible, since it is possible that it was hidden previously.
 	_sectionTitles.append(data.titleWidget);
-	_tabsLayout->insertWidget(_tabsLayout->count() - 2, data.titleWidget);
+	_tabsLayout->insertWidget(_tabsLayout->count() - 1, data.titleWidget);
 	data.titleWidget->setVisible(true);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QObject::connect(data.titleWidget, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
