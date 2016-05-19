@@ -162,7 +162,6 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 		const int fromIndex = section->indexOfContent(_content);
 		const int toIndex = section->indexOfContentByTitlePos(pos, this);
 		section->moveContent(fromIndex, toIndex);
-		section->layout()->update();
 	}
 
 	if (!_dragStartPos.isNull())

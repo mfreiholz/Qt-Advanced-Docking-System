@@ -10,7 +10,6 @@
 #include <QStyle>
 #include <QSplitter>
 #include <QPushButton>
-#include <QScrollArea>
 
 #if defined(ADS_ANIMATIONS_ENABLED)
 #include <QGraphicsDropShadowEffect>
@@ -25,10 +24,6 @@
 #include "ads/ContainerWidget.h"
 
 ADS_NAMESPACE_BEGIN
-
-//int SectionWidget::NextUid = 1;
-//QHash<int, SectionWidget*> SectionWidget::LookupMap;
-//QHash<ContainerWidget*, QHash<int, SectionWidget*> > SectionWidget::LookupMapByContainer;
 
 SectionWidget::SectionWidget(ContainerWidget* parent) :
 	QFrame(parent),
@@ -51,12 +46,10 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	_topLayout->setSpacing(0);
 	l->addLayout(_topLayout);
 
-	_tabsScrollArea = new QScrollArea(this);
-	_tabsScrollArea->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	_tabsScrollArea->setWidgetResizable(true);
+	_tabsScrollArea = new SectionWidgetTabsScrollArea(this);
 	_topLayout->addWidget(_tabsScrollArea, 1);
 
-	_tabsContainerWidget = new QWidget(_tabsScrollArea);
+	_tabsContainerWidget = new QWidget();
 	_tabsScrollArea->setWidget(_tabsContainerWidget);
 
 	_tabsLayout = new QBoxLayout(QBoxLayout::LeftToRight);
@@ -272,17 +265,16 @@ void SectionWidget::moveContent(int from, int to)
 {
 	if (from >= _contents.size() || from < 0 || to >= _contents.size() || to < 0 || from == to)
 	{
-		qCritical() << "Invalid index for tab movement" << from << to;
+		qDebug() << "Invalid index for tab movement" << from << to;
+		_tabsLayout->update();
 		return;
 	}
 
-	SectionContent::RefPtr sc = _contents.at(from);
 	_contents.move(from, to);
 	_sectionTitles.move(from, to);
 	_sectionContents.move(from, to);
 
 	QLayoutItem* liFrom = NULL;
-
 	liFrom = _tabsLayout->takeAt(from);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	_tabsLayout->insertItem(to, liFrom);
@@ -353,17 +345,23 @@ int SectionWidget::GetNextUid()
 	return ++NextUid;
 }
 
-//QHash<int, SectionWidget*>& SectionWidget::GetLookupMap()
-//{
-//	static QHash<int, SectionWidget*> LookupMap;
-//	return LookupMap;
+/*****************************************************************************/
 
-//}
+SectionWidgetTabsScrollArea::SectionWidgetTabsScrollArea(SectionWidget*,
+		QWidget* parent) :
+	QScrollArea(parent)
+{
+	/* Important: QSizePolicy::Ignored makes the QScrollArea behaves more
+	like a QLabel and automatically fits into the layout. */
+	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
+	setFrameStyle(QFrame::NoFrame);
+	setWidgetResizable(true);
+	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+}
 
-//QHash<ContainerWidget*, QHash<int, SectionWidget*> >& SectionWidget::GetLookupMapByContainer()
-//{
-//	static QHash<ContainerWidget*, QHash<int, SectionWidget*> > LookupMapByContainer;
-//	return LookupMapByContainer;
-//}
+SectionWidgetTabsScrollArea::~SectionWidgetTabsScrollArea()
+{
+}
 
 ADS_NAMESPACE_END

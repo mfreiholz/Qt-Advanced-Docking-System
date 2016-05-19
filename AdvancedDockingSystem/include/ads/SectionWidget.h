@@ -5,9 +5,9 @@
 #include <QPointer>
 #include <QList>
 #include <QFrame>
+#include <QScrollArea>
 class QBoxLayout;
 class QStackedLayout;
-class QScrollArea;
 
 #include "ads/API.h"
 #include "ads/Internal.h"
@@ -75,6 +75,14 @@ private:
 	SectionTitleWidget* _mousePressTitleWidget;
 
 	static int GetNextUid();
+};
+
+/* Custom scrollable implementation for tabs */
+class SectionWidgetTabsScrollArea : public QScrollArea
+{
+public:
+	SectionWidgetTabsScrollArea(SectionWidget* sectionWidget, QWidget* parent = NULL);
+	virtual ~SectionWidgetTabsScrollArea();
 };
 
 ADS_NAMESPACE_END

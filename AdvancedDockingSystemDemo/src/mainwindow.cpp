@@ -134,10 +134,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	// Default window geometry
 	resize(800, 600);
-//	restoreGeometry(loadDataHelper("MainWindow"));
+	restoreGeometry(loadDataHelper("MainWindow"));
 
 	// ADS - Restore geometries and states of contents.
-//	_container->restoreState(loadDataHelper("ContainerWidget"));
+	_container->restoreState(loadDataHelper("ContainerWidget"));
 }
 
 MainWindow::~MainWindow()
