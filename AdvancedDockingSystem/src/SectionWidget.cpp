@@ -4,12 +4,14 @@
 #include <QBoxLayout>
 #include <QStackedLayout>
 #include <QMouseEvent>
+#include <QWheelEvent>
 #include <QDragEnterEvent>
 #include <QMimeData>
 #include <QPainter>
 #include <QStyle>
 #include <QSplitter>
 #include <QPushButton>
+#include <QScrollBar>
 
 #if defined(ADS_ANIMATIONS_ENABLED)
 #include <QGraphicsDropShadowEffect>
@@ -307,7 +309,10 @@ void SectionWidget::setCurrentIndex(int index)
 			if (stw)
 			{
 				if (i == index)
+				{
 					stw->setActiveTab(true);
+					_tabsScrollArea->ensureWidgetVisible(stw, 50, 0);
+				}
 				else
 					stw->setActiveTab(false);
 			}
@@ -362,6 +367,20 @@ SectionWidgetTabsScrollArea::SectionWidgetTabsScrollArea(SectionWidget*,
 
 SectionWidgetTabsScrollArea::~SectionWidgetTabsScrollArea()
 {
+}
+
+void SectionWidgetTabsScrollArea::wheelEvent(QWheelEvent* e)
+{
+	e->accept();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+	const int direction = e->angleDelta().y();
+#else
+	const int direction = e->delta();
+#endif
+	if (direction < 0)
+		horizontalScrollBar()->setValue(horizontalScrollBar()->value() + 20);
+	else
+		horizontalScrollBar()->setValue(horizontalScrollBar()->value() - 20);
 }
 
 ADS_NAMESPACE_END

@@ -83,6 +83,9 @@ class SectionWidgetTabsScrollArea : public QScrollArea
 public:
 	SectionWidgetTabsScrollArea(SectionWidget* sectionWidget, QWidget* parent = NULL);
 	virtual ~SectionWidgetTabsScrollArea();
+
+protected:
+	virtual void wheelEvent(QWheelEvent*);
 };
 
 ADS_NAMESPACE_END
