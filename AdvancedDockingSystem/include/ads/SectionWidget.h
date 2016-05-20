@@ -47,6 +47,9 @@ public:
 	int currentIndex() const;
 	void moveContent(int from, int to);
 
+protected:
+	virtual void showEvent(QShowEvent*);
+
 public slots:
 	void setCurrentIndex(int index);
 

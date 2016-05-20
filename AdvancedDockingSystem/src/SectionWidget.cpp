@@ -291,6 +291,11 @@ void SectionWidget::moveContent(int from, int to)
 	delete liFrom;
 }
 
+void SectionWidget::showEvent(QShowEvent*)
+{
+	_tabsScrollArea->ensureWidgetVisible(_sectionTitles.at(currentIndex()));
+}
+
 void SectionWidget::setCurrentIndex(int index)
 {
 	if (index < 0 || index > _contents.count() - 1)
@@ -311,7 +316,7 @@ void SectionWidget::setCurrentIndex(int index)
 				if (i == index)
 				{
 					stw->setActiveTab(true);
-					_tabsScrollArea->ensureWidgetVisible(stw, 50, 0);
+					_tabsScrollArea->ensureWidgetVisible(stw);
 				}
 				else
 					stw->setActiveTab(false);
@@ -356,7 +361,7 @@ SectionWidgetTabsScrollArea::SectionWidgetTabsScrollArea(SectionWidget*,
 		QWidget* parent) :
 	QScrollArea(parent)
 {
-	/* Important: QSizePolicy::Ignored makes the QScrollArea behaves more
+	/* Important: QSizePolicy::Ignored makes the QScrollArea behaves
 	like a QLabel and automatically fits into the layout. */
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
 	setFrameStyle(QFrame::NoFrame);
