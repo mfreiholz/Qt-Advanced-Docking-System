@@ -53,6 +53,7 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	_topLayout->addWidget(_tabsScrollArea, 1);
 
 	_tabsContainerWidget = new QWidget();
+	_tabsContainerWidget->setObjectName("tabsContainerWidget");
 	_tabsScrollArea->setWidget(_tabsContainerWidget);
 
 	_tabsLayout = new QBoxLayout(QBoxLayout::LeftToRight);
