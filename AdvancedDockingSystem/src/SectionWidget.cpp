@@ -4,12 +4,15 @@
 #include <QBoxLayout>
 #include <QStackedLayout>
 #include <QMouseEvent>
+#include <QWheelEvent>
 #include <QDragEnterEvent>
 #include <QMimeData>
 #include <QPainter>
 #include <QStyle>
 #include <QSplitter>
 #include <QPushButton>
+#include <QScrollBar>
+#include <QMenu>
 
 #if defined(ADS_ANIMATIONS_ENABLED)
 #include <QGraphicsDropShadowEffect>
@@ -25,15 +28,12 @@
 
 ADS_NAMESPACE_BEGIN
 
-//int SectionWidget::NextUid = 1;
-//QHash<int, SectionWidget*> SectionWidget::LookupMap;
-//QHash<ContainerWidget*, QHash<int, SectionWidget*> > SectionWidget::LookupMapByContainer;
-
 SectionWidget::SectionWidget(ContainerWidget* parent) :
 	QFrame(parent),
 	_uid(GetNextUid()),
 	_container(parent),
 	_tabsLayout(NULL),
+	_tabsLayoutInitCount(0),
 	_contentsLayout(NULL),
 	_mousePressTitleWidget(NULL)
 {
@@ -42,11 +42,36 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	l->setSpacing(0);
 	setLayout(l);
 
+	/* top area with tabs and close button */
+
+	_topLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+	_topLayout->setContentsMargins(0, 0, 0, 0);
+	_topLayout->setSpacing(0);
+	l->addLayout(_topLayout);
+
+	_tabsScrollArea = new SectionWidgetTabsScrollArea(this);
+	_topLayout->addWidget(_tabsScrollArea, 1);
+
+	_tabsContainerWidget = new QWidget();
+	_tabsScrollArea->setWidget(_tabsContainerWidget);
+
 	_tabsLayout = new QBoxLayout(QBoxLayout::LeftToRight);
 	_tabsLayout->setContentsMargins(0, 0, 0, 0);
 	_tabsLayout->setSpacing(0);
 	_tabsLayout->addStretch(1);
-	l->addLayout(_tabsLayout);
+	_tabsContainerWidget->setLayout(_tabsLayout);
+
+	_tabsMenuButton = new QPushButton();
+	_tabsMenuButton->setObjectName("tabsMenuButton");
+	_tabsMenuButton->setFlat(true);
+	_tabsMenuButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarUnshadeButton));
+	_tabsMenuButton->setMaximumWidth(_tabsMenuButton->iconSize().width());
+	_topLayout->addWidget(_tabsMenuButton, 0);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+	//QObject::connect(_tabsMenuButton, &QPushButton::clicked, this, &SectionWidget::onTabsMenuButtonClicked);
+#else
+	//QObject::connect(_tabsMenuButton, SIGNAL(clicked()), this, SLOT(onTabsMenuButtonClicked()));
+#endif
 
 	QPushButton* closeButton = new QPushButton();
 	closeButton->setObjectName("closeButton");
@@ -54,12 +79,16 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	closeButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarCloseButton));
 	closeButton->setToolTip(tr("Close"));
 	closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	_tabsLayout->addWidget(closeButton);
+	_topLayout->addWidget(closeButton, 0);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QObject::connect(closeButton, &QPushButton::clicked, this, &SectionWidget::onCloseButtonClicked);
 #else
 	QObject::connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
 #endif
+
+	_tabsLayoutInitCount = _tabsLayout->count();
+
+	/* central area with contents */
 
 	_contentsLayout = new QStackedLayout();
 	_contentsLayout->setContentsMargins(0, 0, 0, 0);
@@ -104,7 +133,7 @@ ContainerWidget* SectionWidget::containerWidget() const
 
 QRect SectionWidget::titleAreaGeometry() const
 {
-	return _tabsLayout->geometry();
+	return _topLayout->geometry();
 }
 
 QRect SectionWidget::contentAreaGeometry() const
@@ -118,7 +147,7 @@ void SectionWidget::addContent(const SectionContent::RefPtr& c)
 
 	SectionTitleWidget* title = new SectionTitleWidget(c, NULL);
 	_sectionTitles.append(title);
-	_tabsLayout->insertWidget(_tabsLayout->count() - 2, title);
+	_tabsLayout->insertWidget(_tabsLayout->count() - _tabsLayoutInitCount, title);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QObject::connect(title, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
 #else
@@ -135,6 +164,8 @@ void SectionWidget::addContent(const SectionContent::RefPtr& c)
 	// Switch to newest.
 //	else
 //		setCurrentIndex(_contentsLayout->count() - 1);
+
+	updateTabsMenu();
 }
 
 void SectionWidget::addContent(const InternalContentData& data, bool autoActivate)
@@ -144,7 +175,7 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 	// Add title-widget to tab-bar
 	// #FIX: Make it visible, since it is possible that it was hidden previously.
 	_sectionTitles.append(data.titleWidget);
-	_tabsLayout->insertWidget(_tabsLayout->count() - 2, data.titleWidget);
+	_tabsLayout->insertWidget(_tabsLayout->count() - _tabsLayoutInitCount, data.titleWidget);
 	data.titleWidget->setVisible(true);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QObject::connect(data.titleWidget, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
@@ -166,6 +197,8 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 	// Mark it as inactive tab.
 	else
 		data.titleWidget->setActiveTab(false); // or: setCurrentIndex(currentIndex())
+
+	updateTabsMenu();
 }
 
 bool SectionWidget::takeContent(int uid, InternalContentData& data)
@@ -217,6 +250,8 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 			setCurrentIndex(0);
 	}
 
+	updateTabsMenu();
+
 	data.content = sc;
 	data.titleWidget = title;
 	data.contentWidget = content;
@@ -226,6 +261,16 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 int SectionWidget::indexOfContent(const SectionContent::RefPtr& c) const
 {
 	return _contents.indexOf(c);
+}
+
+int SectionWidget::indexOfContentByUid(int uid) const
+{
+	for (int i = 0; i < _contents.count(); ++i)
+	{
+		if (_contents[i]->uid() == uid)
+			return i;
+	}
+	return -1;
 }
 
 int SectionWidget::indexOfContentByTitlePos(const QPoint& p, QWidget* exclude) const
@@ -251,17 +296,16 @@ void SectionWidget::moveContent(int from, int to)
 {
 	if (from >= _contents.size() || from < 0 || to >= _contents.size() || to < 0 || from == to)
 	{
-		qCritical() << "Invalid index for tab movement" << from << to;
+		qDebug() << "Invalid index for tab movement" << from << to;
+		_tabsLayout->update();
 		return;
 	}
 
-	SectionContent::RefPtr sc = _contents.at(from);
 	_contents.move(from, to);
 	_sectionTitles.move(from, to);
 	_sectionContents.move(from, to);
 
 	QLayoutItem* liFrom = NULL;
-
 	liFrom = _tabsLayout->takeAt(from);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	_tabsLayout->insertItem(to, liFrom);
@@ -274,6 +318,13 @@ void SectionWidget::moveContent(int from, int to)
 	liFrom = _contentsLayout->takeAt(from);
 	_contentsLayout->insertWidget(to, liFrom->widget());
 	delete liFrom;
+
+	updateTabsMenu();
+}
+
+void SectionWidget::showEvent(QShowEvent*)
+{
+	_tabsScrollArea->ensureWidgetVisible(_sectionTitles.at(currentIndex()));
 }
 
 void SectionWidget::setCurrentIndex(int index)
@@ -294,7 +345,10 @@ void SectionWidget::setCurrentIndex(int index)
 			if (stw)
 			{
 				if (i == index)
+				{
 					stw->setActiveTab(true);
+					_tabsScrollArea->ensureWidgetVisible(stw);
+				}
 				else
 					stw->setActiveTab(false);
 			}
@@ -326,23 +380,74 @@ void SectionWidget::onCloseButtonClicked()
 	_container->hideSectionContent(sc);
 }
 
+void SectionWidget::onTabsMenuActionTriggered(bool)
+{
+	QAction* a = qobject_cast<QAction*>(sender());
+	if (a)
+	{
+		const int uid = a->data().toInt();
+		const int index = indexOfContentByUid(uid);
+		if (index >= 0)
+			setCurrentIndex(index);
+	}
+}
+
+void SectionWidget::updateTabsMenu()
+{
+	QMenu* m = new QMenu();
+	for (int i = 0; i < _contents.count(); ++i)
+	{
+		const SectionContent::RefPtr& sc = _contents.at(i);
+		QAction* a = m->addAction(QIcon(), sc->visibleTitle());
+		a->setData(sc->uid());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+		QObject::connect(a, &QAction::triggered, this, &SectionWidget::onTabsMenuActionTriggered);
+#else
+		QObject::connect(a, SIGNAL(triggered(bool)), this, SLOT(onTabsMenuActionTriggered(bool)));
+#endif
+	}
+	QMenu* old = _tabsMenuButton->menu();
+	_tabsMenuButton->setMenu(m);
+	delete old;
+}
+
 int SectionWidget::GetNextUid()
 {
 	static int NextUid = 0;
 	return ++NextUid;
 }
 
-//QHash<int, SectionWidget*>& SectionWidget::GetLookupMap()
-//{
-//	static QHash<int, SectionWidget*> LookupMap;
-//	return LookupMap;
+/*****************************************************************************/
 
-//}
+SectionWidgetTabsScrollArea::SectionWidgetTabsScrollArea(SectionWidget*,
+		QWidget* parent) :
+	QScrollArea(parent)
+{
+	/* Important: QSizePolicy::Ignored makes the QScrollArea behaves
+	like a QLabel and automatically fits into the layout. */
+	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
+	setFrameStyle(QFrame::NoFrame);
+	setWidgetResizable(true);
+	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+}
 
-//QHash<ContainerWidget*, QHash<int, SectionWidget*> >& SectionWidget::GetLookupMapByContainer()
-//{
-//	static QHash<ContainerWidget*, QHash<int, SectionWidget*> > LookupMapByContainer;
-//	return LookupMapByContainer;
-//}
+SectionWidgetTabsScrollArea::~SectionWidgetTabsScrollArea()
+{
+}
+
+void SectionWidgetTabsScrollArea::wheelEvent(QWheelEvent* e)
+{
+	e->accept();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+	const int direction = e->angleDelta().y();
+#else
+	const int direction = e->delta();
+#endif
+	if (direction < 0)
+		horizontalScrollBar()->setValue(horizontalScrollBar()->value() + 20);
+	else
+		horizontalScrollBar()->setValue(horizontalScrollBar()->value() - 20);
+}
 
 ADS_NAMESPACE_END

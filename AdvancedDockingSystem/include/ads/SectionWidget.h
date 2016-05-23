@@ -5,8 +5,11 @@
 #include <QPointer>
 #include <QList>
 #include <QFrame>
+#include <QScrollArea>
 class QBoxLayout;
 class QStackedLayout;
+class QPushButton;
+class QMenu;
 
 #include "ads/API.h"
 #include "ads/Internal.h"
@@ -41,10 +44,14 @@ public:
 	void addContent(const InternalContentData& data, bool autoActivate);
 	bool takeContent(int uid, InternalContentData& data);
 	int indexOfContent(const SectionContent::RefPtr& c) const;
+	int indexOfContentByUid(int uid) const;
 	int indexOfContentByTitlePos(const QPoint& pos, QWidget* exclude = NULL) const;
 
 	int currentIndex() const;
 	void moveContent(int from, int to);
+
+protected:
+	virtual void showEvent(QShowEvent*);
 
 public slots:
 	void setCurrentIndex(int index);
@@ -52,6 +59,9 @@ public slots:
 private slots:
 	void onSectionTitleClicked();
 	void onCloseButtonClicked();
+	void onTabsMenuActionTriggered(bool);
+	void updateTabsMenu();
+
 
 private:
 	const int _uid;
@@ -61,7 +71,13 @@ private:
 	QList<SectionTitleWidget*> _sectionTitles;
 	QList<SectionContentWidget*> _sectionContents;
 
-	QBoxLayout *_tabsLayout;
+	QBoxLayout* _topLayout;
+	QScrollArea* _tabsScrollArea;
+	QWidget* _tabsContainerWidget;
+	QBoxLayout* _tabsLayout;
+	QPushButton* _tabsMenuButton;
+	int _tabsLayoutInitCount; // used for calculations on _tabsLayout modification calls.
+
 	QStackedLayout *_contentsLayout;
 
 	QPoint _mousePressPoint;
@@ -69,6 +85,17 @@ private:
 	SectionTitleWidget* _mousePressTitleWidget;
 
 	static int GetNextUid();
+};
+
+/* Custom scrollable implementation for tabs */
+class SectionWidgetTabsScrollArea : public QScrollArea
+{
+public:
+	SectionWidgetTabsScrollArea(SectionWidget* sectionWidget, QWidget* parent = NULL);
+	virtual ~SectionWidgetTabsScrollArea();
+
+protected:
+	virtual void wheelEvent(QWheelEvent*);
 };
 
 ADS_NAMESPACE_END
