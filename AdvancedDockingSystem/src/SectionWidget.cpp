@@ -12,6 +12,7 @@
 #include <QSplitter>
 #include <QPushButton>
 #include <QScrollBar>
+#include <QMenu>
 
 #if defined(ADS_ANIMATIONS_ENABLED)
 #include <QGraphicsDropShadowEffect>
@@ -59,6 +60,18 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	_tabsLayout->setSpacing(0);
 	_tabsLayout->addStretch(1);
 	_tabsContainerWidget->setLayout(_tabsLayout);
+
+	_tabsMenuButton = new QPushButton();
+	_tabsMenuButton->setObjectName("tabsMenuButton");
+	_tabsMenuButton->setFlat(true);
+	_tabsMenuButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarUnshadeButton));
+	_tabsMenuButton->setMaximumWidth(_tabsMenuButton->iconSize().width());
+	_topLayout->addWidget(_tabsMenuButton, 0);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+	//QObject::connect(_tabsMenuButton, &QPushButton::clicked, this, &SectionWidget::onTabsMenuButtonClicked);
+#else
+	//QObject::connect(_tabsMenuButton, SIGNAL(clicked()), this, SLOT(onTabsMenuButtonClicked()));
+#endif
 
 	QPushButton* closeButton = new QPushButton();
 	closeButton->setObjectName("closeButton");
@@ -134,7 +147,7 @@ void SectionWidget::addContent(const SectionContent::RefPtr& c)
 
 	SectionTitleWidget* title = new SectionTitleWidget(c, NULL);
 	_sectionTitles.append(title);
-	_tabsLayout->insertWidget(_tabsLayout->count() - 1, title);
+	_tabsLayout->insertWidget(_tabsLayout->count() - _tabsLayoutInitCount, title);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QObject::connect(title, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
 #else
@@ -151,6 +164,8 @@ void SectionWidget::addContent(const SectionContent::RefPtr& c)
 	// Switch to newest.
 //	else
 //		setCurrentIndex(_contentsLayout->count() - 1);
+
+	updateTabsMenu();
 }
 
 void SectionWidget::addContent(const InternalContentData& data, bool autoActivate)
@@ -160,7 +175,7 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 	// Add title-widget to tab-bar
 	// #FIX: Make it visible, since it is possible that it was hidden previously.
 	_sectionTitles.append(data.titleWidget);
-	_tabsLayout->insertWidget(_tabsLayout->count() - 1, data.titleWidget);
+	_tabsLayout->insertWidget(_tabsLayout->count() - _tabsLayoutInitCount, data.titleWidget);
 	data.titleWidget->setVisible(true);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	QObject::connect(data.titleWidget, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
@@ -182,6 +197,8 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 	// Mark it as inactive tab.
 	else
 		data.titleWidget->setActiveTab(false); // or: setCurrentIndex(currentIndex())
+
+	updateTabsMenu();
 }
 
 bool SectionWidget::takeContent(int uid, InternalContentData& data)
@@ -233,6 +250,8 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 			setCurrentIndex(0);
 	}
 
+	updateTabsMenu();
+
 	data.content = sc;
 	data.titleWidget = title;
 	data.contentWidget = content;
@@ -242,6 +261,16 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 int SectionWidget::indexOfContent(const SectionContent::RefPtr& c) const
 {
 	return _contents.indexOf(c);
+}
+
+int SectionWidget::indexOfContentByUid(int uid) const
+{
+	for (int i = 0; i < _contents.count(); ++i)
+	{
+		if (_contents[i]->uid() == uid)
+			return i;
+	}
+	return -1;
 }
 
 int SectionWidget::indexOfContentByTitlePos(const QPoint& p, QWidget* exclude) const
@@ -289,6 +318,8 @@ void SectionWidget::moveContent(int from, int to)
 	liFrom = _contentsLayout->takeAt(from);
 	_contentsLayout->insertWidget(to, liFrom->widget());
 	delete liFrom;
+
+	updateTabsMenu();
 }
 
 void SectionWidget::showEvent(QShowEvent*)
@@ -347,6 +378,37 @@ void SectionWidget::onCloseButtonClicked()
 	if (sc.isNull())
 		return;
 	_container->hideSectionContent(sc);
+}
+
+void SectionWidget::onTabsMenuActionTriggered(bool)
+{
+	QAction* a = qobject_cast<QAction*>(sender());
+	if (a)
+	{
+		const int uid = a->data().toInt();
+		const int index = indexOfContentByUid(uid);
+		if (index >= 0)
+			setCurrentIndex(index);
+	}
+}
+
+void SectionWidget::updateTabsMenu()
+{
+	QMenu* m = new QMenu();
+	for (int i = 0; i < _contents.count(); ++i)
+	{
+		const SectionContent::RefPtr& sc = _contents.at(i);
+		QAction* a = m->addAction(QIcon(), sc->visibleTitle());
+		a->setData(sc->uid());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+		QObject::connect(a, &QAction::triggered, this, &SectionWidget::onTabsMenuActionTriggered);
+#else
+		QObject::connect(a, SIGNAL(triggered(bool)), this, SLOT(onTabsMenuActionTriggered(bool)));
+#endif
+	}
+	QMenu* old = _tabsMenuButton->menu();
+	_tabsMenuButton->setMenu(m);
+	delete old;
 }
 
 int SectionWidget::GetNextUid()

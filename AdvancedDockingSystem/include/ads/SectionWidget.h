@@ -8,6 +8,8 @@
 #include <QScrollArea>
 class QBoxLayout;
 class QStackedLayout;
+class QPushButton;
+class QMenu;
 
 #include "ads/API.h"
 #include "ads/Internal.h"
@@ -42,6 +44,7 @@ public:
 	void addContent(const InternalContentData& data, bool autoActivate);
 	bool takeContent(int uid, InternalContentData& data);
 	int indexOfContent(const SectionContent::RefPtr& c) const;
+	int indexOfContentByUid(int uid) const;
 	int indexOfContentByTitlePos(const QPoint& pos, QWidget* exclude = NULL) const;
 
 	int currentIndex() const;
@@ -56,6 +59,9 @@ public slots:
 private slots:
 	void onSectionTitleClicked();
 	void onCloseButtonClicked();
+	void onTabsMenuActionTriggered(bool);
+	void updateTabsMenu();
+
 
 private:
 	const int _uid;
@@ -68,8 +74,9 @@ private:
 	QBoxLayout* _topLayout;
 	QScrollArea* _tabsScrollArea;
 	QWidget* _tabsContainerWidget;
-	QBoxLayout *_tabsLayout;
-	int _tabsLayoutInitCount;
+	QBoxLayout* _tabsLayout;
+	QPushButton* _tabsMenuButton;
+	int _tabsLayoutInitCount; // used for calculations on _tabsLayout modification calls.
 
 	QStackedLayout *_contentsLayout;
 
