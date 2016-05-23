@@ -22,6 +22,12 @@ SectionWidget
 	border: 1px solid palette(light);
 }
 
+ads--SectionWidget #tabsMenuButton::menu-indicator,
+SectionWidget #tabsMenuButton::menu-indicator
+{
+	image: none;
+}
+
 ads--SectionTitleWidget,
 SectionTitleWidget
 {
