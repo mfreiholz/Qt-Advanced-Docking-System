@@ -7,7 +7,7 @@ compiler:
 addons:
     apt:
         sources:
-            - ppa:ubuntu-sdk-team/ppa
+            - ubuntu-sdk-team
         packages:
             - qt5-qmake
             - qtbase5-dev
