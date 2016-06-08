@@ -70,17 +70,6 @@ ContainerWidget::~ContainerWidget()
 SectionWidget* ContainerWidget::addSectionContent(const SectionContent::RefPtr& sc, SectionWidget* sw, DropArea area)
 {
 	ADS_Expects(!sc.isNull());
-	if (!sw)
-	{
-		if (_sections.isEmpty())
-		{	// Create default section
-			sw = newSectionWidget();
-			addSection(sw);
-		}
-		else if (area == CenterDropArea)
-			// Use existing default section
-			sw = _sections.first();
-	}
 
 	// Drop it based on "area"
 	InternalContentData data;
@@ -495,6 +484,14 @@ SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, Sec
 	ADS_Expects(targetSection != NULL);
 
 	SectionWidget* ret = NULL;
+
+	// If no sections exists yet, create a default one and always drop into it.
+	if (_sections.count() <= 0)
+	{
+		targetSection = newSectionWidget();
+		addSection(targetSection);
+		area = CenterDropArea;
+	}
 
 	// Drop on outer area
 	if (!targetSection)

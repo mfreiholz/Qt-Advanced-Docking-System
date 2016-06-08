@@ -116,9 +116,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	}
 
 	// ADS - Adding some contents.
-	// Test #1: Use high-level public API
 	if (true)
 	{
+		// Test #1: Use high-level public API
 		ADS_NS::ContainerWidget* cw = _container;
 		ADS_NS::SectionWidget* sw = NULL;
 
@@ -130,6 +130,20 @@ MainWindow::MainWindow(QWidget *parent) :
 		_container->addSectionContent(createLongTextLabelSC(_container));
 		_container->addSectionContent(createLongTextLabelSC(_container));
 		_container->addSectionContent(createLongTextLabelSC(_container));
+	}
+	else if (false)
+	{
+		// Issue #2: If the first drop is not into CenterDropArea, the application crashes.
+		ADS_NS::ContainerWidget* cw = _container;
+		ADS_NS::SectionWidget* sw = NULL;
+
+		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::LeftDropArea);
+		sw = _container->addSectionContent(createCalendarSC(cw), sw, ADS_NS::LeftDropArea);
+		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
+		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
+		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
+		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::RightDropArea);
+		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::BottomDropArea);
 	}
 
 	// Default window geometry
