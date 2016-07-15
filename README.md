@@ -1,5 +1,4 @@
-# Advanced Docking System
-[![Travis Build](https://travis-ci.org/mfreiholz/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/mfreiholz/Qt-Advanced-Docking-System)
+# Advanced Docking System for Qt
 [![Gitter](https://badges.gitter.im/mfreiholz/Qt-Advanced-Docking-System.svg)](https://gitter.im/mfreiholz/Qt-Advanced-Docking-System?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 Manages content widgets more like Visual Studio or similar programs.
@@ -10,9 +9,7 @@ Basic usage of QWidgets an QLayouts and using basic styles as much as possible.
 ![Dropping widgets](preview-dragndrop.png)
 
 ## Tested Compatible Environments
-- Windows 10 / Qt 5.5.1 / VC12
-- Windows 10 / Qt 5.5.1 / MinGW
-- Windows 10 / Qt 4.5.3 / VC9
+- Windows 7 / 8 / 8.1 / 10
 - Ubuntu 15.10
 
 ## Build
