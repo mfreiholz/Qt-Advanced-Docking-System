@@ -504,6 +504,7 @@ SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, Sec
 		case RightDropArea:
 			ret = dropContentOuterHelper(_mainLayout, data, Qt::Horizontal, true);
 			break;
+		case CenterDropArea:
 		case BottomDropArea:
 			ret = dropContentOuterHelper(_mainLayout, data, Qt::Vertical, true);
 			break;
@@ -513,7 +514,7 @@ SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, Sec
 		default:
 			return NULL;
 		}
-		return NULL;
+		return ret;
 	}
 
 	QSplitter* targetSectionSplitter = findParentSplitter(targetSection);
