@@ -76,6 +76,7 @@ private:
 	QWidget* _tabsContainerWidget;
 	QBoxLayout* _tabsLayout;
 	QPushButton* _tabsMenuButton;
+	QPushButton* _closeButton;
 	int _tabsLayoutInitCount; // used for calculations on _tabsLayout modification calls.
 
 	QStackedLayout *_contentsLayout;

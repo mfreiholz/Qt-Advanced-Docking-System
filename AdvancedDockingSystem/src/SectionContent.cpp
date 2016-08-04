@@ -9,7 +9,8 @@
 ADS_NAMESPACE_BEGIN
 
 SectionContent::SectionContent() :
-	_uid(GetNextUid())
+	_uid(GetNextUid()),
+	_flags(AllFlags)
 {
 }
 
@@ -78,6 +79,11 @@ QWidget* SectionContent::contentWidget() const
 	return _contentWidget;
 }
 
+SectionContent::Flags SectionContent::flags() const
+{
+	return _flags;
+}
+
 QString SectionContent::visibleTitle() const
 {
 	if (_title.isEmpty())
@@ -93,6 +99,11 @@ QString SectionContent::title() const
 void SectionContent::setTitle(const QString& title)
 {
 	_title = title;
+}
+
+void SectionContent::setFlags(const Flags f)
+{
+	_flags = f;
 }
 
 int SectionContent::GetNextUid()

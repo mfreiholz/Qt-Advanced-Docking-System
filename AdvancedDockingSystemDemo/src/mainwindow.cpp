@@ -130,6 +130,10 @@ MainWindow::MainWindow(QWidget *parent) :
 		_container->addSectionContent(createLongTextLabelSC(_container));
 		_container->addSectionContent(createLongTextLabelSC(_container));
 		_container->addSectionContent(createLongTextLabelSC(_container));
+
+		ADS_NS::SectionContent::RefPtr sc = createLongTextLabelSC(cw);
+		sc->setFlags(ADS_NS::SectionContent::AllFlags ^ ADS_NS::SectionContent::Closeable);
+		_container->addSectionContent(sc);
 	}
 	else if (false)
 	{

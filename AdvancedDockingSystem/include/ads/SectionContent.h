@@ -24,6 +24,14 @@ public:
 	typedef QSharedPointer<SectionContent> RefPtr;
 	typedef QWeakPointer<SectionContent> WeakPtr;
 
+	enum Flag
+	{
+		None = 0,
+		Closeable = 1,
+		AllFlags = Closeable
+	};
+	Q_DECLARE_FLAGS(Flags, Flag)
+
 	/*!
 	 * Creates new content, associates it to <em>container</em> and takes ownership of
 	 * <em>title</em>- and <em>content</em>- widgets.
@@ -41,10 +49,12 @@ public:
 	ContainerWidget* containerWidget() const;
 	QWidget* titleWidget() const;
 	QWidget* contentWidget() const;
+	Flags flags() const;
 
 	QString visibleTitle() const;
 	QString title() const;
 	void setTitle(const QString& title);
+	void setFlags(const Flags f);
 
 private:
 	const int _uid;
@@ -56,6 +66,7 @@ private:
 
 	// Optional attributes
 	QString _title;
+	Flags _flags;
 
 	/* Note: This method could be a problem in static build environment
 	 * since it may begin with 0 for every module which uses ADS.

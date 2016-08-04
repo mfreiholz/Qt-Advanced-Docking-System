@@ -31,18 +31,21 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 	l->addLayout(_titleLayout, 0);
 	titleWidget->setActiveTab(false);
 
-	QPushButton* closeButton = new QPushButton();
-	closeButton->setObjectName("closeButton");
-	closeButton->setFlat(true);
-	closeButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarCloseButton));
-	closeButton->setToolTip(tr("Close"));
-	closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	_titleLayout->addWidget(closeButton);
+	if (sc->flags().testFlag(SectionContent::Closeable))
+	{
+		QPushButton* closeButton = new QPushButton();
+		closeButton->setObjectName("closeButton");
+		closeButton->setFlat(true);
+		closeButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarCloseButton));
+		closeButton->setToolTip(tr("Close"));
+		closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+		_titleLayout->addWidget(closeButton);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-	QObject::connect(closeButton, &QPushButton::clicked, this, &FloatingWidget::onCloseButtonClicked);
+		QObject::connect(closeButton, &QPushButton::clicked, this, &FloatingWidget::onCloseButtonClicked);
 #else
-	QObject::connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
+		QObject::connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
 #endif
+	}
 
 	// Content
 	l->addWidget(contentWidget, 1);

@@ -325,6 +325,7 @@ QMenu* ContainerWidget::createContextMenu() const
 			a->setProperty("type", "section");
 			a->setCheckable(true);
 			a->setChecked(true);
+			a->setEnabled(sc->flags().testFlag(SectionContent::Closeable));
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 			QObject::connect(a, &QAction::toggled, this, &ContainerWidget::onActionToggleSectionContentVisibility);
 #else
