@@ -1,12 +1,12 @@
 TARGET = AdvancedDockingSystem
-#VERSION = 0.1.0
+TEMPLATE = lib
+VERSION = 1.0.0
+
 CONFIG += adsBuildShared
 
 QT += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4): DEFINES += ADS_NAMESPACE_ENABLED
-
-TEMPLATE = lib
 
 adsBuildShared {
 	CONFIG += shared
@@ -16,7 +16,6 @@ adsBuildShared {
 	CONFIG += staticlib
 }
 
-INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/include
 
 windows {
