@@ -49,7 +49,7 @@ FORMS += \
 # Dependency: AdvancedDockingSystem (shared)
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../AdvancedDockingSystem/release/ -lAdvancedDockingSystem1
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../AdvancedDockingSystem/debug/ -lAdvancedDockingSystem1
-else:unix: LIBS += -L$$OUT_PWD/../AdvancedDockingSystem/ -lAdvancedDockingSystem1
+else:unix: LIBS += -L$$OUT_PWD/../AdvancedDockingSystem/ -lAdvancedDockingSystem
 
 INCLUDEPATH += $$PWD/../AdvancedDockingSystem/include
 DEPENDPATH += $$PWD/../AdvancedDockingSystem/include
