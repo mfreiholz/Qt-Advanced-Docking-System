@@ -104,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	setCentralWidget(_container);
 
 	// Optional: Use custom drop area widgets.
-	if (false)
+    if (false)
 	{
 		QHash<ADS_NS::DropArea, QWidget*> areaWidgets;
 		areaWidgets.insert(ADS_NS::TopDropArea, new QPushButton("TOP"));
@@ -122,18 +122,18 @@ MainWindow::MainWindow(QWidget *parent) :
 		ADS_NS::ContainerWidget* cw = _container;
 		ADS_NS::SectionWidget* sw = NULL;
 
-		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
-		sw = _container->addSectionContent(createCalendarSC(cw), sw, ADS_NS::RightDropArea);
-		sw = _container->addSectionContent(createFileSystemTreeSC(cw), sw, ADS_NS::CenterDropArea);
+        sw = _container->addSectionContent(createLongTextLabelSC(cw), nullptr, ADS_NS::CenterDropArea);
+        sw = _container->addSectionContent(createCalendarSC(cw), nullptr, ADS_NS::LeftDropArea);
+        sw = _container->addSectionContent(createFileSystemTreeSC(cw), nullptr, ADS_NS::BottomDropArea);
 
-		_container->addSectionContent(createCalendarSC(_container));
+        /*_container->addSectionContent(createCalendarSC(_container));
 		_container->addSectionContent(createLongTextLabelSC(_container));
 		_container->addSectionContent(createLongTextLabelSC(_container));
 		_container->addSectionContent(createLongTextLabelSC(_container));
 
 		ADS_NS::SectionContent::RefPtr sc = createLongTextLabelSC(cw);
 		sc->setFlags(ADS_NS::SectionContent::AllFlags ^ ADS_NS::SectionContent::Closeable);
-		_container->addSectionContent(sc);
+        _container->addSectionContent(sc);*/
 	}
 	else if (false)
 	{
@@ -155,7 +155,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	restoreGeometry(loadDataHelper("MainWindow"));
 
 	// ADS - Restore geometries and states of contents.
-	_container->restoreState(loadDataHelper("ContainerWidget"));
+    //_container->restoreState(loadDataHelper("ContainerWidget"));
 }
 
 MainWindow::~MainWindow()

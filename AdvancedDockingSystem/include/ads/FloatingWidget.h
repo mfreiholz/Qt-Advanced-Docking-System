@@ -12,6 +12,7 @@ class ContainerWidget;
 class SectionTitleWidget;
 class SectionContentWidget;
 class InternalContentData;
+class SectionWidget;
 
 // FloatingWidget holds and displays SectionContent as a floating window.
 // It can be resized, moved and dropped back into a SectionWidget.
@@ -23,7 +24,8 @@ class FloatingWidget : public QWidget
 
 public:
 	FloatingWidget(ContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent = NULL);
-	virtual ~FloatingWidget();
+    FloatingWidget(SectionWidget* sectionWidget);
+    virtual ~FloatingWidget();
 
 	SectionContent::RefPtr content() const { return _content; }
 

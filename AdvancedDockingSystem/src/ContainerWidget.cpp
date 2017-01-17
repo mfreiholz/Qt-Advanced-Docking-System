@@ -1111,7 +1111,7 @@ bool ContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, QList
 			fw->_contentWidget->setVisible(visible);
 		}
 		floatings.append(fw);
-		data.titleWidget->_fw = fw; // $mfreiholz: Don't look at it :-< It's more than ugly...
+		data.titleWidget->m_FloatingWidget = fw; // $mfreiholz: Don't look at it :-< It's more than ugly...
 	}
 	return true;
 }
@@ -1249,7 +1249,7 @@ void ContainerWidget::onActiveTabChanged()
 	SectionTitleWidget* stw = qobject_cast<SectionTitleWidget*>(sender());
 	if (stw)
 	{
-		emit activeTabChanged(stw->_content, stw->isActiveTab());
+		emit activeTabChanged(stw->m_Content, stw->isActiveTab());
 	}
 }
 
@@ -1269,6 +1269,72 @@ void ContainerWidget::onActionToggleSectionContentVisibility(bool visible)
 		showSectionContent(sc);
 	else
 		hideSectionContent(sc);
+}
+
+
+void ContainerWidget::moveFloatingWidget(const QPoint& TargetPos)
+{
+    // Mouse is over a SectionWidget
+    SectionWidget* sectionwidget = sectionAt(mapFromGlobal(QCursor::pos()));
+    if (sectionwidget)
+    {
+        qInfo() << "over sectionWidget";
+        _dropOverlay->setAllowedAreas(ADS_NS::AllAreas);
+        _dropOverlay->showDropOverlay(sectionwidget);
+    }
+    // Mouse is at the edge of the ContainerWidget
+    // Top, Right, Bottom, Left
+    else if (outerTopDropRect().contains(mapFromGlobal(QCursor::pos())))
+    {
+        _dropOverlay->setAllowedAreas(ADS_NS::TopDropArea);
+        _dropOverlay->showDropOverlay(this, outerTopDropRect());
+    }
+    else if (outerRightDropRect().contains(mapFromGlobal(QCursor::pos())))
+    {
+        _dropOverlay->setAllowedAreas(ADS_NS::RightDropArea);
+        _dropOverlay->showDropOverlay(this, outerRightDropRect());
+    }
+    else if (outerBottomDropRect().contains(mapFromGlobal(QCursor::pos())))
+    {
+        _dropOverlay->setAllowedAreas(ADS_NS::BottomDropArea);
+        _dropOverlay->showDropOverlay(this, outerBottomDropRect());
+    }
+    else if (outerLeftDropRect().contains(mapFromGlobal(QCursor::pos())))
+    {
+        _dropOverlay->setAllowedAreas(ADS_NS::LeftDropArea);
+        _dropOverlay->showDropOverlay(this, outerLeftDropRect());
+    }
+    else
+    {
+        _dropOverlay->hideDropOverlay();
+    }
+}
+
+
+FloatingWidget* ContainerWidget::startFloating(SectionWidget* sectionwidget, int ContentUid, const QPoint& TargetPos)
+{
+    // Create floating widget.
+    InternalContentData data;
+    if (!sectionwidget->takeContent(ContentUid, data))
+    {
+        qWarning() << "THIS SHOULD NOT HAPPEN!!" << ContentUid;
+        return 0;
+    }
+
+    FloatingWidget* fw = new FloatingWidget(this, data.content, data.titleWidget, data.contentWidget, this);
+    fw->resize(sectionwidget->size());
+    _floatings.append(fw);
+    fw->move(TargetPos);
+    fw->show();
+
+    // Delete old section, if it is empty now.
+    if (sectionwidget->contents().isEmpty())
+    {
+        delete sectionwidget;
+        sectionwidget = NULL;
+    }
+    deleteEmptySplitter(this);
+    return fw;
 }
 
 ADS_NAMESPACE_END

@@ -21,17 +21,17 @@ class SectionTitleWidget : public QFrame
 	friend class ContainerWidget;
 	friend class SectionWidget;
 
-	SectionContent::RefPtr _content;
+    SectionContent::RefPtr m_Content;
 
 	// Drag & Drop (Floating)
-	QPointer<FloatingWidget> _fw;
-	QPoint _dragStartPos;
+    QPointer<FloatingWidget> m_FloatingWidget;
+    QPoint m_DragStartPosition;
 
 	// Drag & Drop (Title/Tabs)
-	bool _tabMoving;
+    bool m_TabMoving;
 
 	// Property values
-	bool _activeTab;
+    bool m_IsActiveTab;
 
 public:
 	SectionTitleWidget(SectionContent::RefPtr content, QWidget* parent);
@@ -44,6 +44,11 @@ protected:
 	virtual void mousePressEvent(QMouseEvent* ev);
 	virtual void mouseReleaseEvent(QMouseEvent* ev);
 	virtual void mouseMoveEvent(QMouseEvent* ev);
+
+private:
+   void moveFloatingWidget(QMouseEvent* ev, ContainerWidget* cw);
+   void startFloating(QMouseEvent* ev, ContainerWidget* cw, SectionWidget* sectionwidget);
+   void moveTab(QMouseEvent* ev);
 
 signals:
 	void activeTabChanged();

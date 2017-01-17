@@ -1,3 +1,5 @@
+include($$(cetoni_repository)/build/qt/qtprojectsettings/common.pri)
+
 TARGET = AdvancedDockingSystemUnitTests
 
 QT += core gui testlib

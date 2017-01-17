@@ -13,6 +13,7 @@
 #include <QPushButton>
 #include <QScrollBar>
 #include <QMenu>
+#include <QtGlobal>
 
 #if defined(ADS_ANIMATIONS_ENABLED)
 #include <QGraphicsDropShadowEffect>
@@ -349,7 +350,7 @@ void SectionWidget::setCurrentIndex(int index)
 				{
 					stw->setActiveTab(true);
 					_tabsScrollArea->ensureWidgetVisible(stw);
-					if (stw->_content->flags().testFlag(SectionContent::Closeable))
+					if (stw->m_Content->flags().testFlag(SectionContent::Closeable))
 						_closeButton->setEnabled(true);
 					else
 						_closeButton->setEnabled(false);
@@ -422,6 +423,11 @@ int SectionWidget::GetNextUid()
 	return ++NextUid;
 }
 
+bool SectionWidget::eventFilter(QObject *watched, QEvent *event)
+{
+
+}
+
 /*****************************************************************************/
 
 SectionWidgetTabsScrollArea::SectionWidgetTabsScrollArea(SectionWidget*,
@@ -453,6 +459,46 @@ void SectionWidgetTabsScrollArea::wheelEvent(QWheelEvent* e)
 		horizontalScrollBar()->setValue(horizontalScrollBar()->value() + 20);
 	else
 		horizontalScrollBar()->setValue(horizontalScrollBar()->value() - 20);
+}
+
+
+void SectionWidgetTabsScrollArea::mousePressEvent(QMouseEvent* ev)
+{
+    qInfo() << "mousePressEvent " << ev->type();
+    if (ev->button() == Qt::LeftButton)
+    {
+        ev->accept();
+        _dragStartPos = ev->pos();
+        return;
+    }
+    QScrollArea::mousePressEvent(ev);
+}
+
+void SectionWidgetTabsScrollArea::mouseMoveEvent(QMouseEvent* ev)
+{
+    /*if (_fw)
+    {
+        return;
+    }
+
+    ContainerWidget* cw = findParentContainerWidget(this);
+    SectionWidget* sectionWidget = findParentSectionWidget(this);
+
+    qInfo() << "mousePressEvent " << ev->type();
+    ev->accept();
+
+    _fw = new FloatingWidget(sectionWidget);
+    _fw->resize(sectionWidget->size());
+    cw->_floatings.append(_fw); // Note: I don't like this...
+
+    const QPoint moveToPos = ev->globalPos() - (_dragStartPos + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
+    _fw->move(moveToPos);
+    _fw->show();
+
+    //delete sectionWidget;
+    deleteEmptySplitter(cw);*/
+    QScrollArea::mouseMoveEvent(ev);
+    return;
 }
 
 ADS_NAMESPACE_END

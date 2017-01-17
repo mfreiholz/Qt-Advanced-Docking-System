@@ -1,6 +1,8 @@
-TARGET = AdvancedDockingSystem
+include($$(cetoni_repository)/build/qt/qtprojectsettings/shared_library.pri)
+
+TARGET = $$qtLibraryTarget(AdvancedDockingSystem)
 TEMPLATE = lib
-VERSION = 1.0.0
+#VERSION = 1.0.0
 
 CONFIG += adsBuildShared
 

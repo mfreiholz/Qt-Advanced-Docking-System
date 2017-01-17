@@ -35,6 +35,7 @@ class ADS_EXPORT_API ContainerWidget : public QFrame
 	friend class FloatingWidget;
 	friend class SectionTitleWidget;
 	friend class SectionContentWidget;
+    friend class SectionWidgetTabsScrollArea;
 
 public:
 	explicit ContainerWidget(QWidget *parent = NULL);
@@ -142,6 +143,9 @@ private:
 	bool restoreSectionWidgets(QDataStream& in, int version, QSplitter* currentSplitter, QList<SectionWidget*>& sections, QList<SectionContent::RefPtr>& contentsToHide);
 
 	bool takeContent(const SectionContent::RefPtr& sc, InternalContentData& data);
+
+    void moveFloatingWidget(const QPoint& TargetPos);
+    FloatingWidget* startFloating(SectionWidget* sectionwidget, int ContentUid, const QPoint& TargetPos);
 
 private slots:
 	void onActiveTabChanged();

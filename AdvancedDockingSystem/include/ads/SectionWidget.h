@@ -14,6 +14,7 @@ class QMenu;
 #include "ads/API.h"
 #include "ads/Internal.h"
 #include "ads/SectionContent.h"
+#include "ads/FloatingWidget.h"
 
 ADS_NAMESPACE_BEGIN
 class ContainerWidget;
@@ -49,6 +50,8 @@ public:
 
 	int currentIndex() const;
 	void moveContent(int from, int to);
+
+    virtual bool eventFilter(QObject *watched, QEvent *event);
 
 protected:
 	virtual void showEvent(QShowEvent*);
@@ -96,7 +99,11 @@ public:
 	virtual ~SectionWidgetTabsScrollArea();
 
 protected:
+    QPoint _dragStartPos;
+    QPointer<FloatingWidget> _fw;
 	virtual void wheelEvent(QWheelEvent*);
+    virtual void mousePressEvent(QMouseEvent* ev);
+    virtual void mouseMoveEvent(QMouseEvent* ev);
 };
 
 ADS_NAMESPACE_END

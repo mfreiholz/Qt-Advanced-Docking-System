@@ -1,3 +1,5 @@
+include($$(cetoni_repository)/build/qt/qtprojectsettings/common.pri)
+
 TARGET = AdvancedDockingSystemDemo
 
 QT += core gui
@@ -47,8 +49,8 @@ FORMS += \
 #else:unix: PRE_TARGETDEPS += $$OUT_PWD/../AdvancedDockingSystem/libAdvancedDockingSystem.a
 
 # Dependency: AdvancedDockingSystem (shared)
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../AdvancedDockingSystem/release/ -lAdvancedDockingSystem1
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../AdvancedDockingSystem/debug/ -lAdvancedDockingSystem1
+win32:CONFIG(release, debug|release): LIBS += -l$$qtLinkLibrary(AdvancedDockingSystem)
+else:win32:CONFIG(debug, debug|release): LIBS += -l$$qtLinkLibrary(AdvancedDockingSystem)
 else:unix: LIBS += -L$$OUT_PWD/../AdvancedDockingSystem/ -lAdvancedDockingSystem
 
 INCLUDEPATH += $$PWD/../AdvancedDockingSystem/include

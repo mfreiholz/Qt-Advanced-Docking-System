@@ -10,6 +10,7 @@
 #include "ads/SectionTitleWidget.h"
 #include "ads/SectionContentWidget.h"
 #include "ads/Internal.h"
+#include "ads/SectionWidget.h"
 
 ADS_NAMESPACE_BEGIN
 
@@ -54,6 +55,18 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 //	_container->_floatingWidgets.append(this);
 }
 
+
+FloatingWidget::FloatingWidget(SectionWidget* sectionWidget)
+{
+    QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
+    l->setContentsMargins(0, 0, 0, 0);
+    l->setSpacing(0);
+    setLayout(l);
+
+    l->addWidget(sectionWidget);
+}
+
+
 FloatingWidget::~FloatingWidget()
 {
 	_container->_floatings.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
@@ -80,5 +93,6 @@ void FloatingWidget::onCloseButtonClicked()
 {
 	_container->hideSectionContent(_content);
 }
+
 
 ADS_NAMESPACE_END
