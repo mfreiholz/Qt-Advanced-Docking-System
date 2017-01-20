@@ -41,18 +41,10 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 		closeButton->setToolTip(tr("Close"));
 		closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		_titleLayout->addWidget(closeButton);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-		QObject::connect(closeButton, &QPushButton::clicked, this, &FloatingWidget::onCloseButtonClicked);
-#else
-		QObject::connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
-#endif
+		connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
 	}
-
-	// Content
 	l->addWidget(contentWidget, 1);
 	contentWidget->show();
-
-//	_container->_floatingWidgets.append(this);
 }
 
 
@@ -69,7 +61,7 @@ FloatingWidget::FloatingWidget(SectionWidget* sectionWidget)
 
 FloatingWidget::~FloatingWidget()
 {
-	_container->_floatings.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
+	_container->d->floatings.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
 }
 
 bool FloatingWidget::takeContent(InternalContentData& data)

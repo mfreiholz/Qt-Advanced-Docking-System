@@ -60,6 +60,11 @@ enum DropArea
 	LeftDropArea = 8,
 	CenterDropArea = 16,
 
+	TopBorderDropArea = 32,
+	RightBorderDropArea = 64,
+	BottomBorderDropArea = 128,
+	LeftBorderDropArea = 256,
+
 	AllAreas = TopDropArea | RightDropArea | BottomDropArea | LeftDropArea | CenterDropArea
 };
 Q_DECLARE_FLAGS(DropAreas, DropArea)

@@ -11,9 +11,6 @@
 #include "ads/SectionContent.h"
 #endif
 
-#define SCLookupMapById(X)   X->_scLookupMapById
-#define SCLookupMapByName(X) X->_scLookupMapByName
-#define SWLookupMapById(X)   X->_swLookupMapById
 
 ADS_NAMESPACE_BEGIN
 class SectionContent;

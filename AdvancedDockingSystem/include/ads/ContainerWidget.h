@@ -21,6 +21,30 @@ class SectionWidget;
 class DropOverlay;
 class InternalContentData;
 
+struct ContainerWidgetPrivate
+{
+	// Elements inside container.
+	QList<SectionWidget*> sections;
+	QList<FloatingWidget*> floatings;
+	QHash<int, HiddenSectionItem> hiddenSectionContents;
+
+
+	// Helper lookup maps, restricted to this container.
+	QHash<int, SectionContent::WeakPtr> scLookupMapById;
+	QHash<QString, SectionContent::WeakPtr> scLookupMapByName;
+	QHash<int, SectionWidget*> swLookupMapById;
+
+
+	// Layout stuff
+	QGridLayout* mainLayout = nullptr;;
+	Qt::Orientation orientation = Qt::Horizontal;
+	QPointer<QSplitter> splitter; // $mfreiholz: I'd like to remove this variable entirely,
+								   // because it changes during user interaction anyway.
+
+	// Drop overlay stuff.
+	QPointer<DropOverlay> dropOverlay;
+};
+
 
 /*!
  * ContainerWidget is the main container to provide the docking
@@ -36,6 +60,7 @@ class ADS_EXPORT_API ContainerWidget : public QFrame
 	friend class SectionTitleWidget;
 	friend class SectionContentWidget;
     friend class SectionWidgetTabsScrollArea;
+    friend class ContainerWidgetPrivate;
 
 public:
 	explicit ContainerWidget(QWidget *parent = NULL);
@@ -169,26 +194,7 @@ signals:
 	void sectionContentVisibilityChanged(const SectionContent::RefPtr& sc, bool visible);
 
 private:
-	// Elements inside container.
-	QList<SectionWidget*> _sections;
-	QList<FloatingWidget*> _floatings;
-	QHash<int, HiddenSectionItem> _hiddenSectionContents;
-
-
-	// Helper lookup maps, restricted to this container.
-	QHash<int, SectionContent::WeakPtr> _scLookupMapById;
-	QHash<QString, SectionContent::WeakPtr> _scLookupMapByName;
-	QHash<int, SectionWidget*> _swLookupMapById;
-
-
-	// Layout stuff
-	QGridLayout* _mainLayout;
-	Qt::Orientation _orientation;
-	QPointer<QSplitter> _splitter; // $mfreiholz: I'd like to remove this variable entirely,
-								   // because it changes during user interaction anyway.
-
-	// Drop overlay stuff.
-	QPointer<DropOverlay> _dropOverlay;
+	ContainerWidgetPrivate* d;///< private data
 };
 
 ADS_NAMESPACE_END

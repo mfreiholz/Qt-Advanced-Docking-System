@@ -12,6 +12,8 @@
 #include <QtGlobal>
 #include <QDebug>
 
+#include <iostream>
+
 ADS_NAMESPACE_BEGIN
 
 // Helper /////////////////////////////////////////////////////////////
@@ -42,42 +44,40 @@ static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size
 		switch (dropArea)
 		{
 			case TopDropArea:
+			case TopBorderDropArea:
 				areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width(), baseRect.height() * .5f);
 				areaLine = QLineF(areaRect.bottomLeft(), areaRect.bottomRight());
 				gradient.setStart(areaRect.topLeft());
 				gradient.setFinalStop(areaRect.bottomLeft());
-				gradient.setColorAt(0.f, areaBackgroundColor);
-				gradient.setColorAt(1.f, areaBackgroundColor.lighter(120));
 				break;
 			case RightDropArea:
+			case RightBorderDropArea:
 				areaRect = QRectF(baseRect.width() * .5f, baseRect.y(), baseRect.width() * .5f, baseRect.height());
 				areaLine = QLineF(areaRect.topLeft(), areaRect.bottomLeft());
 				gradient.setStart(areaRect.topLeft());
 				gradient.setFinalStop(areaRect.topRight());
-				gradient.setColorAt(0.f, areaBackgroundColor.lighter(120));
-				gradient.setColorAt(1.f, areaBackgroundColor);
 				break;
 			case BottomDropArea:
+			case BottomBorderDropArea:
 				areaRect = QRectF(baseRect.x(), baseRect.height() * .5f, baseRect.width(), baseRect.height() * .5f);
 				areaLine = QLineF(areaRect.topLeft(), areaRect.topRight());
 				gradient.setStart(areaRect.topLeft());
 				gradient.setFinalStop(areaRect.bottomLeft());
-				gradient.setColorAt(0.f, areaBackgroundColor.lighter(120));
-				gradient.setColorAt(1.f, areaBackgroundColor);
 				break;
 			case LeftDropArea:
+			case LeftBorderDropArea:
 				areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width() * .5f, baseRect.height());
 				areaLine = QLineF(areaRect.topRight(), areaRect.bottomRight());
 				gradient.setStart(areaRect.topLeft());
 				gradient.setFinalStop(areaRect.topRight());
-				gradient.setColorAt(0.f, areaBackgroundColor);
-				gradient.setColorAt(1.f, areaBackgroundColor.lighter(120));
 				break;
 			default:
 				break;
 		}
 		if (areaRect.isValid())
 		{
+			gradient.setColorAt(0.f, areaBackgroundColor);
+			gradient.setColorAt(1.f, areaBackgroundColor.lighter(120));
 			p.fillRect(areaRect, gradient);
 
 			pen = p.pen();
@@ -104,7 +104,7 @@ static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size
 	return pm;
 }
 
-static QWidget* createDropIndicatorWidget(DropArea dropArea)
+QWidget* DropOverlay::createDropIndicatorWidget(DropArea dropArea)
 {
 	QLabel* l = new QLabel();
 	l->setObjectName("DropAreaLabel");
@@ -113,6 +113,8 @@ static QWidget* createDropIndicatorWidget(DropArea dropArea)
 	const QSizeF size(metric, metric);
 
 	l->setPixmap(createDropIndicatorPixmap(l->palette(), size, dropArea));
+	l->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+	l->setAttribute(Qt::WA_TranslucentBackground);
 	return l;
 }
 
@@ -141,6 +143,10 @@ DropOverlay::DropOverlay(QWidget* parent) :
 	areaWidgets.insert(ADS_NS::BottomDropArea, createDropIndicatorWidget(BottomDropArea));//createDropWidget(":/img/split-bottom.png"));
 	areaWidgets.insert(ADS_NS::LeftDropArea, createDropIndicatorWidget(LeftDropArea));//createDropWidget(":/img/split-left.png"));
 	areaWidgets.insert(ADS_NS::CenterDropArea, createDropIndicatorWidget(CenterDropArea));//createDropWidget(":/img/dock-center.png"));
+
+	m_LeftBorderDropArea = createDropIndicatorWidget(LeftDropArea);
+	m_LeftBorderDropArea->setVisible(false);
+	m_LeftBorderDropArea->setWindowTitle("DropOverlayCross");
 
 	_cross->setAreaWidgets(areaWidgets);
 	_cross->setVisible(false);
@@ -253,6 +259,7 @@ void DropOverlay::paintEvent(QPaintEvent*)
 	// Draw rect based on location
 	QRect r = rect();
 	const DropArea da = cursorLocation();
+	std::cout << "CursorLocation: " << cursorLocation() << std::endl;
 	switch (da)
 	{
     case ADS_NS::TopDropArea:
@@ -293,11 +300,17 @@ void DropOverlay::paintEvent(QPaintEvent*)
 void DropOverlay::showEvent(QShowEvent*)
 {
 	_cross->show();
+	QRect ContainerWidgetRect = parentWidget()->rect();
+	QPoint Pos(ContainerWidgetRect.left(), ContainerWidgetRect.center().y());
+	m_LeftBorderDropArea->move(parentWidget()->mapToGlobal(Pos));
+	m_LeftBorderDropArea->show();
+
 }
 
 void DropOverlay::hideEvent(QHideEvent*)
 {
 	_cross->hide();
+	m_LeftBorderDropArea->hide();
 }
 
 void DropOverlay::resizeEvent(QResizeEvent* e)

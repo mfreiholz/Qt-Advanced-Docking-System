@@ -16,12 +16,15 @@ SectionContent::SectionContent() :
 
 SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueName, ContainerWidget* container, QWidget* title, QWidget* content)
 {
+	auto SectionContentNameMap = container->d->scLookupMapByName;
+	auto SectionContentIdMap = container->d->scLookupMapById;
+
 	if (uniqueName.isEmpty())
 	{
 		qFatal("Can not create SectionContent with empty uniqueName");
 		return RefPtr();
 	}
-	else if (SCLookupMapByName(container).contains(uniqueName))
+	else if (SectionContentNameMap.contains(uniqueName))
 	{
 		qFatal("Can not create SectionContent with already used uniqueName");
 		return RefPtr();
@@ -38,17 +41,20 @@ SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueNa
 	sc->_titleWidget = title;
 	sc->_contentWidget = content;
 
-	SCLookupMapById(container).insert(sc->uid(), sc);
-	SCLookupMapByName(container).insert(sc->uniqueName(), sc);
+	SectionContentIdMap.insert(sc->uid(), sc);
+	SectionContentNameMap.insert(sc->uniqueName(), sc);
 	return sc;
 }
 
 SectionContent::~SectionContent()
 {
+	auto SectionContentNameMap = _containerWidget->d->scLookupMapByName;
+	auto SectionContentIdMap = _containerWidget->d->scLookupMapById;
+
 	if (_containerWidget)
 	{
-		SCLookupMapById(_containerWidget).remove(_uid);
-		SCLookupMapByName(_containerWidget).remove(_uniqueName);
+		SectionContentIdMap.remove(_uid);
+		SectionContentNameMap.remove(_uniqueName);
 	}
 	delete _titleWidget;
 	delete _contentWidget;

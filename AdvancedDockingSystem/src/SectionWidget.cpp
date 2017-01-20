@@ -82,11 +82,7 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	_closeButton->setToolTip(tr("Close"));
 	_closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	_topLayout->addWidget(_closeButton, 0);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-	QObject::connect(_closeButton, &QPushButton::clicked, this, &SectionWidget::onCloseButtonClicked);
-#else
-	QObject::connect(_closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
-#endif
+	connect(_closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
 
 	_tabsLayoutInitCount = _tabsLayout->count();
 
@@ -97,22 +93,15 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	_contentsLayout->setSpacing(0);
 	l->addLayout(_contentsLayout, 1);
 
-#if defined(ADS_ANIMATIONS_ENABLED)
-	QGraphicsDropShadowEffect* shadow = new QGraphicsDropShadowEffect(this);
-	shadow->setOffset(0, 0);
-	shadow->setBlurRadius(8);
-	setGraphicsEffect(shadow);
-#endif
-
-	SWLookupMapById(_container).insert(_uid, this);
+	_container->d->swLookupMapById.insert(_uid, this);
 }
 
 SectionWidget::~SectionWidget()
 {
 	if (_container)
 	{
-		SWLookupMapById(_container).remove(_uid);
-		_container->_sections.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
+		_container->d->swLookupMapById.remove(_uid);
+		_container->d->sections.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
 	}
 
 	// Delete empty QSplitter.

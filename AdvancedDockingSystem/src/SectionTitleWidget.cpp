@@ -83,8 +83,8 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 		SectionWidget* sw = cw->sectionAt(cw->mapFromGlobal(ev->globalPos()));
 		if (sw)
 		{
-			cw->_dropOverlay->setAllowedAreas(ADS_NS::AllAreas);
-			DropArea loc = cw->_dropOverlay->showDropOverlay(sw);
+			cw->d->dropOverlay->setAllowedAreas(ADS_NS::AllAreas);
+			DropArea loc = cw->d->dropOverlay->showDropOverlay(sw);
 			if (loc != InvalidDropArea)
 			{
 				InternalContentData data;
@@ -140,7 +140,7 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 	// Reset
     m_DragStartPosition = QPoint();
     m_TabMoving = false;
-	cw->_dropOverlay->hideDropOverlay();
+	cw->d->dropOverlay->hideDropOverlay();
 	QFrame::mouseReleaseEvent(ev);
 }
 

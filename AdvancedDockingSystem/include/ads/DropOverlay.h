@@ -36,6 +36,11 @@ public:
 	void showDropOverlay(QWidget* target, const QRect& targetAreaRect);
 	void hideDropOverlay();
 
+	/**
+	 * Creates a drop indicator widget for the given drop area
+	 */
+	static QWidget* createDropIndicatorWidget(DropArea dropArea);
+
 protected:
 	virtual void paintEvent(QPaintEvent *e);
 	virtual void showEvent(QShowEvent* e);
@@ -51,6 +56,7 @@ private:
 	QPointer<QWidget> _target;
 	QRect _targetRect;
 	DropArea _lastLocation;
+	QWidget* m_LeftBorderDropArea;
 };
 
 /*!
