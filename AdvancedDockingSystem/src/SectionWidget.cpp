@@ -93,14 +93,14 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	_contentsLayout->setSpacing(0);
 	l->addLayout(_contentsLayout, 1);
 
-	_container->d->swLookupMapById.insert(_uid, this);
+	_container->d->SectionWidgetIdMap.insert(_uid, this);
 }
 
 SectionWidget::~SectionWidget()
 {
 	if (_container)
 	{
-		_container->d->swLookupMapById.remove(_uid);
+		_container->d->SectionWidgetIdMap.remove(_uid);
 		_container->d->sections.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
 	}
 

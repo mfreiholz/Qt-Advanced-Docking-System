@@ -41,6 +41,10 @@ ContainerWidget::ContainerWidget(QWidget *parent) :
 	QFrame(parent),
 	d(new ContainerWidgetPrivate())
 {
+	d->LeftBorderDropArea = DropOverlay::createDropIndicatorWidget(LeftBorderDropArea);
+	d->LeftBorderDropArea->setVisible(false);
+	d->LeftBorderDropArea->setWindowTitle("LeftBorderDropArea");
+
 	d->dropOverlay = new DropOverlay(this);
 	d->mainLayout = new QGridLayout();
 	d->mainLayout->setContentsMargins(4, 4, 4, 4);
@@ -64,9 +68,9 @@ ContainerWidget::~ContainerWidget()
 		FloatingWidget* fw = d->floatings.takeLast();
 		delete fw;
 	}
-	d->scLookupMapById.clear();
-	d->scLookupMapByName.clear();
-	d->swLookupMapById.clear();
+	d->SectionContentIdMap.clear();
+	d->SectionContentNameMap.clear();
+	d->SectionWidgetIdMap.clear();
 	delete d;
 }
 
@@ -157,7 +161,7 @@ bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 		hsi.data.titleWidget->setVisible(true);
 		hsi.data.contentWidget->setVisible(true);
 		SectionWidget* sw = nullptr;
-		if (hsi.preferredSectionId > 0 && (sw = d->swLookupMapById.value(hsi.preferredSectionId)) != nullptr)
+		if (hsi.preferredSectionId > 0 && (sw = d->SectionWidgetIdMap.value(hsi.preferredSectionId)) != nullptr)
 		{
 			sw->addContent(hsi.data, true);
 			emit sectionContentVisibilityChanged(sc, true);
@@ -410,37 +414,10 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 	return true;
 }
 
-QRect ContainerWidget::outerTopDropRect() const
-{
-	QRect r = rect();
-	int h = r.height() / 100 * 5;
-	return QRect(r.left(), r.top(), r.width(), h);
-}
-
-QRect ContainerWidget::outerRightDropRect() const
-{
-	QRect r = rect();
-	int w = r.width() / 100 * 5;
-	return QRect(r.right() - w, r.top(), w, r.height());
-}
-
-QRect ContainerWidget::outerBottomDropRect() const
-{
-	QRect r = rect();
-	int h = r.height() / 100 * 5;
-	return QRect(r.left(), r.bottom() - h, r.width(), h);
-}
-
-QRect ContainerWidget::outerLeftDropRect() const
-{
-	QRect r = rect();
-	int w = r.width() / 100 * 5;
-	return QRect(r.left(), r.top(), w, r.height());
-}
 
 QList<SectionContent::RefPtr> ContainerWidget::contents() const
 {
-	QList<SectionContent::WeakPtr> wl = d->scLookupMapById.values();
+	QList<SectionContent::WeakPtr> wl = d->SectionContentIdMap.values();
 	QList<SectionContent::RefPtr> sl;
 	for (int i = 0; i < wl.count(); ++i)
 	{
@@ -768,7 +745,7 @@ QByteArray ContainerWidget::saveHierarchy() const
 		while (iter.hasNext())
 		{
 			iter.next();
-			if (iter.value().preferredSectionId <= 0 || !d->swLookupMapById.contains(iter.value().preferredSectionId))
+			if (iter.value().preferredSectionId <= 0 || !d->SectionWidgetIdMap.contains(iter.value().preferredSectionId))
 				cnt++;
 		}
 		out << cnt;
@@ -776,7 +753,7 @@ QByteArray ContainerWidget::saveHierarchy() const
 		while (iter.hasNext())
 		{
 			iter.next();
-			if (iter.value().preferredSectionId <= 0 || !d->swLookupMapById.contains(iter.value().preferredSectionId))
+			if (iter.value().preferredSectionId <= 0 || !d->SectionWidgetIdMap.contains(iter.value().preferredSectionId))
 				out << iter.value().data.content->uniqueName();
 		}
 	}
@@ -941,7 +918,7 @@ bool ContainerWidget::restoreHierarchy(const QByteArray& data)
 				QString uname;
 				in >> uname;
 
-				const SectionContent::RefPtr sc = d->scLookupMapByName.value(uname);
+				const SectionContent::RefPtr sc = d->SectionContentNameMap.value(uname);
 				if (!sc)
 					continue;
 
@@ -967,7 +944,7 @@ bool ContainerWidget::restoreHierarchy(const QByteArray& data)
 		{
 			QString uname;
 			in >> uname;
-			const SectionContent::RefPtr sc = d->scLookupMapByName.value(uname);
+			const SectionContent::RefPtr sc = d->SectionContentNameMap.value(uname);
 			if (!sc)
 				continue;
 
@@ -1006,7 +983,7 @@ bool ContainerWidget::restoreHierarchy(const QByteArray& data)
 			contents.append(contentsToHide.at(i));
 
 		// Compare restored contents with available contents
-		const QList<SectionContent::WeakPtr> allContents = d->scLookupMapById.values();
+		const QList<SectionContent::WeakPtr> allContents = d->SectionContentIdMap.values();
 		for (int i = 0; i < allContents.count(); ++i)
 		{
 			const SectionContent::RefPtr sc = allContents.at(i).toStrongRef();
@@ -1078,7 +1055,7 @@ bool ContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, QList
 		bool visible = false;
 		in >> visible;
 
-		const SectionContent::RefPtr sc = d->scLookupMapByName.value(uname).toStrongRef();
+		const SectionContent::RefPtr sc = d->SectionContentNameMap.value(uname).toStrongRef();
 		if (!sc)
 		{
 			qWarning() << "Can not find SectionContent:" << uname;
@@ -1161,7 +1138,7 @@ bool ContainerWidget::restoreSectionWidgets(QDataStream& in, int version, QSplit
 			int preferredIndex = -1;
 			in >> preferredIndex;
 
-			const SectionContent::RefPtr sc = d->scLookupMapByName.value(uname).toStrongRef();
+			const SectionContent::RefPtr sc = d->SectionContentNameMap.value(uname).toStrongRef();
 			if (!sc)
 			{
 				qWarning() << "Can not find SectionContent:" << uname;
@@ -1246,7 +1223,7 @@ void ContainerWidget::onActionToggleSectionContentVisibility(bool visible)
 	if (!a)
 		return;
 	const int uid = a->property("uid").toInt();
-	const SectionContent::RefPtr sc = d->scLookupMapById.value(uid).toStrongRef();
+	const SectionContent::RefPtr sc = d->SectionContentIdMap.value(uid).toStrongRef();
 	if (sc.isNull())
 	{
 		qCritical() << "Can not find content by ID" << uid;
@@ -1261,14 +1238,21 @@ void ContainerWidget::onActionToggleSectionContentVisibility(bool visible)
 
 void ContainerWidget::moveFloatingWidget(const QPoint& TargetPos)
 {
-    // Mouse is over a SectionWidget
-    SectionWidget* sectionwidget = sectionAt(mapFromGlobal(QCursor::pos()));
+	// Mouse is over the container widget
     if (rect().contains(mapFromGlobal(QCursor::pos())))
     {
     	std::cout << "over Container" << std::endl;
+    	d->LeftBorderDropArea->show();
+    	d->LeftBorderDropArea->raise();
+    }
+    else
+    {
+    	std::cout << "-----------------" << std::endl;
+    	d->LeftBorderDropArea->hide();
     }
 
-
+    // Mouse is over a SectionWidget
+    SectionWidget* sectionwidget = sectionAt(mapFromGlobal(QCursor::pos()));
     if (sectionwidget)
     {
         qInfo() << "over sectionWidget";
@@ -1305,6 +1289,10 @@ FloatingWidget* ContainerWidget::startFloating(SectionWidget* sectionwidget, int
         sectionwidget = NULL;
     }
     deleteEmptySplitter(this);
+
+	QRect Rect = rect();
+	QPoint Pos(Rect.left(), Rect.center().y());
+	d->LeftBorderDropArea->move(mapToGlobal(Pos));
     return fw;
 }
 

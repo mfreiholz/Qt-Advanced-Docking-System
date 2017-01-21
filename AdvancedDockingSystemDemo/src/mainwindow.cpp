@@ -90,66 +90,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 
 	// Setup actions.
-	QObject::connect(ui->actionContentList, SIGNAL(triggered()), this, SLOT(showSectionContentListDialog()));
+	connect(ui->actionContentList, SIGNAL(triggered()), this, SLOT(showSectionContentListDialog()));
 
 	// ADS - Create main container (ContainerWidget).
 	_container = new ADS_NS::ContainerWidget();
-#if QT_VERSION >= 0x050000
-	QObject::connect(_container, &ADS_NS::ContainerWidget::activeTabChanged, this, &MainWindow::onActiveTabChanged);
-	QObject::connect(_container, &ADS_NS::ContainerWidget::sectionContentVisibilityChanged, this, &MainWindow::onSectionContentVisibilityChanged);
-#else
-	QObject::connect(_container, SIGNAL(activeTabChanged(const SectionContent::RefPtr&, bool)), this, SLOT(onActiveTabChanged(const SectionContent::RefPtr&, bool)));
-	QObject::connect(_container, SIGNAL(sectionContentVisibilityChanged(SectionContent::RefPtr,bool)), this, SLOT(onSectionContentVisibilityChanged(SectionContent::RefPtr,bool)));
-#endif
+	connect(_container, SIGNAL(activeTabChanged(const SectionContent::RefPtr&, bool)), this, SLOT(onActiveTabChanged(const SectionContent::RefPtr&, bool)));
+	connect(_container, SIGNAL(sectionContentVisibilityChanged(SectionContent::RefPtr,bool)), this, SLOT(onSectionContentVisibilityChanged(SectionContent::RefPtr,bool)));
 	setCentralWidget(_container);
-
-	// Optional: Use custom drop area widgets.
-    if (false)
-	{
-		QHash<ADS_NS::DropArea, QWidget*> areaWidgets;
-		areaWidgets.insert(ADS_NS::TopDropArea, new QPushButton("TOP"));
-		areaWidgets.insert(ADS_NS::RightDropArea, new QPushButton("RIGHT"));
-		areaWidgets.insert(ADS_NS::BottomDropArea, new QPushButton("BOTTOM"));
-		areaWidgets.insert(ADS_NS::LeftDropArea, new QPushButton("LEFT"));
-		areaWidgets.insert(ADS_NS::CenterDropArea, new QPushButton("CENTER"));
-		_container->dropOverlay()->setAreaWidgets(areaWidgets);
-	}
-
-	// ADS - Adding some contents.
-	if (true)
-	{
-		// Test #1: Use high-level public API
-		ADS_NS::ContainerWidget* cw = _container;
-		ADS_NS::SectionWidget* sw = NULL;
-
-        sw = _container->addSectionContent(createLongTextLabelSC(cw), nullptr, ADS_NS::CenterDropArea);
-        sw = _container->addSectionContent(createCalendarSC(cw), nullptr, ADS_NS::LeftDropArea);
-        sw = _container->addSectionContent(createFileSystemTreeSC(cw), nullptr, ADS_NS::BottomDropArea);
-
-        /*_container->addSectionContent(createCalendarSC(_container));
-		_container->addSectionContent(createLongTextLabelSC(_container));
-		_container->addSectionContent(createLongTextLabelSC(_container));
-		_container->addSectionContent(createLongTextLabelSC(_container));
-
-		ADS_NS::SectionContent::RefPtr sc = createLongTextLabelSC(cw);
-		sc->setFlags(ADS_NS::SectionContent::AllFlags ^ ADS_NS::SectionContent::Closeable);
-        _container->addSectionContent(sc);*/
-	}
-	else if (false)
-	{
-		// Issue #2: If the first drop is not into CenterDropArea, the application crashes.
-		ADS_NS::ContainerWidget* cw = _container;
-		ADS_NS::SectionWidget* sw = NULL;
-
-		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::LeftDropArea);
-		sw = _container->addSectionContent(createCalendarSC(cw), sw, ADS_NS::LeftDropArea);
-		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
-		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
-		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
-		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::RightDropArea);
-		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::BottomDropArea);
-	}
-
+	createContent();
 	// Default window geometry
 	resize(800, 600);
 	restoreGeometry(loadDataHelper("MainWindow"));
@@ -161,6 +109,42 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
 	delete ui;
+}
+
+
+void MainWindow::createContent()
+{
+	// ADS - Adding some contents.
+	// Test #1: Use high-level public API
+	ADS_NS::ContainerWidget* cw = _container;
+	ADS_NS::SectionWidget* sw = NULL;
+
+	sw = _container->addSectionContent(createLongTextLabelSC(cw), nullptr, ADS_NS::CenterDropArea);
+	sw = _container->addSectionContent(createCalendarSC(cw), nullptr, ADS_NS::LeftDropArea);
+	sw = _container->addSectionContent(createFileSystemTreeSC(cw), nullptr, ADS_NS::BottomDropArea);
+
+	/*_container->addSectionContent(createCalendarSC(_container));
+	_container->addSectionContent(createLongTextLabelSC(_container));
+	_container->addSectionContent(createLongTextLabelSC(_container));
+	_container->addSectionContent(createLongTextLabelSC(_container));
+
+	ADS_NS::SectionContent::RefPtr sc = createLongTextLabelSC(cw);
+	sc->setFlags(ADS_NS::SectionContent::AllFlags ^ ADS_NS::SectionContent::Closeable);
+	_container->addSectionContent(sc);*/
+
+#if 0
+		// Issue #2: If the first drop is not into CenterDropArea, the application crashes.
+		ADS_NS::ContainerWidget* cw = _container;
+		ADS_NS::SectionWidget* sw = NULL;
+
+		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::LeftDropArea);
+		sw = _container->addSectionContent(createCalendarSC(cw), sw, ADS_NS::LeftDropArea);
+		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
+		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
+		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
+		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::RightDropArea);
+		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::BottomDropArea);
+#endif
 }
 
 void MainWindow::showSectionContentListDialog()

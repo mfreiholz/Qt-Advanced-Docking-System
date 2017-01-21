@@ -15,35 +15,12 @@ class QGridLayout;
 #include "ads/SectionContent.h"
 #include "ads/FloatingWidget.h"
 #include "ads/Serialization.h"
+#include "ContainerWidget_p.h"
 
 ADS_NAMESPACE_BEGIN
 class SectionWidget;
 class DropOverlay;
 class InternalContentData;
-
-struct ContainerWidgetPrivate
-{
-	// Elements inside container.
-	QList<SectionWidget*> sections;
-	QList<FloatingWidget*> floatings;
-	QHash<int, HiddenSectionItem> hiddenSectionContents;
-
-
-	// Helper lookup maps, restricted to this container.
-	QHash<int, SectionContent::WeakPtr> scLookupMapById;
-	QHash<QString, SectionContent::WeakPtr> scLookupMapByName;
-	QHash<int, SectionWidget*> swLookupMapById;
-
-
-	// Layout stuff
-	QGridLayout* mainLayout = nullptr;;
-	Qt::Orientation orientation = Qt::Horizontal;
-	QPointer<QSplitter> splitter; // $mfreiholz: I'd like to remove this variable entirely,
-								   // because it changes during user interaction anyway.
-
-	// Drop overlay stuff.
-	QPointer<DropOverlay> dropOverlay;
-};
 
 
 /*!
@@ -130,13 +107,6 @@ public:
 	// Advanced Public API
 	// You usually should not need access to this methods
 	//
-
-	// Outer DropAreas
-	QRect outerTopDropRect() const;
-	QRect outerRightDropRect() const;
-	QRect outerBottomDropRect() const;
-	QRect outerLeftDropRect() const;
-
 	/*!
 	 * \brief contents
 	 * \return List of known SectionContent for this ContainerWidget.

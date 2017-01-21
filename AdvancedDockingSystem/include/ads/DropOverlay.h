@@ -27,9 +27,6 @@ public:
 
 	void setAllowedAreas(DropAreas areas);
 	DropAreas allowedAreas() const;
-
-	void setAreaWidgets(const QHash<DropArea, QWidget*>& widgets);
-
 	DropArea cursorLocation() const;
 
 	DropArea showDropOverlay(QWidget* target);
@@ -51,12 +48,9 @@ protected:
 private:
 	DropAreas _allowedAreas;
 	DropOverlayCross* _cross;
-
-	bool _fullAreaDrop;
 	QPointer<QWidget> _target;
 	QRect _targetRect;
 	DropArea _lastLocation;
-	QWidget* m_LeftBorderDropArea;
 };
 
 /*!

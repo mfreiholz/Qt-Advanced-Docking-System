@@ -97,7 +97,7 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 		// Mouse is over a outer-edge drop area
 		else
 		{
-			DropArea dropArea = ADS_NS::InvalidDropArea;
+			/*DropArea dropArea = ADS_NS::InvalidDropArea;
 			if (cw->outerTopDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
 				dropArea = ADS_NS::TopDropArea;
 			if (cw->outerRightDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
@@ -114,7 +114,7 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
                 m_FloatingWidget->deleteLater();
                 m_FloatingWidget.clear();
 				cw->dropContent(data, NULL, dropArea, true);
-			}
+			}*/
 		}
 	}
 	// End of tab moving, change order now

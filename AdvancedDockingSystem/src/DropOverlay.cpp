@@ -124,7 +124,6 @@ DropOverlay::DropOverlay(QWidget* parent) :
 	QFrame(parent),
 	_allowedAreas(InvalidDropArea),
 	_cross(new DropOverlayCross(this)),
-	_fullAreaDrop(false),
 	_lastLocation(InvalidDropArea)
 {
 	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
@@ -143,10 +142,6 @@ DropOverlay::DropOverlay(QWidget* parent) :
 	areaWidgets.insert(ADS_NS::BottomDropArea, createDropIndicatorWidget(BottomDropArea));//createDropWidget(":/img/split-bottom.png"));
 	areaWidgets.insert(ADS_NS::LeftDropArea, createDropIndicatorWidget(LeftDropArea));//createDropWidget(":/img/split-left.png"));
 	areaWidgets.insert(ADS_NS::CenterDropArea, createDropIndicatorWidget(CenterDropArea));//createDropWidget(":/img/dock-center.png"));
-
-	m_LeftBorderDropArea = createDropIndicatorWidget(LeftDropArea);
-	m_LeftBorderDropArea->setVisible(false);
-	m_LeftBorderDropArea->setWindowTitle("DropOverlayCross");
 
 	_cross->setAreaWidgets(areaWidgets);
 	_cross->setVisible(false);
@@ -171,10 +166,6 @@ DropAreas DropOverlay::allowedAreas() const
 	return _allowedAreas;
 }
 
-void DropOverlay::setAreaWidgets(const QHash<DropArea, QWidget*>& widgets)
-{
-	_cross->setAreaWidgets(widgets);
-}
 
 DropArea DropOverlay::cursorLocation() const
 {
@@ -183,8 +174,7 @@ DropArea DropOverlay::cursorLocation() const
 
 DropArea DropOverlay::showDropOverlay(QWidget* target)
 {
-    qInfo() << "DropOverlay::showDropOverlay(QWidget* target)";
-    _fullAreaDrop = true;
+    std::cout << "DropOverlay::showDropOverlay(QWidget* target)" << std::endl;
 	if (_target == target)
 	{
         qInfo() << "_target == target";
@@ -199,9 +189,8 @@ DropArea DropOverlay::showDropOverlay(QWidget* target)
 		return da;
 	}
 
-	hideDropOverlay();
-    qInfo() << "_target != target, hideDropOverlay(), _fullAreaDrop = false";
-	_fullAreaDrop = false;
+	//hideDropOverlay();
+    std::cout << "_target != target, hideDropOverlay(), _fullAreaDrop = false" << std::endl;
 	_target = target;
 	_targetRect = QRect();
 	_lastLocation = InvalidDropArea;
@@ -209,9 +198,7 @@ DropArea DropOverlay::showDropOverlay(QWidget* target)
 	// Move it over the target.
 	resize(target->size());
 	move(target->mapToGlobal(target->rect().topLeft()));
-
 	show();
-
 	return cursorLocation();
 }
 
@@ -222,8 +209,7 @@ void DropOverlay::showDropOverlay(QWidget* target, const QRect& targetAreaRect)
 	{
 		return;
 	}
-	hideDropOverlay();
-	_fullAreaDrop = true;
+	//hideDropOverlay();
 	_target = target;
 	_targetRect = targetAreaRect;
 	_lastLocation = InvalidDropArea;
@@ -231,9 +217,7 @@ void DropOverlay::showDropOverlay(QWidget* target, const QRect& targetAreaRect)
 	// Move it over the target's area.
 	resize(targetAreaRect.size());
 	move(target->mapToGlobal(QPoint(targetAreaRect.x(), targetAreaRect.y())));
-
 	show();
-
 	return;
 }
 
@@ -241,7 +225,6 @@ void DropOverlay::hideDropOverlay()
 {
     qInfo() << "hideDropOverlay() _fullAreaDrop = false";
 	hide();
-	_fullAreaDrop = false;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	_target.clear();
 #else
@@ -253,9 +236,6 @@ void DropOverlay::hideDropOverlay()
 
 void DropOverlay::paintEvent(QPaintEvent*)
 {
-	QPainter p(this);
-    const QColor areaColor = palette().color(QPalette::Active, QPalette::Highlight);
-
 	// Draw rect based on location
 	QRect r = rect();
 	const DropArea da = cursorLocation();
@@ -278,23 +258,13 @@ void DropOverlay::paintEvent(QPaintEvent*)
 		r = rect();
 		break;
 	default:
-        r = QRect();
+        return;
 	}
-	if (!r.isNull())
-	{
-		p.fillRect(r, QBrush(areaColor, Qt::Dense4Pattern));
-		p.setBrush(QBrush(areaColor));
-		p.drawRect(r);
-	}
-
-	// Draw rect over the entire size + border.
-//	auto r = rect();
-//	r.setWidth(r.width() - 1);
-//	r.setHeight(r.height() - 1);
-
-//	p.fillRect(r, QBrush(QColor(0, 100, 255), Qt::Dense4Pattern));
-//	p.setBrush(QBrush(QColor(0, 100, 255)));
-	//	p.drawRect(r);
+	QPainter painter(this);
+    QColor Color = palette().color(QPalette::Active, QPalette::Highlight);
+	painter.fillRect(r, QBrush(Color, Qt::Dense4Pattern));
+	painter.setBrush(QBrush(Color));
+	painter.drawRect(r);
 }
 
 void DropOverlay::showEvent(QShowEvent*)
@@ -302,15 +272,11 @@ void DropOverlay::showEvent(QShowEvent*)
 	_cross->show();
 	QRect ContainerWidgetRect = parentWidget()->rect();
 	QPoint Pos(ContainerWidgetRect.left(), ContainerWidgetRect.center().y());
-	m_LeftBorderDropArea->move(parentWidget()->mapToGlobal(Pos));
-	m_LeftBorderDropArea->show();
-
 }
 
 void DropOverlay::hideEvent(QHideEvent*)
 {
 	_cross->hide();
-	m_LeftBorderDropArea->hide();
 }
 
 void DropOverlay::resizeEvent(QResizeEvent* e)

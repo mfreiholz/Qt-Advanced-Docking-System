@@ -16,8 +16,8 @@ SectionContent::SectionContent() :
 
 SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueName, ContainerWidget* container, QWidget* title, QWidget* content)
 {
-	auto SectionContentNameMap = container->d->scLookupMapByName;
-	auto SectionContentIdMap = container->d->scLookupMapById;
+	auto SectionContentNameMap = container->d->SectionContentNameMap;
+	auto SectionContentIdMap = container->d->SectionContentIdMap;
 
 	if (uniqueName.isEmpty())
 	{
@@ -48,8 +48,8 @@ SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueNa
 
 SectionContent::~SectionContent()
 {
-	auto SectionContentNameMap = _containerWidget->d->scLookupMapByName;
-	auto SectionContentIdMap = _containerWidget->d->scLookupMapById;
+	auto SectionContentNameMap = _containerWidget->d->SectionContentNameMap;
+	auto SectionContentIdMap = _containerWidget->d->SectionContentIdMap;
 
 	if (_containerWidget)
 	{

@@ -38,6 +38,7 @@ protected:
 private:
 	Ui::MainWindow *ui;
 	ADS_NS::ContainerWidget* _container;
+	void createContent();
 };
 
 #endif // MAINWINDOW_H
