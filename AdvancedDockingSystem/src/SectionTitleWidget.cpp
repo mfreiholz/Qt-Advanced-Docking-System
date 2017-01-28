@@ -22,6 +22,8 @@
 #include "ads/FloatingWidget.h"
 #include "ads/ContainerWidget.h"
 
+#include <iostream>
+
 ADS_NAMESPACE_BEGIN
 
 SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* parent) :
@@ -77,14 +79,15 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 	SectionWidget* section = NULL;
 	ContainerWidget* cw = findParentContainerWidget(this);
 
-	// Drop contents of FloatingWidget into SectionWidget.
-    if (m_FloatingWidget)
+	// Drop contents of FloatingWidget into container or section widget
+    if (m_FloatingWidget && cw->rect().contains(cw->mapFromGlobal(ev->globalPos())))
 	{
 		SectionWidget* sw = cw->sectionAt(cw->mapFromGlobal(ev->globalPos()));
+		DropArea loc = InvalidDropArea;
 		if (sw)
 		{
-			cw->d->dropOverlay->setAllowedAreas(ADS_NS::AllAreas);
-			DropArea loc = cw->d->dropOverlay->showDropOverlay(sw);
+			cw->d->SectionDropOverlay->setAllowedAreas(ADS_NS::AllAreas);
+			DropArea loc = cw->d->SectionDropOverlay->showDropOverlay(sw);
 			if (loc != InvalidDropArea)
 			{
 				InternalContentData data;
@@ -94,27 +97,20 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 				cw->dropContent(data, sw, loc, true);
 			}
 		}
-		// Mouse is over a outer-edge drop area
-		else
-		{
-			/*DropArea dropArea = ADS_NS::InvalidDropArea;
-			if (cw->outerTopDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
-				dropArea = ADS_NS::TopDropArea;
-			if (cw->outerRightDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
-				dropArea = ADS_NS::RightDropArea;
-			if (cw->outerBottomDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
-				dropArea = ADS_NS::BottomDropArea;
-			if (cw->outerLeftDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
-				dropArea = ADS_NS::LeftDropArea;
 
-			if (dropArea != ADS_NS::InvalidDropArea)
+		// mouse is over container
+		if (InvalidDropArea == loc)
+		{
+			DropArea loc = cw->d->ContainerDropOverlay->cursorLocation();
+			std::cout << "Cursor location: " << loc << std::endl;
+			if (loc != InvalidDropArea)
 			{
 				InternalContentData data;
                 m_FloatingWidget->takeContent(data);
                 m_FloatingWidget->deleteLater();
                 m_FloatingWidget.clear();
-				cw->dropContent(data, NULL, dropArea, true);
-			}*/
+				cw->dropContent(data, nullptr, loc, true);
+			}
 		}
 	}
 	// End of tab moving, change order now
@@ -135,12 +131,15 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 	}
 
     if (!m_DragStartPosition.isNull())
+    {
 		emit clicked();
+    }
 
 	// Reset
     m_DragStartPosition = QPoint();
     m_TabMoving = false;
-	cw->d->dropOverlay->hideDropOverlay();
+	cw->d->SectionDropOverlay->hideDropOverlay();
+	cw->hideContainerOverlay();
 	QFrame::mouseReleaseEvent(ev);
 }
 

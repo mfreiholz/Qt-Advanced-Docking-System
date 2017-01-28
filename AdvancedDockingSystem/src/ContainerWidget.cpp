@@ -41,22 +41,22 @@ ContainerWidget::ContainerWidget(QWidget *parent) :
 	QFrame(parent),
 	d(new ContainerWidgetPrivate())
 {
-	d->LeftBorderDropArea = DropOverlay::createDropIndicatorWidget(LeftBorderDropArea);
-	d->LeftBorderDropArea->setVisible(false);
-	d->LeftBorderDropArea->setWindowTitle("LeftBorderDropArea");
+	d->SectionDropOverlay = new DropOverlay(this, DropOverlay::ModeSectionOverlay);
+	d->ContainerDropOverlay = new DropOverlay(this, DropOverlay::ModeContainerOverlay);
+	d->ContainerDropOverlay->setAttribute(Qt::WA_TransparentForMouseEvents);
+	d->ContainerDropOverlay->setWindowFlags(d->ContainerDropOverlay->windowFlags() | Qt::WindowTransparentForInput);
 
-	d->dropOverlay = new DropOverlay(this);
-	d->mainLayout = new QGridLayout();
-	d->mainLayout->setContentsMargins(4, 4, 4, 4);
-	d->mainLayout->setSpacing(0);
-	setLayout(d->mainLayout);
+	d->MainLayout = new QGridLayout();
+	d->MainLayout->setContentsMargins(0, 1, 0, 0);
+	d->MainLayout->setSpacing(0);
+	setLayout(d->MainLayout);
 }
 
 ContainerWidget::~ContainerWidget()
 {
 	// Note: It's required to delete in 2 steps
 	// Remove from list, and then delete.
-	// Because the destrcutor of objects wants to modfiy the current
+	// Because the destrcutor of objects wants to modify the current
 	// iterating list as well... :-/
 	while (!d->sections.isEmpty())
 	{
@@ -430,7 +430,7 @@ QList<SectionContent::RefPtr> ContainerWidget::contents() const
 
 QPointer<DropOverlay> ContainerWidget::dropOverlay() const
 {
-	return d->dropOverlay;
+	return d->SectionDropOverlay;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -444,14 +444,38 @@ SectionWidget* ContainerWidget::newSectionWidget()
 	return sw;
 }
 
+SectionWidget* ContainerWidget::insertNewSectionWidget(
+    const InternalContentData& data, SectionWidget* targetSection, SectionWidget* ret,
+    Qt::Orientation Orientation, int InsertIndexOffset)
+{
+	QSplitter* targetSectionSplitter = findParentSplitter(targetSection);
+	SectionWidget* sw = newSectionWidget();
+	sw->addContent(data, true);
+	if (targetSectionSplitter->orientation() == Orientation)
+	{
+		const int index = targetSectionSplitter->indexOf(targetSection);
+		targetSectionSplitter->insertWidget(index + InsertIndexOffset, sw);
+	}
+	else
+	{
+		const int index = targetSectionSplitter->indexOf(targetSection);
+		QSplitter* s = newSplitter(Orientation);
+		s->addWidget(sw);
+		s->addWidget(targetSection);
+		targetSectionSplitter->insertWidget(index, s);
+	}
+	ret = sw;
+	return ret;
+}
+
 SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive)
 {
 	ADS_Expects(targetSection != NULL);
 
-	SectionWidget* ret = NULL;
+	SectionWidget* section_widget = nullptr;
 
 	// If no sections exists yet, create a default one and always drop into it.
-	if (d->sections.count() <= 0)
+	if (d->sections.isEmpty())
 	{
 		targetSection = newSectionWidget();
 		addSection(targetSection);
@@ -463,120 +487,32 @@ SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, Sec
 	{
 		switch (area)
 		{
-		case TopDropArea:
-			ret = dropContentOuterHelper(d->mainLayout, data, Qt::Vertical, false);
-			break;
-		case RightDropArea:
-			ret = dropContentOuterHelper(d->mainLayout, data, Qt::Horizontal, true);
-			break;
+		case TopDropArea:return dropContentOuterHelper(d->MainLayout, data, Qt::Vertical, false);
+		case RightDropArea: return dropContentOuterHelper(d->MainLayout, data, Qt::Horizontal, true);
 		case CenterDropArea:
-		case BottomDropArea:
-			ret = dropContentOuterHelper(d->mainLayout, data, Qt::Vertical, true);
-			break;
-		case LeftDropArea:
-			ret = dropContentOuterHelper(d->mainLayout, data, Qt::Horizontal, false);
-			break;
+		case BottomDropArea:return dropContentOuterHelper(d->MainLayout, data, Qt::Vertical, true);
+		case LeftDropArea: return dropContentOuterHelper(d->MainLayout, data, Qt::Horizontal, false);
 		default:
-			return NULL;
+			return nullptr;
 		}
-		return ret;
+		return section_widget;
 	}
-
-	QSplitter* targetSectionSplitter = findParentSplitter(targetSection);
 
 	// Drop logic based on area.
 	switch (area)
 	{
-	case TopDropArea:
-	{
-		SectionWidget* sw = newSectionWidget();
-		sw->addContent(data, true);
-		if (targetSectionSplitter->orientation() == Qt::Vertical)
-		{
-			const int index = targetSectionSplitter->indexOf(targetSection);
-			targetSectionSplitter->insertWidget(index, sw);
-		}
-		else
-		{
-			const int index = targetSectionSplitter->indexOf(targetSection);
-			QSplitter* s = newSplitter(Qt::Vertical);
-			s->addWidget(sw);
-			s->addWidget(targetSection);
-			targetSectionSplitter->insertWidget(index, s);
-		}
-		ret = sw;
-		break;
-	}
-	case RightDropArea:
-	{
-		SectionWidget* sw = newSectionWidget();
-		sw->addContent(data, true);
-		if (targetSectionSplitter->orientation() == Qt::Horizontal)
-		{
-			const int index = targetSectionSplitter->indexOf(targetSection);
-			targetSectionSplitter->insertWidget(index + 1, sw);
-		}
-		else
-		{
-			const int index = targetSectionSplitter->indexOf(targetSection);
-			QSplitter* s = newSplitter(Qt::Horizontal);
-			s->addWidget(targetSection);
-			s->addWidget(sw);
-			targetSectionSplitter->insertWidget(index, s);
-		}
-		ret = sw;
-		break;
-	}
-	case BottomDropArea:
-	{
-		SectionWidget* sw = newSectionWidget();
-		sw->addContent(data, true);
-		if (targetSectionSplitter->orientation() == Qt::Vertical)
-		{
-			int index = targetSectionSplitter->indexOf(targetSection);
-			targetSectionSplitter->insertWidget(index + 1, sw);
-		}
-		else
-		{
-			int index = targetSectionSplitter->indexOf(targetSection);
-			QSplitter* s = newSplitter(Qt::Vertical);
-			s->addWidget(targetSection);
-			s->addWidget(sw);
-			targetSectionSplitter->insertWidget(index, s);
-		}
-		ret = sw;
-		break;
-	}
-	case LeftDropArea:
-	{
-		SectionWidget* sw = newSectionWidget();
-		sw->addContent(data, true);
-		if (targetSectionSplitter->orientation() == Qt::Horizontal)
-		{
-			int index = targetSectionSplitter->indexOf(targetSection);
-			targetSectionSplitter->insertWidget(index, sw);
-		}
-		else
-		{
-			QSplitter* s = newSplitter(Qt::Horizontal);
-			s->addWidget(sw);
-			int index = targetSectionSplitter->indexOf(targetSection);
-			targetSectionSplitter->insertWidget(index, s);
-			s->addWidget(targetSection);
-		}
-		ret = sw;
-		break;
-	}
+	case TopDropArea:return insertNewSectionWidget(data, targetSection, section_widget, Qt::Vertical, 0);
+	case RightDropArea: return insertNewSectionWidget(data, targetSection, section_widget, Qt::Horizontal, 1);
+	case BottomDropArea: return insertNewSectionWidget(data, targetSection, section_widget, Qt::Vertical, 1);
+	case LeftDropArea: return insertNewSectionWidget(data, targetSection, section_widget, Qt::Horizontal, 0);
 	case CenterDropArea:
-	{
-		targetSection->addContent(data, autoActive);
-		ret = targetSection;
-		break;
-	}
+		 targetSection->addContent(data, autoActive);
+		 return targetSection;
+
 	default:
 		break;
 	}
-	return ret;
+	return section_widget;
 }
 
 void ContainerWidget::addSection(SectionWidget* section)
@@ -587,7 +523,7 @@ void ContainerWidget::addSection(SectionWidget* section)
 	if (!d->splitter)
 	{
 		d->splitter = newSplitter(d->orientation);
-		d->mainLayout->addWidget(d->splitter, 0, 0);
+		d->MainLayout->addWidget(d->splitter, 0, 0);
 	}
 	if (d->splitter->indexOf(section) != -1)
 	{
@@ -712,7 +648,7 @@ QByteArray ContainerWidget::saveHierarchy() const
 	saveFloatingWidgets(out);
 
 	// Save state of sections and contents
-	if (d->mainLayout->count() <= 0 || d->sections.isEmpty())
+	if (d->MainLayout->count() <= 0 || d->sections.isEmpty())
 	{
 		// Looks like the user has hidden all contents and no more sections
 		// are available. We can simply write a list of all hidden contents.
@@ -726,12 +662,12 @@ QByteArray ContainerWidget::saveHierarchy() const
 			out << iter.value().data.content->uniqueName();
 		}
 	}
-	else if (d->mainLayout->count() == 1)
+	else if (d->MainLayout->count() == 1)
 	{
 		out << 1; // Mode
 
 		// There should only be one!
-		QLayoutItem* li = d->mainLayout->itemAt(0);
+		QLayoutItem* li = d->MainLayout->itemAt(0);
 		if (!li->widget())
 			qFatal("Not a widget in d->mainLayout, this shouldn't happen.");
 
@@ -1023,8 +959,8 @@ bool ContainerWidget::restoreHierarchy(const QByteArray& data)
 	d->sections = sections;
 
 	// Delete old objects
-	QLayoutItem* old = d->mainLayout->takeAt(0);
-	d->mainLayout->addWidget(d->splitter);
+	QLayoutItem* old = d->MainLayout->takeAt(0);
+	d->MainLayout->addWidget(d->splitter);
 	delete old;
 	qDeleteAll(oldFloatings);
 	qDeleteAll(oldSections);
@@ -1236,19 +1172,26 @@ void ContainerWidget::onActionToggleSectionContentVisibility(bool visible)
 }
 
 
+void ContainerWidget::hideContainerOverlay()
+{
+	d->ContainerDropOverlay->hideDropOverlay();
+}
+
+
 void ContainerWidget::moveFloatingWidget(const QPoint& TargetPos)
 {
+	std::cout << "moveFloatingWidget" << std::endl;
 	// Mouse is over the container widget
     if (rect().contains(mapFromGlobal(QCursor::pos())))
     {
     	std::cout << "over Container" << std::endl;
-    	d->LeftBorderDropArea->show();
-    	d->LeftBorderDropArea->raise();
+    	d->ContainerDropOverlay->showDropOverlay(this);
+    	d->ContainerDropOverlay->raise();
     }
     else
     {
     	std::cout << "-----------------" << std::endl;
-    	d->LeftBorderDropArea->hide();
+    	d->ContainerDropOverlay->hideDropOverlay();
     }
 
     // Mouse is over a SectionWidget
@@ -1256,12 +1199,12 @@ void ContainerWidget::moveFloatingWidget(const QPoint& TargetPos)
     if (sectionwidget)
     {
         qInfo() << "over sectionWidget";
-        d->dropOverlay->setAllowedAreas(ADS_NS::AllAreas);
-        d->dropOverlay->showDropOverlay(sectionwidget);
+        d->SectionDropOverlay->setAllowedAreas(ADS_NS::AllAreas);
+        d->SectionDropOverlay->showDropOverlay(sectionwidget);
     }
     else
     {
-        d->dropOverlay->hideDropOverlay();
+        d->SectionDropOverlay->hideDropOverlay();
     }
 }
 
@@ -1290,9 +1233,9 @@ FloatingWidget* ContainerWidget::startFloating(SectionWidget* sectionwidget, int
     }
     deleteEmptySplitter(this);
 
-	QRect Rect = rect();
-	QPoint Pos(Rect.left(), Rect.center().y());
-	d->LeftBorderDropArea->move(mapToGlobal(Pos));
+	d->ContainerDropOverlay->setAllowedAreas(OuterAreas);
+	d->ContainerDropOverlay->showDropOverlay(this);
+	d->ContainerDropOverlay->raise();
     return fw;
 }
 

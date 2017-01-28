@@ -35,72 +35,61 @@ static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size
 	p.fillRect(baseRect, backgroundColor);
 
 	// Drop area rect.
-	if (true)
+	p.save();
+	QRectF areaRect;
+	QLineF areaLine;
+	QLinearGradient gradient;
+	switch (dropArea)
 	{
-		p.save();
-		QRectF areaRect;
-		QLineF areaLine;
-		QLinearGradient gradient;
-		switch (dropArea)
-		{
-			case TopDropArea:
-			case TopBorderDropArea:
-				areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width(), baseRect.height() * .5f);
-				areaLine = QLineF(areaRect.bottomLeft(), areaRect.bottomRight());
-				gradient.setStart(areaRect.topLeft());
-				gradient.setFinalStop(areaRect.bottomLeft());
-				break;
-			case RightDropArea:
-			case RightBorderDropArea:
-				areaRect = QRectF(baseRect.width() * .5f, baseRect.y(), baseRect.width() * .5f, baseRect.height());
-				areaLine = QLineF(areaRect.topLeft(), areaRect.bottomLeft());
-				gradient.setStart(areaRect.topLeft());
-				gradient.setFinalStop(areaRect.topRight());
-				break;
-			case BottomDropArea:
-			case BottomBorderDropArea:
-				areaRect = QRectF(baseRect.x(), baseRect.height() * .5f, baseRect.width(), baseRect.height() * .5f);
-				areaLine = QLineF(areaRect.topLeft(), areaRect.topRight());
-				gradient.setStart(areaRect.topLeft());
-				gradient.setFinalStop(areaRect.bottomLeft());
-				break;
-			case LeftDropArea:
-			case LeftBorderDropArea:
-				areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width() * .5f, baseRect.height());
-				areaLine = QLineF(areaRect.topRight(), areaRect.bottomRight());
-				gradient.setStart(areaRect.topLeft());
-				gradient.setFinalStop(areaRect.topRight());
-				break;
-			default:
-				break;
-		}
-		if (areaRect.isValid())
-		{
-			gradient.setColorAt(0.f, areaBackgroundColor);
-			gradient.setColorAt(1.f, areaBackgroundColor.lighter(120));
-			p.fillRect(areaRect, gradient);
-
-			pen = p.pen();
-			pen.setColor(borderColor);
-			pen.setStyle(Qt::DashLine);
-			p.setPen(pen);
-			p.drawLine(areaLine);
-		}
-		p.restore();
+		case TopDropArea:
+			areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width(), baseRect.height() * .5f);
+			areaLine = QLineF(areaRect.bottomLeft(), areaRect.bottomRight());
+			gradient.setStart(areaRect.topLeft());
+			gradient.setFinalStop(areaRect.bottomLeft());
+			break;
+		case RightDropArea:
+			areaRect = QRectF(baseRect.width() * .5f, baseRect.y(), baseRect.width() * .5f, baseRect.height());
+			areaLine = QLineF(areaRect.topLeft(), areaRect.bottomLeft());
+			gradient.setStart(areaRect.topLeft());
+			gradient.setFinalStop(areaRect.topRight());
+			break;
+		case BottomDropArea:
+			areaRect = QRectF(baseRect.x(), baseRect.height() * .5f, baseRect.width(), baseRect.height() * .5f);
+			areaLine = QLineF(areaRect.topLeft(), areaRect.topRight());
+			gradient.setStart(areaRect.topLeft());
+			gradient.setFinalStop(areaRect.bottomLeft());
+			break;
+		case LeftDropArea:
+			areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width() * .5f, baseRect.height());
+			areaLine = QLineF(areaRect.topRight(), areaRect.bottomRight());
+			gradient.setStart(areaRect.topLeft());
+			gradient.setFinalStop(areaRect.topRight());
+			break;
+		default:
+			break;
 	}
-
-	// Border
-	if (true)
+	if (areaRect.isValid())
 	{
-		p.save();
+		gradient.setColorAt(0.f, areaBackgroundColor);
+		gradient.setColorAt(1.f, areaBackgroundColor.lighter(120));
+		p.fillRect(areaRect, gradient);
+
 		pen = p.pen();
 		pen.setColor(borderColor);
-		pen.setWidth(1);
-
+		pen.setStyle(Qt::DashLine);
 		p.setPen(pen);
-		p.drawRect(baseRect.adjusted(0, 0, -pen.width(), -pen.width()));
-		p.restore();
+		p.drawLine(areaLine);
 	}
+	p.restore();
+
+	p.save();
+	pen = p.pen();
+	pen.setColor(borderColor);
+	pen.setWidth(1);
+
+	p.setPen(pen);
+	p.drawRect(baseRect.adjusted(0, 0, -pen.width(), -pen.width()));
+	p.restore();
 	return pm;
 }
 
@@ -120,7 +109,7 @@ QWidget* DropOverlay::createDropIndicatorWidget(DropArea dropArea)
 
 ///////////////////////////////////////////////////////////////////////
 
-DropOverlay::DropOverlay(QWidget* parent) :
+DropOverlay::DropOverlay(QWidget* parent, eMode Mode) :
 	QFrame(parent),
 	_allowedAreas(InvalidDropArea),
 	_cross(new DropOverlayCross(this)),
@@ -129,21 +118,14 @@ DropOverlay::DropOverlay(QWidget* parent) :
 	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 	setWindowOpacity(0.2);
 	setWindowTitle("DropOverlay");
+	setAttribute(Qt::WA_NoSystemBackground);
+	setAttribute(Qt::WA_TranslucentBackground);
 
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
-	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
 	setLayout(l);
 
-	// Cross with default drop area widgets.
-	QHash<DropArea, QWidget*> areaWidgets;
-	areaWidgets.insert(ADS_NS::TopDropArea, createDropIndicatorWidget(TopDropArea)); //createDropWidget(":/img/split-top.png"));
-	areaWidgets.insert(ADS_NS::RightDropArea, createDropIndicatorWidget(RightDropArea));//createDropWidget(":/img/split-right.png"));
-	areaWidgets.insert(ADS_NS::BottomDropArea, createDropIndicatorWidget(BottomDropArea));//createDropWidget(":/img/split-bottom.png"));
-	areaWidgets.insert(ADS_NS::LeftDropArea, createDropIndicatorWidget(LeftDropArea));//createDropWidget(":/img/split-left.png"));
-	areaWidgets.insert(ADS_NS::CenterDropArea, createDropIndicatorWidget(CenterDropArea));//createDropWidget(":/img/dock-center.png"));
-
-	_cross->setAreaWidgets(areaWidgets);
+	_cross->setupOverlayCross(Mode);
 	_cross->setVisible(false);
 	setVisible(false);
 }
@@ -291,84 +273,136 @@ void DropOverlay::moveEvent(QMoveEvent* e)
 	_cross->move(e->pos());
 }
 
-///////////////////////////////////////////////////////////////////////
-
-static QPair<QPoint, int> gridPosForArea(const DropArea area)
+static int areaAlignment(const DropArea area)
 {
 	switch (area)
 	{
-		case ADS_NS::TopDropArea:
-			return qMakePair(QPoint(0, 1), (int) Qt::AlignHCenter | Qt::AlignBottom);
-		case ADS_NS::RightDropArea:
-			return qMakePair(QPoint(1, 2), (int) Qt::AlignLeft | Qt::AlignVCenter);
-		case ADS_NS::BottomDropArea:
-			return qMakePair(QPoint(2, 1), (int) Qt::AlignHCenter | Qt::AlignTop);
-		case ADS_NS::LeftDropArea:
-			return qMakePair(QPoint(1, 0), (int) Qt::AlignRight | Qt::AlignVCenter);
-		case ADS_NS::CenterDropArea:
-			return qMakePair(QPoint(1, 1), (int) Qt::AlignCenter);
-		default:
-			return QPair<QPoint, int>();
+		case ADS_NS::TopDropArea: return (int) Qt::AlignHCenter | Qt::AlignBottom;
+		case ADS_NS::RightDropArea: return (int) Qt::AlignLeft | Qt::AlignVCenter;
+		case ADS_NS::BottomDropArea: return (int) Qt::AlignHCenter | Qt::AlignTop;
+		case ADS_NS::LeftDropArea: return (int) Qt::AlignRight | Qt::AlignVCenter;
+		case ADS_NS::CenterDropArea:  return (int) Qt::AlignCenter;
+		default: return Qt::AlignCenter;
 	}
 }
 
+
+QPoint DropOverlayCross::areaGridPosition(const DropArea area)
+{
+	if (DropOverlay::ModeSectionOverlay == m_Mode)
+	{
+		switch (area)
+		{
+			case ADS_NS::TopDropArea: return QPoint(1, 2);
+			case ADS_NS::RightDropArea: return QPoint(2, 3);
+			case ADS_NS::BottomDropArea: return QPoint(3, 2);
+			case ADS_NS::LeftDropArea: return QPoint(2, 1);
+			case ADS_NS::CenterDropArea: return QPoint(2, 2);
+			default: return QPoint();
+		}
+	}
+	else
+	{
+		switch (area)
+		{
+			case ADS_NS::TopDropArea: return QPoint(0, 2);
+			case ADS_NS::RightDropArea: return QPoint(2, 4);
+			case ADS_NS::BottomDropArea: return QPoint(4, 2);
+			case ADS_NS::LeftDropArea: return QPoint(2, 0);
+			case ADS_NS::CenterDropArea: return QPoint(2, 2);
+			default: return QPoint();
+		}
+	}
+}
+
+
 DropOverlayCross::DropOverlayCross(DropOverlay* overlay) :
 	QWidget(overlay->parentWidget()),
-	_overlay(overlay),
-	_widgets()
+	m_DropOverlay(overlay)
 {
 	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 	setWindowTitle("DropOverlayCross");
 	setAttribute(Qt::WA_TranslucentBackground);
 
-	_grid = new QGridLayout();
-	_grid->setContentsMargins(0, 0, 0, 0);
-	_grid->setSpacing(6);
-
-	QBoxLayout* bl1 = new QBoxLayout(QBoxLayout::TopToBottom);
-	bl1->setContentsMargins(0, 0, 0, 0);
-	bl1->setSpacing(0);
-	setLayout(bl1);
-
-	QBoxLayout* bl2 = new QBoxLayout(QBoxLayout::LeftToRight);
-	bl2->setContentsMargins(0, 0, 0, 0);
-	bl2->setSpacing(0);
-
-	bl1->addStretch(1);
-	bl1->addLayout(bl2);
-	bl2->addStretch(1);
-	bl2->addLayout(_grid, 0);
-	bl2->addStretch(1);
-	bl1->addStretch(1);
+	m_GridLayout = new QGridLayout();
+	m_GridLayout->setSpacing(6);
+	setLayout(m_GridLayout);
 }
 
 DropOverlayCross::~DropOverlayCross()
 {
 }
 
+
+void DropOverlayCross::setupOverlayCross(DropOverlay::eMode Mode)
+{
+	m_Mode = Mode;
+
+	QHash<DropArea, QWidget*> areaWidgets;
+	areaWidgets.insert(TopDropArea, DropOverlay::createDropIndicatorWidget(TopDropArea));
+	areaWidgets.insert(RightDropArea, DropOverlay::createDropIndicatorWidget(RightDropArea));
+	areaWidgets.insert(BottomDropArea, DropOverlay::createDropIndicatorWidget(BottomDropArea));
+	areaWidgets.insert(LeftDropArea, DropOverlay::createDropIndicatorWidget(LeftDropArea));
+	areaWidgets.insert(CenterDropArea, DropOverlay::createDropIndicatorWidget(CenterDropArea));
+
+	setAreaWidgets(areaWidgets);
+}
+
+
 void DropOverlayCross::setAreaWidgets(const QHash<DropArea, QWidget*>& widgets)
 {
 	// Delete old widgets.
-	QMutableHashIterator<DropArea, QWidget*> i(_widgets);
+	QMutableHashIterator<DropArea, QWidget*> i(m_DropIndicatorWidgets);
 	while (i.hasNext())
 	{
 		i.next();
 		QWidget* widget = i.value();
-		_grid->removeWidget(widget);
+		m_GridLayout->removeWidget(widget);
 		delete widget;
 		i.remove();
 	}
 
 	// Insert new widgets into grid.
-	_widgets = widgets;
-	QHashIterator<DropArea, QWidget*> i2(_widgets);
+	m_DropIndicatorWidgets = widgets;
+	QHashIterator<DropArea, QWidget*> i2(m_DropIndicatorWidgets);
 	while (i2.hasNext())
 	{
 		i2.next();
 		const DropArea area = i2.key();
 		QWidget* widget = i2.value();
-		const QPair<QPoint, int> opts = gridPosForArea(area);
-		_grid->addWidget(widget, opts.first.x(), opts.first.y(), (Qt::Alignment) opts.second);
+		QPoint p = areaGridPosition(area);
+		m_GridLayout->addWidget(widget, p.x(), p.y(), (Qt::Alignment) areaAlignment(area));
+	}
+
+	if (DropOverlay::ModeSectionOverlay == m_Mode)
+	{
+		m_GridLayout->setContentsMargins(0, 0, 0, 0);
+		m_GridLayout->setRowStretch(0, 1);
+		m_GridLayout->setRowStretch(1, 0);
+		m_GridLayout->setRowStretch(2, 0);
+		m_GridLayout->setRowStretch(3, 0);
+		m_GridLayout->setRowStretch(4, 1);
+
+		m_GridLayout->setColumnStretch(0, 1);
+		m_GridLayout->setColumnStretch(1, 0);
+		m_GridLayout->setColumnStretch(2, 0);
+		m_GridLayout->setColumnStretch(3, 0);
+		m_GridLayout->setColumnStretch(4, 1);
+	}
+	else
+	{
+		m_GridLayout->setContentsMargins(4, 4, 4, 4);
+		m_GridLayout->setRowStretch(0, 0);
+		m_GridLayout->setRowStretch(1, 1);
+		m_GridLayout->setRowStretch(2, 1);
+		m_GridLayout->setRowStretch(3, 1);
+		m_GridLayout->setRowStretch(4, 0);
+
+		m_GridLayout->setColumnStretch(0, 0);
+		m_GridLayout->setColumnStretch(1, 1);
+		m_GridLayout->setColumnStretch(2, 1);
+		m_GridLayout->setColumnStretch(3, 1);
+		m_GridLayout->setColumnStretch(4, 0);
 	}
 	reset();
 }
@@ -376,11 +410,11 @@ void DropOverlayCross::setAreaWidgets(const QHash<DropArea, QWidget*>& widgets)
 DropArea DropOverlayCross::cursorLocation() const
 {
 	const QPoint pos = mapFromGlobal(QCursor::pos());
-	QHashIterator<DropArea, QWidget*> i(_widgets);
+	QHashIterator<DropArea, QWidget*> i(m_DropIndicatorWidgets);
 	while (i.hasNext())
 	{
 		i.next();
-		if (_overlay->allowedAreas().testFlag(i.key())
+		if (m_DropOverlay->allowedAreas().testFlag(i.key())
 			&& i.value()
 			&& i.value()->isVisible()
 			&& i.value()->geometry().contains(pos))
@@ -393,24 +427,24 @@ DropArea DropOverlayCross::cursorLocation() const
 
 void DropOverlayCross::showEvent(QShowEvent*)
 {
-	resize(_overlay->size());
-	move(_overlay->pos());
+	resize(m_DropOverlay->size());
+	move(m_DropOverlay->pos());
 }
 
 void DropOverlayCross::reset()
 {
 	QList<DropArea> allAreas;
-	allAreas << ADS_NS::TopDropArea << ADS_NS::RightDropArea << ADS_NS::BottomDropArea << ADS_NS::LeftDropArea << ADS_NS::CenterDropArea;
-	const DropAreas allowedAreas = _overlay->allowedAreas();
+	allAreas << ADS_NS::TopDropArea << ADS_NS::RightDropArea
+		<< ADS_NS::BottomDropArea << ADS_NS::LeftDropArea << ADS_NS::CenterDropArea;
+	const DropAreas allowedAreas = m_DropOverlay->allowedAreas();
 
 	// Update visibility of area widgets based on allowedAreas.
 	for (int i = 0; i < allAreas.count(); ++i)
 	{
-		const QPair<QPoint, int> opts = gridPosForArea(allAreas.at(i));
-
-		QLayoutItem* item = _grid->itemAtPosition(opts.first.x(), opts.first.y());
-		QWidget* w = NULL;
-		if (item && (w = item->widget()) != NULL)
+		QPoint p = areaGridPosition(allAreas.at(i));
+		QLayoutItem* item = m_GridLayout->itemAtPosition(p.x(), p.y());
+		QWidget* w = nullptr;
+		if (item && (w = item->widget()) != nullptr)
 		{
 			w->setVisible(allowedAreas.testFlag(allAreas.at(i)));
 		}

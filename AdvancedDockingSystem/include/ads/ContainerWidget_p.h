@@ -27,6 +27,9 @@ class FloatingWidget;
 class HiddenSectionItem;
 
 
+/**
+ * Container widget private data
+ */
 struct ContainerWidgetPrivate
 {
 	// Elements inside container.
@@ -42,15 +45,16 @@ struct ContainerWidgetPrivate
 
 
 	// Layout stuff
-	QGridLayout* mainLayout = nullptr;
+	QGridLayout* MainLayout = nullptr;
 	Qt::Orientation orientation = Qt::Horizontal;
 	QPointer<QSplitter> splitter; // $mfreiholz: I'd like to remove this variable entirely,
 								   // because it changes during user interaction anyway.
 
 	// Drop overlay stuff.
-	QPointer<DropOverlay> dropOverlay;
-	QWidget* LeftBorderDropArea;
-};
+	QPointer<DropOverlay> SectionDropOverlay;
+	QPointer<DropOverlay> ContainerDropOverlay;
+	//QWidget* LeftBorderDropArea;
+}; // struct ContainerWidgetPrivate
 } // namespace ads
 
 //---------------------------------------------------------------------------

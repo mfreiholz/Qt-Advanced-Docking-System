@@ -141,10 +141,14 @@ private:
 
     void moveFloatingWidget(const QPoint& TargetPos);
     FloatingWidget* startFloating(SectionWidget* sectionwidget, int ContentUid, const QPoint& TargetPos);
+    void hideContainerOverlay();
+	SectionWidget* insertNewSectionWidget(const InternalContentData& data,
+		SectionWidget* targetSection, SectionWidget* ret, Qt::Orientation Orientation, int InsertIndexOffset);
 
 private slots:
 	void onActiveTabChanged();
 	void onActionToggleSectionContentVisibility(bool visible);
+
 
 signals:
 	void orientationChanged();

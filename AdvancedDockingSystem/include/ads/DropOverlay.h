@@ -22,7 +22,13 @@ class ADS_EXPORT_API DropOverlay : public QFrame
 	friend class DropOverlayCross;
 
 public:
-	DropOverlay(QWidget* parent);
+	enum eMode
+	{
+		ModeSectionOverlay,
+		ModeContainerOverlay
+	};
+
+	DropOverlay(QWidget* parent, eMode Mode = ModeSectionOverlay);
 	virtual ~DropOverlay();
 
 	void setAllowedAreas(DropAreas areas);
@@ -67,19 +73,22 @@ public:
 	DropOverlayCross(DropOverlay* overlay);
 	virtual ~DropOverlayCross();
 
-	void setAreaWidgets(const QHash<DropArea, QWidget*>& widgets);
 	DropArea cursorLocation() const;
+	void setupOverlayCross(DropOverlay::eMode Mode);
 
 protected:
 	virtual void showEvent(QShowEvent* e);
+	void setAreaWidgets(const QHash<DropArea, QWidget*>& widgets);
 
 private:
 	void reset();
+	QPoint areaGridPosition(const DropArea area);
 
 private:
-	DropOverlay* _overlay;
-	QHash<DropArea, QWidget*> _widgets;
-	QGridLayout* _grid;
+	DropOverlay::eMode m_Mode = DropOverlay::ModeSectionOverlay;
+	DropOverlay* m_DropOverlay;
+	QHash<DropArea, QWidget*> m_DropIndicatorWidgets;
+	QGridLayout* m_GridLayout;
 };
 
 ADS_NAMESPACE_END
