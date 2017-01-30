@@ -1,3 +1,4 @@
+#include <ads/ContainerWidget.h>
 #include "ads/FloatingWidget.h"
 
 #include <QBoxLayout>
@@ -6,7 +7,6 @@
 #include <QMouseEvent>
 #include <QStyle>
 
-#include "ads/ContainerWidget.h"
 #include "ads/SectionTitleWidget.h"
 #include "ads/SectionContentWidget.h"
 #include "ads/Internal.h"
@@ -14,7 +14,9 @@
 
 ADS_NAMESPACE_BEGIN
 
-FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent) :
+unsigned int FloatingWidget::zOrderCounter = 0;
+
+FloatingWidget::FloatingWidget(MainContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent) :
 	QWidget(parent, Qt::CustomizeWindowHint | Qt::Tool),
 	_container(container),
 	_content(sc),
@@ -45,6 +47,8 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 	}
 	l->addWidget(contentWidget, 1);
 	contentWidget->show();
+
+	m_zOrderIndex = ++zOrderCounter;
 }
 
 
@@ -56,12 +60,14 @@ FloatingWidget::FloatingWidget(SectionWidget* sectionWidget)
     setLayout(l);
 
     l->addWidget(sectionWidget);
+    m_zOrderIndex = ++zOrderCounter;
 }
 
 
 FloatingWidget::~FloatingWidget()
 {
-	_container->d->floatings.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
+	// maybe we can implement this this via connection to destroyed signal
+	_container->m_Floatings.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
 }
 
 bool FloatingWidget::takeContent(InternalContentData& data)
@@ -84,6 +90,32 @@ bool FloatingWidget::takeContent(InternalContentData& data)
 void FloatingWidget::onCloseButtonClicked()
 {
 	_container->hideSectionContent(_content);
+}
+
+bool FloatingWidget::isDraggingActive() const
+{
+	return _titleWidget->isDraggingFloatingWidget();
+}
+
+
+void FloatingWidget::changeEvent(QEvent *event)
+{
+	QWidget::changeEvent(event);
+	if (event->type() != QEvent::ActivationChange)
+    {
+        return;
+    }
+
+    if (isActiveWindow())
+    {
+        m_zOrderIndex = ++zOrderCounter;
+    }
+}
+
+
+unsigned int FloatingWidget::zOrderIndex() const
+{
+	return m_zOrderIndex;
 }
 
 

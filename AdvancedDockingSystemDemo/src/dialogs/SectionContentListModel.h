@@ -5,12 +5,11 @@
 #include <QList>
 #include <QString>
 #include <QAbstractTableModel>
-
+#include "../../../AdvancedDockingSystem/include/ads/ContainerWidget.h"
 #include "ads/API.h"
-#include "ads/ContainerWidget.h"
 #include "ads/SectionContent.h"
 ADS_NAMESPACE_BEGIN
-class ContainerWidget;
+class MainContainerWidget;
 ADS_NAMESPACE_END
 
 class SectionContentListModel : public QAbstractTableModel
@@ -28,7 +27,7 @@ public:
 
 	SectionContentListModel(QObject* parent);
 	virtual ~SectionContentListModel();
-	void init(ADS_NS::ContainerWidget* cw);
+	void init(ADS_NS::MainContainerWidget* cw);
 
 	virtual int columnCount(const QModelIndex &parent) const;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
@@ -41,7 +40,7 @@ public:
 private:
 	QHash<int, QString> _headers;
 
-	ADS_NS::ContainerWidget* _cw;
+	ADS_NS::MainContainerWidget* _cw;
 	QList<ADS_NS::SectionContent::RefPtr> _contents;
 };
 

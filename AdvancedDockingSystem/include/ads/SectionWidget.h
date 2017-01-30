@@ -17,7 +17,7 @@ class QMenu;
 #include "ads/FloatingWidget.h"
 
 ADS_NAMESPACE_BEGIN
-class ContainerWidget;
+class MainContainerWidget;
 class SectionTitleWidget;
 class SectionContentWidget;
 
@@ -27,15 +27,15 @@ class SectionContentWidget;
 class ADS_EXPORT_API SectionWidget : public QFrame
 {
 	Q_OBJECT
-	friend class ContainerWidget;
+	friend class MainContainerWidget;
 
-	explicit SectionWidget(ContainerWidget* parent);
+	explicit SectionWidget(MainContainerWidget* parent);
 
 public:
 	virtual ~SectionWidget();
 
 	int uid() const;
-	ContainerWidget* containerWidget() const;
+	MainContainerWidget* containerWidget() const;
 
 	QRect titleAreaGeometry() const;
 	QRect contentAreaGeometry() const;
@@ -69,7 +69,7 @@ private slots:
 private:
 	const int _uid;
 
-	QPointer<ContainerWidget> _container;
+	QPointer<MainContainerWidget> _container;
 	QList<SectionContent::RefPtr> _contents;
 	QList<SectionTitleWidget*> _sectionTitles;
 	QList<SectionContentWidget*> _sectionContents;

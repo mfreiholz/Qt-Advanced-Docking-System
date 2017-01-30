@@ -32,8 +32,16 @@ public:
 	virtual ~DropOverlay();
 
 	void setAllowedAreas(DropAreas areas);
+
+	/**
+	 * Returns flags with all allowed drop areas
+	 */
 	DropAreas allowedAreas() const;
-	DropArea cursorLocation() const;
+
+	/**
+	 * Returns the drop area under the current cursor location
+	 */
+	DropArea dropAreaUnderCursor() const;
 
 	DropArea showDropOverlay(QWidget* target);
 	void showDropOverlay(QWidget* target, const QRect& targetAreaRect);

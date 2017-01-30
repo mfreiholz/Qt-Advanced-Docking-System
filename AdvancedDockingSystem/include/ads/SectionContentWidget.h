@@ -7,14 +7,14 @@
 #include "ads/SectionContent.h"
 
 ADS_NAMESPACE_BEGIN
-class ContainerWidget;
+class MainContainerWidget;
 class SectionWidget;
 
 class SectionContentWidget : public QFrame
 {
 	Q_OBJECT
 
-	friend class ContainerWidget;
+	friend class MainContainerWidget;
 
 public:
 	SectionContentWidget(SectionContent::RefPtr c, QWidget* parent = 0);

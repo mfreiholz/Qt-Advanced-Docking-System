@@ -20,7 +20,7 @@
 #include "ads/SectionContent.h"
 #include "ads/SectionWidget.h"
 #include "ads/FloatingWidget.h"
-#include "ads/ContainerWidget.h"
+#include <ads/ContainerWidget.h>
 
 #include <iostream>
 
@@ -37,6 +37,7 @@ SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* 
 	l->setSpacing(0);
 	l->addWidget(content->titleWidget());
 	setLayout(l);
+
 }
 
 SectionTitleWidget::~SectionTitleWidget()
@@ -76,46 +77,15 @@ void SectionTitleWidget::mousePressEvent(QMouseEvent* ev)
 
 void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 {
-	SectionWidget* section = NULL;
-	ContainerWidget* cw = findParentContainerWidget(this);
+	SectionWidget* section = nullptr;
+	MainContainerWidget* cw = findParentContainerWidget(this);
 
-	// Drop contents of FloatingWidget into container or section widget
-    if (m_FloatingWidget && cw->rect().contains(cw->mapFromGlobal(ev->globalPos())))
+	if (isDraggingFloatingWidget() && cw->rect().contains(cw->mapFromGlobal(ev->globalPos())))
 	{
-		SectionWidget* sw = cw->sectionAt(cw->mapFromGlobal(ev->globalPos()));
-		DropArea loc = InvalidDropArea;
-		if (sw)
-		{
-			cw->d->SectionDropOverlay->setAllowedAreas(ADS_NS::AllAreas);
-			DropArea loc = cw->d->SectionDropOverlay->showDropOverlay(sw);
-			if (loc != InvalidDropArea)
-			{
-				InternalContentData data;
-                m_FloatingWidget->takeContent(data);
-                m_FloatingWidget->deleteLater();
-                m_FloatingWidget.clear();
-				cw->dropContent(data, sw, loc, true);
-			}
-		}
-
-		// mouse is over container
-		if (InvalidDropArea == loc)
-		{
-			DropArea loc = cw->d->ContainerDropOverlay->cursorLocation();
-			std::cout << "Cursor location: " << loc << std::endl;
-			if (loc != InvalidDropArea)
-			{
-				InternalContentData data;
-                m_FloatingWidget->takeContent(data);
-                m_FloatingWidget->deleteLater();
-                m_FloatingWidget.clear();
-				cw->dropContent(data, nullptr, loc, true);
-			}
-		}
+		cw->dropFloatingWidget(m_FloatingWidget, ev->globalPos());
 	}
 	// End of tab moving, change order now
-    else if (m_TabMoving
-			&& (section = findParentSectionWidget(this)) != NULL)
+	else if (m_TabMoving && (section = findParentSectionWidget(this)) != nullptr)
 	{
 		// Find tab under mouse
 		QPoint pos = ev->globalPos();
@@ -138,21 +108,23 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 	// Reset
     m_DragStartPosition = QPoint();
     m_TabMoving = false;
-	cw->d->SectionDropOverlay->hideDropOverlay();
+	cw->m_SectionDropOverlay->hideDropOverlay();
 	cw->hideContainerOverlay();
 	QFrame::mouseReleaseEvent(ev);
 }
 
 
-void SectionTitleWidget::moveFloatingWidget(QMouseEvent* ev, ContainerWidget* cw)
+void SectionTitleWidget::moveFloatingWidget(QMouseEvent* ev, MainContainerWidget* cw)
 {
     const QPoint moveToPos = ev->globalPos() - (m_DragStartPosition + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
     m_FloatingWidget->move(moveToPos);
     cw->moveFloatingWidget(moveToPos);
+
+
 }
 
 
-void SectionTitleWidget::startFloating(QMouseEvent* ev, ContainerWidget* cw, SectionWidget* sectionwidget)
+void SectionTitleWidget::startFloating(QMouseEvent* ev, MainContainerWidget* cw, SectionWidget* sectionwidget)
 {
     QPoint moveToPos = ev->globalPos() - (m_DragStartPosition + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
     m_FloatingWidget = cw->startFloating(sectionwidget, m_Content->uid(), moveToPos);
@@ -169,6 +141,12 @@ void SectionTitleWidget::moveTab(QMouseEvent* ev)
     move(moveToPos);
 }
 
+
+bool SectionTitleWidget::isDraggingFloatingWidget() const
+{
+	return m_FloatingWidget != nullptr;
+}
+
 void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 {
     if (!(ev->buttons() & Qt::LeftButton))
@@ -177,10 +155,31 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
         return;
     }
 
+    QPoint Pos = QCursor::pos();
+    MainContainerWidget* cw = findParentContainerWidget(this);
+    auto Floatings = cw->m_Floatings;
+    FloatingWidget* TopWidget = nullptr;
+    for (auto widget : Floatings)
+    {
+    	if ((widget != m_FloatingWidget.data()) && widget->geometry().contains(Pos))
+    	{
+    		if (!TopWidget || widget->zOrderIndex() > TopWidget->zOrderIndex())
+    		{
+    			TopWidget = widget;
+    		}
+    	}
+    }
+
+    if (TopWidget)
+    {
+    	std::cout << "TopWidget " << std::hex << (int)TopWidget << std::dec
+    			<< " Z: " << TopWidget->zOrderIndex() << std::endl;
+    }
+
     ev->accept();
-    ContainerWidget* cw = findParentContainerWidget(this);
-	// Move already existing FloatingWidget
-    if (m_FloatingWidget)
+
+    // Move already existing FloatingWidget
+    if (isDraggingFloatingWidget())
 	{
         moveFloatingWidget(ev, cw);
 		return;

@@ -149,19 +149,19 @@ DropAreas DropOverlay::allowedAreas() const
 }
 
 
-DropArea DropOverlay::cursorLocation() const
+DropArea DropOverlay::dropAreaUnderCursor() const
 {
 	return _cross->cursorLocation();
 }
 
 DropArea DropOverlay::showDropOverlay(QWidget* target)
 {
-    std::cout << "DropOverlay::showDropOverlay(QWidget* target)" << std::endl;
+    //std::cout << "DropOverlay::showDropOverlay(QWidget* target)" << std::endl;
 	if (_target == target)
 	{
         qInfo() << "_target == target";
 		// Hint: We could update geometry of overlay here.
-		DropArea da = cursorLocation();
+		DropArea da = dropAreaUnderCursor();
 		if (da != _lastLocation)
 		{
             qInfo() << "repaint()";
@@ -172,7 +172,7 @@ DropArea DropOverlay::showDropOverlay(QWidget* target)
 	}
 
 	//hideDropOverlay();
-    std::cout << "_target != target, hideDropOverlay(), _fullAreaDrop = false" << std::endl;
+    //std::cout << "_target != target, hideDropOverlay(), _fullAreaDrop = false" << std::endl;
 	_target = target;
 	_targetRect = QRect();
 	_lastLocation = InvalidDropArea;
@@ -181,7 +181,7 @@ DropArea DropOverlay::showDropOverlay(QWidget* target)
 	resize(target->size());
 	move(target->mapToGlobal(target->rect().topLeft()));
 	show();
-	return cursorLocation();
+	return dropAreaUnderCursor();
 }
 
 void DropOverlay::showDropOverlay(QWidget* target, const QRect& targetAreaRect)
@@ -220,8 +220,8 @@ void DropOverlay::paintEvent(QPaintEvent*)
 {
 	// Draw rect based on location
 	QRect r = rect();
-	const DropArea da = cursorLocation();
-	std::cout << "CursorLocation: " << cursorLocation() << std::endl;
+	const DropArea da = dropAreaUnderCursor();
+	std::cout << "CursorLocation: " << dropAreaUnderCursor() << std::endl;
 	switch (da)
 	{
     case ADS_NS::TopDropArea:

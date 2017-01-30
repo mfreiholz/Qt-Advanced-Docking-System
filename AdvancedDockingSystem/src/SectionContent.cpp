@@ -1,10 +1,10 @@
+#include <ads/ContainerWidget.h>
 #include "ads/SectionContent.h"
 
 #include <QWidget>
 #include <QLabel>
 
 #include "ads/Internal.h"
-#include "ads/ContainerWidget.h"
 
 ADS_NAMESPACE_BEGIN
 
@@ -14,10 +14,10 @@ SectionContent::SectionContent() :
 {
 }
 
-SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueName, ContainerWidget* container, QWidget* title, QWidget* content)
+SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueName, MainContainerWidget* container, QWidget* title, QWidget* content)
 {
-	auto SectionContentNameMap = container->d->SectionContentNameMap;
-	auto SectionContentIdMap = container->d->SectionContentIdMap;
+	auto SectionContentNameMap = container->m_SectionContentNameMap;
+	auto SectionContentIdMap = container->m_SectionContentIdMap;
 
 	if (uniqueName.isEmpty())
 	{
@@ -48,8 +48,8 @@ SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueNa
 
 SectionContent::~SectionContent()
 {
-	auto SectionContentNameMap = _containerWidget->d->SectionContentNameMap;
-	auto SectionContentIdMap = _containerWidget->d->SectionContentIdMap;
+	auto SectionContentNameMap = _containerWidget->m_SectionContentNameMap;
+	auto SectionContentIdMap = _containerWidget->m_SectionContentIdMap;
 
 	if (_containerWidget)
 	{
@@ -70,7 +70,7 @@ QString SectionContent::uniqueName() const
 	return _uniqueName;
 }
 
-ContainerWidget* SectionContent::containerWidget() const
+MainContainerWidget* SectionContent::containerWidget() const
 {
 	return _containerWidget;
 }

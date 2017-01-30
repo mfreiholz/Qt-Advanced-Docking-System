@@ -1,3 +1,4 @@
+#include <ads/ContainerWidget.h>
 #include "ads/API.h"
 
 #include <QWidget>
@@ -5,7 +6,6 @@
 #include <QLayout>
 #include <QVariant>
 
-#include "ads/ContainerWidget.h"
 #include "ads/SectionWidget.h"
 
 ADS_NAMESPACE_BEGIN
@@ -25,7 +25,7 @@ static bool splitterContainsSectionWidget(QSplitter* splitter)
 	return false;
 }
 
-void deleteEmptySplitter(ContainerWidget* container)
+void deleteEmptySplitter(MainContainerWidget* container)
 {
 	bool doAgain = false;
 	do
@@ -47,13 +47,13 @@ void deleteEmptySplitter(ContainerWidget* container)
 	while (doAgain);
 }
 
-ContainerWidget* findParentContainerWidget(QWidget* w)
+MainContainerWidget* findParentContainerWidget(QWidget* w)
 {
-	ContainerWidget* cw = 0;
+	MainContainerWidget* cw = 0;
 	QWidget* next = w;
 	do
 	{
-		if ((cw = dynamic_cast<ContainerWidget*>(next)) != 0)
+		if ((cw = dynamic_cast<MainContainerWidget*>(next)) != 0)
 		{
 			break;
 		}

@@ -13,7 +13,7 @@ SectionContentListModel::~SectionContentListModel()
 {
 }
 
-void SectionContentListModel::init(ADS_NS::ContainerWidget* cw)
+void SectionContentListModel::init(ADS_NS::MainContainerWidget* cw)
 {
 #if QT_VERSION >= 0x050000
 	beginResetModel();

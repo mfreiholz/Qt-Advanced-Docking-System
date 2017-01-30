@@ -5,17 +5,18 @@
 #include <QHash>
 #include <QPointer>
 #include <QFrame>
+#include <QGridLayout>
+#include <QSplitter>
+
 class QPoint;
-class QSplitter;
 class QMenu;
-class QGridLayout;
 
 #include "ads/API.h"
 #include "ads/Internal.h"
 #include "ads/SectionContent.h"
 #include "ads/FloatingWidget.h"
 #include "ads/Serialization.h"
-#include "ContainerWidget_p.h"
+#include "ads/DropOverlay.h"
 
 ADS_NAMESPACE_BEGIN
 class SectionWidget;
@@ -23,11 +24,12 @@ class DropOverlay;
 class InternalContentData;
 
 
+
 /*!
  * ContainerWidget is the main container to provide the docking
  * functionality. It manages multiple sections with all possible areas.
  */
-class ADS_EXPORT_API ContainerWidget : public QFrame
+class ADS_EXPORT_API MainContainerWidget : public QFrame
 {
 	Q_OBJECT
 
@@ -35,13 +37,11 @@ class ADS_EXPORT_API ContainerWidget : public QFrame
 	friend class SectionWidget;
 	friend class FloatingWidget;
 	friend class SectionTitleWidget;
-	friend class SectionContentWidget;
-    friend class SectionWidgetTabsScrollArea;
     friend class ContainerWidgetPrivate;
 
 public:
-	explicit ContainerWidget(QWidget *parent = NULL);
-	virtual ~ContainerWidget();
+	explicit MainContainerWidget(QWidget *parent = NULL);
+	virtual ~MainContainerWidget();
 
 	//
 	// Public API
@@ -113,7 +113,15 @@ public:
 	 */
 	QList<SectionContent::RefPtr> contents() const;
 
-	QPointer<DropOverlay> dropOverlay() const;
+	/**
+	 * Access function for the section drop overlay
+	 */
+	QPointer<DropOverlay> sectionDropOverlay() const;
+
+	/**
+	 * Filters the events of the floating widgets
+	 */
+	virtual bool event(QEvent *e) override;
 
 private:
 	//
@@ -122,8 +130,8 @@ private:
 
 	SectionWidget* newSectionWidget();
 	SectionWidget* dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive = true);
-	void addSection(SectionWidget* section);
-	SectionWidget* sectionAt(const QPoint& pos) const;
+	void addSectionWidget(SectionWidget* section);
+	SectionWidget* sectionWidgetAt(const QPoint& pos) const;
 	SectionWidget* dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append);
 
 	// Serialization
@@ -138,17 +146,16 @@ private:
 	bool restoreSectionWidgets(QDataStream& in, int version, QSplitter* currentSplitter, QList<SectionWidget*>& sections, QList<SectionContent::RefPtr>& contentsToHide);
 
 	bool takeContent(const SectionContent::RefPtr& sc, InternalContentData& data);
-
-    void moveFloatingWidget(const QPoint& TargetPos);
     FloatingWidget* startFloating(SectionWidget* sectionwidget, int ContentUid, const QPoint& TargetPos);
     void hideContainerOverlay();
 	SectionWidget* insertNewSectionWidget(const InternalContentData& data,
 		SectionWidget* targetSection, SectionWidget* ret, Qt::Orientation Orientation, int InsertIndexOffset);
+	void moveFloatingWidget(const QPoint& TargetPos);
+	void dropFloatingWidget(FloatingWidget* FloatingWidget, const QPoint& TargetPos);
 
 private slots:
 	void onActiveTabChanged();
 	void onActionToggleSectionContentVisibility(bool visible);
-
 
 signals:
 	void orientationChanged();
@@ -168,7 +175,26 @@ signals:
 	void sectionContentVisibilityChanged(const SectionContent::RefPtr& sc, bool visible);
 
 private:
-	ContainerWidgetPrivate* d;///< private data
+	QList<SectionWidget*> m_Sections;
+	QList<FloatingWidget*> m_Floatings;
+	QHash<int, HiddenSectionItem> m_HiddenSectionContents;
+
+
+	// Helper lookup maps, restricted to this container.
+	QHash<int, SectionContent::WeakPtr> m_SectionContentIdMap;
+	QHash<QString, SectionContent::WeakPtr> m_SectionContentNameMap;
+	QHash<int, SectionWidget*> m_SectionWidgetIdMap;
+
+
+	// Layout stuff
+	QGridLayout* m_MainLayout = nullptr;
+	Qt::Orientation m_Orientation = Qt::Horizontal;
+	QPointer<QSplitter> m_Splitter; // $mfreiholz: I'd like to remove this variable entirely,
+								   // because it changes during user interaction anyway.
+
+	// Drop overlay stuff.
+	QPointer<DropOverlay> m_SectionDropOverlay;
+	QPointer<DropOverlay> m_ContainerDropOverlay;
 };
 
 ADS_NAMESPACE_END

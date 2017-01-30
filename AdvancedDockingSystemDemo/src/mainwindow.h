@@ -2,8 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "../../AdvancedDockingSystem/include/ads/ContainerWidget.h"
 #include "ads/API.h"
-#include "ads/ContainerWidget.h"
 #include "ads/SectionContent.h"
 
 namespace Ui {
@@ -37,7 +37,7 @@ protected:
 
 private:
 	Ui::MainWindow *ui;
-	ADS_NS::ContainerWidget* _container;
+	ADS_NS::MainContainerWidget* _container;
 	void createContent();
 };
 

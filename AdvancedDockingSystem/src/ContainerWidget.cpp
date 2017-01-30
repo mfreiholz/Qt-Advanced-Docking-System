@@ -1,5 +1,3 @@
-#include "ads/ContainerWidget.h"
-
 #include <QDebug>
 #include <QPaintEvent>
 #include <QPainter>
@@ -10,6 +8,7 @@
 #include <QtGlobal>
 #include <QGridLayout>
 #include <QPoint>
+#include <QApplication>
 
 #include "ads/Internal.h"
 #include "ads/SectionWidget.h"
@@ -19,12 +18,10 @@
 #include "ads/Serialization.h"
 
 #include <iostream>
+#include "../include/ads/ContainerWidget.h"
 
 ADS_NAMESPACE_BEGIN
 
-
-
-// Static Helper //////////////////////////////////////////////////////
 
 static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = 0)
 {
@@ -35,47 +32,46 @@ static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal, QWid
 	return s;
 }
 
-///////////////////////////////////////////////////////////////////////
 
-ContainerWidget::ContainerWidget(QWidget *parent) :
-	QFrame(parent),
-	d(new ContainerWidgetPrivate())
+
+MainContainerWidget::MainContainerWidget(QWidget *parent) :
+	QFrame(parent)
 {
-	d->SectionDropOverlay = new DropOverlay(this, DropOverlay::ModeSectionOverlay);
-	d->ContainerDropOverlay = new DropOverlay(this, DropOverlay::ModeContainerOverlay);
-	d->ContainerDropOverlay->setAttribute(Qt::WA_TransparentForMouseEvents);
-	d->ContainerDropOverlay->setWindowFlags(d->ContainerDropOverlay->windowFlags() | Qt::WindowTransparentForInput);
+	m_SectionDropOverlay = new DropOverlay(this, DropOverlay::ModeSectionOverlay);
+	m_ContainerDropOverlay = new DropOverlay(this, DropOverlay::ModeContainerOverlay);
+	m_ContainerDropOverlay->setAttribute(Qt::WA_TransparentForMouseEvents);
+	m_ContainerDropOverlay->setWindowFlags(m_ContainerDropOverlay->windowFlags() | Qt::WindowTransparentForInput);
 
-	d->MainLayout = new QGridLayout();
-	d->MainLayout->setContentsMargins(0, 1, 0, 0);
-	d->MainLayout->setSpacing(0);
-	setLayout(d->MainLayout);
+	m_MainLayout = new QGridLayout();
+	m_MainLayout->setContentsMargins(0, 1, 0, 0);
+	m_MainLayout->setSpacing(0);
+	setLayout(m_MainLayout);
+	setAcceptDrops(true);
 }
 
-ContainerWidget::~ContainerWidget()
+MainContainerWidget::~MainContainerWidget()
 {
 	// Note: It's required to delete in 2 steps
 	// Remove from list, and then delete.
 	// Because the destrcutor of objects wants to modify the current
 	// iterating list as well... :-/
-	while (!d->sections.isEmpty())
+	while (!m_Sections.isEmpty())
 	{
-		SectionWidget* sw = d->sections.takeLast();
+		SectionWidget* sw = m_Sections.takeLast();
 		delete sw;
 	}
-	while (!d->floatings.isEmpty())
+	while (!m_Floatings.isEmpty())
 	{
-		FloatingWidget* fw = d->floatings.takeLast();
+		FloatingWidget* fw = m_Floatings.takeLast();
 		delete fw;
 	}
-	d->SectionContentIdMap.clear();
-	d->SectionContentNameMap.clear();
-	d->SectionWidgetIdMap.clear();
-	delete d;
+	m_SectionContentIdMap.clear();
+	m_SectionContentNameMap.clear();
+	m_SectionWidgetIdMap.clear();
 }
 
 
-SectionWidget* ContainerWidget::addSectionContent(const SectionContent::RefPtr& sc, SectionWidget* sw, DropArea area)
+SectionWidget* MainContainerWidget::addSectionContent(const SectionContent::RefPtr& sc, SectionWidget* sw, DropArea area)
 {
 	ADS_Expects(!sc.isNull());
 
@@ -89,7 +85,7 @@ SectionWidget* ContainerWidget::addSectionContent(const SectionContent::RefPtr& 
 	return dropContent(data, sw, area, false);
 }
 
-bool ContainerWidget::removeSectionContent(const SectionContent::RefPtr& sc)
+bool MainContainerWidget::removeSectionContent(const SectionContent::RefPtr& sc)
 {
 	ADS_Expects(!sc.isNull());
 
@@ -103,13 +99,13 @@ bool ContainerWidget::removeSectionContent(const SectionContent::RefPtr& sc)
 	// but only cares about SectionWidgets right now. So we need to check whether it was a FloatingWidget
 	// and delete it.
 	bool found = false;
-	for (int i = 0; i < d->floatings.count(); ++i)
+	for (int i = 0; i < m_Floatings.count(); ++i)
 	{
-		FloatingWidget* fw = d->floatings.at(i);
+		FloatingWidget* fw = m_Floatings.at(i);
 		InternalContentData data;
 		if (!(found = fw->takeContent(data)))
 			continue;
-		d->floatings.removeAll(fw);
+		m_Floatings.removeAll(fw);
 		delete fw;
 		delete data.titleWidget;
 		delete data.contentWidget;
@@ -117,14 +113,14 @@ bool ContainerWidget::removeSectionContent(const SectionContent::RefPtr& sc)
 	} // End of ugly work arround.
 
 	// Get from hidden contents and delete associated internal stuff.
-	if (!d->hiddenSectionContents.contains(sc->uid()))
+	if (!m_HiddenSectionContents.contains(sc->uid()))
 	{
 		qFatal("Something went wrong... The content should have been there :-/");
 		return false;
 	}
 
 	// Delete internal objects.
-	HiddenSectionItem hsi = d->hiddenSectionContents.take(sc->uid());
+	HiddenSectionItem hsi = m_HiddenSectionContents.take(sc->uid());
 	delete hsi.data.titleWidget;
 	delete hsi.data.contentWidget;
 
@@ -134,14 +130,14 @@ bool ContainerWidget::removeSectionContent(const SectionContent::RefPtr& sc)
 	return true;
 }
 
-bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
+bool MainContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 {
 	ADS_Expects(!sc.isNull());
 
 	// Search SC in floatings
-	for (int i = 0; i < d->floatings.count(); ++i)
+	for (int i = 0; i < m_Floatings.count(); ++i)
 	{
-		FloatingWidget* fw = d->floatings.at(i);
+		FloatingWidget* fw = m_Floatings.at(i);
 		const bool found = fw->content()->uid() == sc->uid();
 		if (!found)
 			continue;
@@ -155,19 +151,19 @@ bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 	// Search SC in hidden sections
 	// Try to show them in the last position, otherwise simply append
 	// it to the first section (or create a new section?)
-	if (d->hiddenSectionContents.contains(sc->uid()))
+	if (m_HiddenSectionContents.contains(sc->uid()))
 	{
-		const HiddenSectionItem hsi = d->hiddenSectionContents.take(sc->uid());
+		const HiddenSectionItem hsi = m_HiddenSectionContents.take(sc->uid());
 		hsi.data.titleWidget->setVisible(true);
 		hsi.data.contentWidget->setVisible(true);
 		SectionWidget* sw = nullptr;
-		if (hsi.preferredSectionId > 0 && (sw = d->SectionWidgetIdMap.value(hsi.preferredSectionId)) != nullptr)
+		if (hsi.preferredSectionId > 0 && (sw = m_SectionWidgetIdMap.value(hsi.preferredSectionId)) != nullptr)
 		{
 			sw->addContent(hsi.data, true);
 			emit sectionContentVisibilityChanged(sc, true);
 			return true;
 		}
-		else if (d->sections.size() > 0 && (sw = d->sections.first()) != NULL)
+		else if (m_Sections.size() > 0 && (sw = m_Sections.first()) != NULL)
 		{
 			sw->addContent(hsi.data, true);
 			emit sectionContentVisibilityChanged(sc, true);
@@ -176,7 +172,7 @@ bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 		else
 		{
 			sw = newSectionWidget();
-			addSection(sw);
+			addSectionWidget(sw);
 			sw->addContent(hsi.data, true);
 			emit sectionContentVisibilityChanged(sc, true);
 			return true;
@@ -189,18 +185,18 @@ bool ContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 	return false;
 }
 
-bool ContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
+bool MainContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
 {
 	ADS_Expects(!sc.isNull());
 
 	// Search SC in floatings
 	// We can simply hide floatings, nothing else required.
-	for (int i = 0; i < d->floatings.count(); ++i)
+	for (int i = 0; i < m_Floatings.count(); ++i)
 	{
-		const bool found = d->floatings.at(i)->content()->uid() == sc->uid();
+		const bool found = m_Floatings.at(i)->content()->uid() == sc->uid();
 		if (!found)
 			continue;
-		d->floatings.at(i)->setVisible(false);
+		m_Floatings.at(i)->setVisible(false);
 		emit sectionContentVisibilityChanged(sc, false);
 		return true;
 	}
@@ -209,9 +205,9 @@ bool ContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
 	// It's required to remove the SC from SW completely and hold it in a
 	// separate list as long as a "showSectionContent" gets called for the SC again.
 	// In case that the SW does not have any other SCs, we need to delete it.
-	for (int i = 0; i < d->sections.count(); ++i)
+	for (int i = 0; i < m_Sections.count(); ++i)
 	{
-		SectionWidget* sw = d->sections.at(i);
+		SectionWidget* sw = m_Sections.at(i);
 		const bool found = sw->indexOfContent(sc) >= 0;
 		if (!found)
 			continue;
@@ -224,7 +220,7 @@ bool ContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
 
 		hsi.data.titleWidget->setVisible(false);
 		hsi.data.contentWidget->setVisible(false);
-		d->hiddenSectionContents.insert(sc->uid(), hsi);
+		m_HiddenSectionContents.insert(sc->uid(), hsi);
 
 		if (sw->contents().isEmpty())
 		{
@@ -238,21 +234,21 @@ bool ContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
 
 	// Search SC in hidden elements
 	// The content may already be hidden
-	if (d->hiddenSectionContents.contains(sc->uid()))
+	if (m_HiddenSectionContents.contains(sc->uid()))
 		return true;
 
 	qFatal("Unable to hide SectionContent, don't know this one 8-/");
 	return false;
 }
 
-bool ContainerWidget::raiseSectionContent(const SectionContent::RefPtr& sc)
+bool MainContainerWidget::raiseSectionContent(const SectionContent::RefPtr& sc)
 {
 	ADS_Expects(!sc.isNull());
 
 	// Search SC in sections
-	for (int i = 0; i < d->sections.count(); ++i)
+	for (int i = 0; i < m_Sections.count(); ++i)
 	{
-		SectionWidget* sw = d->sections.at(i);
+		SectionWidget* sw = m_Sections.at(i);
 		int index = sw->indexOfContent(sc);
 		if (index < 0)
 			continue;
@@ -261,9 +257,9 @@ bool ContainerWidget::raiseSectionContent(const SectionContent::RefPtr& sc)
 	}
 
 	// Search SC in floatings
-	for (int i = 0; i < d->floatings.size(); ++i)
+	for (int i = 0; i < m_Floatings.size(); ++i)
 	{
-		FloatingWidget* fw = d->floatings.at(i);
+		FloatingWidget* fw = m_Floatings.at(i);
 		if (fw->content()->uid() != sc->uid())
 			continue;
 		fw->setVisible(true);
@@ -272,30 +268,30 @@ bool ContainerWidget::raiseSectionContent(const SectionContent::RefPtr& sc)
 	}
 
 	// Search SC in hidden
-	if (d->hiddenSectionContents.contains(sc->uid()))
+	if (m_HiddenSectionContents.contains(sc->uid()))
 		return showSectionContent(sc);
 
 	qFatal("Unable to hide SectionContent, don't know this one 8-/");
 	return false;
 }
 
-bool ContainerWidget::isSectionContentVisible(const SectionContent::RefPtr& sc)
+bool MainContainerWidget::isSectionContentVisible(const SectionContent::RefPtr& sc)
 {
 	ADS_Expects(!sc.isNull());
 
 	// Search SC in floatings
-	for (int i = 0; i < d->floatings.count(); ++i)
+	for (int i = 0; i < m_Floatings.count(); ++i)
 	{
-		const bool found = d->floatings.at(i)->content()->uid() == sc->uid();
+		const bool found = m_Floatings.at(i)->content()->uid() == sc->uid();
 		if (!found)
 			continue;
-		return d->floatings.at(i)->isVisible();
+		return m_Floatings.at(i)->isVisible();
 	}
 
 	// Search SC in sections
-	for (int i = 0; i < d->sections.count(); ++i)
+	for (int i = 0; i < m_Sections.count(); ++i)
 	{
-		SectionWidget* sw = d->sections.at(i);
+		SectionWidget* sw = m_Sections.at(i);
 		const int index = sw->indexOfContent(sc);
 		if (index < 0)
 			continue;
@@ -303,22 +299,22 @@ bool ContainerWidget::isSectionContentVisible(const SectionContent::RefPtr& sc)
 	}
 
 	// Search SC in hidden
-	if (d->hiddenSectionContents.contains(sc->uid()))
+	if (m_HiddenSectionContents.contains(sc->uid()))
 		return false;
 
 	qWarning() << "SectionContent is not a part of this ContainerWidget:" << sc->uniqueName();
 	return false;
 }
 
-QMenu* ContainerWidget::createContextMenu() const
+QMenu* MainContainerWidget::createContextMenu() const
 {
 	// Fill map with actions (sorted by key!)
 	QMap<QString, QAction*> actions;
 
 	// Visible contents of sections
-	for (int i = 0; i < d->sections.size(); ++i)
+	for (int i = 0; i < m_Sections.size(); ++i)
 	{
-		const SectionWidget* sw = d->sections.at(i);
+		const SectionWidget* sw = m_Sections.at(i);
 		const QList<SectionContent::RefPtr>& contents = sw->contents();
 		foreach (const SectionContent::RefPtr& sc, contents)
 		{
@@ -335,7 +331,7 @@ QMenu* ContainerWidget::createContextMenu() const
 	}
 
 	// Hidden contents of sections
-	QHashIterator<int, HiddenSectionItem> hiddenIter(d->hiddenSectionContents);
+	QHashIterator<int, HiddenSectionItem> hiddenIter(m_HiddenSectionContents);
 	while (hiddenIter.hasNext())
 	{
 		hiddenIter.next();
@@ -352,9 +348,9 @@ QMenu* ContainerWidget::createContextMenu() const
 	}
 
 	// Floating contents
-	for (int i = 0; i < d->floatings.size(); ++i)
+	for (int i = 0; i < m_Floatings.size(); ++i)
 	{
-		const FloatingWidget* fw = d->floatings.at(i);
+		const FloatingWidget* fw = m_Floatings.at(i);
 		const SectionContent::RefPtr sc = fw->content();
 
 		QAction* a = new QAction(QIcon(), sc->visibleTitle(), NULL);
@@ -373,7 +369,7 @@ QMenu* ContainerWidget::createContextMenu() const
 	return m;
 }
 
-QByteArray ContainerWidget::saveState() const
+QByteArray MainContainerWidget::saveState() const
 {
 	ADS_NS_SER::InMemoryWriter writer;
 
@@ -396,7 +392,7 @@ QByteArray ContainerWidget::saveState() const
 	return writer.toByteArray();
 }
 
-bool ContainerWidget::restoreState(const QByteArray& data)
+bool MainContainerWidget::restoreState(const QByteArray& data)
 {
 	if (data.isEmpty())
 		return false;
@@ -415,9 +411,9 @@ bool ContainerWidget::restoreState(const QByteArray& data)
 }
 
 
-QList<SectionContent::RefPtr> ContainerWidget::contents() const
+QList<SectionContent::RefPtr> MainContainerWidget::contents() const
 {
-	QList<SectionContent::WeakPtr> wl = d->SectionContentIdMap.values();
+	QList<SectionContent::WeakPtr> wl = m_SectionContentIdMap.values();
 	QList<SectionContent::RefPtr> sl;
 	for (int i = 0; i < wl.count(); ++i)
 	{
@@ -428,23 +424,23 @@ QList<SectionContent::RefPtr> ContainerWidget::contents() const
 	return sl;
 }
 
-QPointer<DropOverlay> ContainerWidget::dropOverlay() const
+QPointer<DropOverlay> MainContainerWidget::sectionDropOverlay() const
 {
-	return d->SectionDropOverlay;
+	return m_SectionDropOverlay;
 }
 
 ///////////////////////////////////////////////////////////////////////
 // PRIVATE API BEGINS HERE
 ///////////////////////////////////////////////////////////////////////
 
-SectionWidget* ContainerWidget::newSectionWidget()
+SectionWidget* MainContainerWidget::newSectionWidget()
 {
 	SectionWidget* sw = new SectionWidget(this);
-	d->sections.append(sw);
+	m_Sections.append(sw);
 	return sw;
 }
 
-SectionWidget* ContainerWidget::insertNewSectionWidget(
+SectionWidget* MainContainerWidget::insertNewSectionWidget(
     const InternalContentData& data, SectionWidget* targetSection, SectionWidget* ret,
     Qt::Orientation Orientation, int InsertIndexOffset)
 {
@@ -468,30 +464,30 @@ SectionWidget* ContainerWidget::insertNewSectionWidget(
 	return ret;
 }
 
-SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive)
+SectionWidget* MainContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSectionWidget, DropArea area, bool autoActive)
 {
 	ADS_Expects(targetSection != NULL);
 
 	SectionWidget* section_widget = nullptr;
 
 	// If no sections exists yet, create a default one and always drop into it.
-	if (d->sections.isEmpty())
+	if (m_Sections.isEmpty())
 	{
-		targetSection = newSectionWidget();
-		addSection(targetSection);
+		targetSectionWidget = newSectionWidget();
+		addSectionWidget(targetSectionWidget);
 		area = CenterDropArea;
 	}
 
 	// Drop on outer area
-	if (!targetSection)
+	if (!targetSectionWidget)
 	{
 		switch (area)
 		{
-		case TopDropArea:return dropContentOuterHelper(d->MainLayout, data, Qt::Vertical, false);
-		case RightDropArea: return dropContentOuterHelper(d->MainLayout, data, Qt::Horizontal, true);
+		case TopDropArea:return dropContentOuterHelper(m_MainLayout, data, Qt::Vertical, false);
+		case RightDropArea: return dropContentOuterHelper(m_MainLayout, data, Qt::Horizontal, true);
 		case CenterDropArea:
-		case BottomDropArea:return dropContentOuterHelper(d->MainLayout, data, Qt::Vertical, true);
-		case LeftDropArea: return dropContentOuterHelper(d->MainLayout, data, Qt::Horizontal, false);
+		case BottomDropArea:return dropContentOuterHelper(m_MainLayout, data, Qt::Vertical, true);
+		case LeftDropArea: return dropContentOuterHelper(m_MainLayout, data, Qt::Horizontal, false);
 		default:
 			return nullptr;
 		}
@@ -501,13 +497,13 @@ SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, Sec
 	// Drop logic based on area.
 	switch (area)
 	{
-	case TopDropArea:return insertNewSectionWidget(data, targetSection, section_widget, Qt::Vertical, 0);
-	case RightDropArea: return insertNewSectionWidget(data, targetSection, section_widget, Qt::Horizontal, 1);
-	case BottomDropArea: return insertNewSectionWidget(data, targetSection, section_widget, Qt::Vertical, 1);
-	case LeftDropArea: return insertNewSectionWidget(data, targetSection, section_widget, Qt::Horizontal, 0);
+	case TopDropArea:return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Vertical, 0);
+	case RightDropArea: return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Horizontal, 1);
+	case BottomDropArea: return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Vertical, 1);
+	case LeftDropArea: return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Horizontal, 0);
 	case CenterDropArea:
-		 targetSection->addContent(data, autoActive);
-		 return targetSection;
+		 targetSectionWidget->addContent(data, autoActive);
+		 return targetSectionWidget;
 
 	default:
 		break;
@@ -515,30 +511,30 @@ SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, Sec
 	return section_widget;
 }
 
-void ContainerWidget::addSection(SectionWidget* section)
+void MainContainerWidget::addSectionWidget(SectionWidget* section)
 {
 	ADS_Expects(section != NULL);
 
 	// Create default splitter.
-	if (!d->splitter)
+	if (!m_Splitter)
 	{
-		d->splitter = newSplitter(d->orientation);
-		d->MainLayout->addWidget(d->splitter, 0, 0);
+		m_Splitter = newSplitter(m_Orientation);
+		m_MainLayout->addWidget(m_Splitter, 0, 0);
 	}
-	if (d->splitter->indexOf(section) != -1)
+	if (m_Splitter->indexOf(section) != -1)
 	{
 		qWarning() << Q_FUNC_INFO << QString("Section has already been added");
 		return;
 	}
-	d->splitter->addWidget(section);
+	m_Splitter->addWidget(section);
 }
 
-SectionWidget* ContainerWidget::sectionAt(const QPoint& pos) const
+SectionWidget* MainContainerWidget::sectionWidgetAt(const QPoint& pos) const
 {
 	const QPoint gpos = mapToGlobal(pos);
-	for (int i = 0; i < d->sections.size(); ++i)
+	for (int i = 0; i < m_Sections.size(); ++i)
 	{
-		SectionWidget* sw = d->sections[i];
+		SectionWidget* sw = m_Sections[i];
 		if (sw->rect().contains(sw->mapFromGlobal(gpos)))
 		{
 			return sw;
@@ -547,7 +543,7 @@ SectionWidget* ContainerWidget::sectionAt(const QPoint& pos) const
 	return 0;
 }
 
-SectionWidget* ContainerWidget::dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append)
+SectionWidget* MainContainerWidget::dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append)
 {
 	ADS_Expects(l != NULL);
 
@@ -615,7 +611,7 @@ SectionWidget* ContainerWidget::dropContentOuterHelper(QLayout* l, const Interna
 	return sw;
 }
 
-QByteArray ContainerWidget::saveHierarchy() const
+QByteArray MainContainerWidget::saveHierarchy() const
 {
 	/*
 		# Data Format
@@ -648,40 +644,40 @@ QByteArray ContainerWidget::saveHierarchy() const
 	saveFloatingWidgets(out);
 
 	// Save state of sections and contents
-	if (d->MainLayout->count() <= 0 || d->sections.isEmpty())
+	if (m_MainLayout->count() <= 0 || m_Sections.isEmpty())
 	{
 		// Looks like the user has hidden all contents and no more sections
 		// are available. We can simply write a list of all hidden contents.
 		out << 0; // Mode
 
-		out << d->hiddenSectionContents.count();
-		QHashIterator<int, HiddenSectionItem> iter(d->hiddenSectionContents);
+		out << m_HiddenSectionContents.count();
+		QHashIterator<int, HiddenSectionItem> iter(m_HiddenSectionContents);
 		while (iter.hasNext())
 		{
 			iter.next();
 			out << iter.value().data.content->uniqueName();
 		}
 	}
-	else if (d->MainLayout->count() == 1)
+	else if (m_MainLayout->count() == 1)
 	{
 		out << 1; // Mode
 
 		// There should only be one!
-		QLayoutItem* li = d->MainLayout->itemAt(0);
+		QLayoutItem* li = m_MainLayout->itemAt(0);
 		if (!li->widget())
-			qFatal("Not a widget in d->mainLayout, this shouldn't happen.");
+			qFatal("Not a widget in mainLayout, this shouldn't happen.");
 
 		// Save sections beginning with the first QSplitter (li->widget()).
 		saveSectionWidgets(out, li->widget());
 
 		// Safe state of hidden contents, which doesn't have an section association
 		// or the section association points to a no longer existing section.
-		QHashIterator<int, HiddenSectionItem> iter(d->hiddenSectionContents);
+		QHashIterator<int, HiddenSectionItem> iter(m_HiddenSectionContents);
 		int cnt = 0;
 		while (iter.hasNext())
 		{
 			iter.next();
-			if (iter.value().preferredSectionId <= 0 || !d->SectionWidgetIdMap.contains(iter.value().preferredSectionId))
+			if (iter.value().preferredSectionId <= 0 || !m_SectionWidgetIdMap.contains(iter.value().preferredSectionId))
 				cnt++;
 		}
 		out << cnt;
@@ -689,7 +685,7 @@ QByteArray ContainerWidget::saveHierarchy() const
 		while (iter.hasNext())
 		{
 			iter.next();
-			if (iter.value().preferredSectionId <= 0 || !d->SectionWidgetIdMap.contains(iter.value().preferredSectionId))
+			if (iter.value().preferredSectionId <= 0 || !m_SectionWidgetIdMap.contains(iter.value().preferredSectionId))
 				out << iter.value().data.content->uniqueName();
 		}
 	}
@@ -697,24 +693,24 @@ QByteArray ContainerWidget::saveHierarchy() const
 	{
 		// More? Oh oh.. something is wrong :-/
 		out << -1;
-		qWarning() << "Oh noooz.. Something went wrong. There are too many items in d->mainLayout.";
+		qWarning() << "Oh noooz.. Something went wrong. There are too many items in mainLayout.";
 	}
 	return ba;
 }
 
-void ContainerWidget::saveFloatingWidgets(QDataStream& out) const
+void MainContainerWidget::saveFloatingWidgets(QDataStream& out) const
 {
-	out << d->floatings.count();
-	for (int i = 0; i < d->floatings.count(); ++i)
+	out << m_Floatings.count();
+	for (int i = 0; i < m_Floatings.count(); ++i)
 	{
-		FloatingWidget* fw = d->floatings.at(i);
+		FloatingWidget* fw = m_Floatings.at(i);
 		out << fw->content()->uniqueName();
 		out << fw->saveGeometry();
 		out << fw->isVisible();
 	}
 }
 
-void ContainerWidget::saveSectionWidgets(QDataStream& out, QWidget* widget) const
+void MainContainerWidget::saveSectionWidgets(QDataStream& out, QWidget* widget) const
 {
 	QSplitter* sp = NULL;
 	SectionWidget* sw = NULL;
@@ -748,7 +744,7 @@ void ContainerWidget::saveSectionWidgets(QDataStream& out, QWidget* widget) cons
 		const QList<SectionContent::RefPtr>& contents = sw->contents();
 		QList<HiddenSectionItem> hiddenContents;
 
-		QHashIterator<int, HiddenSectionItem> iter(d->hiddenSectionContents);
+		QHashIterator<int, HiddenSectionItem> iter(m_HiddenSectionContents);
 		while (iter.hasNext())
 		{
 			iter.next();
@@ -777,27 +773,27 @@ void ContainerWidget::saveSectionWidgets(QDataStream& out, QWidget* widget) cons
 	}
 }
 
-bool ContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) const
+bool MainContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) const
 {
-	if (d->sections.count() <= 0)
+	if (m_Sections.count() <= 0)
 		return false;
 
-	sid.sectionsCount = d->sections.count();
+	sid.sectionsCount = m_Sections.count();
 	for (int i = 0; i < sid.sectionsCount; ++i)
 	{
 		ADS_NS_SER::SectionEntity se;
-		se.x = mapFromGlobal(d->sections[i]->parentWidget()->mapToGlobal(d->sections[i]->pos())).x();
-		se.y = mapFromGlobal(d->sections[i]->parentWidget()->mapToGlobal(d->sections[i]->pos())).y();
-		se.width = d->sections[i]->geometry().width();
-		se.height = d->sections[i]->geometry().height();
-		se.currentIndex = d->sections[i]->currentIndex();
-		se.sectionContentsCount = d->sections[i]->contents().count();
-		foreach (const SectionContent::RefPtr& sc, d->sections[i]->contents())
+		se.x = mapFromGlobal(m_Sections[i]->parentWidget()->mapToGlobal(m_Sections[i]->pos())).x();
+		se.y = mapFromGlobal(m_Sections[i]->parentWidget()->mapToGlobal(m_Sections[i]->pos())).y();
+		se.width = m_Sections[i]->geometry().width();
+		se.height = m_Sections[i]->geometry().height();
+		se.currentIndex = m_Sections[i]->currentIndex();
+		se.sectionContentsCount = m_Sections[i]->contents().count();
+		foreach (const SectionContent::RefPtr& sc, m_Sections[i]->contents())
 		{
 			ADS_NS_SER::SectionContentEntity sce;
 			sce.uniqueName = sc->uniqueName();
 			sce.visible = true;
-			sce.preferredIndex = d->sections[i]->indexOfContent(sc);
+			sce.preferredIndex = m_Sections[i]->indexOfContent(sc);
 			se.sectionContents.append(sce); // std::move()?
 		}
 		sid.sections.append(se); // std::move()?
@@ -805,7 +801,7 @@ bool ContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) const
 	return true;
 }
 
-bool ContainerWidget::restoreHierarchy(const QByteArray& data)
+bool MainContainerWidget::restoreHierarchy(const QByteArray& data)
 {
 	QDataStream in(data);
 	in.setVersion(QDataStream::Qt_4_5);
@@ -820,8 +816,8 @@ bool ContainerWidget::restoreHierarchy(const QByteArray& data)
 	if (version != 1)
 		return false;
 
-	QList<FloatingWidget*> oldFloatings = d->floatings;
-	QList<SectionWidget*> oldSections = d->sections;
+	QList<FloatingWidget*> oldFloatings = m_Floatings;
+	QList<SectionWidget*> oldSections = m_Sections;
 
 	// Restore floating widgets
 	QList<FloatingWidget*> floatings;
@@ -854,7 +850,7 @@ bool ContainerWidget::restoreHierarchy(const QByteArray& data)
 				QString uname;
 				in >> uname;
 
-				const SectionContent::RefPtr sc = d->SectionContentNameMap.value(uname);
+				const SectionContent::RefPtr sc = m_SectionContentNameMap.value(uname);
 				if (!sc)
 					continue;
 
@@ -880,7 +876,7 @@ bool ContainerWidget::restoreHierarchy(const QByteArray& data)
 		{
 			QString uname;
 			in >> uname;
-			const SectionContent::RefPtr sc = d->SectionContentNameMap.value(uname);
+			const SectionContent::RefPtr sc = m_SectionContentNameMap.value(uname);
 			if (!sc)
 				continue;
 
@@ -919,7 +915,7 @@ bool ContainerWidget::restoreHierarchy(const QByteArray& data)
 			contents.append(contentsToHide.at(i));
 
 		// Compare restored contents with available contents
-		const QList<SectionContent::WeakPtr> allContents = d->SectionContentIdMap.values();
+		const QList<SectionContent::WeakPtr> allContents = m_SectionContentIdMap.values();
 		for (int i = 0; i < allContents.count(); ++i)
 		{
 			const SectionContent::RefPtr sc = allContents.at(i).toStrongRef();
@@ -942,7 +938,7 @@ bool ContainerWidget::restoreHierarchy(const QByteArray& data)
 			{
 				sw = new SectionWidget(this);
 				sections.append(sw);
-				addSection(sw);
+				addSectionWidget(sw);
 			}
 			else
 				sw = sections.first();
@@ -955,12 +951,12 @@ bool ContainerWidget::restoreHierarchy(const QByteArray& data)
 		}
 	}
 
-	d->floatings = floatings;
-	d->sections = sections;
+	m_Floatings = floatings;
+	m_Sections = sections;
 
 	// Delete old objects
-	QLayoutItem* old = d->MainLayout->takeAt(0);
-	d->MainLayout->addWidget(d->splitter);
+	QLayoutItem* old = m_MainLayout->takeAt(0);
+	m_MainLayout->addWidget(m_Splitter);
 	delete old;
 	qDeleteAll(oldFloatings);
 	qDeleteAll(oldSections);
@@ -973,7 +969,7 @@ bool ContainerWidget::restoreHierarchy(const QByteArray& data)
 	return success;
 }
 
-bool ContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, QList<FloatingWidget*>& floatings)
+bool MainContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, QList<FloatingWidget*>& floatings)
 {
 	Q_UNUSED(version)
 
@@ -991,7 +987,7 @@ bool ContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, QList
 		bool visible = false;
 		in >> visible;
 
-		const SectionContent::RefPtr sc = d->SectionContentNameMap.value(uname).toStrongRef();
+		const SectionContent::RefPtr sc = m_SectionContentNameMap.value(uname).toStrongRef();
 		if (!sc)
 		{
 			qWarning() << "Can not find SectionContent:" << uname;
@@ -1016,7 +1012,7 @@ bool ContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, QList
 	return true;
 }
 
-bool ContainerWidget::restoreSectionWidgets(QDataStream& in, int version, QSplitter* currentSplitter, QList<SectionWidget*>& sections, QList<SectionContent::RefPtr>& contentsToHide)
+bool MainContainerWidget::restoreSectionWidgets(QDataStream& in, int version, QSplitter* currentSplitter, QList<SectionWidget*>& sections, QList<SectionContent::RefPtr>& contentsToHide)
 {
 	if (in.atEnd())
 		return true;
@@ -1047,7 +1043,7 @@ bool ContainerWidget::restoreSectionWidgets(QDataStream& in, int version, QSplit
 			sp->setSizes(sizes);
 
 			if (!currentSplitter)
-				d->splitter = sp;
+				m_Splitter = sp;
 			else
 				currentSplitter->addWidget(sp);
 		}
@@ -1074,7 +1070,7 @@ bool ContainerWidget::restoreSectionWidgets(QDataStream& in, int version, QSplit
 			int preferredIndex = -1;
 			in >> preferredIndex;
 
-			const SectionContent::RefPtr sc = d->SectionContentNameMap.value(uname).toStrongRef();
+			const SectionContent::RefPtr sc = m_SectionContentNameMap.value(uname).toStrongRef();
 			if (!sc)
 			{
 				qWarning() << "Can not find SectionContent:" << uname;
@@ -1114,29 +1110,29 @@ bool ContainerWidget::restoreSectionWidgets(QDataStream& in, int version, QSplit
 	return true;
 }
 
-bool ContainerWidget::takeContent(const SectionContent::RefPtr& sc, InternalContentData& data)
+bool MainContainerWidget::takeContent(const SectionContent::RefPtr& sc, InternalContentData& data)
 {
 	ADS_Expects(!sc.isNull());
 
 	// Search in sections
 	bool found = false;
-	for (int i = 0; i < d->sections.count() && !found; ++i)
+	for (int i = 0; i < m_Sections.count() && !found; ++i)
 	{
-		found = d->sections.at(i)->takeContent(sc->uid(), data);
+		found = m_Sections.at(i)->takeContent(sc->uid(), data);
 	}
 
 	// Search in floating widgets
-	for (int i = 0; i < d->floatings.count() && !found; ++i)
+	for (int i = 0; i < m_Floatings.count() && !found; ++i)
 	{
-		found = d->floatings.at(i)->content()->uid() == sc->uid();
+		found = m_Floatings.at(i)->content()->uid() == sc->uid();
 		if (found)
-			d->floatings.at(i)->takeContent(data);
+			m_Floatings.at(i)->takeContent(data);
 	}
 
 	// Search in hidden items
-	if (!found && d->hiddenSectionContents.contains(sc->uid()))
+	if (!found && m_HiddenSectionContents.contains(sc->uid()))
 	{
-		const HiddenSectionItem hsi = d->hiddenSectionContents.take(sc->uid());
+		const HiddenSectionItem hsi = m_HiddenSectionContents.take(sc->uid());
 		data = hsi.data;
 		found = true;
 	}
@@ -1144,7 +1140,7 @@ bool ContainerWidget::takeContent(const SectionContent::RefPtr& sc, InternalCont
 	return found;
 }
 
-void ContainerWidget::onActiveTabChanged()
+void MainContainerWidget::onActiveTabChanged()
 {
 	SectionTitleWidget* stw = qobject_cast<SectionTitleWidget*>(sender());
 	if (stw)
@@ -1153,13 +1149,13 @@ void ContainerWidget::onActiveTabChanged()
 	}
 }
 
-void ContainerWidget::onActionToggleSectionContentVisibility(bool visible)
+void MainContainerWidget::onActionToggleSectionContentVisibility(bool visible)
 {
 	QAction* a = qobject_cast<QAction*>(sender());
 	if (!a)
 		return;
 	const int uid = a->property("uid").toInt();
-	const SectionContent::RefPtr sc = d->SectionContentIdMap.value(uid).toStrongRef();
+	const SectionContent::RefPtr sc = m_SectionContentIdMap.value(uid).toStrongRef();
 	if (sc.isNull())
 	{
 		qCritical() << "Can not find content by ID" << uid;
@@ -1172,44 +1168,13 @@ void ContainerWidget::onActionToggleSectionContentVisibility(bool visible)
 }
 
 
-void ContainerWidget::hideContainerOverlay()
+void MainContainerWidget::hideContainerOverlay()
 {
-	d->ContainerDropOverlay->hideDropOverlay();
+	m_ContainerDropOverlay->hideDropOverlay();
 }
 
 
-void ContainerWidget::moveFloatingWidget(const QPoint& TargetPos)
-{
-	std::cout << "moveFloatingWidget" << std::endl;
-	// Mouse is over the container widget
-    if (rect().contains(mapFromGlobal(QCursor::pos())))
-    {
-    	std::cout << "over Container" << std::endl;
-    	d->ContainerDropOverlay->showDropOverlay(this);
-    	d->ContainerDropOverlay->raise();
-    }
-    else
-    {
-    	std::cout << "-----------------" << std::endl;
-    	d->ContainerDropOverlay->hideDropOverlay();
-    }
-
-    // Mouse is over a SectionWidget
-    SectionWidget* sectionwidget = sectionAt(mapFromGlobal(QCursor::pos()));
-    if (sectionwidget)
-    {
-        qInfo() << "over sectionWidget";
-        d->SectionDropOverlay->setAllowedAreas(ADS_NS::AllAreas);
-        d->SectionDropOverlay->showDropOverlay(sectionwidget);
-    }
-    else
-    {
-        d->SectionDropOverlay->hideDropOverlay();
-    }
-}
-
-
-FloatingWidget* ContainerWidget::startFloating(SectionWidget* sectionwidget, int ContentUid, const QPoint& TargetPos)
+FloatingWidget* MainContainerWidget::startFloating(SectionWidget* sectionwidget, int ContentUid, const QPoint& TargetPos)
 {
     // Create floating widget.
     InternalContentData data;
@@ -1221,9 +1186,11 @@ FloatingWidget* ContainerWidget::startFloating(SectionWidget* sectionwidget, int
 
     FloatingWidget* fw = new FloatingWidget(this, data.content, data.titleWidget, data.contentWidget, this);
     fw->resize(sectionwidget->size());
-    d->floatings.append(fw);
+    m_Floatings.append(fw);
     fw->move(TargetPos);
     fw->show();
+    fw->setObjectName("FloatingWidget");
+    //fw->installEventFilter(this);
 
     // Delete old section, if it is empty now.
     if (sectionwidget->contents().isEmpty())
@@ -1233,10 +1200,89 @@ FloatingWidget* ContainerWidget::startFloating(SectionWidget* sectionwidget, int
     }
     deleteEmptySplitter(this);
 
-	d->ContainerDropOverlay->setAllowedAreas(OuterAreas);
-	d->ContainerDropOverlay->showDropOverlay(this);
-	d->ContainerDropOverlay->raise();
+	m_ContainerDropOverlay->setAllowedAreas(OuterAreas);
+	m_ContainerDropOverlay->showDropOverlay(this);
+	m_ContainerDropOverlay->raise();
     return fw;
 }
+
+
+bool MainContainerWidget::event(QEvent *e)
+{
+	//std::cout << "ContainerWidget::event " << e->type() << std::endl;
+	return QFrame::event(e);
+}
+
+void MainContainerWidget::moveFloatingWidget(const QPoint& TargetPos)
+{
+    QPoint MousePos = mapFromGlobal(QCursor::pos());
+
+	// Mouse is over the container widget
+    if (rect().contains(MousePos))
+    {
+    	//std::cout << "over Container" << std::endl;
+    	m_ContainerDropOverlay->showDropOverlay(this);
+    	m_ContainerDropOverlay->raise();
+    }
+    else
+    {
+    	std::cout << "-----------------" << std::endl;
+    	m_ContainerDropOverlay->hideDropOverlay();
+    }
+
+    // Mouse is over a SectionWidget
+    SectionWidget* sectionwidget = sectionWidgetAt(MousePos);
+    if (sectionwidget)
+    {
+        //qInfo() << "over sectionWidget";
+        m_SectionDropOverlay->setAllowedAreas(ADS_NS::AllAreas);
+        m_SectionDropOverlay->showDropOverlay(sectionwidget);
+    }
+    else
+    {
+        m_SectionDropOverlay->hideDropOverlay();
+    }
+}
+
+
+void MainContainerWidget::dropFloatingWidget(FloatingWidget* FloatingWidget,
+	const QPoint& TargetPos)
+{
+	if (!FloatingWidget->isDraggingActive())
+	{
+		return;
+	}
+
+	QPoint MousePos = mapFromGlobal(TargetPos);
+	SectionWidget* sectionWidget = sectionWidgetAt(MousePos);
+	DropArea dropArea = InvalidDropArea;
+	if (sectionWidget)
+	{
+		m_SectionDropOverlay->setAllowedAreas(ADS_NS::AllAreas);
+		dropArea = m_SectionDropOverlay->showDropOverlay(sectionWidget);
+		if (dropArea != InvalidDropArea)
+		{
+			InternalContentData data;
+			FloatingWidget->takeContent(data);
+			FloatingWidget->deleteLater();
+			dropContent(data, sectionWidget, dropArea, true);
+		}
+	}
+
+	// mouse is over container
+	if (InvalidDropArea == dropArea)
+	{
+		dropArea = m_ContainerDropOverlay->dropAreaUnderCursor();
+		std::cout << "Cursor location: " << dropArea << std::endl;
+		if (dropArea != InvalidDropArea)
+		{
+			InternalContentData data;
+			FloatingWidget->takeContent(data);
+			FloatingWidget->deleteLater();
+			dropContent(data, nullptr, dropArea, true);
+		}
+	}
+}
+
 
 ADS_NAMESPACE_END

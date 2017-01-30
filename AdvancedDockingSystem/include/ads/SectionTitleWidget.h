@@ -9,7 +9,7 @@
 #include "ads/SectionContent.h"
 
 ADS_NAMESPACE_BEGIN
-class ContainerWidget;
+class MainContainerWidget;
 class SectionWidget;
 class FloatingWidget;
 
@@ -18,7 +18,7 @@ class SectionTitleWidget : public QFrame
 	Q_OBJECT
 	Q_PROPERTY(bool activeTab READ isActiveTab WRITE setActiveTab NOTIFY activeTabChanged)
 
-	friend class ContainerWidget;
+	friend class MainContainerWidget;
 	friend class SectionWidget;
 
     SectionContent::RefPtr m_Content;
@@ -40,14 +40,20 @@ public:
 	bool isActiveTab() const;
 	void setActiveTab(bool active);
 
+	/**
+	 * Returns true, if this sections title widget is currently dragging
+	 * a floating widget
+	 */
+	bool isDraggingFloatingWidget() const;
+
 protected:
 	virtual void mousePressEvent(QMouseEvent* ev);
 	virtual void mouseReleaseEvent(QMouseEvent* ev);
 	virtual void mouseMoveEvent(QMouseEvent* ev);
 
 private:
-   void moveFloatingWidget(QMouseEvent* ev, ContainerWidget* cw);
-   void startFloating(QMouseEvent* ev, ContainerWidget* cw, SectionWidget* sectionwidget);
+   void moveFloatingWidget(QMouseEvent* ev, MainContainerWidget* cw);
+   void startFloating(QMouseEvent* ev, MainContainerWidget* cw, SectionWidget* sectionwidget);
    void moveTab(QMouseEvent* ev);
 
 signals:

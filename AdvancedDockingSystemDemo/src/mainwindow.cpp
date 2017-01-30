@@ -21,7 +21,7 @@
 
 static int CONTENT_COUNT = 0;
 
-static ADS_NS::SectionContent::RefPtr createLongTextLabelSC(ADS_NS::ContainerWidget* container)
+static ADS_NS::SectionContent::RefPtr createLongTextLabelSC(ADS_NS::MainContainerWidget* container)
 {
 	QWidget* w = new QWidget();
 	QBoxLayout* bl = new QBoxLayout(QBoxLayout::TopToBottom);
@@ -39,7 +39,7 @@ static ADS_NS::SectionContent::RefPtr createLongTextLabelSC(ADS_NS::ContainerWid
 	return sc;
 }
 
-static ADS_NS::SectionContent::RefPtr createCalendarSC(ADS_NS::ContainerWidget* container)
+static ADS_NS::SectionContent::RefPtr createCalendarSC(ADS_NS::MainContainerWidget* container)
 {
 	QCalendarWidget* w = new QCalendarWidget();
 
@@ -47,7 +47,7 @@ static ADS_NS::SectionContent::RefPtr createCalendarSC(ADS_NS::ContainerWidget* 
 	return ADS_NS::SectionContent::newSectionContent(QString("uname-%1").arg(index), container, new IconTitleWidget(QIcon(), QString("Calendar %1").arg(index)), w);
 }
 
-static ADS_NS::SectionContent::RefPtr createFileSystemTreeSC(ADS_NS::ContainerWidget* container)
+static ADS_NS::SectionContent::RefPtr createFileSystemTreeSC(ADS_NS::MainContainerWidget* container)
 {
 	QTreeView* w = new QTreeView();
 	w->setFrameShape(QFrame::NoFrame);
@@ -93,7 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionContentList, SIGNAL(triggered()), this, SLOT(showSectionContentListDialog()));
 
 	// ADS - Create main container (ContainerWidget).
-	_container = new ADS_NS::ContainerWidget();
+	_container = new ADS_NS::MainContainerWidget();
 	connect(_container, SIGNAL(activeTabChanged(const SectionContent::RefPtr&, bool)), this, SLOT(onActiveTabChanged(const SectionContent::RefPtr&, bool)));
 	connect(_container, SIGNAL(sectionContentVisibilityChanged(SectionContent::RefPtr,bool)), this, SLOT(onSectionContentVisibilityChanged(SectionContent::RefPtr,bool)));
 	setCentralWidget(_container);
@@ -116,8 +116,8 @@ void MainWindow::createContent()
 {
 	// ADS - Adding some contents.
 	// Test #1: Use high-level public API
-	ADS_NS::ContainerWidget* cw = _container;
-	ADS_NS::SectionWidget* sw = NULL;
+	ADS_NS::MainContainerWidget* cw = _container;
+	ADS_NS::SectionWidget* sw = nullptr;
 
 	sw = _container->addSectionContent(createLongTextLabelSC(cw), nullptr, ADS_NS::CenterDropArea);
 	sw = _container->addSectionContent(createCalendarSC(cw), nullptr, ADS_NS::LeftDropArea);
@@ -134,7 +134,7 @@ void MainWindow::createContent()
 
 #if 0
 		// Issue #2: If the first drop is not into CenterDropArea, the application crashes.
-		ADS_NS::ContainerWidget* cw = _container;
+		ADS_NS::MainContainerWidget* cw = _container;
 		ADS_NS::SectionWidget* sw = NULL;
 
 		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::LeftDropArea);

@@ -25,11 +25,11 @@
 #include "ads/SectionTitleWidget.h"
 #include "ads/SectionContentWidget.h"
 #include "ads/FloatingWidget.h"
-#include "ads/ContainerWidget.h"
+#include <ads/ContainerWidget.h>
 
 ADS_NAMESPACE_BEGIN
 
-SectionWidget::SectionWidget(ContainerWidget* parent) :
+SectionWidget::SectionWidget(MainContainerWidget* parent) :
 	QFrame(parent),
 	_uid(GetNextUid()),
 	_container(parent),
@@ -93,15 +93,15 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 	_contentsLayout->setSpacing(0);
 	l->addLayout(_contentsLayout, 1);
 
-	_container->d->SectionWidgetIdMap.insert(_uid, this);
+	_container->m_SectionWidgetIdMap.insert(_uid, this);
 }
 
 SectionWidget::~SectionWidget()
 {
 	if (_container)
 	{
-		_container->d->SectionWidgetIdMap.remove(_uid);
-		_container->d->sections.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
+		_container->m_SectionWidgetIdMap.remove(_uid);
+		_container->m_Sections.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
 	}
 
 	// Delete empty QSplitter.
@@ -117,7 +117,7 @@ int SectionWidget::uid() const
 	return _uid;
 }
 
-ContainerWidget* SectionWidget::containerWidget() const
+MainContainerWidget* SectionWidget::containerWidget() const
 {
 	return _container;
 }
