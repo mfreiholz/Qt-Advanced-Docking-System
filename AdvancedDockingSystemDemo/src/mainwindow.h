@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "../../AdvancedDockingSystem/include/ads/ContainerWidget.h"
+#include "../../AdvancedDockingSystem/include/ads/MainContainerWidget.h"
 #include "ads/API.h"
 #include "ads/SectionContent.h"
 

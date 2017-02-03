@@ -2,7 +2,7 @@
 #define SECTIONCONTENTLISTWIDGET
 
 #include <QDialog>
-#include "../../../AdvancedDockingSystem/include/ads/ContainerWidget.h"
+#include "../../../AdvancedDockingSystem/include/ads/MainContainerWidget.h"
 #include "ui_SectionContentListWidget.h"
 
 #include "ads/API.h"

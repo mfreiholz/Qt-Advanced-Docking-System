@@ -20,7 +20,7 @@
 #include "ads/SectionContent.h"
 #include "ads/SectionWidget.h"
 #include "ads/FloatingWidget.h"
-#include <ads/ContainerWidget.h>
+#include <ads/MainContainerWidget.h>
 
 #include <iostream>
 

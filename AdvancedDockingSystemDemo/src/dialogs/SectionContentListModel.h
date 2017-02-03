@@ -5,7 +5,7 @@
 #include <QList>
 #include <QString>
 #include <QAbstractTableModel>
-#include "../../../AdvancedDockingSystem/include/ads/ContainerWidget.h"
+#include "../../../AdvancedDockingSystem/include/ads/MainContainerWidget.h"
 #include "ads/API.h"
 #include "ads/SectionContent.h"
 ADS_NAMESPACE_BEGIN

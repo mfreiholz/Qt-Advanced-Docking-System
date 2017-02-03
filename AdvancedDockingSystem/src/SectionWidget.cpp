@@ -25,7 +25,7 @@
 #include "ads/SectionTitleWidget.h"
 #include "ads/SectionContentWidget.h"
 #include "ads/FloatingWidget.h"
-#include <ads/ContainerWidget.h>
+#include <ads/MainContainerWidget.h>
 
 ADS_NAMESPACE_BEGIN
 

@@ -1,4 +1,4 @@
-#include <ads/ContainerWidget.h>
+#include <ads/MainContainerWidget.h>
 #include "ads/SectionContent.h"
 
 #include <QWidget>
