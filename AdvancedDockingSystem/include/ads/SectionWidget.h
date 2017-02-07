@@ -28,14 +28,15 @@ class ADS_EXPORT_API SectionWidget : public QFrame
 {
 	Q_OBJECT
 	friend class MainContainerWidget;
+	friend class CContainerWidget;
 
-	explicit SectionWidget(MainContainerWidget* parent);
+	explicit SectionWidget(MainContainerWidget* MainContainer, CContainerWidget* parent);
 
 public:
 	virtual ~SectionWidget();
 
 	int uid() const;
-	MainContainerWidget* containerWidget() const;
+	CContainerWidget* containerWidget() const;
 
 	QRect titleAreaGeometry() const;
 	QRect contentAreaGeometry() const;
@@ -69,7 +70,8 @@ private slots:
 private:
 	const int _uid;
 
-	QPointer<MainContainerWidget> _container;
+	QPointer<CContainerWidget> m_ContainerWidget;
+	QPointer<MainContainerWidget> m_MainContainerWidget;
 	QList<SectionContent::RefPtr> _contents;
 	QList<SectionTitleWidget*> _sectionTitles;
 	QList<SectionContentWidget*> _sectionContents;

@@ -2,6 +2,7 @@
 #define FLOATINGWIDGET_H
 
 #include <QWidget>
+#include <QFrame>
 class QBoxLayout;
 
 #include "ads/API.h"
@@ -13,6 +14,30 @@ class SectionTitleWidget;
 class SectionContentWidget;
 class InternalContentData;
 class SectionWidget;
+class CContainerWidget;
+class FloatingWidget;
+
+class CFloatingTitleWidget : public QFrame
+{
+	Q_OBJECT
+private:
+	QPoint m_DragStartPosition;
+	FloatingWidget* floatingWidget() const;
+	MainContainerWidget* mainContainerWidget() const;
+	void moveFloatingWidget(QMouseEvent* ev, MainContainerWidget* MainContainer);
+
+protected:
+	virtual void mousePressEvent(QMouseEvent* ev);
+	virtual void mouseReleaseEvent(QMouseEvent* ev);
+	virtual void mouseMoveEvent(QMouseEvent* ev);
+
+public:
+	CFloatingTitleWidget(SectionContent::Flags Flags, FloatingWidget* Parent);
+
+signals:
+	void closeButtonClicked();
+};
+
 
 // FloatingWidget holds and displays SectionContent as a floating window.
 // It can be resized, moved and dropped back into a SectionWidget.
@@ -40,6 +65,9 @@ public:
 	 */
 	unsigned int zOrderIndex() const;
 
+	CContainerWidget* containerWidget() const  {return m_ContainerWidget;}
+	MainContainerWidget* mainContainerWidget() const {return m_MainContainerWidget;}
+
 public://private:
 	bool takeContent(InternalContentData& data);
 
@@ -50,12 +78,13 @@ private slots:
 	void onCloseButtonClicked();
 
 private:
-	MainContainerWidget* _container;
+	MainContainerWidget* m_MainContainerWidget;
 	SectionContent::RefPtr _content;
 	SectionTitleWidget* _titleWidget;
 	SectionContentWidget* _contentWidget;
+	CContainerWidget* m_ContainerWidget;
 
-	QBoxLayout* _titleLayout;
+	//QBoxLayout* _titleLayout;
 	unsigned int m_zOrderIndex = 0;
 	static unsigned int zOrderCounter;
 };

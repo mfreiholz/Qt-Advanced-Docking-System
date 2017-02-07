@@ -14,7 +14,8 @@ IconTitleWidget::IconTitleWidget(const QIcon& icon, const QString& title, QWidge
 	setLayout(l);
 
 	_iconLabel = new QLabel();
-	l->addWidget(_iconLabel);
+	_iconLabel->setAlignment(Qt::AlignVCenter);
+	l->addWidget(_iconLabel, Qt::AlignVCenter);
 
 	_titleLabel = new QLabel();
 	l->addWidget(_titleLabel, 1);

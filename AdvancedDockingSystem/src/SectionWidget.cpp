@@ -14,6 +14,7 @@
 #include <QScrollBar>
 #include <QMenu>
 #include <QtGlobal>
+#include <QTabBar>
 
 #if defined(ADS_ANIMATIONS_ENABLED)
 #include <QGraphicsDropShadowEffect>
@@ -29,10 +30,11 @@
 
 ADS_NAMESPACE_BEGIN
 
-SectionWidget::SectionWidget(MainContainerWidget* parent) :
+SectionWidget::SectionWidget(MainContainerWidget* MainContainer, CContainerWidget* parent) :
 	QFrame(parent),
 	_uid(GetNextUid()),
-	_container(parent),
+	m_ContainerWidget(parent),
+	m_MainContainerWidget(MainContainer),
 	_tabsLayout(NULL),
 	_tabsLayoutInitCount(0),
 	_contentsLayout(NULL),
@@ -44,7 +46,6 @@ SectionWidget::SectionWidget(MainContainerWidget* parent) :
 	setLayout(l);
 
 	/* top area with tabs and close button */
-
 	_topLayout = new QBoxLayout(QBoxLayout::LeftToRight);
 	_topLayout->setContentsMargins(0, 0, 0, 0);
 	_topLayout->setSpacing(0);
@@ -93,15 +94,15 @@ SectionWidget::SectionWidget(MainContainerWidget* parent) :
 	_contentsLayout->setSpacing(0);
 	l->addLayout(_contentsLayout, 1);
 
-	_container->m_SectionWidgetIdMap.insert(_uid, this);
+	m_MainContainerWidget->m_SectionWidgetIdMap.insert(_uid, this);
 }
 
 SectionWidget::~SectionWidget()
 {
-	if (_container)
+	if (m_MainContainerWidget)
 	{
-		_container->m_SectionWidgetIdMap.remove(_uid);
-		_container->m_Sections.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
+		m_MainContainerWidget->m_SectionWidgetIdMap.remove(_uid);
+		m_MainContainerWidget->m_Sections.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
 	}
 
 	// Delete empty QSplitter.
@@ -117,9 +118,9 @@ int SectionWidget::uid() const
 	return _uid;
 }
 
-MainContainerWidget* SectionWidget::containerWidget() const
+CContainerWidget* SectionWidget::containerWidget() const
 {
-	return _container;
+	return m_ContainerWidget;
 }
 
 QRect SectionWidget::titleAreaGeometry() const
@@ -139,11 +140,7 @@ void SectionWidget::addContent(const SectionContent::RefPtr& c)
 	SectionTitleWidget* title = new SectionTitleWidget(c, NULL);
 	_sectionTitles.append(title);
 	_tabsLayout->insertWidget(_tabsLayout->count() - _tabsLayoutInitCount, title);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-	QObject::connect(title, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
-#else
 	QObject::connect(title, SIGNAL(clicked()), this, SLOT(onSectionTitleClicked()));
-#endif
 
 	SectionContentWidget* content = new SectionContentWidget(c, NULL);
 	_sectionContents.append(content);
@@ -168,11 +165,7 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 	_sectionTitles.append(data.titleWidget);
 	_tabsLayout->insertWidget(_tabsLayout->count() - _tabsLayoutInitCount, data.titleWidget);
 	data.titleWidget->setVisible(true);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-	QObject::connect(data.titleWidget, &SectionTitleWidget::clicked, this, &SectionWidget::onSectionTitleClicked);
-#else
 	QObject::connect(data.titleWidget, SIGNAL(clicked()), this, SLOT(onSectionTitleClicked()));
-#endif
 
 	// Add content-widget to stack.
 	// Visibility is managed by QStackedWidget.
@@ -217,7 +210,7 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 		title->setAttribute(Qt::WA_WState_Created, false); /* fix: floating rubberband #16 */
 #endif
 		title->disconnect(this);
-		title->setParent(_container);
+		title->setParent(m_MainContainerWidget);
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 		title->setAttribute(Qt::WA_WState_Created, true); /* fix: floating rubberband #16 */
 #endif
@@ -229,7 +222,7 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 	{
 		_contentsLayout->removeWidget(content);
 		content->disconnect(this);
-		content->setParent(_container);
+		content->setParent(m_MainContainerWidget);
 	}
 
 	// Select the previous tab as activeTab.
@@ -372,7 +365,7 @@ void SectionWidget::onCloseButtonClicked()
 	SectionContent::RefPtr sc = _contents.at(index);
 	if (sc.isNull())
 		return;
-	_container->hideSectionContent(sc);
+	m_MainContainerWidget->hideSectionContent(sc);
 }
 
 void SectionWidget::onTabsMenuActionTriggered(bool)

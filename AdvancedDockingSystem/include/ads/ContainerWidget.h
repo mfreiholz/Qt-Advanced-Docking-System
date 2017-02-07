@@ -24,6 +24,7 @@ namespace ads
 class SectionWidget;
 class DropOverlay;
 class InternalContentData;
+class MainContainerWidget;
 
 /**
  * @brief
@@ -39,19 +40,54 @@ class CContainerWidget  : public QFrame
     friend class ContainerWidgetPrivate;
 
 public:
-	explicit CContainerWidget(QWidget *parent = nullptr);
+	explicit CContainerWidget(MainContainerWidget* MainContainerWidget, QWidget *parent = nullptr);
 	virtual ~CContainerWidget();
 
+	void moveFloatingWidget(const QPoint& TargetPos);
+	/**
+	 * Returns the current zOrderIndex
+	 */
+	unsigned int zOrderIndex() const;
+
+	void dropFloatingWidget(FloatingWidget* FloatingWidget,
+		const QPoint& TargetPos);
+
+	SectionWidget* sectionWidgetAt(const QPoint& pos) const;
+
+	/**
+	 * This function returns true if this container widgets z order index is
+	 * higher than the index of the container widget given in Other parameter
+	 */
+	bool isInFrontOf(CContainerWidget* Other) const;
+
+	SectionWidget* dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive = true);
+
+	/*!
+	 * Adds the section-content <em>sc</em> to this container-widget into the section-widget <em>sw</em>.
+	 * If <em>sw</em> is not NULL, the <em>area</em> is used to indicate how the content should be arranged.
+	 * Returns a pointer to the SectionWidget of the added SectionContent. Do not use it for anything else than adding more
+	 * SectionContent elements with this method.
+	 */
+	SectionWidget* addSectionContent(const SectionContent::RefPtr& sc, SectionWidget* sw = NULL, DropArea area = CenterDropArea);
+
 protected:
+	virtual bool event(QEvent *e) override;
+	SectionWidget* newSectionWidget();
+	void addSectionWidget(SectionWidget* section);
+	SectionWidget* dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append);
+	SectionWidget* insertNewSectionWidget(const InternalContentData& data,
+		SectionWidget* targetSection, SectionWidget* ret, Qt::Orientation Orientation, int InsertIndexOffset);
+
+	QList<SectionWidget*> m_Sections;
 	// Layout stuff
 	QGridLayout* m_MainLayout = nullptr;
 	Qt::Orientation m_Orientation = Qt::Horizontal;
 	QPointer<QSplitter> m_Splitter; // $mfreiholz: I'd like to remove this variable entirely,
 								   // because it changes during user interaction anyway.
 
-	// Drop overlay stuff.
-	QPointer<DropOverlay> m_SectionDropOverlay;
-	QPointer<DropOverlay> m_ContainerDropOverlay;
+	MainContainerWidget* m_MainContainerWidget = 0;
+	unsigned int m_zOrderIndex = 0;
+	static unsigned int zOrderCounter;
 };
 
 } // namespace ads

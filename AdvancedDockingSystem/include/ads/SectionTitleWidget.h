@@ -8,6 +8,8 @@
 #include "ads/API.h"
 #include "ads/SectionContent.h"
 
+class QPushButton;
+
 ADS_NAMESPACE_BEGIN
 class MainContainerWidget;
 class SectionWidget;

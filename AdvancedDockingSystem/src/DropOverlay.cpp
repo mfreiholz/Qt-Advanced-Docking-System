@@ -252,8 +252,9 @@ void DropOverlay::paintEvent(QPaintEvent*)
 void DropOverlay::showEvent(QShowEvent*)
 {
 	_cross->show();
-	QRect ContainerWidgetRect = parentWidget()->rect();
-	QPoint Pos(ContainerWidgetRect.left(), ContainerWidgetRect.center().y());
+	QWidget* w = parentWidget() ? parentWidget() : _target.data();
+	QRect WidgetRect = w->rect();
+	QPoint Pos(WidgetRect.left(), WidgetRect.center().y());
 }
 
 void DropOverlay::hideEvent(QHideEvent*)

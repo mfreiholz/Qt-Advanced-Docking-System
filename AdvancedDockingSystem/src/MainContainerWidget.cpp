@@ -23,7 +23,7 @@
 ADS_NAMESPACE_BEGIN
 
 
-static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = 0)
+QSplitter* MainContainerWidget::newSplitter(Qt::Orientation orientation, QWidget* parent)
 {
 	QSplitter* s = new QSplitter(orientation, parent);
 	s->setProperty("ads-splitter", QVariant(true));
@@ -35,9 +35,14 @@ static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal, QWid
 
 
 MainContainerWidget::MainContainerWidget(QWidget *parent) :
-	CContainerWidget(parent)
+	CContainerWidget(this, parent)
 {
+	m_SectionDropOverlay = new DropOverlay(this, DropOverlay::ModeSectionOverlay);
 
+	m_ContainerDropOverlay = new DropOverlay(this, DropOverlay::ModeContainerOverlay);
+	m_ContainerDropOverlay->setAttribute(Qt::WA_TransparentForMouseEvents);
+	m_ContainerDropOverlay->setWindowFlags(m_ContainerDropOverlay->windowFlags() | Qt::WindowTransparentForInput);
+	m_Containers.append(this);
 }
 
 MainContainerWidget::~MainContainerWidget()
@@ -420,40 +425,15 @@ QPointer<DropOverlay> MainContainerWidget::sectionDropOverlay() const
 	return m_SectionDropOverlay;
 }
 
+
+QPointer<DropOverlay> MainContainerWidget::dropOverlay() const
+{
+	return m_ContainerDropOverlay;
+}
+
 ///////////////////////////////////////////////////////////////////////
 // PRIVATE API BEGINS HERE
 ///////////////////////////////////////////////////////////////////////
-
-SectionWidget* MainContainerWidget::newSectionWidget()
-{
-	SectionWidget* sw = new SectionWidget(this);
-	m_Sections.append(sw);
-	return sw;
-}
-
-SectionWidget* MainContainerWidget::insertNewSectionWidget(
-    const InternalContentData& data, SectionWidget* targetSection, SectionWidget* ret,
-    Qt::Orientation Orientation, int InsertIndexOffset)
-{
-	QSplitter* targetSectionSplitter = findParentSplitter(targetSection);
-	SectionWidget* sw = newSectionWidget();
-	sw->addContent(data, true);
-	if (targetSectionSplitter->orientation() == Orientation)
-	{
-		const int index = targetSectionSplitter->indexOf(targetSection);
-		targetSectionSplitter->insertWidget(index + InsertIndexOffset, sw);
-	}
-	else
-	{
-		const int index = targetSectionSplitter->indexOf(targetSection);
-		QSplitter* s = newSplitter(Orientation);
-		s->addWidget(sw);
-		s->addWidget(targetSection);
-		targetSectionSplitter->insertWidget(index, s);
-	}
-	ret = sw;
-	return ret;
-}
 
 SectionWidget* MainContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSectionWidget, DropArea area, bool autoActive)
 {
@@ -502,23 +482,6 @@ SectionWidget* MainContainerWidget::dropContent(const InternalContentData& data,
 	return section_widget;
 }
 
-void MainContainerWidget::addSectionWidget(SectionWidget* section)
-{
-	ADS_Expects(section != NULL);
-
-	// Create default splitter.
-	if (!m_Splitter)
-	{
-		m_Splitter = newSplitter(m_Orientation);
-		m_MainLayout->addWidget(m_Splitter, 0, 0);
-	}
-	if (m_Splitter->indexOf(section) != -1)
-	{
-		qWarning() << Q_FUNC_INFO << QString("Section has already been added");
-		return;
-	}
-	m_Splitter->addWidget(section);
-}
 
 SectionWidget* MainContainerWidget::sectionWidgetAt(const QPoint& pos) const
 {
@@ -534,73 +497,7 @@ SectionWidget* MainContainerWidget::sectionWidgetAt(const QPoint& pos) const
 	return 0;
 }
 
-SectionWidget* MainContainerWidget::dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append)
-{
-	ADS_Expects(l != NULL);
 
-	SectionWidget* sw = newSectionWidget();
-	sw->addContent(data, true);
-
-	QSplitter* oldsp = findImmediateSplitter(this);
-	if (!oldsp)
-	{
-		QSplitter* sp = newSplitter(orientation);
-		if (l->count() > 0)
-		{
-			qWarning() << "Still items in layout. This should never happen.";
-			QLayoutItem* li = l->takeAt(0);
-			delete li;
-		}
-		l->addWidget(sp);
-		sp->addWidget(sw);
-	}
-	else if (oldsp->orientation() == orientation
-			|| oldsp->count() == 1)
-	{
-		oldsp->setOrientation(orientation);
-		if (append)
-			oldsp->addWidget(sw);
-		else
-			oldsp->insertWidget(0, sw);
-	}
-	else
-	{
-		QSplitter* sp = newSplitter(orientation);
-		if (append)
-		{
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
-			QLayoutItem* li = l->replaceWidget(oldsp, sp);
-			sp->addWidget(oldsp);
-			sp->addWidget(sw);
-			delete li;
-#else
-			int index = l->indexOf(oldsp);
-			QLayoutItem* li = l->takeAt(index);
-			l->addWidget(sp);
-			sp->addWidget(oldsp);
-			sp->addWidget(sw);
-			delete li;
-#endif
-		}
-		else
-		{
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
-			sp->addWidget(sw);
-			QLayoutItem* li = l->replaceWidget(oldsp, sp);
-			sp->addWidget(oldsp);
-			delete li;
-#else
-			sp->addWidget(sw);
-			int index = l->indexOf(oldsp);
-			QLayoutItem* li = l->takeAt(index);
-			l->addWidget(sp);
-			sp->addWidget(oldsp);
-			delete li;
-#endif
-		}
-	}
-	return sw;
-}
 
 QByteArray MainContainerWidget::saveHierarchy() const
 {
@@ -833,7 +730,7 @@ bool MainContainerWidget::restoreHierarchy(const QByteArray& data)
 		if(cnt > 0)
 		{
 			// Create dummy section, required to call hideSectionContent() later.
-			SectionWidget* sw = new SectionWidget(this);
+			SectionWidget* sw = new SectionWidget(this, this);
 			sections.append(sw);
 
 			for (int i = 0; i < cnt; ++i)
@@ -927,7 +824,7 @@ bool MainContainerWidget::restoreHierarchy(const QByteArray& data)
 
 			if (sections.isEmpty())
 			{
-				sw = new SectionWidget(this);
+				sw = new SectionWidget(this, this);
 				sections.append(sw);
 				addSectionWidget(sw);
 			}
@@ -1051,7 +948,7 @@ bool MainContainerWidget::restoreSectionWidgets(QDataStream& in, int version, QS
 		int currentIndex, count;
 		in >> currentIndex >> count;
 
-		SectionWidget* sw = new SectionWidget(this);
+		SectionWidget* sw = new SectionWidget(this, this);
 		for (int i = 0; i < count; ++i)
 		{
 			QString uname;
@@ -1178,6 +1075,7 @@ FloatingWidget* MainContainerWidget::startFloating(SectionWidget* sectionwidget,
     FloatingWidget* fw = new FloatingWidget(this, data.content, data.titleWidget, data.contentWidget, this);
     fw->resize(sectionwidget->size());
     m_Floatings.append(fw);
+    m_Containers.append(fw->containerWidget());
     fw->move(TargetPos);
     fw->show();
     fw->setObjectName("FloatingWidget");

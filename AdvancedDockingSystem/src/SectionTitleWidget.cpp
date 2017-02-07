@@ -9,6 +9,7 @@
 #include <QCursor>
 #include <QStyle>
 #include <QSplitter>
+#include <QPushButton>
 
 #ifdef ADS_ANIMATIONS_ENABLED
 #include <QPropertyAnimation>
@@ -37,8 +38,8 @@ SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* 
 	l->setSpacing(0);
 	l->addWidget(content->titleWidget());
 	setLayout(l);
-
 }
+
 
 SectionTitleWidget::~SectionTitleWidget()
 {
@@ -118,8 +119,7 @@ void SectionTitleWidget::moveFloatingWidget(QMouseEvent* ev, MainContainerWidget
 {
     const QPoint moveToPos = ev->globalPos() - (m_DragStartPosition + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
     m_FloatingWidget->move(moveToPos);
-    cw->moveFloatingWidget(moveToPos);
-
+   // cw->moveFloatingWidget(moveToPos);
 
 }
 
@@ -156,24 +156,42 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
     }
 
     QPoint Pos = QCursor::pos();
-    MainContainerWidget* cw = findParentContainerWidget(this);
-    auto Floatings = cw->m_Floatings;
-    FloatingWidget* TopWidget = nullptr;
-    for (auto widget : Floatings)
+    // TODO make a member with the main container widget and assign it on
+    // creation
+    MainContainerWidget* MainContainerWidget = findParentContainerWidget(this);
+    auto Containers = MainContainerWidget->m_Containers;
+    CContainerWidget* TopContainer = nullptr;
+    for (auto ContainerWidget : Containers)
     {
-    	if ((widget != m_FloatingWidget.data()) && widget->geometry().contains(Pos))
+    	if (!ContainerWidget->isVisible())
     	{
-    		if (!TopWidget || widget->zOrderIndex() > TopWidget->zOrderIndex())
+    		continue;
+    	}
+
+    	if (!m_FloatingWidget || (m_FloatingWidget->containerWidget() == ContainerWidget))
+    	{
+    		continue;
+    	}
+
+    	QPoint MappedPos = ContainerWidget->mapFromGlobal(Pos);
+    	if (ContainerWidget->rect().contains(MappedPos))
+    	{
+    		std::cout << "Container " <<  ContainerWidget << " contains maousepos" << std::endl;
+    		if (!TopContainer || ContainerWidget->isInFrontOf(TopContainer))
     		{
-    			TopWidget = widget;
+    			TopContainer = ContainerWidget;
     		}
     	}
     }
 
-    if (TopWidget)
+    if (TopContainer)
     {
-    	std::cout << "TopWidget " << std::hex << (int)TopWidget << std::dec
-    			<< " Z: " << TopWidget->zOrderIndex() << std::endl;
+    	MainContainerWidget->dropOverlay()->showDropOverlay(TopContainer);
+		MainContainerWidget->dropOverlay()->raise();
+    }
+    else
+    {
+    	MainContainerWidget->dropOverlay()->hideDropOverlay();
     }
 
     ev->accept();
@@ -181,7 +199,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
     // Move already existing FloatingWidget
     if (isDraggingFloatingWidget())
 	{
-        moveFloatingWidget(ev, cw);
+        moveFloatingWidget(ev, MainContainerWidget);
 		return;
 	}
 
@@ -209,7 +227,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 	// Begin to drag/float the SectionContent.
     if (!sectionwidget->titleAreaGeometry().contains(sectionwidget->mapFromGlobal(ev->globalPos())))
 	{
-        startFloating(ev, cw, sectionwidget);
+        startFloating(ev, MainContainerWidget, sectionwidget);
 		return;
 	}
 	// Begin to drag title inside the title area to switch its position inside the SectionWidget.

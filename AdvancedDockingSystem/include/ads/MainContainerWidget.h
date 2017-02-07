@@ -39,6 +39,7 @@ class ADS_EXPORT_API MainContainerWidget : public CContainerWidget
 	friend class FloatingWidget;
 	friend class SectionTitleWidget;
     friend class ContainerWidgetPrivate;
+    friend class CFloatingTitleWidget;
 
 public:
 	explicit MainContainerWidget(QWidget *parent = nullptr);
@@ -119,6 +120,10 @@ public:
 	 */
 	QPointer<DropOverlay> sectionDropOverlay() const;
 
+	QPointer<DropOverlay> dropOverlay() const;
+
+	static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = 0);
+
 	/**
 	 * Filters the events of the floating widgets
 	 */
@@ -128,12 +133,8 @@ private:
 	//
 	// Internal Stuff Begins Here
 	//
-
-	SectionWidget* newSectionWidget();
 	SectionWidget* dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive = true);
-	void addSectionWidget(SectionWidget* section);
 	SectionWidget* sectionWidgetAt(const QPoint& pos) const;
-	SectionWidget* dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append);
 
 	// Serialization
 	QByteArray saveHierarchy() const;
@@ -149,8 +150,6 @@ private:
 	bool takeContent(const SectionContent::RefPtr& sc, InternalContentData& data);
     FloatingWidget* startFloating(SectionWidget* sectionwidget, int ContentUid, const QPoint& TargetPos);
     void hideContainerOverlay();
-	SectionWidget* insertNewSectionWidget(const InternalContentData& data,
-		SectionWidget* targetSection, SectionWidget* ret, Qt::Orientation Orientation, int InsertIndexOffset);
 	void moveFloatingWidget(const QPoint& TargetPos);
 	void dropFloatingWidget(FloatingWidget* FloatingWidget, const QPoint& TargetPos);
 
@@ -178,13 +177,16 @@ signals:
 private:
 	QList<SectionWidget*> m_Sections;
 	QList<FloatingWidget*> m_Floatings;
+	QList<CContainerWidget*> m_Containers;
 	QHash<int, HiddenSectionItem> m_HiddenSectionContents;
-
 
 	// Helper lookup maps, restricted to this container.
 	QHash<int, SectionContent::WeakPtr> m_SectionContentIdMap;
 	QHash<QString, SectionContent::WeakPtr> m_SectionContentNameMap;
 	QHash<int, SectionWidget*> m_SectionWidgetIdMap;
+
+	QPointer<DropOverlay> m_ContainerDropOverlay;
+	QPointer<DropOverlay> m_SectionDropOverlay;
 };
 
 ADS_NAMESPACE_END
