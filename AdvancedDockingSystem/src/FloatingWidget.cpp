@@ -7,6 +7,7 @@
 #include <QMouseEvent>
 #include <QStyle>
 #include <QLabel>
+#include <QGuiApplication>
 
 #include "ads/SectionTitleWidget.h"
 #include "ads/SectionContentWidget.h"
@@ -31,7 +32,20 @@ CFloatingTitleWidget::CFloatingTitleWidget(SectionContent::Flags Flags, Floating
 	Label->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	Label->setAlignment(Qt::AlignLeft);
 	Layout->addWidget(Label, 1, Qt::AlignLeft | Qt::AlignVCenter);
+	Layout->setSpacing(0);
 	setLayout(Layout);
+
+	if (Flags.testFlag(SectionContent::Maximizable))
+	{
+		QPushButton* Button = new QPushButton();
+		Button->setObjectName("maximizeButton");
+		Button->setFlat(true);
+		Button->setIcon(style()->standardIcon(QStyle::SP_TitleBarMaxButton));
+		Button->setToolTip(tr("Close"));
+		Button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+		Layout->addWidget(Button);
+		connect(Button, SIGNAL(clicked(bool)), this, SLOT(onMaximizeButtonClicked()));
+	}
 
 	if (Flags.testFlag(SectionContent::Closeable))
 	{
@@ -39,15 +53,19 @@ CFloatingTitleWidget::CFloatingTitleWidget(SectionContent::Flags Flags, Floating
 		closeButton->setObjectName("closeButton");
 		closeButton->setFlat(true);
 		closeButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarCloseButton));
-		closeButton->setToolTip(tr("Close"));
-		closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+		closeButton->setToolTip(tr("Maximize"));
+		closeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 		Layout->addWidget(closeButton);
 		connect(closeButton, SIGNAL(clicked(bool)), this, SIGNAL(closeButtonClicked()));
-		Layout->setContentsMargins(6, 0, 0, 0);
+	}
+
+	if (Flags == 0)
+	{
+		Layout->setContentsMargins(6, 6, 6, 6);
 	}
 	else
 	{
-		Layout->setContentsMargins(6, 6, 6, 6);
+		Layout->setContentsMargins(6, 0, 0, 0);
 	}
 }
 
@@ -67,7 +85,8 @@ void CFloatingTitleWidget::mousePressEvent(QMouseEvent* ev)
 	if (ev->button() == Qt::LeftButton)
 	{
 		ev->accept();
-        //m_DragStartPosition = ev->pos();
+        m_DragStartPosition = floatingWidget()->pos();
+        m_DragStartMousePosition = ev->globalPos();
 		return;
 	}
 	QFrame::mousePressEvent(ev);
@@ -88,62 +107,37 @@ void CFloatingTitleWidget::mouseMoveEvent(QMouseEvent* ev)
         return;
     }
 
-    QPoint Pos = QCursor::pos();
-    // TODO make a member with the main container widget and assign it on
-    // creation
-    MainContainerWidget* MainContainerWidget = mainContainerWidget();
-    auto Containers = MainContainerWidget->m_Containers;
-    CContainerWidget* TopContainer = nullptr;
-    for (auto ContainerWidget : Containers)
-    {
-    	if (!ContainerWidget->isVisible())
-    	{
-    		continue;
-    	}
-
-    	if (floatingWidget()->containerWidget() == ContainerWidget)
-    	{
-    		continue;
-    	}
-
-    	QPoint MappedPos = ContainerWidget->mapFromGlobal(Pos);
-    	if (ContainerWidget->rect().contains(MappedPos))
-    	{
-    		std::cout << "Container " <<  ContainerWidget << " contains maousepos" << std::endl;
-    		if (!TopContainer || ContainerWidget->isInFrontOf(TopContainer))
-    		{
-    			TopContainer = ContainerWidget;
-    		}
-    	}
-    }
-
-    if (TopContainer)
-    {
-    	MainContainerWidget->dropOverlay()->showDropOverlay(TopContainer);
-		MainContainerWidget->dropOverlay()->raise();
-    }
-    else
-    {
-    	MainContainerWidget->dropOverlay()->hideDropOverlay();
-    }
-
+    floatingWidget()->updateDropOverlays(ev->globalPos());
     ev->accept();
-    moveFloatingWidget(ev, MainContainerWidget);
+    moveFloatingWidget(ev);
 }
 
 
-void CFloatingTitleWidget::moveFloatingWidget(QMouseEvent* ev, MainContainerWidget* cw)
+void CFloatingTitleWidget::moveFloatingWidget(QMouseEvent* ev)
 {
-    const QPoint moveToPos = ev->globalPos() - (m_DragStartPosition + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
+    const QPoint DragDistance = ev->globalPos() - m_DragStartMousePosition;
+	const QPoint moveToPos = m_DragStartPosition + DragDistance;
     floatingWidget()->move(moveToPos);
-   // cw->moveFloatingWidget(moveToPos);
-
 }
+
+
+void CFloatingTitleWidget::onMaximizeButtonClicked()
+{
+	if (floatingWidget()->isMaximized())
+	{
+		floatingWidget()->showNormal();
+	}
+	else
+	{
+		floatingWidget()->showMaximized();
+	}
+}
+
 
 
 
 FloatingWidget::FloatingWidget(MainContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent) :
-	QWidget(parent, Qt::CustomizeWindowHint | Qt::Tool),
+	QWidget(parent, Qt::Window/*Qt::CustomizeWindowHint | Qt::Tool*/),
 	m_MainContainerWidget(container),
 	_content(sc),
 	_titleWidget(titleWidget),
@@ -155,12 +149,9 @@ FloatingWidget::FloatingWidget(MainContainerWidget* container, SectionContent::R
 	setLayout(l);
 
 	// Title + Controls
-	CFloatingTitleWidget* TitleBar = new CFloatingTitleWidget(sc->flags(), this);
+	/*CFloatingTitleWidget* TitleBar = new CFloatingTitleWidget(sc->flags(), this);
 	l->insertWidget(0, TitleBar);
-	connect(TitleBar, SIGNAL(closeButtonClicked()), this, SLOT(onCloseButtonClicked()));
-
-	//l->addWidget(contentWidget, 1);
-	//contentWidget->show();
+	connect(TitleBar, SIGNAL(closeButtonClicked()), this, SLOT(onCloseButtonClicked()));*/
 
 	m_ContainerWidget = new CContainerWidget(m_MainContainerWidget, this);
 	l->addWidget(m_ContainerWidget, 1);
@@ -236,9 +227,86 @@ void FloatingWidget::changeEvent(QEvent *event)
 }
 
 
+void FloatingWidget::moveEvent(QMoveEvent *event)
+{
+	QWidget::moveEvent(event);
+	if (m_DraggingActive)
+	{
+		std::cout << "Dragging" << std::endl;
+		updateDropOverlays(QCursor::pos());
+	}
+}
+
+
+bool FloatingWidget::event(QEvent *e)
+{
+	//std::cout << "FloatingWidget::event " << e->type() << std::endl;
+	if ((e->type() == QEvent::NonClientAreaMouseButtonPress))
+	{
+		if (QGuiApplication::mouseButtons() == Qt::LeftButton)
+		{
+			m_DraggingActive = true;
+		}
+	}
+	else if ((e->type() == QEvent::NonClientAreaMouseButtonRelease) && m_DraggingActive)
+	{
+		m_DraggingActive = false;
+		std::cout << "Dropped" << std::endl;
+	}
+	else if (e->type() == QEvent::WindowActivate)
+	{
+		m_DraggingActive = true;
+		std::cout << "QEvent::WindowActivate MouseButtons " << QGuiApplication::mouseButtons() << std::endl;
+	}
+	return QWidget::event(e);
+}
+
+
 unsigned int FloatingWidget::zOrderIndex() const
 {
 	return m_zOrderIndex;
+}
+
+
+void FloatingWidget::updateDropOverlays(const QPoint& GlobalPos)
+{
+    // TODO make a member with the main container widget and assign it on
+    // creation
+    MainContainerWidget* MainContainerWidget = mainContainerWidget();
+    auto Containers = MainContainerWidget->m_Containers;
+    CContainerWidget* TopContainer = nullptr;
+    for (auto ContainerWidget : Containers)
+    {
+    	if (!ContainerWidget->isVisible())
+    	{
+    		continue;
+    	}
+
+    	if (containerWidget() == ContainerWidget)
+    	{
+    		continue;
+    	}
+
+    	QPoint MappedPos = ContainerWidget->mapFromGlobal(GlobalPos);
+    	if (ContainerWidget->rect().contains(MappedPos))
+    	{
+    		std::cout << "Container " <<  ContainerWidget << " contains mousepos" << std::endl;
+    		if (!TopContainer || ContainerWidget->isInFrontOf(TopContainer))
+    		{
+    			TopContainer = ContainerWidget;
+    		}
+    	}
+    }
+
+    if (TopContainer)
+    {
+    	MainContainerWidget->dropOverlay()->showDropOverlay(TopContainer);
+		MainContainerWidget->dropOverlay()->raise();
+    }
+    else
+    {
+    	MainContainerWidget->dropOverlay()->hideDropOverlay();
+    }
 }
 
 

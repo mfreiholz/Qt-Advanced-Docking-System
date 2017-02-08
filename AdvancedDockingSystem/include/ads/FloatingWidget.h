@@ -22,9 +22,13 @@ class CFloatingTitleWidget : public QFrame
 	Q_OBJECT
 private:
 	QPoint m_DragStartPosition;
+	QPoint m_DragStartMousePosition;
 	FloatingWidget* floatingWidget() const;
 	MainContainerWidget* mainContainerWidget() const;
-	void moveFloatingWidget(QMouseEvent* ev, MainContainerWidget* MainContainer);
+	void moveFloatingWidget(QMouseEvent* ev);
+
+private slots:
+	void onMaximizeButtonClicked();
 
 protected:
 	virtual void mousePressEvent(QMouseEvent* ev);
@@ -46,6 +50,7 @@ class FloatingWidget : public QWidget
 	Q_OBJECT
 
 	friend class MainContainerWidget;
+	friend class CFloatingTitleWidget;
 
 public:
 	FloatingWidget(MainContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent = NULL);
@@ -73,6 +78,9 @@ public://private:
 
 protected:
 	virtual void changeEvent(QEvent *event) override;
+	virtual void moveEvent(QMoveEvent *event) override;
+	virtual bool event(QEvent *e);
+	void updateDropOverlays(const QPoint& GlobalPos);
 
 private slots:
 	void onCloseButtonClicked();
@@ -83,8 +91,7 @@ private:
 	SectionTitleWidget* _titleWidget;
 	SectionContentWidget* _contentWidget;
 	CContainerWidget* m_ContainerWidget;
-
-	//QBoxLayout* _titleLayout;
+	bool m_DraggingActive = false;
 	unsigned int m_zOrderIndex = 0;
 	static unsigned int zOrderCounter;
 };

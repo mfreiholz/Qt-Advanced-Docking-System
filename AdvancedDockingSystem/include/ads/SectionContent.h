@@ -28,7 +28,8 @@ public:
 	{
 		None = 0,
 		Closeable = 1,
-		AllFlags = Closeable
+		Maximizable = 2,
+		AllFlags = Closeable | Maximizable
 	};
 	Q_DECLARE_FLAGS(Flags, Flag)
 
