@@ -52,6 +52,7 @@ CContainerWidget::CContainerWidget(MainContainerWidget* MainContainer, QWidget *
 CContainerWidget::~CContainerWidget()
 {
 	std::cout << "CContainerWidget::~CContainerWidget()" << std::endl;
+	m_MainContainerWidget->m_Containers.removeAll(this);
 }
 
 
@@ -79,38 +80,34 @@ unsigned int CContainerWidget::zOrderIndex() const
 void CContainerWidget::dropFloatingWidget(FloatingWidget* FloatingWidget,
 	const QPoint& TargetPos)
 {
-	if (!FloatingWidget->isDraggingActive())
-	{
-		return;
-	}
-
 	QPoint MousePos = mapFromGlobal(TargetPos);
 	SectionWidget* sectionWidget = sectionWidgetAt(MousePos);
 	DropArea dropArea = InvalidDropArea;
 	if (sectionWidget)
 	{
-		//m_SectionDropOverlay->setAllowedAreas(ADS_NS::AllAreas);
-		//dropArea = m_SectionDropOverlay->showDropOverlay(sectionWidget);
+		auto dropOverlay = m_MainContainerWidget->sectionDropOverlay();
+		dropOverlay->setAllowedAreas(ADS_NS::AllAreas);
+		dropArea = dropOverlay->showDropOverlay(sectionWidget);
 		if (dropArea != InvalidDropArea)
 		{
 			InternalContentData data;
 			FloatingWidget->takeContent(data);
 			FloatingWidget->deleteLater();
-			//dropContent(data, sectionWidget, dropArea, true);
+			dropContent(data, sectionWidget, dropArea, true);
 		}
 	}
 
 	// mouse is over container
 	if (InvalidDropArea == dropArea)
 	{
-		//dropArea = m_ContainerDropOverlay->dropAreaUnderCursor();
-		std::cout << "Cursor location: " << dropArea << std::endl;
+		dropArea = m_MainContainerWidget->dropOverlay()->dropAreaUnderCursor();
+		std::cout << "Drop Content: " << dropArea << std::endl;
 		if (dropArea != InvalidDropArea)
 		{
 			InternalContentData data;
 			FloatingWidget->takeContent(data);
 			FloatingWidget->deleteLater();
-			//dropContent(data, nullptr, dropArea, true);
+			dropContent(data, nullptr, dropArea, true);
 		}
 	}
 }

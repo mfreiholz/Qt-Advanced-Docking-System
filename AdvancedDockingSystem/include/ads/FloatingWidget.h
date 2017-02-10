@@ -80,6 +80,8 @@ protected:
 	virtual void changeEvent(QEvent *event) override;
 	virtual void moveEvent(QMoveEvent *event) override;
 	virtual bool event(QEvent *e);
+	void titleMouseReleaseEvent();
+	virtual bool eventFilter(QObject *watched, QEvent *event) override;
 	void updateDropOverlays(const QPoint& GlobalPos);
 
 private slots:
@@ -91,6 +93,7 @@ private:
 	SectionTitleWidget* _titleWidget;
 	SectionContentWidget* _contentWidget;
 	CContainerWidget* m_ContainerWidget;
+	CContainerWidget* m_DropContainer;
 	bool m_DraggingActive = false;
 	unsigned int m_zOrderIndex = 0;
 	static unsigned int zOrderCounter;

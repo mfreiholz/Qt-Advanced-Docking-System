@@ -154,6 +154,7 @@ FloatingWidget::FloatingWidget(MainContainerWidget* container, SectionContent::R
 	connect(TitleBar, SIGNAL(closeButtonClicked()), this, SLOT(onCloseButtonClicked()));*/
 
 	m_ContainerWidget = new CContainerWidget(m_MainContainerWidget, this);
+	m_MainContainerWidget->m_Containers.append(m_ContainerWidget);
 	l->addWidget(m_ContainerWidget, 1);
 	InternalContentData data;
 	data.content = sc;
@@ -163,6 +164,7 @@ FloatingWidget::FloatingWidget(MainContainerWidget* container, SectionContent::R
 	m_ContainerWidget->show();
 
 	m_zOrderIndex = ++zOrderCounter;
+	container->m_Floatings.append(this);
 }
 
 
@@ -180,8 +182,8 @@ FloatingWidget::FloatingWidget(SectionWidget* sectionWidget)
 
 FloatingWidget::~FloatingWidget()
 {
-	// maybe we can implement this this via connection to destroyed signal
-	m_MainContainerWidget->m_Floatings.removeAll(this); // Note: I don't like this here, but we have to remove it from list...
+	std::cout << "FloatingWidget::~FloatingWidget" << std::endl;
+	m_MainContainerWidget->m_Floatings.removeAll(this);
 }
 
 bool FloatingWidget::takeContent(InternalContentData& data)
@@ -246,19 +248,48 @@ bool FloatingWidget::event(QEvent *e)
 		if (QGuiApplication::mouseButtons() == Qt::LeftButton)
 		{
 			m_DraggingActive = true;
+			qApp->installEventFilter(this);
 		}
 	}
 	else if ((e->type() == QEvent::NonClientAreaMouseButtonRelease) && m_DraggingActive)
 	{
-		m_DraggingActive = false;
-		std::cout << "Dropped" << std::endl;
+		titleMouseReleaseEvent();
 	}
 	else if (e->type() == QEvent::WindowActivate)
 	{
 		m_DraggingActive = true;
+		qApp->installEventFilter(this);
 		std::cout << "QEvent::WindowActivate MouseButtons " << QGuiApplication::mouseButtons() << std::endl;
 	}
 	return QWidget::event(e);
+}
+
+
+bool FloatingWidget::eventFilter(QObject *watched, QEvent *event)
+{
+	if (event->type() == QEvent::MouseButtonRelease)
+	{
+		titleMouseReleaseEvent();
+	}
+	return false;
+}
+
+
+void FloatingWidget::titleMouseReleaseEvent()
+{
+	qApp->removeEventFilter(this);
+	m_DraggingActive = false;
+	if (!m_DropContainer)
+	{
+		return;
+	}
+
+	std::cout << "Dropped" << std::endl;
+	MainContainerWidget* MainContainerWidget = mainContainerWidget();
+	//MainContainerWidget->dropFloatingWidget(this, QCursor::pos());
+	m_DropContainer->dropFloatingWidget(this, QCursor::pos());
+	MainContainerWidget->dropOverlay()->hideDropOverlay();
+	MainContainerWidget->sectionDropOverlay()->hideDropOverlay();
 }
 
 
@@ -270,8 +301,6 @@ unsigned int FloatingWidget::zOrderIndex() const
 
 void FloatingWidget::updateDropOverlays(const QPoint& GlobalPos)
 {
-    // TODO make a member with the main container widget and assign it on
-    // creation
     MainContainerWidget* MainContainerWidget = mainContainerWidget();
     auto Containers = MainContainerWidget->m_Containers;
     CContainerWidget* TopContainer = nullptr;
@@ -298,6 +327,7 @@ void FloatingWidget::updateDropOverlays(const QPoint& GlobalPos)
     	}
     }
 
+    m_DropContainer = TopContainer;
     if (TopContainer)
     {
     	MainContainerWidget->dropOverlay()->showDropOverlay(TopContainer);

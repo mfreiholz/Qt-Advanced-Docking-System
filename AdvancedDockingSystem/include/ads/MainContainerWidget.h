@@ -40,6 +40,7 @@ class ADS_EXPORT_API MainContainerWidget : public CContainerWidget
 	friend class SectionTitleWidget;
     friend class ContainerWidgetPrivate;
     friend class CFloatingTitleWidget;
+    friend class CContainerWidget;
 
 public:
 	explicit MainContainerWidget(QWidget *parent = nullptr);
@@ -151,7 +152,6 @@ private:
     FloatingWidget* startFloating(SectionWidget* sectionwidget, int ContentUid, const QPoint& TargetPos);
     void hideContainerOverlay();
 	void moveFloatingWidget(const QPoint& TargetPos);
-	void dropFloatingWidget(FloatingWidget* FloatingWidget, const QPoint& TargetPos);
 
 private slots:
 	void onActiveTabChanged();
@@ -175,7 +175,6 @@ signals:
 	void sectionContentVisibilityChanged(const SectionContent::RefPtr& sc, bool visible);
 
 private:
-	QList<SectionWidget*> m_Sections;
 	QList<FloatingWidget*> m_Floatings;
 	QList<CContainerWidget*> m_Containers;
 	QHash<int, HiddenSectionItem> m_HiddenSectionContents;
@@ -188,6 +187,7 @@ private:
 	QPointer<DropOverlay> m_ContainerDropOverlay;
 	QPointer<DropOverlay> m_SectionDropOverlay;
 };
+
 
 ADS_NAMESPACE_END
 #endif
