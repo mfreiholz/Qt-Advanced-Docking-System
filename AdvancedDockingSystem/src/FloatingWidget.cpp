@@ -219,6 +219,7 @@ void FloatingWidget::changeEvent(QEvent *event)
 	QWidget::changeEvent(event);
 	if (event->type() != QEvent::ActivationChange)
     {
+		std::cout << "FloatingWidget::changeEvent QEvent::ActivationChange " << std::endl;
         return;
     }
 
@@ -242,24 +243,20 @@ void FloatingWidget::moveEvent(QMoveEvent *event)
 
 bool FloatingWidget::event(QEvent *e)
 {
-	//std::cout << "FloatingWidget::event " << e->type() << std::endl;
 	if ((e->type() == QEvent::NonClientAreaMouseButtonPress))
 	{
 		if (QGuiApplication::mouseButtons() == Qt::LeftButton)
 		{
+			std::cout << "FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type() << std::endl;
 			m_DraggingActive = true;
-			qApp->installEventFilter(this);
+			m_NonCLientDraggingActive = true;
+			qApp->installEventFilter(this); // install to remove mouse events if widget is behind drop overlay
 		}
 	}
 	else if ((e->type() == QEvent::NonClientAreaMouseButtonRelease) && m_DraggingActive)
 	{
+		std::cout << "FloatingWidget::event QEvent::NonClientAreaMouseButtonRelease" << e->type() << std::endl;
 		titleMouseReleaseEvent();
-	}
-	else if (e->type() == QEvent::WindowActivate)
-	{
-		m_DraggingActive = true;
-		qApp->installEventFilter(this);
-		std::cout << "QEvent::WindowActivate MouseButtons " << QGuiApplication::mouseButtons() << std::endl;
 	}
 	return QWidget::event(e);
 }
@@ -271,7 +268,30 @@ bool FloatingWidget::eventFilter(QObject *watched, QEvent *event)
 	{
 		titleMouseReleaseEvent();
 	}
+	else if (event->type() == QEvent::MouseMove)
+	{
+		if (m_DraggingActive)
+		{
+			QMouseEvent* MouseEvent = dynamic_cast<QMouseEvent*>(event);
+			int BorderSize = (frameSize().width() - size().width()) / 2;
+			const QPoint moveToPos = QCursor::pos() - m_DragStartMousePosition - QPoint(BorderSize, 0);
+			move(moveToPos);
+			return true;
+		}
+	}
 	return false;
+}
+
+
+void FloatingWidget::startFloating(const QPoint& Pos)
+{
+	qApp->installEventFilter(this);
+	QPoint TargetPos = QCursor::pos() - Pos;
+	move(TargetPos);
+    show();
+	m_DraggingActive = true;
+	m_DragStartMousePosition = Pos;
+	m_DragStartPosition = this->pos();
 }
 
 
@@ -286,7 +306,6 @@ void FloatingWidget::titleMouseReleaseEvent()
 
 	std::cout << "Dropped" << std::endl;
 	MainContainerWidget* MainContainerWidget = mainContainerWidget();
-	//MainContainerWidget->dropFloatingWidget(this, QCursor::pos());
 	m_DropContainer->dropFloatingWidget(this, QCursor::pos());
 	MainContainerWidget->dropOverlay()->hideDropOverlay();
 	MainContainerWidget->sectionDropOverlay()->hideDropOverlay();
@@ -328,6 +347,31 @@ void FloatingWidget::updateDropOverlays(const QPoint& GlobalPos)
     }
 
     m_DropContainer = TopContainer;
+    DropOverlay* ContainerDropOverlay = MainContainerWidget->dropOverlay();
+    DropOverlay* SectionDropOverlay = MainContainerWidget->sectionDropOverlay();
+
+    if (!TopContainer)
+    {
+    	ContainerDropOverlay->hideDropOverlay();
+    	SectionDropOverlay->hideDropOverlay();
+    	return;
+    }
+
+	ContainerDropOverlay->showDropOverlay(TopContainer);
+	ContainerDropOverlay->raise();
+
+    SectionWidget* sectionwidget = TopContainer->sectionWidgetAt(GlobalPos);
+    if (sectionwidget)
+    {
+    	SectionDropOverlay->setAllowedAreas(ADS_NS::AllAreas);
+        SectionDropOverlay->showDropOverlay(sectionwidget);
+    }
+    else
+    {
+    	SectionDropOverlay->hideDropOverlay();
+    }
+
+
     if (TopContainer)
     {
     	MainContainerWidget->dropOverlay()->showDropOverlay(TopContainer);

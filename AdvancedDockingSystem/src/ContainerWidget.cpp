@@ -80,8 +80,7 @@ unsigned int CContainerWidget::zOrderIndex() const
 void CContainerWidget::dropFloatingWidget(FloatingWidget* FloatingWidget,
 	const QPoint& TargetPos)
 {
-	QPoint MousePos = mapFromGlobal(TargetPos);
-	SectionWidget* sectionWidget = sectionWidgetAt(MousePos);
+	SectionWidget* sectionWidget = sectionWidgetAt(TargetPos);
 	DropArea dropArea = InvalidDropArea;
 	if (sectionWidget)
 	{
@@ -90,6 +89,7 @@ void CContainerWidget::dropFloatingWidget(FloatingWidget* FloatingWidget,
 		dropArea = dropOverlay->showDropOverlay(sectionWidget);
 		if (dropArea != InvalidDropArea)
 		{
+			std::cout << "Section Drop Content: " << dropArea << std::endl;
 			InternalContentData data;
 			FloatingWidget->takeContent(data);
 			FloatingWidget->deleteLater();
@@ -101,29 +101,34 @@ void CContainerWidget::dropFloatingWidget(FloatingWidget* FloatingWidget,
 	if (InvalidDropArea == dropArea)
 	{
 		dropArea = m_MainContainerWidget->dropOverlay()->dropAreaUnderCursor();
-		std::cout << "Drop Content: " << dropArea << std::endl;
+		std::cout << "Container Drop Content: " << dropArea << std::endl;
 		if (dropArea != InvalidDropArea)
 		{
-			InternalContentData data;
-			FloatingWidget->takeContent(data);
-			FloatingWidget->deleteLater();
-			dropContent(data, nullptr, dropArea, true);
+			dropIntoContainer(FloatingWidget, dropArea);
 		}
 	}
 }
 
 
+void CContainerWidget::dropIntoContainer(FloatingWidget* FloatingWidget, DropArea area)
+{
+	InternalContentData data;
+	FloatingWidget->takeContent(data);
+	FloatingWidget->deleteLater();
+	dropContent(data, nullptr, area, true);
+}
+
+
 SectionWidget* CContainerWidget::sectionWidgetAt(const QPoint& pos) const
 {
-	const QPoint gpos = mapToGlobal(pos);
-	for (int i = 0; i < m_Sections.size(); ++i)
+	for (const auto& SectionWidget : m_Sections)
 	{
-		SectionWidget* sw = m_Sections[i];
-		if (sw->rect().contains(sw->mapFromGlobal(gpos)))
+		if (SectionWidget->rect().contains(SectionWidget->mapFromGlobal(pos)))
 		{
-			return sw;
+			return SectionWidget;
 		}
 	}
+
 	return 0;
 }
 
@@ -290,8 +295,48 @@ SectionWidget* CContainerWidget::addSectionContent(const SectionContent::RefPtr&
 	data.titleWidget = new SectionTitleWidget(sc, NULL);
 	data.contentWidget = new SectionContentWidget(sc, NULL);
 
-	//connect(data.titleWidget, SIGNAL(activeTabChanged()), this, SLOT(onActiveTabChanged()));
+	connect(data.titleWidget, SIGNAL(activeTabChanged()), this, SLOT(onActiveTabChanged()));
 	return dropContent(data, sw, area, false);
+}
+
+
+void dumpChildSplitters(QWidget* Widget)
+{
+	QSplitter* ParentSplitter = dynamic_cast<QSplitter*>(Widget);
+	auto Sections = Widget->findChildren<SectionWidget*>(QString(), Qt::FindDirectChildrenOnly);
+	auto Splitters = Widget->findChildren<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
+
+	std::cout << "-----------------------" << std::endl;
+	std::cout << "Sections " << Sections.size() << std::endl;
+	std::cout << "Splitters " << Splitters.size() << std::endl;
+	for (const auto& Splitter : Splitters)
+	{
+		if (ParentSplitter)
+		{
+			std::cout << "Orientation " << Splitter->orientation() << " index " << ParentSplitter->indexOf(Splitter) << std::endl;
+		}
+		else
+		{
+			std::cout << "Orientation " << Splitter->orientation() << std::endl;
+		}
+		dumpChildSplitters(Splitter);
+	}
+}
+
+
+
+void CContainerWidget::dumpLayout()
+{
+	dumpChildSplitters(this);
+}
+
+void CContainerWidget::onActiveTabChanged()
+{
+	SectionTitleWidget* stw = qobject_cast<SectionTitleWidget*>(sender());
+	if (stw)
+	{
+		emit activeTabChanged(stw->m_Content, stw->isActiveTab());
+	}
 }
 } // namespace ads
 

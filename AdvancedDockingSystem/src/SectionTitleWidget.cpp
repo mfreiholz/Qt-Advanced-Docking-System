@@ -11,6 +11,8 @@
 #include <QSplitter>
 #include <QPushButton>
 
+#include <iostream>
+
 #ifdef ADS_ANIMATIONS_ENABLED
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -70,7 +72,9 @@ void SectionTitleWidget::mousePressEvent(QMouseEvent* ev)
 	if (ev->button() == Qt::LeftButton)
 	{
 		ev->accept();
-        m_DragStartPosition = ev->pos();
+        m_DragStartMousePosition = ev->pos();
+        m_DragStartGlobalMousePosition = ev->globalPos();
+        m_DragStartPosition = mapToGlobal(this->pos());
 		return;
 	}
 	QFrame::mousePressEvent(ev);
@@ -80,13 +84,11 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 {
 	SectionWidget* section = nullptr;
 	MainContainerWidget* cw = findParentContainerWidget(this);
+	std::cout << "SectionTitleWidget::mouseReleaseEvent" << std::endl;
 
-	if (isDraggingFloatingWidget() && cw->rect().contains(cw->mapFromGlobal(ev->globalPos())))
-	{
-		cw->dropFloatingWidget(m_FloatingWidget, ev->globalPos());
-	}
+	m_FloatingWidget.clear();
 	// End of tab moving, change order now
-	else if (m_TabMoving && (section = findParentSectionWidget(this)) != nullptr)
+	if (m_TabMoving && (section = findParentSectionWidget(this)) != nullptr)
 	{
 		// Find tab under mouse
 		QPoint pos = ev->globalPos();
@@ -101,13 +103,13 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 		section->moveContent(fromIndex, toIndex);
 	}
 
-    if (!m_DragStartPosition.isNull())
+    if (!m_DragStartMousePosition.isNull())
     {
 		emit clicked();
     }
 
 	// Reset
-    m_DragStartPosition = QPoint();
+    m_DragStartMousePosition = QPoint();
     m_TabMoving = false;
 	cw->m_SectionDropOverlay->hideDropOverlay();
 	cw->hideContainerOverlay();
@@ -117,18 +119,76 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 
 void SectionTitleWidget::moveFloatingWidget(QMouseEvent* ev, MainContainerWidget* cw)
 {
-    const QPoint moveToPos = ev->globalPos() - (m_DragStartPosition + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
-    m_FloatingWidget->move(moveToPos);
-   // cw->moveFloatingWidget(moveToPos);
+	std::cout << "SectionTitleWidget::moveFloatingWidget" << std::endl;
+	/*const QPoint DragDistance = ev->globalPos() - m_DragStartGlobalMousePosition;
+	const QPoint moveToGlobalPos = m_DragStartPosition + DragDistance;
+    m_FloatingWidget->move(moveToGlobalPos);*/
 
+	const QPoint moveToPos = ev->globalPos() - m_DragStartMousePosition;
+    m_FloatingWidget->move(moveToPos);
 }
 
 
 void SectionTitleWidget::startFloating(QMouseEvent* ev, MainContainerWidget* cw, SectionWidget* sectionwidget)
 {
-    QPoint moveToPos = ev->globalPos() - (m_DragStartPosition + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
-    m_FloatingWidget = cw->startFloating(sectionwidget, m_Content->uid(), moveToPos);
+	std::cout << "SectionTitleWidget::startFloating" << std::endl;
+	QPoint moveToPos = ev->globalPos() - m_DragStartMousePosition;
+
+    InternalContentData data;
+    if (!sectionwidget->takeContent(m_Content->uid(), data))
+    {
+        qWarning() << "THIS SHOULD NOT HAPPEN!!" << m_Content->uid();
+        return;
+    }
+
+    FloatingWidget* fw = new FloatingWidget(cw, data.content, data.titleWidget, data.contentWidget, cw);
+    fw->resize(sectionwidget->size());
+    fw->setObjectName("FloatingWidget");
+    fw->startFloating(m_DragStartMousePosition);
+
+    // Delete old section, if it is empty now.
+    if (sectionwidget->contents().isEmpty())
+    {
+        delete sectionwidget;
+        sectionwidget = NULL;
+    }
+    deleteEmptySplitter(cw);
+
+    DropOverlay* ContainerDropOverlay = cw->dropOverlay();
+	ContainerDropOverlay->setAllowedAreas(OuterAreas);
+	ContainerDropOverlay->showDropOverlay(this);
+	ContainerDropOverlay->raise();
 }
+
+/*
+FloatingWidget* MainContainerWidget::startFloating(SectionWidget* sectionwidget, int ContentUid, const QPoint& TargetPos)
+{
+    // Create floating widget.
+    InternalContentData data;
+    if (!sectionwidget->takeContent(ContentUid, data))
+    {
+        qWarning() << "THIS SHOULD NOT HAPPEN!!" << ContentUid;
+        return 0;
+    }
+
+    FloatingWidget* fw = new FloatingWidget(this, data.content, data.titleWidget, data.contentWidget, this);
+    fw->resize(sectionwidget->size());
+    fw->setObjectName("FloatingWidget");
+    fw->startFloating(TargetPos);
+
+    // Delete old section, if it is empty now.
+    if (sectionwidget->contents().isEmpty())
+    {
+        delete sectionwidget;
+        sectionwidget = NULL;
+    }
+    deleteEmptySplitter(this);
+
+	m_ContainerDropOverlay->setAllowedAreas(OuterAreas);
+	m_ContainerDropOverlay->showDropOverlay(this);
+	m_ContainerDropOverlay->raise();
+    return fw;
+}*/
 
 
 void SectionTitleWidget::moveTab(QMouseEvent* ev)
@@ -136,7 +196,7 @@ void SectionTitleWidget::moveTab(QMouseEvent* ev)
     ev->accept();
     int left, top, right, bottom;
     getContentsMargins(&left, &top, &right, &bottom);
-    QPoint moveToPos = mapToParent(ev->pos()) - m_DragStartPosition;
+    QPoint moveToPos = mapToParent(ev->pos()) - m_DragStartMousePosition;
     moveToPos.setY(0/* + top*/);
     move(moveToPos);
 }
@@ -144,62 +204,28 @@ void SectionTitleWidget::moveTab(QMouseEvent* ev)
 
 bool SectionTitleWidget::isDraggingFloatingWidget() const
 {
-	return m_FloatingWidget != nullptr;
+	return !m_FloatingWidget.isNull();
 }
 
 void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 {
+	std::cout << "SectionTitleWidget::mouseMoveEvent" << std::endl;
     if (!(ev->buttons() & Qt::LeftButton))
     {
         QFrame::mouseMoveEvent(ev);
         return;
     }
 
-    QPoint Pos = QCursor::pos();
     // TODO make a member with the main container widget and assign it on
     // creation
     MainContainerWidget* MainContainerWidget = findParentContainerWidget(this);
-    auto Containers = MainContainerWidget->m_Containers;
-    CContainerWidget* TopContainer = nullptr;
-    for (auto ContainerWidget : Containers)
-    {
-    	if (!ContainerWidget->isVisible())
-    	{
-    		continue;
-    	}
-
-    	if (!m_FloatingWidget || (m_FloatingWidget->containerWidget() == ContainerWidget))
-    	{
-    		continue;
-    	}
-
-    	QPoint MappedPos = ContainerWidget->mapFromGlobal(Pos);
-    	if (ContainerWidget->rect().contains(MappedPos))
-    	{
-    		std::cout << "Container " <<  ContainerWidget << " contains maousepos" << std::endl;
-    		if (!TopContainer || ContainerWidget->isInFrontOf(TopContainer))
-    		{
-    			TopContainer = ContainerWidget;
-    		}
-    	}
-    }
-
-    if (TopContainer)
-    {
-    	MainContainerWidget->dropOverlay()->showDropOverlay(TopContainer);
-		MainContainerWidget->dropOverlay()->raise();
-    }
-    else
-    {
-    	MainContainerWidget->dropOverlay()->hideDropOverlay();
-    }
-
     ev->accept();
 
     // Move already existing FloatingWidget
     if (isDraggingFloatingWidget())
 	{
-        moveFloatingWidget(ev, MainContainerWidget);
+    	std::cout << "SectionTitleWidget isDraggingFloatingWidget()" << std::endl;
+        //moveFloatingWidget(ev, MainContainerWidget);
 		return;
 	}
 
@@ -218,7 +244,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
     }
 
     // leave if dragging is not active
-    if (m_DragStartPosition.isNull())
+    if (m_DragStartMousePosition.isNull())
     {
         QFrame::mouseMoveEvent(ev);
         return;
@@ -231,7 +257,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 		return;
 	}
 	// Begin to drag title inside the title area to switch its position inside the SectionWidget.
-    else if ((ev->pos() - m_DragStartPosition).manhattanLength() >= QApplication::startDragDistance() // Wait a few pixels before start moving
+    else if ((ev->pos() - m_DragStartMousePosition).manhattanLength() >= QApplication::startDragDistance() // Wait a few pixels before start moving
               && sectionwidget->titleAreaGeometry().contains(sectionwidget->mapFromGlobal(ev->globalPos())))
 	{
         m_TabMoving = true;
@@ -239,6 +265,12 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 		return;
 	}
 	QFrame::mouseMoveEvent(ev);
+}
+
+
+bool SectionTitleWidget::event(QEvent *e)
+{
+	return QFrame::event(e);
 }
 
 ADS_NAMESPACE_END

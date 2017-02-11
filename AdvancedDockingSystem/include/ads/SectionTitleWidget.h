@@ -22,11 +22,14 @@ class SectionTitleWidget : public QFrame
 
 	friend class MainContainerWidget;
 	friend class SectionWidget;
+	friend class CContainerWidget;
 
     SectionContent::RefPtr m_Content;
 
 	// Drag & Drop (Floating)
     QPointer<FloatingWidget> m_FloatingWidget;
+    QPoint m_DragStartMousePosition;
+    QPoint m_DragStartGlobalMousePosition;
     QPoint m_DragStartPosition;
 
 	// Drag & Drop (Title/Tabs)
@@ -47,6 +50,8 @@ public:
 	 * a floating widget
 	 */
 	bool isDraggingFloatingWidget() const;
+
+	virtual bool event(QEvent *e);
 
 protected:
 	virtual void mousePressEvent(QMouseEvent* ev);

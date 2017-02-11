@@ -43,7 +43,6 @@ public:
 	explicit CContainerWidget(MainContainerWidget* MainContainerWidget, QWidget *parent = nullptr);
 	virtual ~CContainerWidget();
 
-	void moveFloatingWidget(const QPoint& TargetPos);
 	/**
 	 * Returns the current zOrderIndex
 	 */
@@ -52,7 +51,7 @@ public:
 	void dropFloatingWidget(FloatingWidget* FloatingWidget,
 		const QPoint& TargetPos);
 
-	SectionWidget* sectionWidgetAt(const QPoint& pos) const;
+	SectionWidget* sectionWidgetAt(const QPoint& GlobalPos) const;
 
 	/**
 	 * This function returns true if this container widgets z order index is
@@ -70,7 +69,18 @@ public:
 	 */
 	SectionWidget* addSectionContent(const SectionContent::RefPtr& sc, SectionWidget* sw = NULL, DropArea area = CenterDropArea);
 
+	void dumpLayout();
+
+signals:
+	/*!
+	 * Emits whenever the "isActiveTab" state of a SectionContent changes.
+	 * Whenever the users sets another tab as active, this signal gets invoked
+	 * for the old tab and the new active tab (the order is unspecified).
+	 */
+	void activeTabChanged(const SectionContent::RefPtr& sc, bool active);
+
 protected:
+	void dropIntoContainer(FloatingWidget* FloatingWidget, DropArea area);
 	virtual bool event(QEvent *e) override;
 	SectionWidget* newSectionWidget();
 	void addSectionWidget(SectionWidget* section);
@@ -88,6 +98,9 @@ protected:
 	MainContainerWidget* m_MainContainerWidget = 0;
 	unsigned int m_zOrderIndex = 0;
 	static unsigned int zOrderCounter;
+
+private slots:
+	void onActiveTabChanged();
 };
 
 } // namespace ads

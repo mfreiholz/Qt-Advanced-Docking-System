@@ -104,6 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	// ADS - Restore geometries and states of contents.
     //_container->restoreState(loadDataHelper("ContainerWidget"));
+	_container->dumpLayout();
 }
 
 MainWindow::~MainWindow()

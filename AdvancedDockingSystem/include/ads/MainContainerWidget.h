@@ -125,18 +125,7 @@ public:
 
 	static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = 0);
 
-	/**
-	 * Filters the events of the floating widgets
-	 */
-	virtual bool event(QEvent *e) override;
-
 private:
-	//
-	// Internal Stuff Begins Here
-	//
-	SectionWidget* dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive = true);
-	SectionWidget* sectionWidgetAt(const QPoint& pos) const;
-
 	// Serialization
 	QByteArray saveHierarchy() const;
 	void saveFloatingWidgets(QDataStream& out) const;
@@ -149,23 +138,14 @@ private:
 	bool restoreSectionWidgets(QDataStream& in, int version, QSplitter* currentSplitter, QList<SectionWidget*>& sections, QList<SectionContent::RefPtr>& contentsToHide);
 
 	bool takeContent(const SectionContent::RefPtr& sc, InternalContentData& data);
-    FloatingWidget* startFloating(SectionWidget* sectionwidget, int ContentUid, const QPoint& TargetPos);
     void hideContainerOverlay();
 	void moveFloatingWidget(const QPoint& TargetPos);
 
 private slots:
-	void onActiveTabChanged();
 	void onActionToggleSectionContentVisibility(bool visible);
 
 signals:
 	void orientationChanged();
-
-	/*!
-	 * Emits whenever the "isActiveTab" state of a SectionContent changes.
-	 * Whenever the users sets another tab as active, this signal gets invoked
-	 * for the old tab and the new active tab (the order is unspecified).
-	 */
-	void activeTabChanged(const SectionContent::RefPtr& sc, bool active);
 
 	/*!
 	 * Emits whenever the visibility of a SectionContent changes.

@@ -435,70 +435,6 @@ QPointer<DropOverlay> MainContainerWidget::dropOverlay() const
 // PRIVATE API BEGINS HERE
 ///////////////////////////////////////////////////////////////////////
 
-SectionWidget* MainContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSectionWidget, DropArea area, bool autoActive)
-{
-	ADS_Expects(targetSection != NULL);
-
-	SectionWidget* section_widget = nullptr;
-
-	// If no sections exists yet, create a default one and always drop into it.
-	if (m_Sections.isEmpty())
-	{
-		targetSectionWidget = newSectionWidget();
-		addSectionWidget(targetSectionWidget);
-		area = CenterDropArea;
-	}
-
-	// Drop on outer area
-	if (!targetSectionWidget)
-	{
-		switch (area)
-		{
-		case TopDropArea:return dropContentOuterHelper(m_MainLayout, data, Qt::Vertical, false);
-		case RightDropArea: return dropContentOuterHelper(m_MainLayout, data, Qt::Horizontal, true);
-		case CenterDropArea:
-		case BottomDropArea:return dropContentOuterHelper(m_MainLayout, data, Qt::Vertical, true);
-		case LeftDropArea: return dropContentOuterHelper(m_MainLayout, data, Qt::Horizontal, false);
-		default:
-			return nullptr;
-		}
-		return section_widget;
-	}
-
-	// Drop logic based on area.
-	switch (area)
-	{
-	case TopDropArea:return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Vertical, 0);
-	case RightDropArea: return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Horizontal, 1);
-	case BottomDropArea: return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Vertical, 1);
-	case LeftDropArea: return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Horizontal, 0);
-	case CenterDropArea:
-		 targetSectionWidget->addContent(data, autoActive);
-		 return targetSectionWidget;
-
-	default:
-		break;
-	}
-	return section_widget;
-}
-
-
-SectionWidget* MainContainerWidget::sectionWidgetAt(const QPoint& pos) const
-{
-	const QPoint gpos = mapToGlobal(pos);
-	for (int i = 0; i < m_Sections.size(); ++i)
-	{
-		SectionWidget* sw = m_Sections[i];
-		if (sw->rect().contains(sw->mapFromGlobal(gpos)))
-		{
-			return sw;
-		}
-	}
-	return 0;
-}
-
-
-
 QByteArray MainContainerWidget::saveHierarchy() const
 {
 	/*
@@ -1028,14 +964,6 @@ bool MainContainerWidget::takeContent(const SectionContent::RefPtr& sc, Internal
 	return found;
 }
 
-void MainContainerWidget::onActiveTabChanged()
-{
-	SectionTitleWidget* stw = qobject_cast<SectionTitleWidget*>(sender());
-	if (stw)
-	{
-		emit activeTabChanged(stw->m_Content, stw->isActiveTab());
-	}
-}
 
 void MainContainerWidget::onActionToggleSectionContentVisibility(bool visible)
 {
@@ -1061,43 +989,6 @@ void MainContainerWidget::hideContainerOverlay()
 	m_ContainerDropOverlay->hideDropOverlay();
 }
 
-
-FloatingWidget* MainContainerWidget::startFloating(SectionWidget* sectionwidget, int ContentUid, const QPoint& TargetPos)
-{
-    // Create floating widget.
-    InternalContentData data;
-    if (!sectionwidget->takeContent(ContentUid, data))
-    {
-        qWarning() << "THIS SHOULD NOT HAPPEN!!" << ContentUid;
-        return 0;
-    }
-
-    FloatingWidget* fw = new FloatingWidget(this, data.content, data.titleWidget, data.contentWidget, this);
-    fw->resize(sectionwidget->size());
-    fw->move(TargetPos);
-    fw->show();
-    fw->setObjectName("FloatingWidget");
-
-    // Delete old section, if it is empty now.
-    if (sectionwidget->contents().isEmpty())
-    {
-        delete sectionwidget;
-        sectionwidget = NULL;
-    }
-    deleteEmptySplitter(this);
-
-	m_ContainerDropOverlay->setAllowedAreas(OuterAreas);
-	m_ContainerDropOverlay->showDropOverlay(this);
-	m_ContainerDropOverlay->raise();
-    return fw;
-}
-
-
-bool MainContainerWidget::event(QEvent *e)
-{
-	//std::cout << "ContainerWidget::event " << e->type() << std::endl;
-	return QFrame::event(e);
-}
 
 void MainContainerWidget::moveFloatingWidget(const QPoint& TargetPos)
 {

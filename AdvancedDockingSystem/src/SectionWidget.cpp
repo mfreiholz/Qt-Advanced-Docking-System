@@ -206,14 +206,8 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 	if (title)
 	{
 		_tabsLayout->removeWidget(title);
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-		title->setAttribute(Qt::WA_WState_Created, false); /* fix: floating rubberband #16 */
-#endif
 		title->disconnect(this);
 		title->setParent(m_MainContainerWidget);
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-		title->setAttribute(Qt::WA_WState_Created, true); /* fix: floating rubberband #16 */
-#endif
 	}
 
 	// Content wrapper widget (CONTENT)
@@ -388,11 +382,7 @@ void SectionWidget::updateTabsMenu()
 		const SectionContent::RefPtr& sc = _contents.at(i);
 		QAction* a = m->addAction(QIcon(), sc->visibleTitle());
 		a->setData(sc->uid());
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-		QObject::connect(a, &QAction::triggered, this, &SectionWidget::onTabsMenuActionTriggered);
-#else
 		QObject::connect(a, SIGNAL(triggered(bool)), this, SLOT(onTabsMenuActionTriggered(bool)));
-#endif
 	}
 	QMenu* old = _tabsMenuButton->menu();
 	_tabsMenuButton->setMenu(m);

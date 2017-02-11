@@ -76,6 +76,8 @@ public:
 public://private:
 	bool takeContent(InternalContentData& data);
 
+	void startFloating(const QPoint& Pos);
+
 protected:
 	virtual void changeEvent(QEvent *event) override;
 	virtual void moveEvent(QMoveEvent *event) override;
@@ -95,7 +97,10 @@ private:
 	CContainerWidget* m_ContainerWidget;
 	CContainerWidget* m_DropContainer;
 	bool m_DraggingActive = false;
+	bool m_NonCLientDraggingActive = false;
 	unsigned int m_zOrderIndex = 0;
+	QPoint m_DragStartPosition;
+	QPoint m_DragStartMousePosition;
 	static unsigned int zOrderCounter;
 };
 
