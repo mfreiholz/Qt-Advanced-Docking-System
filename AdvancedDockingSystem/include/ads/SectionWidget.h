@@ -41,7 +41,7 @@ public:
 	QRect titleAreaGeometry() const;
 	QRect contentAreaGeometry() const;
 
-	const QList<SectionContent::RefPtr>& contents() const { return _contents; }
+	const QList<SectionContent::RefPtr>& contents() const { return m_Contents; }
 	void addContent(const SectionContent::RefPtr& c);
 	void addContent(const InternalContentData& data, bool autoActivate);
 	bool takeContent(int uid, InternalContentData& data);
@@ -53,6 +53,8 @@ public:
 	void moveContent(int from, int to);
 
     virtual bool eventFilter(QObject *watched, QEvent *event);
+
+    inline int contentCount() const {return m_ContentWidgets.size();}
 
 protected:
 	virtual void showEvent(QShowEvent*);
@@ -72,9 +74,9 @@ private:
 
 	QPointer<CContainerWidget> m_ContainerWidget;
 	QPointer<MainContainerWidget> m_MainContainerWidget;
-	QList<SectionContent::RefPtr> _contents;
-	QList<SectionTitleWidget*> _sectionTitles;
-	QList<SectionContentWidget*> _sectionContents;
+	QList<SectionContent::RefPtr> m_Contents;
+	QList<SectionTitleWidget*> m_TitleWidgets;
+	QList<SectionContentWidget*> m_ContentWidgets;
 
 	QBoxLayout* _topLayout;
 	QScrollArea* _tabsScrollArea;

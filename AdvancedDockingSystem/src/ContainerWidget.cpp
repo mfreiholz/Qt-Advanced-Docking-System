@@ -109,9 +109,60 @@ void CContainerWidget::dropFloatingWidget(FloatingWidget* FloatingWidget,
 	}
 }
 
+/*void dumpChildSplitters(QWidget* Widget)
+{
+	QSplitter* ParentSplitter = dynamic_cast<QSplitter*>(Widget);
+	auto Sections = Widget->findChildren<SectionWidget*>(QString(), Qt::FindDirectChildrenOnly);
+	auto Splitters = Widget->findChildren<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
+
+	std::cout << "-----------------------" << std::endl;
+	std::cout << "Sections " << Sections.size() << std::endl;
+	std::cout << "Splitters " << Splitters.size() << std::endl;
+	for (const auto& Splitter : Splitters)
+	{
+		if (ParentSplitter)
+		{
+			std::cout << "Orientation " << Splitter->orientation() << " index " << ParentSplitter->indexOf(Splitter) << std::endl;
+		}
+		else
+		{
+			std::cout << "Orientation " << Splitter->orientation() << std::endl;
+		}
+		dumpChildSplitters(Splitter);
+	}
+}
+
+
+
+void CContainerWidget::dumpLayout()
+{
+	dumpChildSplitters(this);
+}*/
+
+void CContainerWidget::dropChildSections(QWidget* Parent)
+{
+	auto Sections = Parent->findChildren<SectionWidget*>(QString(), Qt::FindDirectChildrenOnly);
+	auto Splitters = Parent->findChildren<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
+
+	std::cout << "-----------------------" << std::endl;
+	std::cout << "Sections " << Sections.size() << std::endl;
+	std::cout << "Splitters " << Splitters.size() << std::endl;
+
+	for (auto Section : Sections)
+	{
+		// drop section
+	}
+
+	for (auto Splitter : Splitters)
+	{
+		dropChildSections(Splitter);
+	}
+}
+
 
 void CContainerWidget::dropIntoContainer(FloatingWidget* FloatingWidget, DropArea area)
 {
+	dropChildSections(FloatingWidget->containerWidget());
 	InternalContentData data;
 	FloatingWidget->takeContent(data);
 	FloatingWidget->deleteLater();

@@ -90,6 +90,8 @@ private slots:
 	void onCloseButtonClicked();
 
 private:
+	void setDraggingActive(bool Active);
+
 	MainContainerWidget* m_MainContainerWidget;
 	SectionContent::RefPtr _content;
 	SectionTitleWidget* _titleWidget;

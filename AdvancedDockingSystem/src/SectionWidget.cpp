@@ -135,19 +135,19 @@ QRect SectionWidget::contentAreaGeometry() const
 
 void SectionWidget::addContent(const SectionContent::RefPtr& c)
 {
-	_contents.append(c);
+	m_Contents.append(c);
 
 	SectionTitleWidget* title = new SectionTitleWidget(c, NULL);
-	_sectionTitles.append(title);
+	m_TitleWidgets.append(title);
 	_tabsLayout->insertWidget(_tabsLayout->count() - _tabsLayoutInitCount, title);
 	QObject::connect(title, SIGNAL(clicked()), this, SLOT(onSectionTitleClicked()));
 
 	SectionContentWidget* content = new SectionContentWidget(c, NULL);
-	_sectionContents.append(content);
+	m_ContentWidgets.append(content);
 	_contentsLayout->addWidget(content);
 
 	// Active first TAB.
-	if (_contents.size() == 1)
+	if (m_Contents.size() == 1)
 		setCurrentIndex(0);
 	// Switch to newest.
 //	else
@@ -158,26 +158,26 @@ void SectionWidget::addContent(const SectionContent::RefPtr& c)
 
 void SectionWidget::addContent(const InternalContentData& data, bool autoActivate)
 {
-	_contents.append(data.content);
+	m_Contents.append(data.content);
 
 	// Add title-widget to tab-bar
 	// #FIX: Make it visible, since it is possible that it was hidden previously.
-	_sectionTitles.append(data.titleWidget);
+	m_TitleWidgets.append(data.titleWidget);
 	_tabsLayout->insertWidget(_tabsLayout->count() - _tabsLayoutInitCount, data.titleWidget);
 	data.titleWidget->setVisible(true);
 	QObject::connect(data.titleWidget, SIGNAL(clicked()), this, SLOT(onSectionTitleClicked()));
 
 	// Add content-widget to stack.
 	// Visibility is managed by QStackedWidget.
-	_sectionContents.append(data.contentWidget);
+	m_ContentWidgets.append(data.contentWidget);
 	_contentsLayout->addWidget(data.contentWidget);
 
 	// Activate first TAB.
-	if (_contents.size() == 1)
+	if (m_Contents.size() == 1)
 		setCurrentIndex(0);
 	// Switch to just added TAB.
 	else if (autoActivate)
-		setCurrentIndex(_contents.count() - 1);
+		setCurrentIndex(m_Contents.count() - 1);
 	// Mark it as inactive tab.
 	else
 		data.titleWidget->setActiveTab(false); // or: setCurrentIndex(currentIndex())
@@ -190,19 +190,19 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 	// Find SectionContent.
 	SectionContent::RefPtr sc;
 	int index = -1;
-	for (int i = 0; i < _contents.count(); i++)
+	for (int i = 0; i < m_Contents.count(); i++)
 	{
-		if (_contents[i]->uid() != uid)
+		if (m_Contents[i]->uid() != uid)
 			continue;
 		index = i;
-		sc = _contents.takeAt(i);
+		sc = m_Contents.takeAt(i);
 		break;
 	}
 	if (!sc)
 		return false;
 
 	// Title wrapper widget (TAB)
-	SectionTitleWidget* title = _sectionTitles.takeAt(index);
+	SectionTitleWidget* title = m_TitleWidgets.takeAt(index);
 	if (title)
 	{
 		_tabsLayout->removeWidget(title);
@@ -211,7 +211,7 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 	}
 
 	// Content wrapper widget (CONTENT)
-	SectionContentWidget* content = _sectionContents.takeAt(index);
+	SectionContentWidget* content = m_ContentWidgets.takeAt(index);
 	if (content)
 	{
 		_contentsLayout->removeWidget(content);
@@ -220,7 +220,7 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 	}
 
 	// Select the previous tab as activeTab.
-	if (_contents.size() > 0 && title->isActiveTab())
+	if (m_Contents.size() > 0 && title->isActiveTab())
 	{
 		if (index > 0)
 			setCurrentIndex(index - 1);
@@ -238,14 +238,14 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 
 int SectionWidget::indexOfContent(const SectionContent::RefPtr& c) const
 {
-	return _contents.indexOf(c);
+	return m_Contents.indexOf(c);
 }
 
 int SectionWidget::indexOfContentByUid(int uid) const
 {
-	for (int i = 0; i < _contents.count(); ++i)
+	for (int i = 0; i < m_Contents.count(); ++i)
 	{
-		if (_contents[i]->uid() == uid)
+		if (m_Contents[i]->uid() == uid)
 			return i;
 	}
 	return -1;
@@ -254,9 +254,9 @@ int SectionWidget::indexOfContentByUid(int uid) const
 int SectionWidget::indexOfContentByTitlePos(const QPoint& p, QWidget* exclude) const
 {
 	int index = -1;
-	for (int i = 0; i < _sectionTitles.size(); ++i)
+	for (int i = 0; i < m_TitleWidgets.size(); ++i)
 	{
-		if (_sectionTitles[i]->geometry().contains(p) && (exclude == NULL || _sectionTitles[i] != exclude))
+		if (m_TitleWidgets[i]->geometry().contains(p) && (exclude == NULL || m_TitleWidgets[i] != exclude))
 		{
 			index = i;
 			break;
@@ -272,16 +272,16 @@ int SectionWidget::currentIndex() const
 
 void SectionWidget::moveContent(int from, int to)
 {
-	if (from >= _contents.size() || from < 0 || to >= _contents.size() || to < 0 || from == to)
+	if (from >= m_Contents.size() || from < 0 || to >= m_Contents.size() || to < 0 || from == to)
 	{
 		qDebug() << "Invalid index for tab movement" << from << to;
 		_tabsLayout->update();
 		return;
 	}
 
-	_contents.move(from, to);
-	_sectionTitles.move(from, to);
-	_sectionContents.move(from, to);
+	m_Contents.move(from, to);
+	m_TitleWidgets.move(from, to);
+	m_ContentWidgets.move(from, to);
 
 	QLayoutItem* liFrom = NULL;
 	liFrom = _tabsLayout->takeAt(from);
@@ -302,12 +302,12 @@ void SectionWidget::moveContent(int from, int to)
 
 void SectionWidget::showEvent(QShowEvent*)
 {
-	_tabsScrollArea->ensureWidgetVisible(_sectionTitles.at(currentIndex()));
+	_tabsScrollArea->ensureWidgetVisible(m_TitleWidgets.at(currentIndex()));
 }
 
 void SectionWidget::setCurrentIndex(int index)
 {
-	if (index < 0 || index > _contents.count() - 1)
+	if (index < 0 || index > m_Contents.count() - 1)
 	{
 		qWarning() << Q_FUNC_INFO << "Invalid index" << index;
 		return;
@@ -354,9 +354,9 @@ void SectionWidget::onSectionTitleClicked()
 void SectionWidget::onCloseButtonClicked()
 {
 	const int index = currentIndex();
-	if (index < 0 || index > _contents.size() - 1)
+	if (index < 0 || index > m_Contents.size() - 1)
 		return;
-	SectionContent::RefPtr sc = _contents.at(index);
+	SectionContent::RefPtr sc = m_Contents.at(index);
 	if (sc.isNull())
 		return;
 	m_MainContainerWidget->hideSectionContent(sc);
@@ -377,9 +377,9 @@ void SectionWidget::onTabsMenuActionTriggered(bool)
 void SectionWidget::updateTabsMenu()
 {
 	QMenu* m = new QMenu();
-	for (int i = 0; i < _contents.count(); ++i)
+	for (int i = 0; i < m_Contents.count(); ++i)
 	{
-		const SectionContent::RefPtr& sc = _contents.at(i);
+		const SectionContent::RefPtr& sc = m_Contents.at(i);
 		QAction* a = m->addAction(QIcon(), sc->visibleTitle());
 		a->setData(sc->uid());
 		QObject::connect(a, SIGNAL(triggered(bool)), this, SLOT(onTabsMenuActionTriggered(bool)));

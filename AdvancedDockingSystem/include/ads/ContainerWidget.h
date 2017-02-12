@@ -99,6 +99,9 @@ protected:
 	unsigned int m_zOrderIndex = 0;
 	static unsigned int zOrderCounter;
 
+private:
+	void dropChildSections(QWidget* Parent);
+
 private slots:
 	void onActiveTabChanged();
 };
