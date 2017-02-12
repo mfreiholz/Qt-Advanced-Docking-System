@@ -286,6 +286,7 @@ bool FloatingWidget::eventFilter(QObject *watched, QEvent *event)
 {
 	if (event->type() == QEvent::MouseButtonRelease)
 	{
+		std::cout << "FloatingWidget::eventFilter QEvent::MouseButtonRelease" << std::endl;
 		titleMouseReleaseEvent();
 	}
 	else if (event->type() == QEvent::MouseMove)
