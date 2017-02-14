@@ -67,20 +67,6 @@ MainContainerWidget::~MainContainerWidget()
 }
 
 
-SectionWidget* MainContainerWidget::addSectionContent(const SectionContent::RefPtr& sc, SectionWidget* sw, DropArea area)
-{
-	ADS_Expects(!sc.isNull());
-
-	// Drop it based on "area"
-	InternalContentData data;
-	data.content = sc;
-	data.titleWidget = new SectionTitleWidget(sc, NULL);
-	data.contentWidget = new SectionContentWidget(sc, NULL);
-
-	connect(data.titleWidget, SIGNAL(activeTabChanged()), this, SLOT(onActiveTabChanged()));
-	return dropContent(data, sw, area, false);
-}
-
 bool MainContainerWidget::removeSectionContent(const SectionContent::RefPtr& sc)
 {
 	ADS_Expects(!sc.isNull());

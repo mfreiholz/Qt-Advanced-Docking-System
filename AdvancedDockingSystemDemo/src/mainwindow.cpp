@@ -123,6 +123,7 @@ void MainWindow::createContent()
 	sw = _container->addSectionContent(createLongTextLabelSC(cw), nullptr, ADS_NS::CenterDropArea);
 	sw = _container->addSectionContent(createCalendarSC(cw), nullptr, ADS_NS::LeftDropArea);
 	sw = _container->addSectionContent(createFileSystemTreeSC(cw), nullptr, ADS_NS::BottomDropArea);
+	sw = _container->addSectionContent(createCalendarSC(cw), nullptr, ADS_NS::BottomDropArea);
 
 	/*_container->addSectionContent(createCalendarSC(_container));
 	_container->addSectionContent(createLongTextLabelSC(_container));

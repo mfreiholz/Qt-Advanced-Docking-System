@@ -16,6 +16,8 @@
 #include <QtGlobal>
 #include <QTabBar>
 
+#include <iostream>
+
 #if defined(ADS_ANIMATIONS_ENABLED)
 #include <QGraphicsDropShadowEffect>
 #endif
@@ -111,6 +113,8 @@ SectionWidget::~SectionWidget()
 	{
 		splitter->deleteLater();
 	}
+
+	std::cout << "SectionWidget::~SectionWidget()" << std::endl;
 }
 
 int SectionWidget::uid() const
@@ -422,11 +426,7 @@ SectionWidgetTabsScrollArea::~SectionWidgetTabsScrollArea()
 void SectionWidgetTabsScrollArea::wheelEvent(QWheelEvent* e)
 {
 	e->accept();
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	const int direction = e->angleDelta().y();
-#else
-	const int direction = e->delta();
-#endif
 	if (direction < 0)
 		horizontalScrollBar()->setValue(horizontalScrollBar()->value() + 20);
 	else

@@ -81,6 +81,7 @@ signals:
 
 protected:
 	void dropIntoContainer(FloatingWidget* FloatingWidget, DropArea area);
+	void dropIntoSection(FloatingWidget* FloatingWidget, SectionWidget* targetSection, DropArea area);
 	virtual bool event(QEvent *e) override;
 	SectionWidget* newSectionWidget();
 	void addSectionWidget(SectionWidget* section);

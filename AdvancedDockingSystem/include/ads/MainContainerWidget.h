@@ -51,14 +51,6 @@ public:
 	//
 
 	/*!
-	 * Adds the section-content <em>sc</em> to this container-widget into the section-widget <em>sw</em>.
-	 * If <em>sw</em> is not NULL, the <em>area</em> is used to indicate how the content should be arranged.
-	 * Returns a pointer to the SectionWidget of the added SectionContent. Do not use it for anything else than adding more
-	 * SectionContent elements with this method.
-	 */
-	SectionWidget* addSectionContent(const SectionContent::RefPtr& sc, SectionWidget* sw = NULL, DropArea area = CenterDropArea);
-
-	/*!
 	 * Completely removes the <em>sc</em> from this ContainerWidget.
 	 * This container will no longer hold a reference to the content.
 	 * The content can be safely deleted.

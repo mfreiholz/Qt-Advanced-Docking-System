@@ -97,17 +97,24 @@ QSplitter* findParentSplitter(class QWidget* w)
 
 QSplitter* findImmediateSplitter(class QWidget* w)
 {
-	QSplitter* sp = NULL;
 	QLayout* l = w->layout();
 	if (!l || l->count() <= 0)
-		return sp;
+	{
+		return nullptr;
+	}
+
+	QSplitter* sp = nullptr;
 	for (int i = 0; i < l->count(); ++i)
 	{
 		QLayoutItem* li = l->itemAt(0);
 		if (!li->widget())
+		{
 			continue;
-		if ((sp = dynamic_cast<QSplitter*>(li->widget())) != NULL)
+		}
+		if ((sp = dynamic_cast<QSplitter*>(li->widget())) != nullptr)
+		{
 			break;
+		}
 	}
 	return sp;
 }
