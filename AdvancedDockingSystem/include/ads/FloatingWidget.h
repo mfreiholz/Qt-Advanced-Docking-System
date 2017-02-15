@@ -60,12 +60,6 @@ public:
 	SectionContent::RefPtr content() const { return _content; }
 
 	/**
-	 * Returns true, if this floating widget is dragged right now.
-	 * That means, left mouse button is down in the title widget
-	 */
-	bool isDraggingActive() const;
-
-	/**
 	 * Returns the current zOrderIndex
 	 */
 	unsigned int zOrderIndex() const;
@@ -99,7 +93,6 @@ private:
 	CContainerWidget* m_ContainerWidget;
 	CContainerWidget* m_DropContainer;
 	bool m_DraggingActive = false;
-	bool m_NonCLientDraggingActive = false;
 	unsigned int m_zOrderIndex = 0;
 	QPoint m_DragStartPosition;
 	QPoint m_DragStartMousePosition;

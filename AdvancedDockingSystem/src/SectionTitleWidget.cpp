@@ -13,11 +13,6 @@
 
 #include <iostream>
 
-#ifdef ADS_ANIMATIONS_ENABLED
-#include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
-#endif
-
 #include "ads/Internal.h"
 #include "ads/DropOverlay.h"
 #include "ads/SectionContent.h"
@@ -80,13 +75,47 @@ void SectionTitleWidget::mousePressEvent(QMouseEvent* ev)
 	QFrame::mousePressEvent(ev);
 }
 
+
+CContainerWidget* findParentContainerWidget(QWidget* w)
+{
+	CContainerWidget* cw = 0;
+	QWidget* next = w;
+	do
+	{
+		if ((cw = dynamic_cast<CContainerWidget*>(next)) != 0)
+		{
+			break;
+		}
+		next = next->parentWidget();
+	}
+	while (next);
+	return cw;
+}
+
+SectionWidget* findParentSectionWidget(class QWidget* w)
+{
+	SectionWidget* cw = 0;
+	QWidget* next = w;
+	do
+	{
+		if ((cw = dynamic_cast<SectionWidget*>(next)) != 0)
+		{
+			break;
+		}
+		next = next->parentWidget();
+	}
+	while (next);
+	return cw;
+}
+
 void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 {
 	SectionWidget* section = nullptr;
-	MainContainerWidget* cw = findParentContainerWidget(this);
+	CContainerWidget* cw = findParentContainerWidget(this);
+	MainContainerWidget* mcw = cw->mainContainerWidget();
 	std::cout << "SectionTitleWidget::mouseReleaseEvent" << std::endl;
 
-	m_FloatingWidget.clear();
+	//m_FloatingWidget.clear();
 	// End of tab moving, change order now
 	if (m_TabMoving && (section = findParentSectionWidget(this)) != nullptr)
 	{
@@ -111,8 +140,8 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 	// Reset
     m_DragStartMousePosition = QPoint();
     m_TabMoving = false;
-	cw->m_SectionDropOverlay->hideDropOverlay();
-	cw->hideContainerOverlay();
+	mcw->m_SectionDropOverlay->hideDropOverlay();
+	mcw->hideContainerOverlay();
 	QFrame::mouseReleaseEvent(ev);
 }
 
@@ -125,7 +154,7 @@ void SectionTitleWidget::moveFloatingWidget(QMouseEvent* ev, MainContainerWidget
     m_FloatingWidget->move(moveToGlobalPos);*/
 
 	const QPoint moveToPos = ev->globalPos() - m_DragStartMousePosition;
-    m_FloatingWidget->move(moveToPos);
+    //m_FloatingWidget->move(moveToPos);
 }
 
 
@@ -202,11 +231,6 @@ void SectionTitleWidget::moveTab(QMouseEvent* ev)
 }
 
 
-bool SectionTitleWidget::isDraggingFloatingWidget() const
-{
-	return !m_FloatingWidget.isNull();
-}
-
 void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 {
 	std::cout << "SectionTitleWidget::mouseMoveEvent" << std::endl;
@@ -218,16 +242,8 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 
     // TODO make a member with the main container widget and assign it on
     // creation
-    MainContainerWidget* MainContainerWidget = findParentContainerWidget(this);
+    MainContainerWidget* MainContainerWidget = findParentContainerWidget(this)->mainContainerWidget();
     ev->accept();
-
-    // Move already existing FloatingWidget
-    if (isDraggingFloatingWidget())
-	{
-    	std::cout << "SectionTitleWidget isDraggingFloatingWidget()" << std::endl;
-        //moveFloatingWidget(ev, MainContainerWidget);
-		return;
-	}
 
 
     SectionWidget* sectionwidget = findParentSectionWidget(this);
@@ -265,12 +281,6 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 		return;
 	}
 	QFrame::mouseMoveEvent(ev);
-}
-
-
-bool SectionTitleWidget::event(QEvent *e)
-{
-	return QFrame::event(e);
 }
 
 ADS_NAMESPACE_END

@@ -137,7 +137,7 @@ void CFloatingTitleWidget::onMaximizeButtonClicked()
 
 
 FloatingWidget::FloatingWidget(MainContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent) :
-	QWidget(parent, Qt::Window/*Qt::CustomizeWindowHint | Qt::Tool*/),
+	QWidget(0),
 	m_MainContainerWidget(container),
 	_content(sc),
 	_titleWidget(titleWidget),
@@ -208,24 +208,15 @@ void FloatingWidget::onCloseButtonClicked()
 	m_MainContainerWidget->hideSectionContent(_content);
 }
 
-bool FloatingWidget::isDraggingActive() const
-{
-	return _titleWidget->isDraggingFloatingWidget();
-}
-
 
 void FloatingWidget::changeEvent(QEvent *event)
 {
 	QWidget::changeEvent(event);
-	if (event->type() != QEvent::ActivationChange)
+	if (event->type() == QEvent::ActivationChange && isActiveWindow())
     {
 		std::cout << "FloatingWidget::changeEvent QEvent::ActivationChange " << std::endl;
+		m_zOrderIndex = ++zOrderCounter;
         return;
-    }
-
-    if (isActiveWindow())
-    {
-        m_zOrderIndex = ++zOrderCounter;
     }
 }
 
@@ -233,9 +224,9 @@ void FloatingWidget::changeEvent(QEvent *event)
 void FloatingWidget::moveEvent(QMoveEvent *event)
 {
 	QWidget::moveEvent(event);
-	if (m_DraggingActive)
+	if (m_DraggingActive && qApp->mouseButtons().testFlag(Qt::LeftButton))
 	{
-		std::cout << "Dragging" << std::endl;
+		//std::cout << "Dragging" << std::endl;
 		updateDropOverlays(QCursor::pos());
 	}
 }
@@ -270,12 +261,16 @@ bool FloatingWidget::event(QEvent *e)
 		{
 			std::cout << "FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type() << std::endl;
 			setDraggingActive(true);
-			m_NonCLientDraggingActive = true;
 		}
+	}
+	else if (e->type() == QEvent::NonClientAreaMouseButtonDblClick)
+	{
+		std::cout << "FloatingWidget::event QEvent::NonClientAreaMouseButtonDblClick" << std::endl;
+		setDraggingActive(false);
 	}
 	else if ((e->type() == QEvent::NonClientAreaMouseButtonRelease) && m_DraggingActive)
 	{
-		std::cout << "FloatingWidget::event QEvent::NonClientAreaMouseButtonRelease" << e->type() << std::endl;
+		std::cout << "FloatingWidget::event QEvent::NonClientAreaMouseButtonRelease" << std::endl;
 		titleMouseReleaseEvent();
 	}
 	return QWidget::event(e);
@@ -318,7 +313,6 @@ void FloatingWidget::startFloating(const QPoint& Pos)
 void FloatingWidget::titleMouseReleaseEvent()
 {
 	setDraggingActive(false);
-	m_NonCLientDraggingActive = false;
 	if (!m_DropContainer)
 	{
 		return;

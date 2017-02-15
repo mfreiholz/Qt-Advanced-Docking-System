@@ -27,7 +27,6 @@ class SectionTitleWidget : public QFrame
     SectionContent::RefPtr m_Content;
 
 	// Drag & Drop (Floating)
-    QPointer<FloatingWidget> m_FloatingWidget;
     QPoint m_DragStartMousePosition;
     QPoint m_DragStartGlobalMousePosition;
     QPoint m_DragStartPosition;
@@ -44,14 +43,6 @@ public:
 
 	bool isActiveTab() const;
 	void setActiveTab(bool active);
-
-	/**
-	 * Returns true, if this sections title widget is currently dragging
-	 * a floating widget
-	 */
-	bool isDraggingFloatingWidget() const;
-
-	virtual bool event(QEvent *e);
 
 protected:
 	virtual void mousePressEvent(QMouseEvent* ev);

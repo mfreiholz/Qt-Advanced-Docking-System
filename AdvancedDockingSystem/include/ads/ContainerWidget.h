@@ -71,6 +71,8 @@ public:
 
 	void dumpLayout();
 
+	MainContainerWidget* mainContainerWidget() const {return m_MainContainerWidget;}
+
 signals:
 	/*!
 	 * Emits whenever the "isActiveTab" state of a SectionContent changes.

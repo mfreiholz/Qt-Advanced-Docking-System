@@ -33,13 +33,11 @@ QSplitter* MainContainerWidget::newSplitter(Qt::Orientation orientation, QWidget
 }
 
 
-
 MainContainerWidget::MainContainerWidget(QWidget *parent) :
 	CContainerWidget(this, parent)
 {
-	m_SectionDropOverlay = new DropOverlay(this, DropOverlay::ModeSectionOverlay);
-
-	m_ContainerDropOverlay = new DropOverlay(this, DropOverlay::ModeContainerOverlay);
+	m_SectionDropOverlay = new DropOverlay(0, DropOverlay::ModeSectionOverlay);
+	m_ContainerDropOverlay = new DropOverlay(0, DropOverlay::ModeContainerOverlay);
 	m_ContainerDropOverlay->setAttribute(Qt::WA_TransparentForMouseEvents);
 	m_ContainerDropOverlay->setWindowFlags(m_ContainerDropOverlay->windowFlags() | Qt::WindowTransparentForInput);
 	m_Containers.append(this);
@@ -817,7 +815,7 @@ bool MainContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, Q
 			fw->_contentWidget->setVisible(visible);
 		}
 		floatings.append(fw);
-		data.titleWidget->m_FloatingWidget = fw; // $mfreiholz: Don't look at it :-< It's more than ugly...
+		//data.titleWidget->m_FloatingWidget = fw; // $mfreiholz: Don't look at it :-< It's more than ugly...
 	}
 	return true;
 }

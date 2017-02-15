@@ -183,7 +183,7 @@ void CContainerWidget::dropIntoContainer(FloatingWidget* FloatingWidget, DropAre
 		l->addWidget(sp);
 		for (auto SectionWidget : SectionWidgets)
 		{
-			sp->insertWidget(0, SectionWidget);
+			sp->addWidget(SectionWidget);
 		}
 	}
 	else if ((FloatingMainSplitter->orientation() == orientation) &&

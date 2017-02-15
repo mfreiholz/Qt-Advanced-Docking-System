@@ -47,37 +47,6 @@ void deleteEmptySplitter(MainContainerWidget* container)
 	while (doAgain);
 }
 
-MainContainerWidget* findParentContainerWidget(QWidget* w)
-{
-	MainContainerWidget* cw = 0;
-	QWidget* next = w;
-	do
-	{
-		if ((cw = dynamic_cast<MainContainerWidget*>(next)) != 0)
-		{
-			break;
-		}
-		next = next->parentWidget();
-	}
-	while (next);
-	return cw;
-}
-
-SectionWidget* findParentSectionWidget(class QWidget* w)
-{
-	SectionWidget* cw = 0;
-	QWidget* next = w;
-	do
-	{
-		if ((cw = dynamic_cast<SectionWidget*>(next)) != 0)
-		{
-			break;
-		}
-		next = next->parentWidget();
-	}
-	while (next);
-	return cw;
-}
 
 QSplitter* findParentSplitter(class QWidget* w)
 {

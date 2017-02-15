@@ -66,8 +66,6 @@ enum DropArea
 Q_DECLARE_FLAGS(DropAreas, DropArea)
 
 void deleteEmptySplitter(MainContainerWidget* container);
-MainContainerWidget* findParentContainerWidget(QWidget* w);
-SectionWidget* findParentSectionWidget(QWidget* w);
 QSplitter* findParentSplitter(QWidget* w);
 QSplitter* findImmediateSplitter(QWidget* w);
 
