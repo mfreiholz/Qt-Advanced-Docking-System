@@ -35,7 +35,6 @@ ADS_NAMESPACE_BEGIN
 SectionWidget::SectionWidget(MainContainerWidget* MainContainer, CContainerWidget* parent) :
 	QFrame(parent),
 	_uid(GetNextUid()),
-	m_ContainerWidget(parent),
 	m_MainContainerWidget(MainContainer),
 	_tabsLayout(NULL),
 	_tabsLayoutInitCount(0),
@@ -124,7 +123,7 @@ int SectionWidget::uid() const
 
 CContainerWidget* SectionWidget::containerWidget() const
 {
-	return m_ContainerWidget;
+	return dynamic_cast<CContainerWidget*>(parent());
 }
 
 QRect SectionWidget::titleAreaGeometry() const
@@ -191,17 +190,21 @@ void SectionWidget::addContent(const InternalContentData& data, bool autoActivat
 
 bool SectionWidget::takeContent(int uid, InternalContentData& data)
 {
-	// Find SectionContent.
-	SectionContent::RefPtr sc;
-	int index = -1;
 	for (int i = 0; i < m_Contents.count(); i++)
 	{
 		if (m_Contents[i]->uid() != uid)
+		{
 			continue;
-		index = i;
-		sc = m_Contents.takeAt(i);
-		break;
+		}
+		return takeContentAt(i, data);
 	}
+
+	return false;
+}
+
+bool SectionWidget::takeContentAt(int index, InternalContentData& data)
+{
+	SectionContent::RefPtr sc = m_Contents.takeAt(index);
 	if (!sc)
 		return false;
 
@@ -239,6 +242,7 @@ bool SectionWidget::takeContent(int uid, InternalContentData& data)
 	data.contentWidget = content;
 	return !data.content.isNull();
 }
+
 
 int SectionWidget::indexOfContent(const SectionContent::RefPtr& c) const
 {
@@ -289,14 +293,7 @@ void SectionWidget::moveContent(int from, int to)
 
 	QLayoutItem* liFrom = NULL;
 	liFrom = _tabsLayout->takeAt(from);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	_tabsLayout->insertItem(to, liFrom);
-#else
-	_tabsLayout->insertWidget(to, liFrom->widget());
-	delete liFrom;
-	liFrom = NULL;
-#endif
-
 	liFrom = _contentsLayout->takeAt(from);
 	_contentsLayout->insertWidget(to, liFrom->widget());
 	delete liFrom;

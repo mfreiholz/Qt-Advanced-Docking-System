@@ -226,6 +226,7 @@ void CContainerWidget::dropIntoContainer(FloatingWidget* FloatingWidget, DropAre
 		}
 	}
 
+	m_Sections.append(SectionWidgets);
 	FloatingWidget->deleteLater();
 }
 
@@ -249,17 +250,50 @@ void CContainerWidget::dropIntoSection(FloatingWidget* FloatingWidget,
 	case BottomDropArea: return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Vertical, 1);
 	case LeftDropArea: return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Horizontal, 0);*/
 	case CenterDropArea:
+	{
+		QList<SectionWidget*> SectionWidgets = FloatingContainer->findChildren<SectionWidget*>(QString(), Qt::FindChildrenRecursively);
 		 for (auto SectionWidget : SectionWidgets)
 		 {
-			//sp->insertWidget(0, SectionWidget);
-			//targetSectionWidget->addContent(data, autoActive);
-			// targetSection->add
+			std::cout << "dropping into section CenterDropArea " << SectionWidget->contentCount() << std::endl;
+			while (SectionWidget->contentCount())
+			{
+				InternalContentData data;
+				if (!SectionWidget->takeContentAt(0, data))
+				{
+					qWarning() << "THIS SHOULD NOT HAPPEN!! " << 0;
+					return;
+				}
+				targetSection->addContent(data, false);
+			}
 		 }
-		 return;
+		 FloatingWidget->deleteLater();
+	}
+	return;
 
 	default:
 		break;
 	}
+
+	/*   InternalContentData data;
+    if (!sectionwidget->takeContent(m_Content->uid(), data))
+    {
+        qWarning() << "THIS SHOULD NOT HAPPEN!!" << m_Content->uid();
+        return;
+    }
+
+    FloatingWidget* fw = new FloatingWidget(cw, data.content, data.titleWidget, data.contentWidget, cw);
+    fw->resize(sectionwidget->size());
+    fw->setObjectName("FloatingWidget");
+    fw->startFloating(m_DragStartMousePosition);
+
+    // Delete old section, if it is empty now.
+    if (sectionwidget->contents().isEmpty())
+    {
+        delete sectionwidget;
+        sectionwidget = NULL;
+    }
+    deleteEmptySplitter(cw);*/
+
 
 	/*QSplitter* targetSectionSplitter = findParentSplitter(targetSection);
 	SectionWidget* sw = newSectionWidget();
@@ -285,6 +319,8 @@ void CContainerWidget::dropIntoSection(FloatingWidget* FloatingWidget,
 
 SectionWidget* CContainerWidget::sectionWidgetAt(const QPoint& pos) const
 {
+	std::cout << "CContainerWidget::sectionWidgetAt m_Sections count "
+		<< m_Sections.count() << std::endl;
 	for (const auto& SectionWidget : m_Sections)
 	{
 		if (SectionWidget->rect().contains(SectionWidget->mapFromGlobal(pos)))
@@ -360,6 +396,10 @@ SectionWidget* CContainerWidget::newSectionWidget()
 void CContainerWidget::addSectionWidget(SectionWidget* section)
 {
 	ADS_Expects(section != NULL);
+	if (section->containerWidget())
+	{
+		section->containerWidget()->takeSection(section);
+	}
 
 	// Create default splitter.
 	if (!m_Splitter)
@@ -373,6 +413,13 @@ void CContainerWidget::addSectionWidget(SectionWidget* section)
 		return;
 	}
 	m_Splitter->addWidget(section);
+	m_Sections.append(section);
+}
+
+
+void CContainerWidget::takeSection(SectionWidget* Widget)
+{
+	m_Sections.removeAll(Widget);
 }
 
 SectionWidget* CContainerWidget::dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append)

@@ -146,31 +146,26 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 }
 
 
-void SectionTitleWidget::moveFloatingWidget(QMouseEvent* ev, MainContainerWidget* cw)
-{
-	std::cout << "SectionTitleWidget::moveFloatingWidget" << std::endl;
-	/*const QPoint DragDistance = ev->globalPos() - m_DragStartGlobalMousePosition;
-	const QPoint moveToGlobalPos = m_DragStartPosition + DragDistance;
-    m_FloatingWidget->move(moveToGlobalPos);*/
-
-	const QPoint moveToPos = ev->globalPos() - m_DragStartMousePosition;
-    //m_FloatingWidget->move(moveToPos);
-}
-
-
 void SectionTitleWidget::startFloating(QMouseEvent* ev, MainContainerWidget* cw, SectionWidget* sectionwidget)
 {
 	std::cout << "SectionTitleWidget::startFloating" << std::endl;
-	QPoint moveToPos = ev->globalPos() - m_DragStartMousePosition;
 
-    InternalContentData data;
-    if (!sectionwidget->takeContent(m_Content->uid(), data))
-    {
-        qWarning() << "THIS SHOULD NOT HAPPEN!!" << m_Content->uid();
-        return;
-    }
+	FloatingWidget* fw;
+	if (sectionwidget->contentCount() > 1)
+	{
+		InternalContentData data;
+		if (!sectionwidget->takeContent(m_Content->uid(), data))
+		{
+			qWarning() << "THIS SHOULD NOT HAPPEN!!" << m_Content->uid();
+			return;
+		}
+		fw = new FloatingWidget(cw, data.content, data.titleWidget, data.contentWidget, cw);
+	}
+	else
+	{
+		fw = new FloatingWidget(cw, sectionwidget);
+	}
 
-    FloatingWidget* fw = new FloatingWidget(cw, data.content, data.titleWidget, data.contentWidget, cw);
     fw->resize(sectionwidget->size());
     fw->setObjectName("FloatingWidget");
     fw->startFloating(m_DragStartMousePosition);

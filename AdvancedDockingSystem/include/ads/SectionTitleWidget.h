@@ -50,7 +50,6 @@ protected:
 	virtual void mouseMoveEvent(QMouseEvent* ev);
 
 private:
-   void moveFloatingWidget(QMouseEvent* ev, MainContainerWidget* cw);
    void startFloating(QMouseEvent* ev, MainContainerWidget* cw, SectionWidget* sectionwidget);
    void moveTab(QMouseEvent* ev);
 

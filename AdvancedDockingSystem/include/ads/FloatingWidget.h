@@ -54,7 +54,7 @@ class FloatingWidget : public QWidget
 
 public:
 	FloatingWidget(MainContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent = NULL);
-    FloatingWidget(SectionWidget* sectionWidget);
+    FloatingWidget(MainContainerWidget* container, SectionWidget* sectionWidget);
     virtual ~FloatingWidget();
 
 	SectionContent::RefPtr content() const { return _content; }
@@ -88,8 +88,8 @@ private:
 
 	MainContainerWidget* m_MainContainerWidget;
 	SectionContent::RefPtr _content;
-	SectionTitleWidget* _titleWidget;
-	SectionContentWidget* _contentWidget;
+	//SectionTitleWidget* _titleWidget;
+	//SectionContentWidget* _contentWidget;
 	CContainerWidget* m_ContainerWidget;
 	CContainerWidget* m_DropContainer;
 	bool m_DraggingActive = false;

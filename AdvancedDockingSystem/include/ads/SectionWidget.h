@@ -45,6 +45,7 @@ public:
 	void addContent(const SectionContent::RefPtr& c);
 	void addContent(const InternalContentData& data, bool autoActivate);
 	bool takeContent(int uid, InternalContentData& data);
+	bool takeContentAt(int Index, InternalContentData& data);
 	int indexOfContent(const SectionContent::RefPtr& c) const;
 	int indexOfContentByUid(int uid) const;
 	int indexOfContentByTitlePos(const QPoint& pos, QWidget* exclude = NULL) const;
@@ -71,8 +72,6 @@ private slots:
 
 private:
 	const int _uid;
-
-	QPointer<CContainerWidget> m_ContainerWidget;
 	QPointer<MainContainerWidget> m_MainContainerWidget;
 	QList<SectionContent::RefPtr> m_Contents;
 	QList<SectionTitleWidget*> m_TitleWidgets;

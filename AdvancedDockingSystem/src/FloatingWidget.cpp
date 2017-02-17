@@ -136,47 +136,48 @@ void CFloatingTitleWidget::onMaximizeButtonClicked()
 
 
 
-FloatingWidget::FloatingWidget(MainContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent) :
-	QWidget(0),
-	m_MainContainerWidget(container),
-	_content(sc),
-	_titleWidget(titleWidget),
-	_contentWidget(contentWidget)
+FloatingWidget::FloatingWidget(MainContainerWidget* MainContainer, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent) :
+	QWidget(MainContainer, Qt::Window),
+	m_MainContainerWidget(MainContainer),
+	_content(sc)
 {
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
 	setLayout(l);
-
-	// Title + Controls
-	/*CFloatingTitleWidget* TitleBar = new CFloatingTitleWidget(sc->flags(), this);
-	l->insertWidget(0, TitleBar);
-	connect(TitleBar, SIGNAL(closeButtonClicked()), this, SLOT(onCloseButtonClicked()));*/
-
 	m_ContainerWidget = new CContainerWidget(m_MainContainerWidget, this);
 	m_MainContainerWidget->m_Containers.append(m_ContainerWidget);
 	l->addWidget(m_ContainerWidget, 1);
+
 	InternalContentData data;
 	data.content = sc;
 	data.contentWidget = contentWidget;
 	data.titleWidget = titleWidget;
+
 	m_ContainerWidget->dropContent(data, nullptr, CenterDropArea);
 	m_ContainerWidget->show();
-
 	m_zOrderIndex = ++zOrderCounter;
-	container->m_Floatings.append(this);
+	m_MainContainerWidget->m_Floatings.append(this);
 }
 
 
-FloatingWidget::FloatingWidget(SectionWidget* sectionWidget)
+FloatingWidget::FloatingWidget(MainContainerWidget* MainContainer, SectionWidget* sectionWidget)
+	: QWidget(MainContainer, Qt::Window),
+	  m_MainContainerWidget(MainContainer)
 {
     QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
     l->setContentsMargins(0, 0, 0, 0);
     l->setSpacing(0);
     setLayout(l);
 
-    l->addWidget(sectionWidget);
+    m_ContainerWidget = new CContainerWidget(m_MainContainerWidget, this);
+	m_MainContainerWidget->m_Containers.append(m_ContainerWidget);
+	l->addWidget(m_ContainerWidget, 1);
+
+    m_ContainerWidget->addSectionWidget(sectionWidget);
+    m_ContainerWidget->show();
     m_zOrderIndex = ++zOrderCounter;
+    m_MainContainerWidget->m_Floatings.append(this);
 }
 
 
@@ -188,7 +189,8 @@ FloatingWidget::~FloatingWidget()
 
 bool FloatingWidget::takeContent(InternalContentData& data)
 {
-	data.content = _content;
+	// TODO remove takeContent function
+	/*data.content = _content;
 	data.titleWidget = _titleWidget;
 	data.contentWidget = _contentWidget;
 
@@ -198,7 +200,7 @@ bool FloatingWidget::takeContent(InternalContentData& data)
 
 	layout()->removeWidget(_contentWidget);
 	_contentWidget->setParent(m_MainContainerWidget);
-	_contentWidget = NULL;
+	_contentWidget = NULL;*/
 
 	return true;
 }

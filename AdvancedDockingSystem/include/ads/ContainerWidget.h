@@ -73,6 +73,10 @@ public:
 
 	MainContainerWidget* mainContainerWidget() const {return m_MainContainerWidget;}
 
+	void addSectionWidget(SectionWidget* section);
+
+	void takeSection(SectionWidget* Widget);
+
 signals:
 	/*!
 	 * Emits whenever the "isActiveTab" state of a SectionContent changes.
@@ -86,7 +90,6 @@ protected:
 	void dropIntoSection(FloatingWidget* FloatingWidget, SectionWidget* targetSection, DropArea area);
 	virtual bool event(QEvent *e) override;
 	SectionWidget* newSectionWidget();
-	void addSectionWidget(SectionWidget* section);
 	SectionWidget* dropContentOuterHelper(QLayout* l, const InternalContentData& data, Qt::Orientation orientation, bool append);
 	SectionWidget* insertNewSectionWidget(const InternalContentData& data,
 		SectionWidget* targetSection, SectionWidget* ret, Qt::Orientation Orientation, int InsertIndexOffset);
