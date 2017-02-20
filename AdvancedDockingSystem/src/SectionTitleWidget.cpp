@@ -184,36 +184,6 @@ void SectionTitleWidget::startFloating(QMouseEvent* ev, MainContainerWidget* cw,
 	ContainerDropOverlay->raise();
 }
 
-/*
-FloatingWidget* MainContainerWidget::startFloating(SectionWidget* sectionwidget, int ContentUid, const QPoint& TargetPos)
-{
-    // Create floating widget.
-    InternalContentData data;
-    if (!sectionwidget->takeContent(ContentUid, data))
-    {
-        qWarning() << "THIS SHOULD NOT HAPPEN!!" << ContentUid;
-        return 0;
-    }
-
-    FloatingWidget* fw = new FloatingWidget(this, data.content, data.titleWidget, data.contentWidget, this);
-    fw->resize(sectionwidget->size());
-    fw->setObjectName("FloatingWidget");
-    fw->startFloating(TargetPos);
-
-    // Delete old section, if it is empty now.
-    if (sectionwidget->contents().isEmpty())
-    {
-        delete sectionwidget;
-        sectionwidget = NULL;
-    }
-    deleteEmptySplitter(this);
-
-	m_ContainerDropOverlay->setAllowedAreas(OuterAreas);
-	m_ContainerDropOverlay->showDropOverlay(this);
-	m_ContainerDropOverlay->raise();
-    return fw;
-}*/
-
 
 void SectionTitleWidget::moveTab(QMouseEvent* ev)
 {
@@ -272,7 +242,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
               && sectionwidget->titleAreaGeometry().contains(sectionwidget->mapFromGlobal(ev->globalPos())))
 	{
         m_TabMoving = true;
-		raise(); // Raise current title-widget above other tabs
+		//raise(); // Raise current title-widget above other tabs
 		return;
 	}
 	QFrame::mouseMoveEvent(ev);

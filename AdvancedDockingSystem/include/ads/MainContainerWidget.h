@@ -117,6 +117,8 @@ public:
 
 	static QSplitter* newSplitter(Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = 0);
 
+	virtual unsigned int zOrderIndex() const {return 0;}
+
 private:
 	// Serialization
 	QByteArray saveHierarchy() const;

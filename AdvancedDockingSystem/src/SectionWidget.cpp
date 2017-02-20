@@ -123,7 +123,18 @@ int SectionWidget::uid() const
 
 CContainerWidget* SectionWidget::containerWidget() const
 {
-	return dynamic_cast<CContainerWidget*>(parent());
+	QWidget* Parent = parentWidget();
+	while (Parent)
+	{
+		CContainerWidget* Container = dynamic_cast<CContainerWidget*>(Parent);
+		if (Container)
+		{
+			return Container;
+		}
+		Parent = Parent->parentWidget();
+	}
+
+	return 0;
 }
 
 QRect SectionWidget::titleAreaGeometry() const

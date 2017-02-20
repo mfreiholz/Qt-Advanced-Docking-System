@@ -36,8 +36,8 @@ QSplitter* MainContainerWidget::newSplitter(Qt::Orientation orientation, QWidget
 MainContainerWidget::MainContainerWidget(QWidget *parent) :
 	CContainerWidget(this, parent)
 {
-	m_SectionDropOverlay = new DropOverlay(0, DropOverlay::ModeSectionOverlay);
-	m_ContainerDropOverlay = new DropOverlay(0, DropOverlay::ModeContainerOverlay);
+	m_SectionDropOverlay = new DropOverlay(this, DropOverlay::ModeSectionOverlay);
+	m_ContainerDropOverlay = new DropOverlay(this, DropOverlay::ModeContainerOverlay);
 	m_ContainerDropOverlay->setAttribute(Qt::WA_TransparentForMouseEvents);
 	m_ContainerDropOverlay->setWindowFlags(m_ContainerDropOverlay->windowFlags() | Qt::WindowTransparentForInput);
 	m_Containers.append(this);
@@ -118,12 +118,12 @@ bool MainContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 	for (int i = 0; i < m_Floatings.count(); ++i)
 	{
 		FloatingWidget* fw = m_Floatings.at(i);
-		const bool found = fw->content()->uid() == sc->uid();
+		/*const bool found = fw->content()->uid() == sc->uid();
 		if (!found)
-			continue;
+			continue;*/
 		fw->setVisible(true);
-		fw->_titleWidget->setVisible(true);
-		fw->_contentWidget->setVisible(true);
+		//fw->_titleWidget->setVisible(true);
+		//fw->_contentWidget->setVisible(true);
 		emit sectionContentVisibilityChanged(sc, true);
 		return true;
 	}
@@ -173,9 +173,9 @@ bool MainContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
 	// We can simply hide floatings, nothing else required.
 	for (int i = 0; i < m_Floatings.count(); ++i)
 	{
-		const bool found = m_Floatings.at(i)->content()->uid() == sc->uid();
+		/*const bool found = m_Floatings.at(i)->content()->uid() == sc->uid();
 		if (!found)
-			continue;
+			continue;*/
 		m_Floatings.at(i)->setVisible(false);
 		emit sectionContentVisibilityChanged(sc, false);
 		return true;
@@ -240,8 +240,8 @@ bool MainContainerWidget::raiseSectionContent(const SectionContent::RefPtr& sc)
 	for (int i = 0; i < m_Floatings.size(); ++i)
 	{
 		FloatingWidget* fw = m_Floatings.at(i);
-		if (fw->content()->uid() != sc->uid())
-			continue;
+		/*if (fw->content()->uid() != sc->uid())
+			continue;*/
 		fw->setVisible(true);
 		fw->raise();
 		return true;
@@ -262,9 +262,9 @@ bool MainContainerWidget::isSectionContentVisible(const SectionContent::RefPtr& 
 	// Search SC in floatings
 	for (int i = 0; i < m_Floatings.count(); ++i)
 	{
-		const bool found = m_Floatings.at(i)->content()->uid() == sc->uid();
+		/*const bool found = m_Floatings.at(i)->content()->uid() == sc->uid();
 		if (!found)
-			continue;
+			continue;*/
 		return m_Floatings.at(i)->isVisible();
 	}
 
@@ -330,7 +330,7 @@ QMenu* MainContainerWidget::createContextMenu() const
 	// Floating contents
 	for (int i = 0; i < m_Floatings.size(); ++i)
 	{
-		const FloatingWidget* fw = m_Floatings.at(i);
+		/*const FloatingWidget* fw = m_Floatings.at(i);
 		const SectionContent::RefPtr sc = fw->content();
 
 		QAction* a = new QAction(QIcon(), sc->visibleTitle(), NULL);
@@ -340,7 +340,7 @@ QMenu* MainContainerWidget::createContextMenu() const
 		a->setCheckable(true);
 		a->setChecked(fw->isVisible());
 		connect(a, SIGNAL(toggled(bool)), this, SLOT(onActionToggleSectionContentVisibility(bool)));
-		actions.insert(a->text(), a);
+		actions.insert(a->text(), a);*/
 	}
 
 	// Create menu from "actions"
@@ -512,7 +512,7 @@ void MainContainerWidget::saveFloatingWidgets(QDataStream& out) const
 	for (int i = 0; i < m_Floatings.count(); ++i)
 	{
 		FloatingWidget* fw = m_Floatings.at(i);
-		out << fw->content()->uniqueName();
+		/*out << fw->content()->uniqueName();*/
 		out << fw->saveGeometry();
 		out << fw->isVisible();
 	}
@@ -714,8 +714,8 @@ bool MainContainerWidget::restoreHierarchy(const QByteArray& data)
 
 		// Collect all contents which has been restored
 		QList<SectionContent::RefPtr> contents;
-		for (int i = 0; i < floatings.count(); ++i)
-			contents.append(floatings.at(i)->content());
+		/*for (int i = 0; i < floatings.count(); ++i)
+			contents.append(floatings.at(i)->content());*/
 		for (int i = 0; i < sections.count(); ++i)
 			for (int j = 0; j < sections.at(i)->contents().count(); ++j)
 				contents.append(sections.at(i)->contents().at(j));
@@ -811,8 +811,8 @@ bool MainContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, Q
 		fw->setVisible(visible);
 		if (visible)
 		{
-			fw->_titleWidget->setVisible(visible);
-			fw->_contentWidget->setVisible(visible);
+			//fw->_titleWidget->setVisible(visible);
+			//fw->_contentWidget->setVisible(visible);
 		}
 		floatings.append(fw);
 		//data.titleWidget->m_FloatingWidget = fw; // $mfreiholz: Don't look at it :-< It's more than ugly...
@@ -932,9 +932,9 @@ bool MainContainerWidget::takeContent(const SectionContent::RefPtr& sc, Internal
 	// Search in floating widgets
 	for (int i = 0; i < m_Floatings.count() && !found; ++i)
 	{
-		found = m_Floatings.at(i)->content()->uid() == sc->uid();
+		/*found = m_Floatings.at(i)->content()->uid() == sc->uid();
 		if (found)
-			m_Floatings.at(i)->takeContent(data);
+			m_Floatings.at(i)->takeContent(data);*/
 	}
 
 	// Search in hidden items

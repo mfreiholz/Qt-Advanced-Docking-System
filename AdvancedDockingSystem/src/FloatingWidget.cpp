@@ -138,8 +138,7 @@ void CFloatingTitleWidget::onMaximizeButtonClicked()
 
 FloatingWidget::FloatingWidget(MainContainerWidget* MainContainer, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent) :
 	QWidget(MainContainer, Qt::Window),
-	m_MainContainerWidget(MainContainer),
-	_content(sc)
+	m_MainContainerWidget(MainContainer)
 {
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
 	l->setContentsMargins(0, 0, 0, 0);
@@ -207,7 +206,7 @@ bool FloatingWidget::takeContent(InternalContentData& data)
 
 void FloatingWidget::onCloseButtonClicked()
 {
-	m_MainContainerWidget->hideSectionContent(_content);
+	//m_MainContainerWidget->hideSectionContent(_content);
 }
 
 
@@ -336,6 +335,10 @@ unsigned int FloatingWidget::zOrderIndex() const
 
 void FloatingWidget::updateDropOverlays(const QPoint& GlobalPos)
 {
+	if (!isVisible())
+	{
+		return;
+	}
     MainContainerWidget* MainContainerWidget = mainContainerWidget();
     auto Containers = MainContainerWidget->m_Containers;
     CContainerWidget* TopContainer = nullptr;
@@ -390,12 +393,12 @@ void FloatingWidget::updateDropOverlays(const QPoint& GlobalPos)
 
     if (TopContainer)
     {
-    	MainContainerWidget->dropOverlay()->showDropOverlay(TopContainer);
-		MainContainerWidget->dropOverlay()->raise();
+    	ContainerDropOverlay->showDropOverlay(TopContainer);
+		ContainerDropOverlay->raise();
     }
     else
     {
-    	MainContainerWidget->dropOverlay()->hideDropOverlay();
+    	ContainerDropOverlay->hideDropOverlay();
     }
 }
 

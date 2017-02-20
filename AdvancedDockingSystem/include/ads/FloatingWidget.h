@@ -57,8 +57,6 @@ public:
     FloatingWidget(MainContainerWidget* container, SectionWidget* sectionWidget);
     virtual ~FloatingWidget();
 
-	SectionContent::RefPtr content() const { return _content; }
-
 	/**
 	 * Returns the current zOrderIndex
 	 */
@@ -87,9 +85,6 @@ private:
 	void setDraggingActive(bool Active);
 
 	MainContainerWidget* m_MainContainerWidget;
-	SectionContent::RefPtr _content;
-	//SectionTitleWidget* _titleWidget;
-	//SectionContentWidget* _contentWidget;
 	CContainerWidget* m_ContainerWidget;
 	CContainerWidget* m_DropContainer;
 	bool m_DraggingActive = false;

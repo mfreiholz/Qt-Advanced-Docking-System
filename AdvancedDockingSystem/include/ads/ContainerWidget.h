@@ -46,7 +46,7 @@ public:
 	/**
 	 * Returns the current zOrderIndex
 	 */
-	unsigned int zOrderIndex() const;
+	virtual unsigned int zOrderIndex() const;
 
 	void dropFloatingWidget(FloatingWidget* FloatingWidget,
 		const QPoint& TargetPos);

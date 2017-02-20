@@ -171,8 +171,6 @@ DropArea DropOverlay::showDropOverlay(QWidget* target)
 		return da;
 	}
 
-	//hideDropOverlay();
-    //std::cout << "_target != target, hideDropOverlay(), _fullAreaDrop = false" << std::endl;
 	_target = target;
 	_targetRect = QRect();
 	_lastLocation = InvalidDropArea;

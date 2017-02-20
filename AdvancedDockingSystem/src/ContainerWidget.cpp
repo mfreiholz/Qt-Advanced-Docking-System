@@ -186,7 +186,7 @@ void CContainerWidget::dropIntoContainer(FloatingWidget* FloatingWidget, DropAre
 			sp->addWidget(SectionWidget);
 		}
 	}
-	else if ((FloatingMainSplitter->orientation() == orientation) &&
+	else if ((FloatingMainSplitter->orientation() == orientation || FloatingMainSplitter->count() == 1) &&
 		     (OldSplitter->count() == 1 || OldSplitter->orientation() == orientation))
 	{
 		OldSplitter->setOrientation(orientation);
@@ -236,19 +236,22 @@ void CContainerWidget::dropIntoSection(FloatingWidget* FloatingWidget,
 {
 	CContainerWidget* FloatingContainer = FloatingWidget->containerWidget();
 	QSplitter* FloatingMainSplitter = FloatingContainer->findChild<QSplitter*>(QString(),
-		Qt::FindDirectChildrenOnly);	QSplitter* OldSplitter = this->findChild<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
+		Qt::FindDirectChildrenOnly);
 	QList<SectionWidget*> SectionWidgets;
 	for (int i = 0; i < FloatingMainSplitter->count(); ++i)
 	{
 		SectionWidgets.append(static_cast<SectionWidget*>(FloatingMainSplitter->widget(i)));
 	}
 
+	Qt::Orientation Orientation;
+	int InsertIndexOffset;
 	switch (area)
 	{
-	/*case TopDropArea:return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Vertical, 0);
-	case RightDropArea: return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Horizontal, 1);
-	case BottomDropArea: return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Vertical, 1);
-	case LeftDropArea: return insertNewSectionWidget(data, targetSectionWidget, section_widget, Qt::Horizontal, 0);*/
+	case TopDropArea: Orientation = Qt::Vertical; InsertIndexOffset = 0;break;
+	case RightDropArea: Orientation = Qt::Horizontal; InsertIndexOffset = 1;break;
+	case BottomDropArea: Orientation = Qt::Vertical; InsertIndexOffset = 1;break;
+	case LeftDropArea:  Orientation = Qt::Horizontal; InsertIndexOffset = 0;break;
+
 	case CenterDropArea:
 	{
 		QList<SectionWidget*> SectionWidgets = FloatingContainer->findChildren<SectionWidget*>(QString(), Qt::FindChildrenRecursively);
@@ -273,6 +276,48 @@ void CContainerWidget::dropIntoSection(FloatingWidget* FloatingWidget,
 	default:
 		break;
 	}
+
+	QSplitter* targetSectionSplitter = findParentSplitter(targetSection);
+	std::cout << "target->orientaton " << targetSectionSplitter->orientation()
+		<< " orien " << Orientation << std::endl;
+	int index = targetSectionSplitter->indexOf(targetSection);
+	if (targetSectionSplitter->orientation() == Orientation)
+	{
+		std::cout << "targetSectionSplitter->orientation() == Orientation" << std::endl;
+		if (FloatingMainSplitter->orientation() == Orientation || FloatingMainSplitter->count() == 1)
+		{
+			std::cout << "FloatingMainSplitter->orientation() == Orientation || FloatingMainSplitter->count() == 1" << std::endl;
+			for (int i = 0; i < SectionWidgets.count(); ++i)
+			{
+				targetSectionSplitter->insertWidget(index + InsertIndexOffset, SectionWidgets[i]);
+			}
+		}
+		else
+		{
+			targetSectionSplitter->insertWidget(index + InsertIndexOffset, FloatingMainSplitter);
+		}
+	}
+	else
+	{
+		std::cout << "targetSectionSplitter->orientation() != Orientation" << std::endl;
+		QSplitter* s = MainContainerWidget::newSplitter(Orientation);
+		if (FloatingMainSplitter->orientation() == Orientation || FloatingMainSplitter->count() == 1)
+		{
+			std::cout << "FloatingMainSplitter->orientation() == Orientation || FloatingMainSplitter->count() == 1" << std::endl;
+			for (int i = 0; i < SectionWidgets.count(); ++i)
+			{
+				s->addWidget(SectionWidgets[i]);
+			}
+		}
+		else
+		{
+			s->addWidget(FloatingMainSplitter);
+		}
+
+		s->addWidget(targetSection);
+		targetSectionSplitter->insertWidget(index, s);
+	}
+	FloatingWidget->deleteLater();
 
 	/*   InternalContentData data;
     if (!sectionwidget->takeContent(m_Content->uid(), data))
@@ -335,7 +380,7 @@ SectionWidget* CContainerWidget::sectionWidgetAt(const QPoint& pos) const
 
 bool CContainerWidget::isInFrontOf(CContainerWidget* Other) const
 {
-	return this->m_zOrderIndex > Other->m_zOrderIndex;
+	return this->zOrderIndex() > Other->zOrderIndex();
 }
 
 SectionWidget*  CContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSectionWidget, DropArea area, bool autoActive)
@@ -396,6 +441,7 @@ SectionWidget* CContainerWidget::newSectionWidget()
 void CContainerWidget::addSectionWidget(SectionWidget* section)
 {
 	ADS_Expects(section != NULL);
+
 	if (section->containerWidget())
 	{
 		section->containerWidget()->takeSection(section);
