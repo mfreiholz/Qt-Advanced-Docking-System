@@ -19,8 +19,8 @@ The `master` branch is not guaranteed to be stable or does not even build, since
 If you want a version that builds, you should always use a release/beta tag.
 
 ## Developers
-Uwe Kindler, Project Maintainer
-Manuel Freiholz 
+- Uwe Kindler, Project Maintainer
+- Manuel Freiholz 
 
 ## License information
 This project uses the [GPLv3 license] (gnu-gpl-v3.0.md)
