@@ -293,6 +293,7 @@ void CContainerWidget::dropIntoSection(FloatingWidget* FloatingWidget,
 	std::cout << "target->orientaton " << targetSectionSplitter->orientation()
 		<< " orien " << Orientation << std::endl;
 	int index = targetSectionSplitter->indexOf(targetSection);
+	std::cout << "targetSectionSplitter->indexOf(targetSection) " << index << std::endl;
 	if (targetSectionSplitter->orientation() == Orientation)
 	{
 		std::cout << "targetSectionSplitter->orientation() == Orientation" << std::endl;
@@ -326,50 +327,18 @@ void CContainerWidget::dropIntoSection(FloatingWidget* FloatingWidget,
 			s->addWidget(FloatingMainSplitter);
 		}
 
-		s->addWidget(targetSection);
+		if (!InsertIndexOffset)
+		{
+			s->addWidget(targetSection);
+		}
+		else
+		{
+			s->insertWidget(0, targetSection);
+		}
 		targetSectionSplitter->insertWidget(index, s);
 	}
 	FloatingWidget->deleteLater();
-
-	/*   InternalContentData data;
-    if (!sectionwidget->takeContent(m_Content->uid(), data))
-    {
-        qWarning() << "THIS SHOULD NOT HAPPEN!!" << m_Content->uid();
-        return;
-    }
-
-    FloatingWidget* fw = new FloatingWidget(cw, data.content, data.titleWidget, data.contentWidget, cw);
-    fw->resize(sectionwidget->size());
-    fw->setObjectName("FloatingWidget");
-    fw->startFloating(m_DragStartMousePosition);
-
-    // Delete old section, if it is empty now.
-    if (sectionwidget->contents().isEmpty())
-    {
-        delete sectionwidget;
-        sectionwidget = NULL;
-    }
-    deleteEmptySplitter(cw);*/
-
-
-	/*QSplitter* targetSectionSplitter = findParentSplitter(targetSection);
-	SectionWidget* sw = newSectionWidget();
-	sw->addContent(data, true);
-	if (targetSectionSplitter->orientation() == Orientation)
-	{
-		const int index = targetSectionSplitter->indexOf(targetSection);
-		targetSectionSplitter->insertWidget(index + InsertIndexOffset, sw);
-	}
-	else
-	{
-		const int index = targetSectionSplitter->indexOf(targetSection);
-		QSplitter* s = MainContainerWidget::newSplitter(Orientation);
-		s->addWidget(sw);
-		s->addWidget(targetSection);
-		targetSectionSplitter->insertWidget(index, s);
-	}
-	ret = sw;
-	return ret;*/
+	m_Sections.append(SectionWidgets);
 }
 
 

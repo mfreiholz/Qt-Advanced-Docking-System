@@ -67,23 +67,24 @@ void deleteEmptySplitter(MainContainerWidget* container)
 }
 
 
-QSplitter* findParentSplitter(class QWidget* w)
+QSplitter* findParentSplitter(QWidget* w)
 {
-	QSplitter* cw = 0;
-	QWidget* next = w;
+	QSplitter* splitter = 0;
+	QWidget* parentWidget = w;
 	do
 	{
-		if ((cw = dynamic_cast<QSplitter*>(next)) != 0)
+		if ((splitter = dynamic_cast<QSplitter*>(parentWidget)) != 0)
 		{
 			break;
 		}
-		next = next->parentWidget();
+		parentWidget = parentWidget->parentWidget();
 	}
-	while (next);
-	return cw;
+	while (parentWidget);
+	return splitter;
 }
 
-QSplitter* findImmediateSplitter(class QWidget* w)
+
+QSplitter* findImmediateSplitter(QWidget* w)
 {
 	QLayout* l = w->layout();
 	if (!l || l->count() <= 0)

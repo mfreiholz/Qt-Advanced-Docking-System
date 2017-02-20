@@ -171,6 +171,7 @@ void SectionTitleWidget::startFloating(QMouseEvent* ev, MainContainerWidget* cw,
 	FloatingWidget* fw;
 	if (sectionwidget->contentCount() > 1)
 	{
+		// If section widget has multiple tabs, we take only one tab
 		InternalContentData data;
 		if (!sectionwidget->takeContent(m_Content->uid(), data))
 		{
@@ -181,7 +182,27 @@ void SectionTitleWidget::startFloating(QMouseEvent* ev, MainContainerWidget* cw,
 	}
 	else
 	{
+		// If section widget has only one content widget, we can move the complete
+		// section widget into floating widget
+		QSplitter* splitter = findParentSplitter(sectionwidget);
 		fw = new FloatingWidget(cw, sectionwidget);
+		if (splitter && splitter->count() == 1)
+		{
+			// if splitter contains only one section widget, then we can
+			// remove the splitter and replace it with the section widget
+			std::cout << "splitter->count() == 1" << std::endl;
+			SectionWidget* sectionwidget = dynamic_cast<SectionWidget*>(splitter->widget(0));
+			QSplitter* parentSplitter = dynamic_cast<QSplitter*>(splitter->parentWidget());
+			if (parentSplitter)
+			{
+				sectionwidget->setParent(0);
+				int index = parentSplitter->indexOf(splitter);
+				splitter->setParent(0);
+				parentSplitter->insertWidget(index, sectionwidget);
+				delete splitter;
+				std::cout << "Index of splitter " << index << std::endl;
+			}
+		}
 	}
 
     fw->resize(sectionwidget->size());
