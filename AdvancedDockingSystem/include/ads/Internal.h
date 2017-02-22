@@ -31,7 +31,7 @@
 ADS_NAMESPACE_BEGIN
 class SectionContent;
 class SectionTitleWidget;
-class SectionContentWidget;
+class CSectionContentWidget;
 
 
 class InternalContentData
@@ -45,7 +45,7 @@ public:
 
 	QSharedPointer<SectionContent> content;
 	SectionTitleWidget* titleWidget;
-	SectionContentWidget* contentWidget;
+	CSectionContentWidget* contentWidget;
 };
 
 

@@ -33,9 +33,9 @@ class QMenu;
 #include "ads/FloatingWidget.h"
 
 ADS_NAMESPACE_BEGIN
-class MainContainerWidget;
+class CMainContainerWidget;
 class SectionTitleWidget;
-class SectionContentWidget;
+class CSectionContentWidget;
 
 // SectionWidget manages multiple instances of SectionContent.
 // It displays a title TAB, which is clickable and will switch to
@@ -43,10 +43,10 @@ class SectionContentWidget;
 class ADS_EXPORT_API SectionWidget : public QFrame
 {
 	Q_OBJECT
-	friend class MainContainerWidget;
+	friend class CMainContainerWidget;
 	friend class CContainerWidget;
 
-	explicit SectionWidget(MainContainerWidget* MainContainer, CContainerWidget* parent);
+	explicit SectionWidget(CMainContainerWidget* MainContainer, CContainerWidget* parent);
 
 public:
 	virtual ~SectionWidget();
@@ -88,10 +88,10 @@ private slots:
 
 private:
 	const int _uid;
-	QPointer<MainContainerWidget> m_MainContainerWidget;
+	QPointer<CMainContainerWidget> m_MainContainerWidget;
 	QList<SectionContent::RefPtr> m_Contents;
 	QList<SectionTitleWidget*> m_TitleWidgets;
-	QList<SectionContentWidget*> m_ContentWidgets;
+	QList<CSectionContentWidget*> m_ContentWidgets;
 
 	QBoxLayout* _topLayout;
 	QScrollArea* _tabsScrollArea;

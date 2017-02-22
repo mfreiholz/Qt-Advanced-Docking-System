@@ -25,9 +25,9 @@ class QBoxLayout;
 #include "ads/SectionContent.h"
 
 ADS_NAMESPACE_BEGIN
-class MainContainerWidget;
+class CMainContainerWidget;
 class SectionTitleWidget;
-class SectionContentWidget;
+class CSectionContentWidget;
 class InternalContentData;
 class SectionWidget;
 class CContainerWidget;
@@ -40,7 +40,7 @@ private:
 	QPoint m_DragStartPosition;
 	QPoint m_DragStartMousePosition;
 	FloatingWidget* floatingWidget() const;
-	MainContainerWidget* mainContainerWidget() const;
+	CMainContainerWidget* mainContainerWidget() const;
 	void moveFloatingWidget(QMouseEvent* ev);
 
 private slots:
@@ -65,12 +65,12 @@ class FloatingWidget : public QWidget
 {
 	Q_OBJECT
 
-	friend class MainContainerWidget;
+	friend class CMainContainerWidget;
 	friend class CFloatingTitleWidget;
 
 public:
-	FloatingWidget(MainContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent = NULL);
-    FloatingWidget(MainContainerWidget* container, SectionWidget* sectionWidget);
+	FloatingWidget(CMainContainerWidget* container, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, CSectionContentWidget* contentWidget, QWidget* parent = NULL);
+    FloatingWidget(CMainContainerWidget* container, SectionWidget* sectionWidget);
     virtual ~FloatingWidget();
 
 	/**
@@ -79,7 +79,7 @@ public:
 	unsigned int zOrderIndex() const;
 
 	CContainerWidget* containerWidget() const  {return m_ContainerWidget;}
-	MainContainerWidget* mainContainerWidget() const {return m_MainContainerWidget;}
+	CMainContainerWidget* mainContainerWidget() const {return m_MainContainerWidget;}
 
 public://private:
 	bool takeContent(InternalContentData& data);
@@ -100,7 +100,7 @@ private slots:
 private:
 	void setDraggingActive(bool Active);
 
-	MainContainerWidget* m_MainContainerWidget;
+	CMainContainerWidget* m_MainContainerWidget;
 	CContainerWidget* m_ContainerWidget;
 	CContainerWidget* m_DropContainer;
 	bool m_DraggingActive = false;

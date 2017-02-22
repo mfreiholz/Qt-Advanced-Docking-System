@@ -13,18 +13,12 @@ SectionContentListModel::~SectionContentListModel()
 {
 }
 
-void SectionContentListModel::init(ADS_NS::MainContainerWidget* cw)
+void SectionContentListModel::init(ADS_NS::CMainContainerWidget* cw)
 {
-#if QT_VERSION >= 0x050000
 	beginResetModel();
 	_cw = cw;
 	_contents = _cw->contents();
 	endResetModel();
-#else
-	_cw = cw;
-	_contents = _cw->contents();
-	reset();
-#endif
 }
 
 int SectionContentListModel::columnCount(const QModelIndex& parent) const

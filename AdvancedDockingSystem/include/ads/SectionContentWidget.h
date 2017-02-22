@@ -22,23 +22,64 @@
 #include "ads/API.h"
 #include "ads/SectionContent.h"
 
-ADS_NAMESPACE_BEGIN
-class MainContainerWidget;
+namespace ads
+{
+class CMainContainerWidget;
 class SectionWidget;
+class SectionTitleWidget;
 
-class SectionContentWidget : public QFrame
+
+struct SectionContentWidgetPrivate;
+
+
+class CSectionContentWidget : public QFrame
 {
 	Q_OBJECT
-
-	friend class MainContainerWidget;
+private:
+	SectionContentWidgetPrivate* d;
+	friend class SectionContentWidgetPrivate;
+	friend class CMainContainerWidget;
 
 public:
-	SectionContentWidget(SectionContent::RefPtr c, QWidget* parent = 0);
-	virtual ~SectionContentWidget();
+	enum Flag
+	{
+		None = 0,
+		Closeable = 1,
+		Maximizable = 2,
+		AllFlags = Closeable | Maximizable
+	};
+	Q_DECLARE_FLAGS(Flags, Flag)
+
+	CSectionContentWidget(SectionContent::RefPtr c = SectionContent::RefPtr(), QWidget* parent = 0);
+	virtual ~CSectionContentWidget();
+
+	/*!
+	 * Creates new content, associates it to <em>container</em> and takes ownership of
+	 * <em>title</em>- and <em>content</em>- widgets.
+	 * \param uniqueName An unique identifier across the entire process.
+	 * \param container The parent ContainerWidget in which this content will be active.
+	 * \param title The widget to use as title.
+	 * \param content The widget to use as content.
+	 * \return May return a invalid ref-pointer in case of invalid parameters.
+	 */
+	static CSectionContentWidget* newSectionContent(const QString& uniqueName,
+		CMainContainerWidget* container, QWidget* title, QWidget* content);
+
+	int uid() const;
+	QString uniqueName() const;
+	CMainContainerWidget* containerWidget() const;
+	QWidget* titleWidgetContent() const;
+	QWidget* contentWidget() const;
+	Flags flags() const;
+
+	QString visibleTitle() const;
+	QString title() const;
+	void setTitle(const QString& title);
+	void setFlags(const Flags f);
 
 private:
 	SectionContent::RefPtr _content;
 };
 
-ADS_NAMESPACE_END
+} // namespace ads
 #endif

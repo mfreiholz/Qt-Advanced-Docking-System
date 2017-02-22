@@ -27,7 +27,7 @@
 class QPushButton;
 
 ADS_NAMESPACE_BEGIN
-class MainContainerWidget;
+class CMainContainerWidget;
 class SectionWidget;
 class FloatingWidget;
 
@@ -36,7 +36,7 @@ class SectionTitleWidget : public QFrame
 	Q_OBJECT
 	Q_PROPERTY(bool activeTab READ isActiveTab WRITE setActiveTab NOTIFY activeTabChanged)
 
-	friend class MainContainerWidget;
+	friend class CMainContainerWidget;
 	friend class SectionWidget;
 	friend class CContainerWidget;
 
@@ -66,7 +66,7 @@ protected:
 	virtual void mouseMoveEvent(QMouseEvent* ev);
 
 private:
-   void startFloating(QMouseEvent* ev, MainContainerWidget* cw, SectionWidget* sectionwidget);
+   void startFloating(QMouseEvent* ev, CMainContainerWidget* cw, SectionWidget* sectionwidget);
    void moveTab(QMouseEvent* ev);
 
 signals:

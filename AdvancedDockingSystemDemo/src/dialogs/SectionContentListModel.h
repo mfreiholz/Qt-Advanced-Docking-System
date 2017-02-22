@@ -9,7 +9,7 @@
 #include "ads/API.h"
 #include "ads/SectionContent.h"
 ADS_NAMESPACE_BEGIN
-class MainContainerWidget;
+class CMainContainerWidget;
 ADS_NAMESPACE_END
 
 class SectionContentListModel : public QAbstractTableModel
@@ -27,7 +27,7 @@ public:
 
 	SectionContentListModel(QObject* parent);
 	virtual ~SectionContentListModel();
-	void init(ADS_NS::MainContainerWidget* cw);
+	void init(ADS_NS::CMainContainerWidget* cw);
 
 	virtual int columnCount(const QModelIndex &parent) const;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
@@ -40,7 +40,7 @@ public:
 private:
 	QHash<int, QString> _headers;
 
-	ADS_NS::MainContainerWidget* _cw;
+	ADS_NS::CMainContainerWidget* _cw;
 	QList<ADS_NS::SectionContent::RefPtr> _contents;
 };
 

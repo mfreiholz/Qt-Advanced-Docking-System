@@ -16,7 +16,7 @@
 ** along with this program. If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include <ads/MainContainerWidget.h>
+#include <ads/SectionContentWidget.h>
 #include <QDebug>
 #include <QPaintEvent>
 #include <QPainter>
@@ -32,16 +32,16 @@
 #include "ads/Internal.h"
 #include "ads/SectionWidget.h"
 #include "ads/SectionTitleWidget.h"
-#include "ads/SectionContentWidget.h"
 #include "ads/DropOverlay.h"
 #include "ads/Serialization.h"
 
 #include <iostream>
+#include "../include/ads/MainContainerWidget.h"
 
 ADS_NAMESPACE_BEGIN
 
 
-QSplitter* MainContainerWidget::newSplitter(Qt::Orientation orientation, QWidget* parent)
+QSplitter* CMainContainerWidget::newSplitter(Qt::Orientation orientation, QWidget* parent)
 {
 	QSplitter* s = new QSplitter(orientation, parent);
 	s->setProperty("ads-splitter", QVariant(true));
@@ -51,7 +51,7 @@ QSplitter* MainContainerWidget::newSplitter(Qt::Orientation orientation, QWidget
 }
 
 
-MainContainerWidget::MainContainerWidget(QWidget *parent) :
+CMainContainerWidget::CMainContainerWidget(QWidget *parent) :
 	CContainerWidget(this, parent)
 {
 	m_SectionDropOverlay = new DropOverlay(this, DropOverlay::ModeSectionOverlay);
@@ -61,7 +61,7 @@ MainContainerWidget::MainContainerWidget(QWidget *parent) :
 	m_Containers.append(this);
 }
 
-MainContainerWidget::~MainContainerWidget()
+CMainContainerWidget::~CMainContainerWidget()
 {
 	// Note: It's required to delete in 2 steps
 	// Remove from list, and then delete.
@@ -83,7 +83,7 @@ MainContainerWidget::~MainContainerWidget()
 }
 
 
-bool MainContainerWidget::removeSectionContent(const SectionContent::RefPtr& sc)
+bool CMainContainerWidget::removeSectionContent(const SectionContent::RefPtr& sc)
 {
 	ADS_Expects(!sc.isNull());
 
@@ -128,7 +128,7 @@ bool MainContainerWidget::removeSectionContent(const SectionContent::RefPtr& sc)
 	return true;
 }
 
-bool MainContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
+bool CMainContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 {
 	ADS_Expects(!sc.isNull());
 
@@ -183,7 +183,7 @@ bool MainContainerWidget::showSectionContent(const SectionContent::RefPtr& sc)
 	return false;
 }
 
-bool MainContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
+bool CMainContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
 {
 	ADS_Expects(!sc.isNull());
 
@@ -239,7 +239,7 @@ bool MainContainerWidget::hideSectionContent(const SectionContent::RefPtr& sc)
 	return false;
 }
 
-bool MainContainerWidget::raiseSectionContent(const SectionContent::RefPtr& sc)
+bool CMainContainerWidget::raiseSectionContent(const SectionContent::RefPtr& sc)
 {
 	ADS_Expects(!sc.isNull());
 
@@ -273,7 +273,7 @@ bool MainContainerWidget::raiseSectionContent(const SectionContent::RefPtr& sc)
 	return false;
 }
 
-bool MainContainerWidget::isSectionContentVisible(const SectionContent::RefPtr& sc)
+bool CMainContainerWidget::isSectionContentVisible(const SectionContent::RefPtr& sc)
 {
 	ADS_Expects(!sc.isNull());
 
@@ -304,7 +304,7 @@ bool MainContainerWidget::isSectionContentVisible(const SectionContent::RefPtr& 
 	return false;
 }
 
-QMenu* MainContainerWidget::createContextMenu() const
+QMenu* CMainContainerWidget::createContextMenu() const
 {
 	// Fill map with actions (sorted by key!)
 	QMap<QString, QAction*> actions;
@@ -367,7 +367,7 @@ QMenu* MainContainerWidget::createContextMenu() const
 	return m;
 }
 
-QByteArray MainContainerWidget::saveState() const
+QByteArray CMainContainerWidget::saveState() const
 {
 	ADS_NS_SER::InMemoryWriter writer;
 
@@ -390,7 +390,7 @@ QByteArray MainContainerWidget::saveState() const
 	return writer.toByteArray();
 }
 
-bool MainContainerWidget::restoreState(const QByteArray& data)
+bool CMainContainerWidget::restoreState(const QByteArray& data)
 {
 	if (data.isEmpty())
 		return false;
@@ -409,7 +409,7 @@ bool MainContainerWidget::restoreState(const QByteArray& data)
 }
 
 
-QList<SectionContent::RefPtr> MainContainerWidget::contents() const
+QList<SectionContent::RefPtr> CMainContainerWidget::contents() const
 {
 	QList<SectionContent::WeakPtr> wl = m_SectionContentIdMap.values();
 	QList<SectionContent::RefPtr> sl;
@@ -422,13 +422,13 @@ QList<SectionContent::RefPtr> MainContainerWidget::contents() const
 	return sl;
 }
 
-QPointer<DropOverlay> MainContainerWidget::sectionDropOverlay() const
+QPointer<DropOverlay> CMainContainerWidget::sectionDropOverlay() const
 {
 	return m_SectionDropOverlay;
 }
 
 
-QPointer<DropOverlay> MainContainerWidget::dropOverlay() const
+QPointer<DropOverlay> CMainContainerWidget::dropOverlay() const
 {
 	return m_ContainerDropOverlay;
 }
@@ -437,7 +437,7 @@ QPointer<DropOverlay> MainContainerWidget::dropOverlay() const
 // PRIVATE API BEGINS HERE
 ///////////////////////////////////////////////////////////////////////
 
-QByteArray MainContainerWidget::saveHierarchy() const
+QByteArray CMainContainerWidget::saveHierarchy() const
 {
 	/*
 		# Data Format
@@ -524,7 +524,7 @@ QByteArray MainContainerWidget::saveHierarchy() const
 	return ba;
 }
 
-void MainContainerWidget::saveFloatingWidgets(QDataStream& out) const
+void CMainContainerWidget::saveFloatingWidgets(QDataStream& out) const
 {
 	out << m_Floatings.count();
 	for (int i = 0; i < m_Floatings.count(); ++i)
@@ -536,7 +536,7 @@ void MainContainerWidget::saveFloatingWidgets(QDataStream& out) const
 	}
 }
 
-void MainContainerWidget::saveSectionWidgets(QDataStream& out, QWidget* widget) const
+void CMainContainerWidget::saveSectionWidgets(QDataStream& out, QWidget* widget) const
 {
 	QSplitter* sp = NULL;
 	SectionWidget* sw = NULL;
@@ -599,7 +599,7 @@ void MainContainerWidget::saveSectionWidgets(QDataStream& out, QWidget* widget) 
 	}
 }
 
-bool MainContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) const
+bool CMainContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) const
 {
 	if (m_Sections.count() <= 0)
 		return false;
@@ -627,7 +627,7 @@ bool MainContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) co
 	return true;
 }
 
-bool MainContainerWidget::restoreHierarchy(const QByteArray& data)
+bool CMainContainerWidget::restoreHierarchy(const QByteArray& data)
 {
 	QDataStream in(data);
 	in.setVersion(QDataStream::Qt_4_5);
@@ -795,7 +795,7 @@ bool MainContainerWidget::restoreHierarchy(const QByteArray& data)
 	return success;
 }
 
-bool MainContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, QList<FloatingWidget*>& floatings)
+bool CMainContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, QList<FloatingWidget*>& floatings)
 {
 	Q_UNUSED(version)
 
@@ -838,7 +838,7 @@ bool MainContainerWidget::restoreFloatingWidgets(QDataStream& in, int version, Q
 	return true;
 }
 
-bool MainContainerWidget::restoreSectionWidgets(QDataStream& in, int version, QSplitter* currentSplitter, QList<SectionWidget*>& sections, QList<SectionContent::RefPtr>& contentsToHide)
+bool CMainContainerWidget::restoreSectionWidgets(QDataStream& in, int version, QSplitter* currentSplitter, QList<SectionWidget*>& sections, QList<SectionContent::RefPtr>& contentsToHide)
 {
 	if (in.atEnd())
 		return true;
@@ -936,7 +936,7 @@ bool MainContainerWidget::restoreSectionWidgets(QDataStream& in, int version, QS
 	return true;
 }
 
-bool MainContainerWidget::takeContent(const SectionContent::RefPtr& sc, InternalContentData& data)
+bool CMainContainerWidget::takeContent(const SectionContent::RefPtr& sc, InternalContentData& data)
 {
 	ADS_Expects(!sc.isNull());
 
@@ -967,7 +967,7 @@ bool MainContainerWidget::takeContent(const SectionContent::RefPtr& sc, Internal
 }
 
 
-void MainContainerWidget::onActionToggleSectionContentVisibility(bool visible)
+void CMainContainerWidget::onActionToggleSectionContentVisibility(bool visible)
 {
 	QAction* a = qobject_cast<QAction*>(sender());
 	if (!a)
@@ -986,13 +986,13 @@ void MainContainerWidget::onActionToggleSectionContentVisibility(bool visible)
 }
 
 
-void MainContainerWidget::hideContainerOverlay()
+void CMainContainerWidget::hideContainerOverlay()
 {
 	m_ContainerDropOverlay->hideDropOverlay();
 }
 
 
-void MainContainerWidget::moveFloatingWidget(const QPoint& TargetPos)
+void CMainContainerWidget::moveFloatingWidget(const QPoint& TargetPos)
 {
     QPoint MousePos = mapFromGlobal(QCursor::pos());
 

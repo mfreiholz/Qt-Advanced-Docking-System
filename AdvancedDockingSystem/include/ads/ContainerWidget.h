@@ -35,7 +35,7 @@ namespace ads
 class SectionWidget;
 class DropOverlay;
 class InternalContentData;
-class MainContainerWidget;
+class CMainContainerWidget;
 
 /**
  * @brief
@@ -51,7 +51,7 @@ class CContainerWidget  : public QFrame
     friend class ContainerWidgetPrivate;
 
 public:
-	explicit CContainerWidget(MainContainerWidget* MainContainerWidget, QWidget *parent = nullptr);
+	explicit CContainerWidget(CMainContainerWidget* MainContainerWidget, QWidget *parent = nullptr);
 	virtual ~CContainerWidget();
 
 	/**
@@ -82,7 +82,7 @@ public:
 
 	void dumpLayout();
 
-	MainContainerWidget* mainContainerWidget() const {return m_MainContainerWidget;}
+	CMainContainerWidget* mainContainerWidget() const {return m_MainContainerWidget;}
 
 	void addSectionWidget(SectionWidget* section);
 
@@ -112,7 +112,7 @@ protected:
 	QPointer<QSplitter> m_Splitter; // $mfreiholz: I'd like to remove this variable entirely,
 								   // because it changes during user interaction anyway.
 
-	MainContainerWidget* m_MainContainerWidget = 0;
+	CMainContainerWidget* m_MainContainerWidget = 0;
 	unsigned int m_zOrderIndex = 0;
 	static unsigned int zOrderCounter;
 

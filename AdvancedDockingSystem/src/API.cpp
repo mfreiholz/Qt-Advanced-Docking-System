@@ -44,7 +44,7 @@ static bool splitterContainsSectionWidget(QSplitter* splitter)
 	return false;
 }
 
-void deleteEmptySplitter(MainContainerWidget* container)
+void deleteEmptySplitter(CMainContainerWidget* container)
 {
 	bool doAgain = false;
 	do

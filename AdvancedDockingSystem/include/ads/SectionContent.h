@@ -25,11 +25,11 @@ class QWidget;
 #include "ads/API.h"
 
 ADS_NAMESPACE_BEGIN
-class MainContainerWidget;
+class CMainContainerWidget;
 
 class ADS_EXPORT_API SectionContent
 {
-	friend class MainContainerWidget;
+	friend class CMainContainerWidget;
 
 private:
 	SectionContent();
@@ -58,13 +58,13 @@ public:
 	 * \param content The widget to use as content.
 	 * \return May return a invalid ref-pointer in case of invalid parameters.
 	 */
-	static RefPtr newSectionContent(const QString& uniqueName, MainContainerWidget* container, QWidget* title, QWidget* content);
+	static RefPtr newSectionContent(const QString& uniqueName, CMainContainerWidget* container, QWidget* title, QWidget* content);
 
 	virtual ~SectionContent();
 	int uid() const;
 	QString uniqueName() const;
-	MainContainerWidget* containerWidget() const;
-	QWidget* titleWidget() const;
+	CMainContainerWidget* containerWidget() const;
+	QWidget* titleWidgetContent() const;
 	QWidget* contentWidget() const;
 	Flags flags() const;
 
@@ -77,9 +77,9 @@ private:
 	const int _uid;
 	QString _uniqueName;
 
-	QPointer<MainContainerWidget> _containerWidget;
-	QPointer<QWidget> _titleWidget;
-	QPointer<QWidget> _contentWidget;
+	QPointer<CMainContainerWidget> m_MainContainerWidget;
+	QPointer<QWidget> m_TitleWidgetContent;
+	QPointer<QWidget> m_ContentWidget;
 
 	// Optional attributes
 	QString _title;

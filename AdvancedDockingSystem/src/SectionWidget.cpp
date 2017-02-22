@@ -44,13 +44,13 @@
 #include "ads/DropOverlay.h"
 #include "ads/SectionContent.h"
 #include "ads/SectionTitleWidget.h"
-#include "ads/SectionContentWidget.h"
+#include <ads/SectionContentWidget.h>
 #include "ads/FloatingWidget.h"
 #include <ads/MainContainerWidget.h>
 
 ADS_NAMESPACE_BEGIN
 
-SectionWidget::SectionWidget(MainContainerWidget* MainContainer, CContainerWidget* parent) :
+SectionWidget::SectionWidget(CMainContainerWidget* MainContainer, CContainerWidget* parent) :
 	QFrame(parent),
 	_uid(GetNextUid()),
 	m_MainContainerWidget(MainContainer),
@@ -174,7 +174,7 @@ void SectionWidget::addContent(const SectionContent::RefPtr& c)
 	_tabsLayout->insertWidget(_tabsLayout->count() - _tabsLayoutInitCount, title);
 	QObject::connect(title, SIGNAL(clicked()), this, SLOT(onSectionTitleClicked()));
 
-	SectionContentWidget* content = new SectionContentWidget(c, NULL);
+	CSectionContentWidget* content = new CSectionContentWidget(c, NULL);
 	m_ContentWidgets.append(content);
 	_contentsLayout->addWidget(content);
 
@@ -247,7 +247,7 @@ bool SectionWidget::takeContentAt(int index, InternalContentData& data)
 	}
 
 	// Content wrapper widget (CONTENT)
-	SectionContentWidget* content = m_ContentWidgets.takeAt(index);
+	CSectionContentWidget* content = m_ContentWidgets.takeAt(index);
 	if (content)
 	{
 		_contentsLayout->removeWidget(content);

@@ -46,7 +46,7 @@ class InternalContentData;
  * ContainerWidget is the main container to provide the docking
  * functionality. It manages multiple sections with all possible areas.
  */
-class ADS_EXPORT_API MainContainerWidget : public CContainerWidget
+class ADS_EXPORT_API CMainContainerWidget : public CContainerWidget
 {
 	Q_OBJECT
 
@@ -57,10 +57,11 @@ class ADS_EXPORT_API MainContainerWidget : public CContainerWidget
     friend class ContainerWidgetPrivate;
     friend class CFloatingTitleWidget;
     friend class CContainerWidget;
+    friend class CSectionContentWidget;
 
 public:
-	explicit MainContainerWidget(QWidget *parent = nullptr);
-	virtual ~MainContainerWidget();
+	explicit CMainContainerWidget(QWidget *parent = nullptr);
+	virtual ~CMainContainerWidget();
 
 	//
 	// Public API

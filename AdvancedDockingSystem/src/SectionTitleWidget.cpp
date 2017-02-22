@@ -16,6 +16,7 @@
 ** along with this program. If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
+#include <ads/MainContainerWidget.h>
 #include "ads/SectionTitleWidget.h"
 
 #include <QString>
@@ -36,8 +37,6 @@
 #include "ads/SectionContent.h"
 #include "ads/SectionWidget.h"
 #include "ads/FloatingWidget.h"
-#include <ads/MainContainerWidget.h>
-
 #include <iostream>
 
 ADS_NAMESPACE_BEGIN
@@ -51,14 +50,14 @@ SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* 
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::LeftToRight);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
-	l->addWidget(content->titleWidget());
+	l->addWidget(content->titleWidgetContent());
 	setLayout(l);
 }
 
 
 SectionTitleWidget::~SectionTitleWidget()
 {
-    layout()->removeWidget(m_Content->titleWidget());
+    layout()->removeWidget(m_Content->titleWidgetContent());
 }
 
 bool SectionTitleWidget::isActiveTab() const
@@ -130,7 +129,7 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 {
 	SectionWidget* section = nullptr;
 	CContainerWidget* cw = findParentContainerWidget(this);
-	MainContainerWidget* mcw = cw->mainContainerWidget();
+	CMainContainerWidget* mcw = cw->mainContainerWidget();
 	std::cout << "SectionTitleWidget::mouseReleaseEvent" << std::endl;
 
 	//m_FloatingWidget.clear();
@@ -164,7 +163,7 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 }
 
 
-void SectionTitleWidget::startFloating(QMouseEvent* ev, MainContainerWidget* cw, SectionWidget* sectionwidget)
+void SectionTitleWidget::startFloating(QMouseEvent* ev, CMainContainerWidget* cw, SectionWidget* sectionwidget)
 {
 	std::cout << "SectionTitleWidget::startFloating" << std::endl;
 
@@ -246,7 +245,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 
     // TODO make a member with the main container widget and assign it on
     // creation
-    MainContainerWidget* MainContainerWidget = findParentContainerWidget(this)->mainContainerWidget();
+    CMainContainerWidget* MainContainerWidget = findParentContainerWidget(this)->mainContainerWidget();
     ev->accept();
 
 

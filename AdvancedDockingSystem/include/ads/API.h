@@ -65,7 +65,7 @@ class QSplitter;
 //#define ADS_ANIMATION_DURATION 150
 
 ADS_NAMESPACE_BEGIN
-class MainContainerWidget;
+class CMainContainerWidget;
 class SectionWidget;
 
 enum DropArea
@@ -82,7 +82,7 @@ enum DropArea
 };
 Q_DECLARE_FLAGS(DropAreas, DropArea)
 
-void deleteEmptySplitter(MainContainerWidget* container);
+void deleteEmptySplitter(CMainContainerWidget* container);
 QSplitter* findParentSplitter(QWidget* w);
 QSplitter* findImmediateSplitter(QWidget* w);
 

@@ -20,6 +20,8 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <ads/MainContainerWidget.h>
+#include <ads/SectionContentWidget.h>
 #include "ads/ContainerWidget.h"
 
 #include <QDebug>
@@ -39,17 +41,15 @@
 #include "ads/Internal.h"
 #include "ads/SectionWidget.h"
 #include "ads/SectionTitleWidget.h"
-#include "ads/SectionContentWidget.h"
 #include "ads/DropOverlay.h"
 #include "ads/Serialization.h"
-#include "ads/MainContainerWidget.h"
 
 namespace ads
 {
 unsigned int CContainerWidget::zOrderCounter = 0;
 
 //============================================================================
-CContainerWidget::CContainerWidget(MainContainerWidget* MainContainer, QWidget *parent)
+CContainerWidget::CContainerWidget(CMainContainerWidget* MainContainer, QWidget *parent)
 	: QFrame(parent),
 	  m_MainContainerWidget(MainContainer)
 {
@@ -185,7 +185,7 @@ void CContainerWidget::dropIntoContainer(FloatingWidget* FloatingWidget, DropAre
 	{
 		std::cout << "Create new splitter" << std::endl;
 		// we have no splitter yet - let us create one
-		QSplitter* sp = MainContainerWidget::newSplitter(FloatingMainSplitter->orientation());
+		QSplitter* sp = CMainContainerWidget::newSplitter(FloatingMainSplitter->orientation());
 		if (l->count() > 0)
 		{
 			qWarning() << "Still items in layout. This should never happen.";
@@ -221,7 +221,7 @@ void CContainerWidget::dropIntoContainer(FloatingWidget* FloatingWidget, DropAre
 	{
 		std::cout << "Splitter with wrong orientation" << std::endl;
 		// we have a splitter but with the wrong orientation
-		QSplitter* sp = MainContainerWidget::newSplitter(orientation);
+		QSplitter* sp = CMainContainerWidget::newSplitter(orientation);
 		if (append)
 		{
 			QLayoutItem* li = l->replaceWidget(OldSplitter, sp);
@@ -313,7 +313,7 @@ void CContainerWidget::dropIntoSection(FloatingWidget* FloatingWidget,
 	else
 	{
 		std::cout << "targetSectionSplitter->orientation() != Orientation" << std::endl;
-		QSplitter* s = MainContainerWidget::newSplitter(Orientation);
+		QSplitter* s = CMainContainerWidget::newSplitter(Orientation);
 		if (FloatingMainSplitter->orientation() == Orientation || FloatingMainSplitter->count() == 1)
 		{
 			std::cout << "FloatingMainSplitter->orientation() == Orientation || FloatingMainSplitter->count() == 1" << std::endl;
@@ -431,7 +431,7 @@ void CContainerWidget::addSectionWidget(SectionWidget* section)
 	// Create default splitter.
 	if (!m_Splitter)
 	{
-		m_Splitter = MainContainerWidget::newSplitter(m_Orientation);
+		m_Splitter = CMainContainerWidget::newSplitter(m_Orientation);
 		m_MainLayout->addWidget(m_Splitter, 0, 0);
 	}
 	if (m_Splitter->indexOf(section) != -1)
@@ -459,7 +459,7 @@ SectionWidget* CContainerWidget::dropContentOuterHelper(QLayout* l, const Intern
 	QSplitter* oldsp = findImmediateSplitter(this);
 	if (!oldsp)
 	{
-		QSplitter* sp = MainContainerWidget::newSplitter(orientation);
+		QSplitter* sp = CMainContainerWidget::newSplitter(orientation);
 		if (l->count() > 0)
 		{
 			qWarning() << "Still items in layout. This should never happen.";
@@ -480,7 +480,7 @@ SectionWidget* CContainerWidget::dropContentOuterHelper(QLayout* l, const Intern
 	}
 	else
 	{
-		QSplitter* sp = MainContainerWidget::newSplitter(orientation);
+		QSplitter* sp = CMainContainerWidget::newSplitter(orientation);
 		if (append)
 		{
 			QLayoutItem* li = l->replaceWidget(oldsp, sp);
@@ -514,7 +514,7 @@ SectionWidget* CContainerWidget::insertNewSectionWidget(
 	else
 	{
 		const int index = targetSectionSplitter->indexOf(targetSection);
-		QSplitter* s = MainContainerWidget::newSplitter(Orientation);
+		QSplitter* s = CMainContainerWidget::newSplitter(Orientation);
 		s->addWidget(sw);
 		s->addWidget(targetSection);
 		targetSectionSplitter->insertWidget(index, s);
@@ -531,7 +531,7 @@ SectionWidget* CContainerWidget::addSectionContent(const SectionContent::RefPtr&
 	InternalContentData data;
 	data.content = sc;
 	data.titleWidget = new SectionTitleWidget(sc, NULL);
-	data.contentWidget = new SectionContentWidget(sc, NULL);
+	data.contentWidget = new CSectionContentWidget(sc, NULL);
 
 	connect(data.titleWidget, SIGNAL(activeTabChanged()), this, SLOT(onActiveTabChanged()));
 	return dropContent(data, sw, area, false);

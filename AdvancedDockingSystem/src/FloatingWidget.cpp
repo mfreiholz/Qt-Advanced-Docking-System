@@ -17,6 +17,7 @@
 ******************************************************************************/
 
 #include <ads/MainContainerWidget.h>
+#include <ads/SectionContentWidget.h>
 #include "ads/FloatingWidget.h"
 
 #include <QBoxLayout>
@@ -28,7 +29,6 @@
 #include <QGuiApplication>
 
 #include "ads/SectionTitleWidget.h"
-#include "ads/SectionContentWidget.h"
 #include "ads/Internal.h"
 #include "ads/SectionWidget.h"
 #include "ads/ContainerWidget.h"
@@ -92,7 +92,7 @@ FloatingWidget* CFloatingTitleWidget::floatingWidget() const
 	return dynamic_cast<FloatingWidget*>(parentWidget());
 }
 
-MainContainerWidget* CFloatingTitleWidget::mainContainerWidget() const
+CMainContainerWidget* CFloatingTitleWidget::mainContainerWidget() const
 {
 	return floatingWidget()->mainContainerWidget();
 }
@@ -154,7 +154,7 @@ void CFloatingTitleWidget::onMaximizeButtonClicked()
 
 
 
-FloatingWidget::FloatingWidget(MainContainerWidget* MainContainer, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, SectionContentWidget* contentWidget, QWidget* parent) :
+FloatingWidget::FloatingWidget(CMainContainerWidget* MainContainer, SectionContent::RefPtr sc, SectionTitleWidget* titleWidget, CSectionContentWidget* contentWidget, QWidget* parent) :
 	QWidget(MainContainer, Qt::Window),
 	m_MainContainerWidget(MainContainer)
 {
@@ -178,7 +178,7 @@ FloatingWidget::FloatingWidget(MainContainerWidget* MainContainer, SectionConten
 }
 
 
-FloatingWidget::FloatingWidget(MainContainerWidget* MainContainer, SectionWidget* sectionWidget)
+FloatingWidget::FloatingWidget(CMainContainerWidget* MainContainer, SectionWidget* sectionWidget)
 	: QWidget(MainContainer, Qt::Window),
 	  m_MainContainerWidget(MainContainer)
 {
@@ -338,7 +338,7 @@ void FloatingWidget::titleMouseReleaseEvent()
 	}
 
 	std::cout << "Dropped" << std::endl;
-	MainContainerWidget* MainContainerWidget = mainContainerWidget();
+	CMainContainerWidget* MainContainerWidget = mainContainerWidget();
 	m_DropContainer->dropFloatingWidget(this, QCursor::pos());
 	MainContainerWidget->dropOverlay()->hideDropOverlay();
 	MainContainerWidget->sectionDropOverlay()->hideDropOverlay();
@@ -357,7 +357,7 @@ void FloatingWidget::updateDropOverlays(const QPoint& GlobalPos)
 	{
 		return;
 	}
-    MainContainerWidget* MainContainerWidget = mainContainerWidget();
+    CMainContainerWidget* MainContainerWidget = mainContainerWidget();
     auto Containers = MainContainerWidget->m_Containers;
     CContainerWidget* TopContainer = nullptr;
     for (auto ContainerWidget : Containers)

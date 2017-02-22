@@ -32,7 +32,7 @@ SectionContent::SectionContent() :
 {
 }
 
-SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueName, MainContainerWidget* container, QWidget* title, QWidget* content)
+SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueName, CMainContainerWidget* container, QWidget* title, QWidget* content)
 {
 	auto SectionContentNameMap = container->m_SectionContentNameMap;
 	auto SectionContentIdMap = container->m_SectionContentIdMap;
@@ -55,9 +55,9 @@ SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueNa
 
 	QSharedPointer<SectionContent> sc(new SectionContent());
 	sc->_uniqueName = uniqueName;
-	sc->_containerWidget = container;
-	sc->_titleWidget = title;
-	sc->_contentWidget = content;
+	sc->m_MainContainerWidget = container;
+	sc->m_TitleWidgetContent = title;
+	sc->m_ContentWidget = content;
 
 	SectionContentIdMap.insert(sc->uid(), sc);
 	SectionContentNameMap.insert(sc->uniqueName(), sc);
@@ -66,16 +66,16 @@ SectionContent::RefPtr SectionContent::newSectionContent(const QString& uniqueNa
 
 SectionContent::~SectionContent()
 {
-	auto SectionContentNameMap = _containerWidget->m_SectionContentNameMap;
-	auto SectionContentIdMap = _containerWidget->m_SectionContentIdMap;
+	auto SectionContentNameMap = m_MainContainerWidget->m_SectionContentNameMap;
+	auto SectionContentIdMap = m_MainContainerWidget->m_SectionContentIdMap;
 
-	if (_containerWidget)
+	if (m_MainContainerWidget)
 	{
 		SectionContentIdMap.remove(_uid);
 		SectionContentNameMap.remove(_uniqueName);
 	}
-	delete _titleWidget;
-	delete _contentWidget;
+	delete m_TitleWidgetContent;
+	delete m_ContentWidget;
 }
 
 int SectionContent::uid() const
@@ -88,19 +88,19 @@ QString SectionContent::uniqueName() const
 	return _uniqueName;
 }
 
-MainContainerWidget* SectionContent::containerWidget() const
+CMainContainerWidget* SectionContent::containerWidget() const
 {
-	return _containerWidget;
+	return m_MainContainerWidget;
 }
 
-QWidget* SectionContent::titleWidget() const
+QWidget* SectionContent::titleWidgetContent() const
 {
-	return _titleWidget;
+	return m_TitleWidgetContent;
 }
 
 QWidget* SectionContent::contentWidget() const
 {
-	return _contentWidget;
+	return m_ContentWidget;
 }
 
 SectionContent::Flags SectionContent::flags() const
