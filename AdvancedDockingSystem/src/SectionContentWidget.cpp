@@ -97,8 +97,8 @@ CSectionContentWidget* CSectionContentWidget::newSectionContent(const QString& u
 	sc->d->TitleWidgetContent = title;
 	sc->d->ContentWidget = content;
 
-	//SectionContentIdMap.insert(sc->uid(), sc);
-	//SectionContentNameMap.insert(sc->uniqueName(), sc);
+	container->m_SectionContentWidgetIdMap.insert(sc->uid(), sc);
+	container->m_SectionContentWidgetNameMap.insert(sc->uniqueName(), sc);
 	return sc;
 }
 

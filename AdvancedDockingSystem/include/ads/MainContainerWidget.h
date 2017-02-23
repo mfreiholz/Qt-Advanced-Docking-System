@@ -39,6 +39,7 @@ ADS_NAMESPACE_BEGIN
 class SectionWidget;
 class DropOverlay;
 class InternalContentData;
+class CSectionContentWidget;
 
 
 
@@ -174,6 +175,9 @@ private:
 	QHash<int, SectionContent::WeakPtr> m_SectionContentIdMap;
 	QHash<QString, SectionContent::WeakPtr> m_SectionContentNameMap;
 	QHash<int, SectionWidget*> m_SectionWidgetIdMap;
+
+	QHash<int, CSectionContentWidget*> m_SectionContentWidgetIdMap;
+	QHash<QString, CSectionContentWidget*> m_SectionContentWidgetNameMap;
 
 	QPointer<DropOverlay> m_ContainerDropOverlay;
 	QPointer<DropOverlay> m_SectionDropOverlay;
