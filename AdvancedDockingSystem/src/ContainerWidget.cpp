@@ -20,9 +20,9 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include <ads/MainContainerWidget.h>
-#include <ads/SectionContentWidget.h>
-#include "ads/ContainerWidget.h"
+#include "MainContainerWidget.h"
+#include "SectionContentWidget.h"
+#include "ContainerWidget.h"
 
 #include <QDebug>
 #include <QPaintEvent>
@@ -38,11 +38,11 @@
 
 #include <iostream>
 
-#include "ads/Internal.h"
-#include "ads/SectionWidget.h"
-#include "ads/SectionTitleWidget.h"
-#include "ads/DropOverlay.h"
-#include "ads/Serialization.h"
+#include "Internal.h"
+#include "SectionWidget.h"
+#include "SectionTitleWidget.h"
+#include "DropOverlay.h"
+#include "Serialization.h"
 
 namespace ads
 {
@@ -97,7 +97,7 @@ void CContainerWidget::dropFloatingWidget(FloatingWidget* FloatingWidget,
 	if (sectionWidget)
 	{
 		auto dropOverlay = m_MainContainerWidget->sectionDropOverlay();
-		dropOverlay->setAllowedAreas(ADS_NS::AllAreas);
+		dropOverlay->setAllowedAreas(AllAreas);
 		dropArea = dropOverlay->showDropOverlay(sectionWidget);
 		if (dropArea != InvalidDropArea)
 		{

@@ -16,11 +16,12 @@
 ** along with this program. If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include "ads/Serialization.h"
+#include "Serialization.h"
 
 #include <QDebug>
 
-ADS_NAMESPACE_SER_BEGIN
+namespace ads
+{
 
 /*
 	\namespace ads::serialization
@@ -455,4 +456,4 @@ bool InMemoryReader::read(SectionIndexData& sid)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ADS_NAMESPACE_SER_END
+} // namespace ads

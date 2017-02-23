@@ -34,4 +34,28 @@ windows {
 RESOURCES += \
 	res/ads.qrc
 
-include(AdvancedDockingSystem.pri)
+SOURCES += \
+    $$PWD/src/API.cpp \
+    $$PWD/src/MainContainerWidget.cpp \
+    $$PWD/src/SectionWidget.cpp \
+    $$PWD/src/SectionContent.cpp \
+    $$PWD/src/SectionTitleWidget.cpp \
+    $$PWD/src/SectionContentWidget.cpp \
+    $$PWD/src/DropOverlay.cpp \
+    $$PWD/src/FloatingWidget.cpp \
+    $$PWD/src/Internal.cpp \
+    $$PWD/src/Serialization.cpp \
+    $$PWD/src/ContainerWidget.cpp
+
+HEADERS += \
+    $$PWD/src/API.h \
+    $$PWD/src/MainContainerWidget.h \
+    $$PWD/src/SectionWidget.h \
+    $$PWD/src/SectionContent.h \
+    $$PWD/src/SectionTitleWidget.h \
+    $$PWD/src/SectionContentWidget.h \
+    $$PWD/src/DropOverlay.h \
+    $$PWD/src/FloatingWidget.h \
+    $$PWD/src/Internal.h \
+    $$PWD/src/Serialization.h \
+    $$PWD/src/ContainerWidget.h

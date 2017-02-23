@@ -16,8 +16,8 @@
 ** along with this program. If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include <ads/MainContainerWidget.h>
-#include "ads/SectionTitleWidget.h"
+#include "MainContainerWidget.h"
+#include "SectionTitleWidget.h"
 
 #include <QString>
 #include <QApplication>
@@ -32,14 +32,15 @@
 
 #include <iostream>
 
-#include "ads/Internal.h"
-#include "ads/DropOverlay.h"
-#include "ads/SectionContent.h"
-#include "ads/SectionWidget.h"
-#include "ads/FloatingWidget.h"
+#include "Internal.h"
+#include "DropOverlay.h"
+#include "SectionContent.h"
+#include "SectionWidget.h"
+#include "FloatingWidget.h"
 #include <iostream>
 
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
 
 SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* parent) :
 	QFrame(parent),
@@ -286,4 +287,4 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 	QFrame::mouseMoveEvent(ev);
 }
 
-ADS_NAMESPACE_END
+} // namespace ads

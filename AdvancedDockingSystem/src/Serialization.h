@@ -23,9 +23,10 @@
 #include <QDataStream>
 #include <QBuffer>
 
-#include "ads/API.h"
+#include "API.h"
 
-ADS_NAMESPACE_SER_BEGIN
+namespace ads
+{
 
 enum EntryType
 {
@@ -177,5 +178,5 @@ private:
 	OffsetsHeaderEntity _offsetsHeader;
 };
 
-ADS_NAMESPACE_SER_END
+} // namespace ads
 #endif

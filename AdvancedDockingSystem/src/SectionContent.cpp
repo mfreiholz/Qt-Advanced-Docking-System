@@ -16,15 +16,16 @@
 ** along with this program. If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include <ads/MainContainerWidget.h>
-#include "ads/SectionContent.h"
+#include "MainContainerWidget.h"
+#include "SectionContent.h"
 
 #include <QWidget>
 #include <QLabel>
 
-#include "ads/Internal.h"
+#include "Internal.h"
 
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
 
 SectionContent::SectionContent() :
 	_uid(GetNextUid()),
@@ -136,4 +137,4 @@ int SectionContent::GetNextUid()
 	return ++NextUid;
 }
 
-ADS_NAMESPACE_END
+} // namespace ads

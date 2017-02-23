@@ -17,17 +17,18 @@
 ******************************************************************************/
 
 
-#include <ads/MainContainerWidget.h>
-#include "ads/API.h"
+#include "MainContainerWidget.h"
+#include "API.h"
 
 #include <QWidget>
 #include <QSplitter>
 #include <QLayout>
 #include <QVariant>
 
-#include "ads/SectionWidget.h"
+#include "SectionWidget.h"
 
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
 
 static bool splitterContainsSectionWidget(QSplitter* splitter)
 {
@@ -108,4 +109,4 @@ QSplitter* findImmediateSplitter(QWidget* w)
 	return sp;
 }
 
-ADS_NAMESPACE_END
+} // namespace ads

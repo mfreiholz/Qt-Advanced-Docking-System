@@ -21,10 +21,12 @@
 #include <QFrame>
 class QBoxLayout;
 
-#include "ads/API.h"
-#include "ads/SectionContent.h"
+#include "API.h"
+#include "SectionContent.h"
 
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
+
 class CMainContainerWidget;
 class SectionTitleWidget;
 class CSectionContentWidget;
@@ -110,5 +112,5 @@ private:
 	static unsigned int zOrderCounter;
 };
 
-ADS_NAMESPACE_END
+} // namespace ads
 #endif

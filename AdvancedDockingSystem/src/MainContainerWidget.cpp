@@ -16,7 +16,8 @@
 ** along with this program. If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include <ads/SectionContentWidget.h>
+#include "SectionContentWidget.h"
+
 #include <QDebug>
 #include <QPaintEvent>
 #include <QPainter>
@@ -29,16 +30,17 @@
 #include <QPoint>
 #include <QApplication>
 
-#include "ads/Internal.h"
-#include "ads/SectionWidget.h"
-#include "ads/SectionTitleWidget.h"
-#include "ads/DropOverlay.h"
-#include "ads/Serialization.h"
+#include "Internal.h"
+#include "SectionWidget.h"
+#include "SectionTitleWidget.h"
+#include "DropOverlay.h"
+#include "Serialization.h"
 
 #include <iostream>
-#include "../include/ads/MainContainerWidget.h"
+#include "MainContainerWidget.h"
 
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
 
 
 QSplitter* CMainContainerWidget::newSplitter(Qt::Orientation orientation, QWidget* parent)
@@ -369,17 +371,17 @@ QMenu* CMainContainerWidget::createContextMenu() const
 
 QByteArray CMainContainerWidget::saveState() const
 {
-	ADS_NS_SER::InMemoryWriter writer;
+	InMemoryWriter writer;
 
 	// Hierarchy data.
 	const QByteArray hierarchyData = saveHierarchy();
 	if (!hierarchyData.isEmpty())
 	{
-		writer.write(ADS_NS_SER::ET_Hierarchy, hierarchyData);
+		writer.write(ET_Hierarchy, hierarchyData);
 	}
 
 	// SectionIndex data.
-	ADS_NS_SER::SectionIndexData sid;
+	SectionIndexData sid;
 	if (saveSectionIndex(sid))
 	{
 		writer.write(sid);
@@ -395,13 +397,13 @@ bool CMainContainerWidget::restoreState(const QByteArray& data)
 	if (data.isEmpty())
 		return false;
 
-	ADS_NS_SER::InMemoryReader reader(data);
+	InMemoryReader reader(data);
 	if (!reader.initReadHeader())
 		return false;
 
 	// Basic hierarchy data.
 	QByteArray hierarchyData;
-	if (reader.read(ADS_NS_SER::ET_Hierarchy, hierarchyData))
+	if (reader.read(ET_Hierarchy, hierarchyData))
 	{
 		restoreHierarchy(hierarchyData);
 	}
@@ -599,7 +601,7 @@ void CMainContainerWidget::saveSectionWidgets(QDataStream& out, QWidget* widget)
 	}
 }
 
-bool CMainContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) const
+bool CMainContainerWidget::saveSectionIndex(SectionIndexData& sid) const
 {
 	if (m_Sections.count() <= 0)
 		return false;
@@ -607,7 +609,7 @@ bool CMainContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) c
 	sid.sectionsCount = m_Sections.count();
 	for (int i = 0; i < sid.sectionsCount; ++i)
 	{
-		ADS_NS_SER::SectionEntity se;
+		SectionEntity se;
 		se.x = mapFromGlobal(m_Sections[i]->parentWidget()->mapToGlobal(m_Sections[i]->pos())).x();
 		se.y = mapFromGlobal(m_Sections[i]->parentWidget()->mapToGlobal(m_Sections[i]->pos())).y();
 		se.width = m_Sections[i]->geometry().width();
@@ -616,7 +618,7 @@ bool CMainContainerWidget::saveSectionIndex(ADS_NS_SER::SectionIndexData& sid) c
 		se.sectionContentsCount = m_Sections[i]->contents().count();
 		foreach (const SectionContent::RefPtr& sc, m_Sections[i]->contents())
 		{
-			ADS_NS_SER::SectionContentEntity sce;
+			SectionContentEntity sce;
 			sce.uniqueName = sc->uniqueName();
 			sce.visible = true;
 			sce.preferredIndex = m_Sections[i]->indexOfContent(sc);
@@ -1014,7 +1016,7 @@ void CMainContainerWidget::moveFloatingWidget(const QPoint& TargetPos)
     if (sectionwidget)
     {
         //qInfo() << "over sectionWidget";
-        m_SectionDropOverlay->setAllowedAreas(ADS_NS::AllAreas);
+        m_SectionDropOverlay->setAllowedAreas(AllAreas);
         m_SectionDropOverlay->showDropOverlay(sectionwidget);
     }
     else
@@ -1024,4 +1026,4 @@ void CMainContainerWidget::moveFloatingWidget(const QPoint& TargetPos)
 }
 
 
-ADS_NAMESPACE_END
+} // namespace ads

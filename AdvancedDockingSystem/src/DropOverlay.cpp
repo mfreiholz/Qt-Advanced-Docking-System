@@ -16,7 +16,7 @@
 ** along with this program. If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include "ads/DropOverlay.h"
+#include "DropOverlay.h"
 
 #include <QPointer>
 #include <QPaintEvent>
@@ -32,7 +32,8 @@
 
 #include <iostream>
 
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
 
 // Helper /////////////////////////////////////////////////////////////
 
@@ -240,23 +241,12 @@ void DropOverlay::paintEvent(QPaintEvent*)
 	std::cout << "CursorLocation: " << dropAreaUnderCursor() << std::endl;
 	switch (da)
 	{
-    case ADS_NS::TopDropArea:
-		r.setHeight(r.height() / 2);
-		break;
-	case ADS_NS::RightDropArea:
-		r.setX(r.width() / 2);
-        break;
-	case ADS_NS::BottomDropArea:
-		r.setY(r.height() / 2);
-		break;
-	case ADS_NS::LeftDropArea:
-		r.setWidth(r.width() / 2);
-		break;
-	case ADS_NS::CenterDropArea:
-		r = rect();
-		break;
-	default:
-        return;
+    case TopDropArea: r.setHeight(r.height() / 2); break;
+	case RightDropArea: r.setX(r.width() / 2); break;
+	case BottomDropArea: r.setY(r.height() / 2); break;
+	case LeftDropArea: r.setWidth(r.width() / 2); break;
+	case CenterDropArea: r = rect();break;
+	default: return;
 	}
 	QPainter painter(this);
     QColor Color = palette().color(QPalette::Active, QPalette::Highlight);
@@ -294,11 +284,11 @@ static int areaAlignment(const DropArea area)
 {
 	switch (area)
 	{
-		case ADS_NS::TopDropArea: return (int) Qt::AlignHCenter | Qt::AlignBottom;
-		case ADS_NS::RightDropArea: return (int) Qt::AlignLeft | Qt::AlignVCenter;
-		case ADS_NS::BottomDropArea: return (int) Qt::AlignHCenter | Qt::AlignTop;
-		case ADS_NS::LeftDropArea: return (int) Qt::AlignRight | Qt::AlignVCenter;
-		case ADS_NS::CenterDropArea:  return (int) Qt::AlignCenter;
+		case TopDropArea: return (int) Qt::AlignHCenter | Qt::AlignBottom;
+		case RightDropArea: return (int) Qt::AlignLeft | Qt::AlignVCenter;
+		case BottomDropArea: return (int) Qt::AlignHCenter | Qt::AlignTop;
+		case LeftDropArea: return (int) Qt::AlignRight | Qt::AlignVCenter;
+		case CenterDropArea:  return (int) Qt::AlignCenter;
 		default: return Qt::AlignCenter;
 	}
 }
@@ -310,11 +300,11 @@ QPoint DropOverlayCross::areaGridPosition(const DropArea area)
 	{
 		switch (area)
 		{
-			case ADS_NS::TopDropArea: return QPoint(1, 2);
-			case ADS_NS::RightDropArea: return QPoint(2, 3);
-			case ADS_NS::BottomDropArea: return QPoint(3, 2);
-			case ADS_NS::LeftDropArea: return QPoint(2, 1);
-			case ADS_NS::CenterDropArea: return QPoint(2, 2);
+			case TopDropArea: return QPoint(1, 2);
+			case RightDropArea: return QPoint(2, 3);
+			case BottomDropArea: return QPoint(3, 2);
+			case LeftDropArea: return QPoint(2, 1);
+			case CenterDropArea: return QPoint(2, 2);
 			default: return QPoint();
 		}
 	}
@@ -322,11 +312,11 @@ QPoint DropOverlayCross::areaGridPosition(const DropArea area)
 	{
 		switch (area)
 		{
-			case ADS_NS::TopDropArea: return QPoint(0, 2);
-			case ADS_NS::RightDropArea: return QPoint(2, 4);
-			case ADS_NS::BottomDropArea: return QPoint(4, 2);
-			case ADS_NS::LeftDropArea: return QPoint(2, 0);
-			case ADS_NS::CenterDropArea: return QPoint(2, 2);
+			case TopDropArea: return QPoint(0, 2);
+			case RightDropArea: return QPoint(2, 4);
+			case BottomDropArea: return QPoint(4, 2);
+			case LeftDropArea: return QPoint(2, 0);
+			case CenterDropArea: return QPoint(2, 2);
 			default: return QPoint();
 		}
 	}
@@ -451,8 +441,8 @@ void DropOverlayCross::showEvent(QShowEvent*)
 void DropOverlayCross::reset()
 {
 	QList<DropArea> allAreas;
-	allAreas << ADS_NS::TopDropArea << ADS_NS::RightDropArea
-		<< ADS_NS::BottomDropArea << ADS_NS::LeftDropArea << ADS_NS::CenterDropArea;
+	allAreas << TopDropArea << RightDropArea
+		<< BottomDropArea << LeftDropArea << CenterDropArea;
 	const DropAreas allowedAreas = m_DropOverlay->allowedAreas();
 
 	// Update visibility of area widgets based on allowedAreas.
@@ -468,4 +458,4 @@ void DropOverlayCross::reset()
 	}
 }
 
-ADS_NAMESPACE_END
+} // namespace ads

@@ -16,9 +16,10 @@
 ** along with this program. If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include "ads/Internal.h"
+#include "Internal.h"
 
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
 
 InternalContentData::InternalContentData() :
 	titleWidget(NULL),
@@ -30,4 +31,4 @@ InternalContentData::~InternalContentData()
 {
 }
 
-ADS_NAMESPACE_END
+} // namespace ads

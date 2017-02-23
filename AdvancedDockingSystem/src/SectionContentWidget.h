@@ -19,8 +19,8 @@
 ******************************************************************************/
 #include <QFrame>
 
-#include "ads/API.h"
-#include "ads/SectionContent.h"
+#include "API.h"
+#include "SectionContent.h"
 
 namespace ads
 {

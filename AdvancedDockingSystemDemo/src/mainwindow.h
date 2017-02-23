@@ -2,9 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "../../AdvancedDockingSystem/include/ads/MainContainerWidget.h"
-#include "ads/API.h"
-#include "ads/SectionContent.h"
+#include "../../AdvancedDockingSystem/src/MainContainerWidget.h"
+#include "API.h"
+#include "SectionContent.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,13 +22,8 @@ public slots:
 	void showSectionContentListDialog();
 
 private slots:
-#if QT_VERSION >= 0x050000
-	void onActiveTabChanged(const ADS_NS::SectionContent::RefPtr& sc, bool active);
-	void onSectionContentVisibilityChanged(const ADS_NS::SectionContent::RefPtr& sc, bool visible);
-#else
-	void onActiveTabChanged(const SectionContent::RefPtr& sc, bool active);
-	void onSectionContentVisibilityChanged(const SectionContent::RefPtr& sc, bool visible);
-#endif
+	void onActiveTabChanged(const ads::SectionContent::RefPtr& sc, bool active);
+	void onSectionContentVisibilityChanged(const ads::SectionContent::RefPtr& sc, bool visible);
 	void onActionAddSectionContentTriggered();
 
 protected:
@@ -37,7 +32,7 @@ protected:
 
 private:
 	Ui::MainWindow *ui;
-	ADS_NS::CMainContainerWidget* _container;
+	ads::CMainContainerWidget* _container;
 	void createContent();
 };
 

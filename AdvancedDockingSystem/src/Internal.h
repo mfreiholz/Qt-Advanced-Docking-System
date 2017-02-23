@@ -20,15 +20,10 @@
 #include <QSharedPointer>
 #include <QWeakPointer>
 
-#include "ads/API.h"
+#include "API.h"
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-#else
-#include "ads/SectionContent.h"
-#endif
-
-
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
 class SectionContent;
 class SectionTitleWidget;
 class CSectionContentWidget;
@@ -63,5 +58,5 @@ public:
 };
 
 
-ADS_NAMESPACE_END
+} // namespace ads
 #endif

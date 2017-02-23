@@ -21,12 +21,14 @@
 #include <QPoint>
 #include <QFrame>
 
-#include "ads/API.h"
-#include "ads/SectionContent.h"
+#include "API.h"
+#include "SectionContent.h"
 
 class QPushButton;
 
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
+
 class CMainContainerWidget;
 class SectionWidget;
 class FloatingWidget;
@@ -74,5 +76,5 @@ signals:
 	void clicked();
 };
 
-ADS_NAMESPACE_END
+} // namepsace ads
 #endif

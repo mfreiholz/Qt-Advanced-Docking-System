@@ -53,5 +53,5 @@ win32:CONFIG(release, debug|release): LIBS += -l$$qtLinkLibrary(AdvancedDockingS
 else:win32:CONFIG(debug, debug|release): LIBS += -l$$qtLinkLibrary(AdvancedDockingSystem)
 else:unix: LIBS += -L$$OUT_PWD/../AdvancedDockingSystem/ -lAdvancedDockingSystem
 
-INCLUDEPATH += $$PWD/../AdvancedDockingSystem/include
-DEPENDPATH += $$PWD/../AdvancedDockingSystem/include
+INCLUDEPATH += $$PWD/../AdvancedDockingSystem/src
+DEPENDPATH += $$PWD/../AdvancedDockingSystem/src

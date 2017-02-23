@@ -20,11 +20,15 @@
 #include <QSharedPointer>
 #include <QWeakPointer>
 #include <QPointer>
+
+
 class QWidget;
 
-#include "ads/API.h"
+#include "API.h"
 
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
+
 class CMainContainerWidget;
 
 class ADS_EXPORT_API SectionContent
@@ -91,5 +95,5 @@ private:
 	static int GetNextUid();
 };
 
-ADS_NAMESPACE_END
+} // namespace ads
 #endif

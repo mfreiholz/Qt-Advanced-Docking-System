@@ -16,9 +16,7 @@
 ** along with this program. If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include <ads/MainContainerWidget.h>
-#include <ads/SectionContentWidget.h>
-#include "ads/FloatingWidget.h"
+#include "FloatingWidget.h"
 
 #include <QBoxLayout>
 #include <QPushButton>
@@ -28,14 +26,17 @@
 #include <QLabel>
 #include <QGuiApplication>
 
-#include "ads/SectionTitleWidget.h"
-#include "ads/Internal.h"
-#include "ads/SectionWidget.h"
-#include "ads/ContainerWidget.h"
+#include "SectionTitleWidget.h"
+#include "Internal.h"
+#include "SectionWidget.h"
+#include "ContainerWidget.h"
+#include "MainContainerWidget.h"
+#include "SectionContentWidget.h"
 
 #include <iostream>
 
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
 
 unsigned int FloatingWidget::zOrderCounter = 0;
 
@@ -400,7 +401,7 @@ void FloatingWidget::updateDropOverlays(const QPoint& GlobalPos)
     SectionWidget* sectionwidget = TopContainer->sectionWidgetAt(GlobalPos);
     if (sectionwidget)
     {
-    	SectionDropOverlay->setAllowedAreas(ADS_NS::AllAreas);
+    	SectionDropOverlay->setAllowedAreas(AllAreas);
         SectionDropOverlay->showDropOverlay(sectionwidget);
     }
     else
@@ -420,5 +421,4 @@ void FloatingWidget::updateDropOverlays(const QPoint& GlobalPos)
     }
 }
 
-
-ADS_NAMESPACE_END
+} // namespace ads

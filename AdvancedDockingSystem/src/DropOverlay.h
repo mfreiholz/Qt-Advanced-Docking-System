@@ -23,9 +23,10 @@
 #include <QFrame>
 class QGridLayout;
 
-#include "ads/API.h"
+#include "API.h"
 
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
 class DropOverlayCross;
 
 /*!
@@ -115,5 +116,5 @@ private:
 	QGridLayout* m_GridLayout;
 };
 
-ADS_NAMESPACE_END
+} // namespace ads
 #endif

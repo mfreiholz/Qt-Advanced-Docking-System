@@ -23,12 +23,12 @@
 //============================================================================
 #include <QFrame>
 
-#include "ads/API.h"
-#include "ads/Internal.h"
-#include "ads/SectionContent.h"
-#include "ads/FloatingWidget.h"
-#include "ads/Serialization.h"
-#include "ads/DropOverlay.h"
+#include "API.h"
+#include "Internal.h"
+#include "SectionContent.h"
+#include "FloatingWidget.h"
+#include "Serialization.h"
+#include "DropOverlay.h"
 
 namespace ads
 {

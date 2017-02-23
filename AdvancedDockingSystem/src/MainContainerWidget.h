@@ -27,15 +27,16 @@
 class QPoint;
 class QMenu;
 
-#include "ads/API.h"
-#include "ads/Internal.h"
-#include "ads/SectionContent.h"
-#include "ads/FloatingWidget.h"
-#include "ads/Serialization.h"
-#include "ads/DropOverlay.h"
-#include "ads/ContainerWidget.h"
+#include "API.h"
+#include "Internal.h"
+#include "SectionContent.h"
+#include "FloatingWidget.h"
+#include "Serialization.h"
+#include "DropOverlay.h"
+#include "ContainerWidget.h"
 
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
 class SectionWidget;
 class DropOverlay;
 class InternalContentData;
@@ -143,7 +144,7 @@ private:
 	void saveFloatingWidgets(QDataStream& out) const;
 	void saveSectionWidgets(QDataStream& out, QWidget* widget) const;
 
-	bool saveSectionIndex(ADS_NS_SER::SectionIndexData &sid) const;
+	bool saveSectionIndex(SectionIndexData &sid) const;
 
 	bool restoreHierarchy(const QByteArray& data);
 	bool restoreFloatingWidgets(QDataStream& in, int version, QList<FloatingWidget*>& floatings);
@@ -184,5 +185,5 @@ private:
 };
 
 
-ADS_NAMESPACE_END
+} // namespace ads
 #endif

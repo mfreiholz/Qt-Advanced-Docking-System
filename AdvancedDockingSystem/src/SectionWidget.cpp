@@ -16,7 +16,7 @@
 ** along with this program. If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include "ads/SectionWidget.h"
+#include "SectionWidget.h"
 
 #include <QApplication>
 #include <QBoxLayout>
@@ -36,19 +36,16 @@
 
 #include <iostream>
 
-#if defined(ADS_ANIMATIONS_ENABLED)
-#include <QGraphicsDropShadowEffect>
-#endif
+#include "Internal.h"
+#include "DropOverlay.h"
+#include "SectionContent.h"
+#include "SectionTitleWidget.h"
+#include "SectionContentWidget.h"
+#include "FloatingWidget.h"
+#include "MainContainerWidget.h"
 
-#include "ads/Internal.h"
-#include "ads/DropOverlay.h"
-#include "ads/SectionContent.h"
-#include "ads/SectionTitleWidget.h"
-#include <ads/SectionContentWidget.h>
-#include "ads/FloatingWidget.h"
-#include <ads/MainContainerWidget.h>
-
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
 
 SectionWidget::SectionWidget(CMainContainerWidget* MainContainer, CContainerWidget* parent) :
 	QFrame(parent),
@@ -425,10 +422,6 @@ int SectionWidget::GetNextUid()
 	return ++NextUid;
 }
 
-bool SectionWidget::eventFilter(QObject *watched, QEvent *event)
-{
-
-}
 
 /*****************************************************************************/
 
@@ -499,4 +492,4 @@ void SectionWidgetTabsScrollArea::mouseMoveEvent(QMouseEvent* ev)
     return;
 }
 
-ADS_NAMESPACE_END
+} // namespace ads

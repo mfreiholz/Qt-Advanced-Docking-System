@@ -2,11 +2,11 @@
 #define SECTIONCONTENTLISTWIDGET
 
 #include <QDialog>
-#include "../../../AdvancedDockingSystem/include/ads/MainContainerWidget.h"
+#include "MainContainerWidget.h"
 #include "ui_SectionContentListWidget.h"
 
-#include "ads/API.h"
-#include "ads/SectionContent.h"
+#include "API.h"
+#include "SectionContent.h"
 
 class SectionContentListWidget : public QDialog
 {
@@ -16,7 +16,7 @@ public:
 	class Values
 	{
 	public:
-		ADS_NS::CMainContainerWidget* cw;
+		ads::CMainContainerWidget* cw;
 	};
 
 	SectionContentListWidget(QWidget* parent);

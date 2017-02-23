@@ -16,10 +16,10 @@
 ** along with this program. If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include <ads/MainContainerWidget.h>
+#include "MainContainerWidget.h"
 #include <QBoxLayout>
-#include "../include/ads/SectionContentWidget.h"
-#include "../include/ads/SectionTitleWidget.h"
+#include "SectionContentWidget.h"
+#include "SectionTitleWidget.h"
 
 namespace ads
 {

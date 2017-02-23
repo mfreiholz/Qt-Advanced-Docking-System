@@ -22,17 +22,20 @@
 #include <QList>
 #include <QFrame>
 #include <QScrollArea>
+
 class QBoxLayout;
 class QStackedLayout;
 class QPushButton;
 class QMenu;
 
-#include "ads/API.h"
-#include "ads/Internal.h"
-#include "ads/SectionContent.h"
-#include "ads/FloatingWidget.h"
+#include "API.h"
+#include "Internal.h"
+#include "SectionContent.h"
+#include "FloatingWidget.h"
 
-ADS_NAMESPACE_BEGIN
+namespace ads
+{
+
 class CMainContainerWidget;
 class SectionTitleWidget;
 class CSectionContentWidget;
@@ -68,8 +71,6 @@ public:
 
 	int currentIndex() const;
 	void moveContent(int from, int to);
-
-    virtual bool eventFilter(QObject *watched, QEvent *event);
 
     inline int contentCount() const {return m_ContentWidgets.size();}
 
@@ -125,5 +126,5 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent* ev);
 };
 
-ADS_NAMESPACE_END
+} // namespace ads
 #endif
