@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 #include "../../AdvancedDockingSystem/src/MainContainerWidget.h"
+#include "../../AdvancedDockingSystem/src/SectionContent.h"
 #include "API.h"
-#include "SectionContent.h"
 
 namespace Ui {
 class MainWindow;

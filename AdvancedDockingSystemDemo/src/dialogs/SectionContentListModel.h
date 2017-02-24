@@ -5,9 +5,9 @@
 #include <QList>
 #include <QString>
 #include <QAbstractTableModel>
+#include "../../../AdvancedDockingSystem/src/SectionContent.h"
 #include "MainContainerWidget.h"
 #include "API.h"
-#include "SectionContent.h"
 namespace ads {class CMainContainerWidget;}
 
 

@@ -1,4 +1,5 @@
 include($$(cetoni_repository)/build/qt/qtprojectsettings/shared_library.pri)
+include(src/v2/v2.pri)
 
 TARGET = $$qtLibraryTarget(AdvancedDockingSystem)
 TEMPLATE = lib

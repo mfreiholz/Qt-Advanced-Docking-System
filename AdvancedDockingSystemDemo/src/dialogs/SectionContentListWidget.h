@@ -2,11 +2,11 @@
 #define SECTIONCONTENTLISTWIDGET
 
 #include <QDialog>
+#include "../../../AdvancedDockingSystem/src/SectionContent.h"
 #include "MainContainerWidget.h"
 #include "ui_SectionContentListWidget.h"
 
 #include "API.h"
-#include "SectionContent.h"
 
 class SectionContentListWidget : public QDialog
 {
