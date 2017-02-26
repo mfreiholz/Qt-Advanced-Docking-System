@@ -124,31 +124,9 @@ void CContainerWidget::dropFloatingWidget(FloatingWidget* FloatingWidget,
 }
 
 
-void CContainerWidget::dropChildSections(QWidget* Parent)
-{
-	auto Sections = Parent->findChildren<SectionWidget*>(QString(), Qt::FindDirectChildrenOnly);
-	auto Splitters = Parent->findChildren<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
-
-	std::cout << "-----------------------" << std::endl;
-	std::cout << "Sections " << Sections.size() << std::endl;
-	std::cout << "Splitters " << Splitters.size() << std::endl;
-
-	for (auto Section : Sections)
-	{
-		// drop section
-	}
-
-	for (auto Splitter : Splitters)
-	{
-		dropChildSections(Splitter);
-	}
-}
-
 
 void CContainerWidget::dropIntoContainer(FloatingWidget* FloatingWidget, DropArea area)
 {
-	dropChildSections(FloatingWidget->containerWidget());
-
 	CContainerWidget* FloatingContainer = FloatingWidget->containerWidget();
 	QSplitter* FloatingMainSplitter = FloatingContainer->findChild<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
 

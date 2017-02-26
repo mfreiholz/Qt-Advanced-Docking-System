@@ -19,7 +19,6 @@ public:
 	virtual ~MainWindow();
 
 public slots:
-	void showSectionContentListDialog();
 
 private slots:
 	void onActiveTabChanged(const ads::SectionContent::RefPtr& sc, bool active);

@@ -10,7 +10,10 @@
 //============================================================================
 #include "DockAreaWidget.h"
 
+#include <QStackedLayout>
+
 #include "DockContainerWidget.h"
+#include "DockWidget.h"
 
 namespace ads
 {
@@ -20,6 +23,7 @@ namespace ads
 struct DockAreaWidgetPrivate
 {
 	CDockAreaWidget* _this;
+	QStackedLayout* StackedLayout;
 
 	/**
 	 * Private data constructor
@@ -40,7 +44,11 @@ CDockAreaWidget::CDockAreaWidget(CDockManager* DockManager, CDockContainerWidget
 	QFrame(parent),
 	d(new DockAreaWidgetPrivate(this))
 {
-
+	setStyleSheet("background: yellow;");
+	d->StackedLayout = new QStackedLayout();
+	d->StackedLayout->setContentsMargins(0, 0, 0, 0);
+	d->StackedLayout->setSpacing(0);
+	setLayout(d->StackedLayout);
 }
 
 //============================================================================
@@ -65,6 +73,13 @@ CDockContainerWidget* CDockAreaWidget::dockContainerWidget() const
 	}
 
 	return 0;
+}
+
+
+//============================================================================
+void CDockAreaWidget::addDockWidget(CDockWidget* DockWidget)
+{
+	d->StackedLayout->addWidget(DockWidget);
 }
 } // namespace ads
 

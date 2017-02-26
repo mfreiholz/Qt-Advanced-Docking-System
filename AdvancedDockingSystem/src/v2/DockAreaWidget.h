@@ -17,6 +17,7 @@ namespace ads
 struct DockAreaWidgetPrivate;
 class CDockManager;
 class CDockContainerWidget;
+class CDockWidget;
 
 /**
  * DockAreaWidget manages multiple instances of DckWidgets.
@@ -46,6 +47,12 @@ public:
 	 * if there is no
 	 */
 	CDockContainerWidget* dockContainerWidget() const;
+
+	/**
+	 * Add a new dock widget to dock area.
+	 * All dockwidgets in the dock area tabified in a stacked layout with tabs
+	 */
+	void addDockWidget(CDockWidget* DockWidget);
 }; // class DockAreaWidget
 }
  // namespace ads
