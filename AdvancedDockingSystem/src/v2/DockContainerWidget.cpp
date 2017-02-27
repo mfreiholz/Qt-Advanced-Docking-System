@@ -1,9 +1,29 @@
+/*******************************************************************************
+** QtAdcancedDockingSystem
+** Copyright (C) 2017 Uwe Kindler
+**
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program. If not, see <http://www.gnu.org/licenses/>.
+******************************************************************************/
+
+
 //============================================================================
 /// \file   DockContainerWidget.cpp
 /// \author Uwe Kindler
 /// \date   24.02.2017
 /// \brief  Implementation of CDockContainerWidget class
 //============================================================================
+
 
 //============================================================================
 //                                   INCLUDES
@@ -65,14 +85,15 @@ struct DockContainerWidgetPrivate
 	}
 
 	/**
-	 * Adds dock widget to container
+	 * Adds dock widget to container and returns the dock area that contains
+	 * the inserted dock widget
 	 */
-	void dockWidgetIntoContainer(DockWidgetArea area, CDockWidget* Dockwidget);
+	CDockAreaWidget* dockWidgetIntoContainer(DockWidgetArea area, CDockWidget* Dockwidget);
 
 	/**
 	 * Adds dock widget to a existing DockWidgetArea
 	 */
-	void dockWidgetIntoDockArea(DockWidgetArea area, CDockWidget* Dockwidget,
+	CDockAreaWidget* dockWidgetIntoDockArea(DockWidgetArea area, CDockWidget* Dockwidget,
 		CDockAreaWidget* DockAreaWidget);
 }; // struct DockContainerWidgetPrivate
 
@@ -86,7 +107,7 @@ DockContainerWidgetPrivate::DockContainerWidgetPrivate(CDockContainerWidget* _pu
 
 
 //============================================================================
-void DockContainerWidgetPrivate::dockWidgetIntoContainer(DockWidgetArea area,
+CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoContainer(DockWidgetArea area,
 	CDockWidget* Dockwidget)
 {
 	CDockAreaWidget* NewDockArea = new CDockAreaWidget(DockManager, _this);
@@ -133,14 +154,22 @@ void DockContainerWidgetPrivate::dockWidgetIntoContainer(DockWidgetArea area,
 	}
 
 	DockAreas.append(NewDockArea);
+	return NewDockArea;
 }
 
 
 //============================================================================
-void DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetArea area,
+CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetArea area,
 	CDockWidget* Dockwidget, CDockAreaWidget* DockAreaWidget)
 {
+	if (CenterDockWidgetArea == area)
+	{
+		DockAreaWidget->addDockWidget(Dockwidget);
+		return DockAreaWidget;
+	}
 
+	auto InsertParam = internal::dockAreaInsertParameters(area);
+	return 0;
 }
 
 
@@ -149,7 +178,7 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 	QFrame(parent),
 	d(new DockContainerWidgetPrivate(this))
 {
-	setStyleSheet("background: green;");
+	//setStyleSheet("background: green;");
 	d->DockManager = DockManager;
 
 	d->Layout = new QGridLayout();
@@ -166,16 +195,16 @@ CDockContainerWidget::~CDockContainerWidget()
 
 
 //============================================================================
-void CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockWidget* Dockwidget,
+CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockWidget* Dockwidget,
 	CDockAreaWidget* DockAreaWidget)
 {
 	if (DockAreaWidget)
 	{
-		d->dockWidgetIntoDockArea(area, Dockwidget, DockAreaWidget);
+		return d->dockWidgetIntoDockArea(area, Dockwidget, DockAreaWidget);
 	}
 	else
 	{
-		d->dockWidgetIntoContainer(area, Dockwidget);
+		return d->dockWidgetIntoContainer(area, Dockwidget);
 	}
 }
 

@@ -1,26 +1,92 @@
 #ifndef DockWidgetTitleBarH
 #define DockWidgetTitleBarH
+/*******************************************************************************
+** QtAdcancedDockingSystem
+** Copyright (C) 2017 Uwe Kindler
+**
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program. If not, see <http://www.gnu.org/licenses/>.
+******************************************************************************/
+
+
 //============================================================================
 /// \file   DockWidgetTitleBar.h
 /// \author Uwe Kindler
-/// \date   23.02.2017
-/// \brief  Declaration of DockWidgetTitleBar
+/// \date   27.02.2017
+/// \brief  Declaration of CDockWidgetTitleBar class
 //============================================================================
+
 
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <QFrame>
+
 namespace ads
 {
+class CDockWidget;
+struct DockWidgetTitleBarPrivate;
 
 /**
- * @brief
+ * A dock widget title bar that shows a title and an icon
  */
-class CDockWidgetTitleBar
+class CDockWidgetTitleBar : public QFrame
 {
-};
+	Q_OBJECT
+	Q_PROPERTY(bool activeTab READ isActiveTab WRITE setActiveTab NOTIFY activeTabChanged)
 
-} // namespace ads
+private:
+	DockWidgetTitleBarPrivate* d; ///< private data (pimpl)
+	friend class DockWidgetTitleBarPrivate;
 
-//---------------------------------------------------------------------------
+protected:
+	virtual void mousePressEvent(QMouseEvent* ev) override;
+	virtual void mouseReleaseEvent(QMouseEvent* ev) override;
+	virtual void mouseMoveEvent(QMouseEvent* ev) override;
+
+public:
+	/**
+	 * Default Constructor
+	 * param[in] DockWidget The dock widget this title bar belongs to
+	 * param[in] parent The parent widget of this title bar
+	 */
+	CDockWidgetTitleBar(CDockWidget* DockWidget, QWidget* parent = 0);
+
+	/**
+	 * Virtual Destructor
+	 */
+	virtual ~CDockWidgetTitleBar();
+
+	/**
+	 * Returns true, if this is the active tab
+	 */
+	bool isActiveTab() const;
+
+	/**
+	 * Set this true to make this tab the active tab
+	 */
+	void setActiveTab(bool active);
+
+	/**
+	 * Returns the dock widget this title widget belongs to
+	 */
+	CDockWidget* dockWidget() const;
+
+signals:
+	void activeTabChanged();
+	void clicked();
+}; // class DockWidgetTitleBar
+}
+ // namespace ads
+//-----------------------------------------------------------------------------
 #endif // DockWidgetTitleBarH

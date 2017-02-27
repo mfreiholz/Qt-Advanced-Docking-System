@@ -1,11 +1,31 @@
 #ifndef DockWidgetH
 #define DockWidgetH
+/*******************************************************************************
+** QtAdcancedDockingSystem
+** Copyright (C) 2017 Uwe Kindler
+**
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program. If not, see <http://www.gnu.org/licenses/>.
+******************************************************************************/
+
+
 //============================================================================
 /// \file   DockWidget.h
 /// \author Uwe Kindler
 /// \date   26.02.2017
 /// \brief  Declaration of CDockWidget class
 //============================================================================
+
 
 //============================================================================
 //                                   INCLUDES
@@ -15,6 +35,7 @@
 namespace ads
 {
 struct DockWidgetPrivate;
+class CDockWidgetTitleBar;
 
 /**
  * The QDockWidget class provides a widget that can be docked inside a
@@ -28,6 +49,16 @@ private:
 	friend class DockWidgetPrivate;
 protected:
 public:
+	enum DockWidgetFeature
+	{
+		DockWidgetClosable = 0x01,
+		DockWidgetMovable = 0x02,
+		DockWidgetFloatable = 0x04,
+		AllDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable,
+		NoDockWidgetFeatures = 0x00
+	};
+	Q_DECLARE_FLAGS(DockWidgetFeatures, DockWidgetFeature)
+
 	/**
 	 * Default Constructor
 	 */
@@ -48,6 +79,24 @@ public:
 	 * the widget has not been set.
 	 */
 	QWidget* widget() const;
+
+	/**
+	 * Returns the title bar widget of this dock widget
+	 */
+	CDockWidgetTitleBar* titleBar() const;
+
+	/**
+	 * Sets, whether the dock widget is movable, closable, and floatable.
+	 */
+	void setFeatures(DockWidgetFeatures features);
+
+	/**
+	 * This property holds whether the dock widget is movable, closable, and
+	 * floatable.
+	 * By default, this property is set to a combination of DockWidgetClosable,
+	 * DockWidgetMovable and DockWidgetFloatable.
+	 */
+	DockWidgetFeatures features() const;
 }; // class DockWidget
 }
  // namespace ads

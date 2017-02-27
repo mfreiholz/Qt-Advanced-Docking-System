@@ -7,7 +7,7 @@
 static void initStyleSheet(QApplication& a)
 {
 	//Q_INIT_RESOURCE(ads); // If static linked.
-	QFile f(":ads/stylesheets/default-windows.css");
+	QFile f(":ads/stylesheets/default-windows2.css");
 	if (f.open(QFile::ReadOnly))
 	{
 		const QByteArray ba = f.readAll();
