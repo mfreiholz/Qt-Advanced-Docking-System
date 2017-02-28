@@ -124,6 +124,7 @@ CDockWidget::DockWidgetFeatures CDockWidget::features() const
 {
 	return d->Features;
 }
+
 } // namespace ads
 
 //---------------------------------------------------------------------------

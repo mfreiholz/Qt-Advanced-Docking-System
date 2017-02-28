@@ -35,6 +35,7 @@
 namespace ads
 {
 class CDockWidget;
+class CDockAreaWidget;
 struct DockWidgetTitleBarPrivate;
 
 /**
@@ -81,6 +82,12 @@ public:
 	 * Returns the dock widget this title widget belongs to
 	 */
 	CDockWidget* dockWidget() const;
+
+	/**
+	 * Sets the dock area widget the dockWidget returned by dockWidget()
+	 * function belongs to.
+	 */
+	void setDockAreaWidget(CDockAreaWidget* DockArea);
 
 signals:
 	void activeTabChanged();

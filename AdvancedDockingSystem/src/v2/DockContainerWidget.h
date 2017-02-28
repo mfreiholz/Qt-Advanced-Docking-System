@@ -43,7 +43,7 @@ class CDockManager;
 
 /**
  * Container that manages a number of dock areas with single dock widgets
- * or tabyfied dock widtes in each area
+ * or tabyfied dock widgets in each area
  */
 class CDockContainerWidget : public QFrame
 {

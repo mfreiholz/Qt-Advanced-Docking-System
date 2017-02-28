@@ -53,6 +53,7 @@ private:
 
 private slots:
 	void onDockWidgetTitleClicked();
+	void onTabsMenuActionTriggered(QAction* Action);
 
 public:
 	/**
@@ -76,6 +77,47 @@ public:
 	 * All dockwidgets in the dock area tabified in a stacked layout with tabs
 	 */
 	void addDockWidget(CDockWidget* DockWidget);
+
+	/**
+	 * Returns the rectangle of the title area
+	 */
+	QRect titleAreaGeometry() const;
+
+	/**
+	 * Returns the rectangle of the content
+	 */
+	QRect contentAreaGeometry() const;
+
+	/**
+	 * Returns the tab index of the given DockWidget
+	 */
+	int tabIndex(CDockWidget* DockWidget);
+
+	/**
+	 * Returns the index of contents of the title widget that is located at
+	 * mouse position pos
+	 */
+	int indexOfContentByTitlePos(const QPoint& pos, QWidget* exclude = nullptr) const;
+
+	/**
+	 * Returns a list of all dock widgets in this dock area
+	 */
+	QList<CDockWidget*> dockWidgets() const;
+
+	/**
+	 * Returns the number of dock widgets in this area
+	 */
+	int count() const;
+
+	/**
+	 * Returns a dock widget by its index
+	 */
+	CDockWidget* dockWidget(int Index) const;
+
+	/**
+	 * Reorder the index position of DockWidget at fromIndx to toIndex.
+	 */
+	void reorderDockWidget(int fromIndex, int toIndex);
 
 public slots:
 	/**

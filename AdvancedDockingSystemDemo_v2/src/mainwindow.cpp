@@ -92,7 +92,9 @@ void MainWindow::createContent()
 	m_DockManager->addDockWidget(ads::LeftDockWidgetArea, createLongTextLabelDockWidget(m_DockManager));
 	m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createFileSystemTreeDockWidget(m_DockManager));
 	auto DockArea = m_DockManager->addDockWidget(ads::TopDockWidgetArea, createFileSystemTreeDockWidget(m_DockManager));
-	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, createCalendarDockWidget(m_DockManager), DockArea);
+	DockWidget = createCalendarDockWidget(m_DockManager);
+	DockWidget->setFeatures(DockWidget->features().setFlag(ads::CDockWidget::DockWidgetClosable, false));
+	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, DockWidget, DockArea);
 }
 
 

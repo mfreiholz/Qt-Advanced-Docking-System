@@ -37,6 +37,7 @@
 #include <QStyle>
 #include <QPushButton>
 #include <QDebug>
+#include <QMenu>
 
 #include "DockContainerWidget.h"
 #include "DockWidget.h"
@@ -46,6 +47,9 @@
 
 namespace ads
 {
+static const char* const INDEX_PROPERTY = "index";
+static const char* const ACTION_PROPERTY = "action";
+
 /**
  * Custom scroll bar implementation for dock area tab bar
  */
@@ -104,6 +108,43 @@ struct DockAreaWidgetPrivate
 	 * Creates the layout for top area with tabs and close button
 	 */
 	void createTabBar();
+
+	/**
+	 * Returns the dock widget with the given index
+	 */
+	CDockWidget* dockWidgetAt(int index)
+	{
+		return dynamic_cast<CDockWidget*>(ContentsLayout->widget(index));
+	}
+
+	/**
+	 * Convenience function to ease title widget access by index
+	 */
+	CDockWidgetTitleBar* titleWidgetAt(int index)
+	{
+		return dockWidgetAt(index)->titleBar();
+	}
+
+	/**
+	 * Adds a tabs menu entry for the given dock widget
+	 */
+	void addTabsMenuEntry(CDockWidget* DockWidget);
+
+	/**
+	 * Returns the tab action of the given dock widget
+	 */
+	QAction* dockWidgetTabAction(CDockWidget* DockWidget) const
+	{
+		return qvariant_cast<QAction*>(DockWidget->property(ACTION_PROPERTY));
+	}
+
+	/**
+	 * Returns the index of the given dock widget
+	 */
+	int dockWidgetIndex(CDockWidget* DockWidget) const
+	{
+		return DockWidget->property(INDEX_PROPERTY).toInt();
+	}
 };
 // struct DockAreaWidgetPrivate
 
@@ -142,7 +183,10 @@ void DockAreaWidgetPrivate::createTabBar()
 	TabsMenuButton->setFlat(true);
 	TabsMenuButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarUnshadeButton));
 	TabsMenuButton->setMaximumWidth(TabsMenuButton->iconSize().width());
+	TabsMenuButton->setMenu(new QMenu(TabsMenuButton));
 	TopLayout->addWidget(TabsMenuButton, 0);
+	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
+		SLOT(onTabsMenuActionTriggered(QAction*)));
 
 	CloseButton = new QPushButton();
 	CloseButton->setObjectName("closeButton");
@@ -155,6 +199,16 @@ void DockAreaWidgetPrivate::createTabBar()
 
 	TabsLayoutInitCount = TabsLayout->count();
 }
+
+
+//============================================================================
+void DockAreaWidgetPrivate::addTabsMenuEntry(CDockWidget* DockWidget)
+{
+	auto Action = TabsMenuButton->menu()->addAction(DockWidget->windowTitle());
+	QVariant vAction = QVariant::fromValue(Action);
+	DockWidget->setProperty(ACTION_PROPERTY, vAction);
+}
+
 
 //============================================================================
 CDockAreaWidget::CDockAreaWidget(CDockManager* DockManager, CDockContainerWidget* parent) :
@@ -204,6 +258,7 @@ CDockContainerWidget* CDockAreaWidget::dockContainerWidget() const
 void CDockAreaWidget::addDockWidget(CDockWidget* DockWidget)
 {
 	d->ContentsLayout->addWidget(DockWidget);
+	DockWidget->titleBar()->setDockAreaWidget(this);
 	auto TitleBar = DockWidget->titleBar();
 	d->TabsLayout->insertWidget(d->TabsLayout->count() - d->TabsLayoutInitCount,
 		TitleBar);
@@ -213,6 +268,9 @@ void CDockAreaWidget::addDockWidget(CDockWidget* DockWidget)
 	{
 		setCurrentIndex(0);
 	}
+
+	DockWidget->setProperty(INDEX_PROPERTY, d->ContentsLayout->count() - 1);
+	d->addTabsMenuEntry(DockWidget);
 }
 
 
@@ -259,7 +317,7 @@ void CDockAreaWidget::setCurrentIndex(int index)
 			TitleWidget->setActiveTab(true);
 			d->TabsScrollArea->ensureWidgetVisible(TitleWidget);
 			auto Features = TitleWidget->dockWidget()->features();
-			d->CloseButton->setEnabled(Features.testFlag(CDockWidget::DockWidgetClosable));
+			d->CloseButton->setVisible(Features.testFlag(CDockWidget::DockWidgetClosable));
 		}
 		else
 		{
@@ -268,6 +326,114 @@ void CDockAreaWidget::setCurrentIndex(int index)
 	}
 
 	d->ContentsLayout->setCurrentIndex(index);
+}
+
+
+//============================================================================
+QRect CDockAreaWidget::titleAreaGeometry() const
+{
+	return d->TopLayout->geometry();
+}
+
+//============================================================================
+QRect CDockAreaWidget::contentAreaGeometry() const
+{
+	return d->ContentsLayout->geometry();
+}
+
+
+//============================================================================
+int CDockAreaWidget::tabIndex(CDockWidget* DockWidget)
+{
+	return d->ContentsLayout->indexOf(DockWidget);
+}
+
+
+//============================================================================
+QList<CDockWidget*> CDockAreaWidget::dockWidgets() const
+{
+	QList<CDockWidget*> DockWidgetList;
+	for (int i = 0; i < d->ContentsLayout->count(); ++i)
+	{
+		DockWidgetList.append(dockWidget(i));
+	}
+	return DockWidgetList;
+}
+
+
+//============================================================================
+int CDockAreaWidget::indexOfContentByTitlePos(const QPoint& p, QWidget* exclude) const
+{
+	for (int i = 0; i < d->ContentsLayout->count(); ++i)
+	{
+		auto TitleWidget = d->titleWidgetAt(i);
+		if (TitleWidget->geometry().contains(p) && (!exclude || TitleWidget != exclude))
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+
+//============================================================================
+int CDockAreaWidget::count() const
+{
+	return d->ContentsLayout->count();
+}
+
+
+//============================================================================
+CDockWidget* CDockAreaWidget::dockWidget(int Index) const
+{
+	return dynamic_cast<CDockWidget*>(d->ContentsLayout->widget(Index));
+}
+
+
+//============================================================================
+void CDockAreaWidget::reorderDockWidget(int fromIndex, int toIndex)
+{
+	if (fromIndex >= d->ContentsLayout->count() || fromIndex < 0
+     || toIndex >= d->ContentsLayout->count() || toIndex < 0 || fromIndex == toIndex)
+	{
+		qDebug() << "Invalid index for tab movement" << fromIndex << toIndex;
+		d->TabsLayout->update();
+		return;
+	}
+
+	CDockWidget* DockWidget = dockWidget(fromIndex);
+
+	// reorder tabs menu action to match new order of contents
+	auto Menu = d->TabsMenuButton->menu();
+	auto TabsAction = d->dockWidgetTabAction(DockWidget);
+	Menu->removeAction(TabsAction);
+	if (toIndex >= Menu->actions().count())
+	{
+		Menu->addAction(TabsAction);
+	}
+	else
+	{
+		Menu->insertAction(Menu->actions().at(toIndex), TabsAction);
+	}
+
+
+	// now reorder contents and title bars
+	QLayoutItem* liFrom = nullptr;
+	liFrom = d->TabsLayout->takeAt(fromIndex);
+	d->TabsLayout->insertItem(toIndex, liFrom);
+	liFrom = d->ContentsLayout->takeAt(fromIndex);
+	d->ContentsLayout->insertWidget(toIndex, liFrom->widget());
+	delete liFrom;
+
+	//Menu->removeAction()
+}
+
+
+//============================================================================
+void CDockAreaWidget::onTabsMenuActionTriggered(QAction* Action)
+{
+	int Index = d->TabsMenuButton->menu()->actions().indexOf(Action);
+	setCurrentIndex(Index);
 }
 } // namespace ads
 
