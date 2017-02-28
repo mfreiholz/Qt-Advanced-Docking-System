@@ -86,15 +86,23 @@ MainWindow::~MainWindow()
 
 void MainWindow::createContent()
 {
+	// Test container docking
 	auto DockWidget = createCalendarDockWidget(m_DockManager);
 	DockWidget->setFeatures(DockWidget->features().setFlag(ads::CDockWidget::DockWidgetClosable, false));
 	m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
 	m_DockManager->addDockWidget(ads::LeftDockWidgetArea, createLongTextLabelDockWidget(m_DockManager));
 	m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createFileSystemTreeDockWidget(m_DockManager));
-	auto DockArea = m_DockManager->addDockWidget(ads::TopDockWidgetArea, createFileSystemTreeDockWidget(m_DockManager));
+	auto TopDockArea = m_DockManager->addDockWidget(ads::TopDockWidgetArea, createFileSystemTreeDockWidget(m_DockManager));
 	DockWidget = createCalendarDockWidget(m_DockManager);
 	DockWidget->setFeatures(DockWidget->features().setFlag(ads::CDockWidget::DockWidgetClosable, false));
-	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, DockWidget, DockArea);
+	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, DockWidget, TopDockArea);
+
+	// Test dock area docking
+	auto RighDockArea = m_DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(m_DockManager), TopDockArea);
+	m_DockManager->addDockWidget(ads::TopDockWidgetArea, createLongTextLabelDockWidget(m_DockManager), RighDockArea);
+	auto BottomDockArea = m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createLongTextLabelDockWidget(m_DockManager), RighDockArea);
+	m_DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(m_DockManager), RighDockArea);
+	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(m_DockManager), BottomDockArea);
 }
 
 

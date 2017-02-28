@@ -58,9 +58,28 @@ namespace internal
 QSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent = 0);
 
 /**
+ * Convenience class for QPair to provide better naming than first and
+ * second
+ */
+class CDockInsertParam : public QPair<Qt::Orientation, bool>
+{
+public:
+	using QPair::QPair;
+	Qt::Orientation orientation() const {return this->first;}
+	bool append() const {return this->second;}
+	int insertOffset() const {return append() ? 1 : 0;}
+};
+
+/**
  * Returns the insertion parameters for the given dock area
  */
-QPair<Qt::Orientation, bool> dockAreaInsertParameters(DockWidgetArea Area);
+CDockInsertParam dockAreaInsertParameters(DockWidgetArea Area);
+
+/**
+ * Returns the parent splitter of the given widget or 0 if the widget is not
+ * child of any splitter
+ */
+QSplitter* findParentSplitter(QWidget* w);
 } // namespace internal
 } // namespace ads
 

@@ -39,6 +39,8 @@
 #include "DockAreaWidget.h"
 #include "ads_globals.h"
 
+#include <iostream>
+
 namespace ads
 {
 static unsigned int zOrderCounter = 0;
@@ -46,7 +48,7 @@ static unsigned int zOrderCounter = 0;
 /**
  * Helper function to ease insertion of dock area into splitter
  */
-static void inserDockAreaIntoSplitter(QSplitter* Splitter, QWidget* widget, bool Append)
+static void insertDockAreaIntoSplitter(QSplitter* Splitter, QWidget* widget, bool Append)
 {
 	if (Append)
 	{
@@ -94,7 +96,7 @@ struct DockContainerWidgetPrivate
 	 * Adds dock widget to a existing DockWidgetArea
 	 */
 	CDockAreaWidget* dockWidgetIntoDockArea(DockWidgetArea area, CDockWidget* Dockwidget,
-		CDockAreaWidget* DockAreaWidget);
+		CDockAreaWidget* TargetDockArea);
 }; // struct DockContainerWidgetPrivate
 
 
@@ -120,23 +122,23 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoContainer(DockWidgetA
 	}
 	else if (DockAreas.count() == 1)
 	{
-		QSplitter* Splitter = internal::newSplitter(InsertParam.first);
+		QSplitter* Splitter = internal::newSplitter(InsertParam.orientation());
 		auto DockArea = dynamic_cast<CDockAreaWidget*>(Layout->itemAtPosition(0, 0)->widget());
 		Layout->replaceWidget(DockArea, Splitter);
 		Splitter->addWidget(DockArea);
-		inserDockAreaIntoSplitter(Splitter, NewDockArea, InsertParam.second);
+		insertDockAreaIntoSplitter(Splitter, NewDockArea, InsertParam.append());
 	}
 	else
 	{
 		QSplitter* Splitter = _this->findChild<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
-		if (Splitter->orientation() == InsertParam.first)
+		if (Splitter->orientation() == InsertParam.orientation())
 		{
-			inserDockAreaIntoSplitter(Splitter, NewDockArea, InsertParam.second);
+			insertDockAreaIntoSplitter(Splitter, NewDockArea, InsertParam.append());
 		}
 		else
 		{
-			QSplitter* NewSplitter = internal::newSplitter(InsertParam.first);
-			if (InsertParam.second)
+			QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
+			if (InsertParam.append())
 			{
 				QLayoutItem* li = Layout->replaceWidget(Splitter, NewSplitter);
 				NewSplitter->addWidget(Splitter);
@@ -160,16 +162,35 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoContainer(DockWidgetA
 
 //============================================================================
 CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetArea area,
-	CDockWidget* Dockwidget, CDockAreaWidget* DockAreaWidget)
+	CDockWidget* Dockwidget, CDockAreaWidget* TargetDockArea)
 {
 	if (CenterDockWidgetArea == area)
 	{
-		DockAreaWidget->addDockWidget(Dockwidget);
-		return DockAreaWidget;
+		TargetDockArea->addDockWidget(Dockwidget);
+		return TargetDockArea;
 	}
 
+	CDockAreaWidget* NewDockArea = new CDockAreaWidget(DockManager, _this);
+	NewDockArea->addDockWidget(Dockwidget);
 	auto InsertParam = internal::dockAreaInsertParameters(area);
-	return 0;
+	QSplitter* TargetAreaSplitter = internal::findParentSplitter(TargetDockArea);
+	int index = TargetAreaSplitter ->indexOf(TargetDockArea);
+	if (TargetAreaSplitter->orientation() == InsertParam.orientation())
+	{
+		std::cout << "TargetAreaSplitter->orientation() == InsertParam.orientation()" << std::endl;
+		TargetAreaSplitter->insertWidget(index + InsertParam.insertOffset(), NewDockArea);
+	}
+	else
+	{
+		std::cout << "TargetAreaSplitter->orientation() != InsertParam.orientation()" << std::endl;
+		QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
+		NewSplitter->addWidget(TargetDockArea);
+		insertDockAreaIntoSplitter(NewSplitter, NewDockArea, InsertParam.append());
+		TargetAreaSplitter->insertWidget(index, NewSplitter);
+	}
+
+	DockAreas.append(NewDockArea);
+	return NewDockArea;
 }
 
 

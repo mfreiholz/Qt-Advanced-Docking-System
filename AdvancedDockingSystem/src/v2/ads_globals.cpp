@@ -49,7 +49,7 @@ QSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent)
 }
 
 //============================================================================
-QPair<Qt::Orientation, bool> dockAreaInsertParameters(DockWidgetArea Area)
+CDockInsertParam dockAreaInsertParameters(DockWidgetArea Area)
 {
 	switch (Area)
     {
@@ -61,9 +61,26 @@ QPair<Qt::Orientation, bool> dockAreaInsertParameters(DockWidgetArea Area)
 	default: QPair<Qt::Orientation, bool>(Qt::Vertical, false);
     } // switch (Area)
 
-	return QPair<Qt::Orientation, bool>(Qt::Vertical, false);
+	return CDockInsertParam(Qt::Vertical, false);
 }
 
+
+//============================================================================
+QSplitter* findParentSplitter(QWidget* w)
+{
+	QWidget* parentWidget = w;
+	do
+	{
+		QSplitter* splitter = dynamic_cast<QSplitter*>(parentWidget);
+		if (splitter)
+		{
+			return splitter;
+		}
+		parentWidget = parentWidget->parentWidget();
+	}
+	while (parentWidget);
+	return 0;
+}
 
 } // namespace internal
 } // namespace ads
