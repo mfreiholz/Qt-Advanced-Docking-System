@@ -33,6 +33,7 @@
 #include <QBoxLayout>
 #include <QApplication>
 #include <QMouseEvent>
+#include <QPointer>
 
 #include <iostream>
 
@@ -40,6 +41,7 @@
 #include "DockAreaWidget.h"
 #include "DockManager.h"
 #include "DockWidget.h"
+#include "DockOverlay.h"
 
 namespace ads
 {
@@ -53,9 +55,10 @@ struct FloatingDockContainerPrivate
 	CFloatingDockContainer* _this;
 	CDockContainerWidget* DockContainer;
 	unsigned int zOrderIndex = ++zOrderCounter;
-	CDockManager* DockManager = nullptr;
+	QPointer<CDockManager> DockManager;
 	bool DraggingActive = false;
 	QPoint DragStartMousePosition;
+	CDockContainerWidget* DropContainer = nullptr;
 
 	/**
 	 * Private data constructor
@@ -98,13 +101,13 @@ void FloatingDockContainerPrivate::titleMouseReleaseEvent()
 //============================================================================
 void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
 {
-	/*if (!isVisible())
+	if (!_this->isVisible() || !DockManager)
 	{
 		return;
 	}
-    CMainContainerWidget* MainContainerWidget = mainContainerWidget();
-    auto Containers = MainContainerWidget->m_Containers;
-    CContainerWidget* TopContainer = nullptr;
+
+    auto Containers = DockManager->dockContainers();
+    CDockContainerWidget* TopContainer = nullptr;
     for (auto ContainerWidget : Containers)
     {
     	if (!ContainerWidget->isVisible())
@@ -112,7 +115,7 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
     		continue;
     	}
 
-    	if (containerWidget() == ContainerWidget)
+    	if (DockContainer == ContainerWidget)
     	{
     		continue;
     	}
@@ -128,41 +131,41 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
     	}
     }
 
-    m_DropContainer = TopContainer;
-    DropOverlay* ContainerDropOverlay = MainContainerWidget->dropOverlay();
-    DropOverlay* SectionDropOverlay = MainContainerWidget->sectionDropOverlay();
+    DropContainer = TopContainer;
+    auto ContainerOverlay = DockManager->containerOverlay();
+    auto DockAreaOverlay = DockManager->dockAreaOverlay();
 
     if (!TopContainer)
     {
-    	ContainerDropOverlay->hideDropOverlay();
-    	SectionDropOverlay->hideDropOverlay();
+    	ContainerOverlay->hideOverlay();
+    	DockAreaOverlay->hideOverlay();
     	return;
     }
 
-	ContainerDropOverlay->showDropOverlay(TopContainer);
-	ContainerDropOverlay->raise();
+	ContainerOverlay->showOverlay(TopContainer);
+	ContainerOverlay->raise();
 
-    SectionWidget* sectionwidget = TopContainer->sectionWidgetAt(GlobalPos);
-    if (sectionwidget)
+    auto DockArea = TopContainer->dockAreaAt(GlobalPos);
+    if (DockArea)
     {
-    	SectionDropOverlay->setAllowedAreas(AllAreas);
-        SectionDropOverlay->showDropOverlay(sectionwidget);
+    	//SectionOverlay->setAllowedAreas(AllAreas);
+        DockAreaOverlay->showOverlay(DockArea);
     }
     else
     {
-    	SectionDropOverlay->hideDropOverlay();
+    	DockAreaOverlay->hideOverlay();
     }
 
 
     if (TopContainer)
     {
-    	ContainerDropOverlay->showDropOverlay(TopContainer);
-		ContainerDropOverlay->raise();
+    	ContainerOverlay->showOverlay(TopContainer);
+		ContainerOverlay->raise();
     }
     else
     {
-    	ContainerDropOverlay->hideDropOverlay();
-    }*/
+    	ContainerOverlay->hideOverlay();
+    }
 }
 
 
@@ -223,6 +226,10 @@ CFloatingDockContainer::CFloatingDockContainer(CDockWidget* DockWidget) :
 //============================================================================
 CFloatingDockContainer::~CFloatingDockContainer()
 {
+	if (d->DockManager)
+	{
+		d->DockManager->removeFloatingWidget(this);
+	}
 	delete d;
 }
 
@@ -251,9 +258,18 @@ void CFloatingDockContainer::changeEvent(QEvent *event)
 void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 {
 	QWidget::moveEvent(event);
-	if (d->DraggingActive && qApp->mouseButtons().testFlag(Qt::LeftButton))
+	if (!qApp->mouseButtons().testFlag(Qt::LeftButton))
 	{
-		//updateDropOverlays(QCursor::pos());
+		if (d->DraggingActive)
+		{
+			d->setDraggingActive(false);
+		}
+		return;
+	}
+
+	if (d->DraggingActive)
+	{
+		d->updateDropOverlays(QCursor::pos());
 	}
 }
 

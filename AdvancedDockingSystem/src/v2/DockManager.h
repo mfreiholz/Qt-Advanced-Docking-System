@@ -36,6 +36,8 @@ namespace ads
 {
 struct DockManagerPrivate;
 class CFloatingDockContainer;
+class CDockContainerWidget;
+class CDockOverlay;
 
 /**
  * The central dock manager that maintains the complete docking system
@@ -46,7 +48,9 @@ class CDockManager : public CDockContainerWidget
 private:
 	DockManagerPrivate* d; ///< private data (pimpl)
 	friend class DockManagerPrivate;
+
 protected:
+
 
 public:
 	/**
@@ -66,6 +70,44 @@ public:
 	 * floating widgets
 	 */
 	void registerFloatingWidget(CFloatingDockContainer* FloatingWidget);
+
+	/**
+	 * Remove the given floating widget from the list of registered floating
+	 * widgets
+	 */
+	void removeFloatingWidget(CFloatingDockContainer* FloatingWidget);
+
+	/**
+	 * Registers the given dock container widget
+	 */
+	void registerDockContainer(CDockContainerWidget* DockContainer);
+
+	/**
+	 * Remove dock container from the internal list of registered dock
+	 * containers
+	 */
+	void removeDockContainer(CDockContainerWidget* DockContainer);
+
+	/**
+	 * Overlay for containers
+	 */
+	CDockOverlay* containerOverlay() const;
+
+	/**
+	 * Overlay for dock areas
+	 */
+	CDockOverlay* dockAreaOverlay() const;
+
+	/**
+	 * Returns the list of all active and visible dock containers
+	 * Dock containers are the main dock manager and all floating widgets
+	 */
+	const QList<CDockContainerWidget*> dockContainers() const;
+
+	/**
+	 * Returns the list of all floating widgets
+	 */
+	const QList<CFloatingDockContainer*> floatingWidgets() const;
 }; // class DockManager
 } // namespace ads
 //-----------------------------------------------------------------------------

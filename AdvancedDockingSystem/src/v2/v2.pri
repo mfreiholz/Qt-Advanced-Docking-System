@@ -6,7 +6,8 @@ HEADERS += \
     $$PWD/DockManager.h \
     $$PWD/DockWidget.h \
     $$PWD/DockWidgetTitleBar.h \
-    $$PWD/FloatingDockContainer.h
+    $$PWD/FloatingDockContainer.h \
+    $$PWD/DockOverlay.h
     
     
     
@@ -17,4 +18,5 @@ SOURCES += \
     $$PWD/DockManager.cpp \
     $$PWD/DockWidget.cpp \
     $$PWD/DockWidgetTitleBar.cpp \
-    $$PWD/FloatingDockContainer.cpp
+    $$PWD/FloatingDockContainer.cpp \
+    $$PWD/DockOverlay.cpp

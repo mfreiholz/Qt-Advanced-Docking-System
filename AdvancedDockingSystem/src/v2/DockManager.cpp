@@ -36,6 +36,7 @@
 #include <iostream>
 
 #include "FloatingDockContainer.h"
+#include "DockOverlay.h"
 
 namespace ads
 {
@@ -46,6 +47,9 @@ struct DockManagerPrivate
 {
 	CDockManager* _this;
 	QList<CFloatingDockContainer*> FloatingWidgets;
+	QList<CDockContainerWidget*> Containers;
+	CDockOverlay* ContainerOverlay;
+	CDockOverlay* DockAreaOverlay;
 
 	/**
 	 * Private data constructor
@@ -72,6 +76,10 @@ CDockManager::CDockManager(QWidget *parent) :
 	{
 		MainWindow->setCentralWidget(this);
 	}
+
+	d->DockAreaOverlay = new CDockOverlay(this);
+	d->ContainerOverlay = new CDockOverlay(this);
+	d->Containers.append(this);
 }
 
 //============================================================================
@@ -87,6 +95,58 @@ void CDockManager::registerFloatingWidget(CFloatingDockContainer* FloatingWidget
 	d->FloatingWidgets.append(FloatingWidget);
 	std::cout << "d->FloatingWidgets.count() " << d->FloatingWidgets.count()
 		<< std::endl;
+}
+
+
+//============================================================================
+void CDockManager::removeFloatingWidget(CFloatingDockContainer* FloatingWidget)
+{
+	d->FloatingWidgets.removeAll(FloatingWidget);
+}
+
+
+//============================================================================
+void CDockManager::registerDockContainer(CDockContainerWidget* DockContainer)
+{
+	d->Containers.append(DockContainer);
+}
+
+
+//============================================================================
+void CDockManager::removeDockContainer(CDockContainerWidget* DockContainer)
+{
+	if (this != DockContainer)
+	{
+		d->Containers.removeAll(DockContainer);
+	}
+}
+
+
+//============================================================================
+CDockOverlay* CDockManager::containerOverlay() const
+{
+	return d->ContainerOverlay;
+}
+
+
+//============================================================================
+CDockOverlay* CDockManager::dockAreaOverlay() const
+{
+	return d->DockAreaOverlay;
+}
+
+
+//============================================================================
+const QList<CDockContainerWidget*> CDockManager::dockContainers() const
+{
+	return d->Containers;
+}
+
+
+//============================================================================
+const QList<CFloatingDockContainer*> CDockManager::floatingWidgets() const
+{
+	return d->FloatingWidgets;
 }
 } // namespace ads
 

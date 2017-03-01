@@ -34,6 +34,7 @@
 #include <QList>
 #include <QGridLayout>
 #include <QSplitter>
+#include <QPointer>
 
 #include "DockManager.h"
 #include "DockAreaWidget.h"
@@ -67,7 +68,7 @@ static void insertDockAreaIntoSplitter(QSplitter* Splitter, QWidget* widget, boo
 struct DockContainerWidgetPrivate
 {
 	CDockContainerWidget* _this;
-	CDockManager* DockManager = nullptr;
+	QPointer<CDockManager> DockManager;
 	unsigned int zOrderIndex = 0;
 	QList<CDockAreaWidget*> DockAreas;
 	QGridLayout* Layout = nullptr;
@@ -213,6 +214,10 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 {
 	//setStyleSheet("background: green;");
 	d->DockManager = DockManager;
+	if (DockManager != this)
+	{
+		d->DockManager->registerDockContainer(this);
+	}
 
 	d->Layout = new QGridLayout();
 	d->Layout->setContentsMargins(0, 1, 0, 0);
@@ -223,6 +228,10 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 //============================================================================
 CDockContainerWidget::~CDockContainerWidget()
 {
+	if (d->DockManager)
+	{
+		d->DockManager->removeDockContainer(this);
+	}
 	delete d;
 }
 
@@ -320,6 +329,21 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 		d->Layout->replaceWidget(Splitter, widget);
 	}
 	delete Splitter;
+}
+
+
+//============================================================================
+CDockAreaWidget* CDockContainerWidget::dockAreaAt(const QPoint& GlobalPos) const
+{
+	for (const auto& DockArea : d->DockAreas)
+	{
+		if (DockArea->rect().contains(DockArea->mapFromGlobal(GlobalPos)))
+		{
+			return DockArea;
+		}
+	}
+
+	return 0;
 }
 } // namespace ads
 

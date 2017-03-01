@@ -75,7 +75,7 @@ public:
 	}
 
 protected:
-	virtual void wheelEvent(QWheelEvent* Event)
+	virtual void wheelEvent(QWheelEvent* Event) override
 	{
 		Event->accept();
 		const int direction = Event->angleDelta().y();
@@ -92,7 +92,7 @@ protected:
 	/**
 	 * Stores mouse position to detect dragging
 	 */
-	void mousePressEvent(QMouseEvent* ev)
+	virtual void mousePressEvent(QMouseEvent* ev) override
 	{
 		if (ev->button() == Qt::LeftButton)
 		{
@@ -106,7 +106,7 @@ protected:
 	/**
 	 * Starts floating the complete docking area including all dock widgets
 	 */
-	void mouseMoveEvent(QMouseEvent* ev)
+	virtual void mouseMoveEvent(QMouseEvent* ev) override
 	{
 		QScrollArea::mouseMoveEvent(ev);
 		if (ev->buttons() != Qt::LeftButton)
@@ -121,6 +121,16 @@ protected:
 		}
 
 		return;
+	}
+
+	/**
+	 * Double clicking the title bar also starts floating of the complete area
+	 */
+	virtual void mouseDoubleClickEvent(QMouseEvent *event) override
+	{
+		QSize Size = DockArea->size();
+		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(DockArea);
+		FloatingWidget->startFloating(event->pos(), Size);
 	}
 }; // class CTabsScrollArea
 

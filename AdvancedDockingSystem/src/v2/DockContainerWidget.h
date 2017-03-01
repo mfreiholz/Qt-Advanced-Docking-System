@@ -98,6 +98,12 @@ public:
 	 * higher than the index of the container widget given in Other parameter
 	 */
 	bool isInFrontOf(CDockContainerWidget* Other) const;
+
+	/**
+	 * Returns the dock area at teh given global position or 0 if there is no
+	 * dock area at this position
+	 */
+	CDockAreaWidget* dockAreaAt(const QPoint& GlobalPos) const;
 }; // class DockContainerWidget
 } // namespace ads
 //-----------------------------------------------------------------------------
