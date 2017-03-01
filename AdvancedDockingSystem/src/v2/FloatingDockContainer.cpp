@@ -279,6 +279,7 @@ bool CFloatingDockContainer::event(QEvent *e)
 		std::cout << "FloatingWidget::event QEvent::NonClientAreaMouseButtonRelease" << std::endl;
 		d->titleMouseReleaseEvent();
 	}
+
 	return QWidget::event(e);
 }
 
@@ -286,7 +287,7 @@ bool CFloatingDockContainer::event(QEvent *e)
 //============================================================================
 bool CFloatingDockContainer::eventFilter(QObject *watched, QEvent *event)
 {
-	if (event->type() == QEvent::MouseButtonRelease)
+	if (event->type() == QEvent::MouseButtonRelease && d->DraggingActive)
 	{
 		std::cout << "FloatingWidget::eventFilter QEvent::MouseButtonRelease" << std::endl;
 		d->titleMouseReleaseEvent();
@@ -304,8 +305,9 @@ bool CFloatingDockContainer::eventFilter(QObject *watched, QEvent *event)
 
 
 //============================================================================
-void CFloatingDockContainer::startFloating(const QPoint& Pos)
+void CFloatingDockContainer::startFloating(const QPoint& Pos, const QSize& Size)
 {
+	resize(Size);
 	d->setDraggingActive(true);
 	QPoint TargetPos = QCursor::pos() - Pos;
 	move(TargetPos);

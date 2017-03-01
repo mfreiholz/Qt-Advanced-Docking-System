@@ -42,6 +42,7 @@
 #include "DockContainerWidget.h"
 #include "DockWidget.h"
 #include "DockWidgetTitleBar.h"
+#include "FloatingDockContainer.h"
 
 #include <iostream>
 
@@ -52,12 +53,19 @@ static const char* const ACTION_PROPERTY = "action";
 
 /**
  * Custom scroll bar implementation for dock area tab bar
+ * This scroll area enables floating of a whole dock area including all
+ * dock widgets
  */
 class CTabsScrollArea : public QScrollArea
 {
+private:
+	QPoint m_DragStartMousePos;
+	CDockAreaWidget* DockArea;
+
 public:
-	CTabsScrollArea(QWidget* parent = nullptr)
-		: QScrollArea(parent)
+	CTabsScrollArea(CDockAreaWidget* parent)
+		: QScrollArea(parent),
+		  DockArea(parent)
 	{
 		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
 		setFrameStyle(QFrame::NoFrame);
@@ -79,6 +87,40 @@ protected:
 		{
 			horizontalScrollBar()->setValue(horizontalScrollBar()->value() - 20);
 		}
+	}
+
+	/**
+	 * Stores mouse position to detect dragging
+	 */
+	void mousePressEvent(QMouseEvent* ev)
+	{
+		if (ev->button() == Qt::LeftButton)
+		{
+			ev->accept();
+			m_DragStartMousePos = ev->pos();
+			return;
+		}
+		QScrollArea::mousePressEvent(ev);
+	}
+
+	/**
+	 * Starts floating the complete docking area including all dock widgets
+	 */
+	void mouseMoveEvent(QMouseEvent* ev)
+	{
+		QScrollArea::mouseMoveEvent(ev);
+		if (ev->buttons() != Qt::LeftButton)
+		{
+			return;
+		}
+		if (!this->geometry().contains(ev->pos()))
+		{
+			QSize Size = DockArea->size();
+			CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(DockArea);
+			FloatingWidget->startFloating(m_DragStartMousePos, Size);
+		}
+
+		return;
 	}
 }; // class CTabsScrollArea
 

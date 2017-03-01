@@ -172,9 +172,7 @@ void DockWidgetTitleBarPrivate::startFloating(const QPoint& GlobalPos)
 		FloatingWidget = new CFloatingDockContainer(DockArea);
 	}
 
-	FloatingWidget->resize(Size);
-    FloatingWidget->setObjectName("FloatingWidget");
-    FloatingWidget->startFloating(DragStartMousePosition);
+    FloatingWidget->startFloating(DragStartMousePosition, Size);
 
     /*
      *     DropOverlay* ContainerDropOverlay = cw->dropOverlay();

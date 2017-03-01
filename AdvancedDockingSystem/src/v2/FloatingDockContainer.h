@@ -86,7 +86,7 @@ public:
 	/**
 	 * Starts floating at the given global position
 	 */
-	void startFloating(const QPoint& Pos);
+	void startFloating(const QPoint& Pos, const QSize& Size = QSize());
 }; // class FloatingDockContainer
 }
  // namespace ads
