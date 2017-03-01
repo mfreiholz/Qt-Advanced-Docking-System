@@ -33,6 +33,9 @@
 #include <QBoxLayout>
 
 #include "DockWidgetTitleBar.h"
+#include "DockContainerWidget.h"
+#include "DockAreaWidget.h"
+#include "ads_globals.h"
 
 namespace ads
 {
@@ -46,6 +49,7 @@ struct DockWidgetPrivate
 	QWidget* Widget = nullptr;
 	CDockWidgetTitleBar* TitleWidget;
 	CDockWidget::DockWidgetFeatures Features = CDockWidget::AllDockWidgetFeatures;
+	CDockManager* DockManager = nullptr;
 
 	/**
 	 * Private data constructor
@@ -123,6 +127,34 @@ void CDockWidget::setFeatures(DockWidgetFeatures features)
 CDockWidget::DockWidgetFeatures CDockWidget::features() const
 {
 	return d->Features;
+}
+
+
+//============================================================================
+CDockManager* CDockWidget::dockManager() const
+{
+	return d->DockManager;
+}
+
+
+//============================================================================
+void CDockWidget::setDockManager(CDockManager* DockManager)
+{
+	d->DockManager = DockManager;
+}
+
+
+//============================================================================
+CDockContainerWidget* CDockWidget::dockContainer() const
+{
+	return internal::findParent<CDockContainerWidget*>(this);
+}
+
+
+//============================================================================
+CDockAreaWidget* CDockWidget::dockAreaWidget() const
+{
+	return internal::findParent<CDockAreaWidget*>(this);
 }
 
 } // namespace ads

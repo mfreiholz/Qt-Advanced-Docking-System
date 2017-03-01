@@ -36,6 +36,9 @@ namespace ads
 {
 struct DockWidgetPrivate;
 class CDockWidgetTitleBar;
+class CDockManager;
+class CDockContainerWidget;
+class CDockAreaWidget;
 
 /**
  * The QDockWidget class provides a widget that can be docked inside a
@@ -47,7 +50,14 @@ class CDockWidget : public QFrame
 private:
 	DockWidgetPrivate* d; ///< private data (pimpl)
 	friend class DockWidgetPrivate;
+
 protected:
+	friend class CDockContainerWidget;
+	/**
+	 * Assigns the dock manager that manages this dock widget
+	 */
+	void setDockManager(CDockManager* DockManager);
+
 public:
 	enum DockWidgetFeature
 	{
@@ -97,6 +107,24 @@ public:
 	 * DockWidgetMovable and DockWidgetFloatable.
 	 */
 	DockWidgetFeatures features() const;
+
+	/**
+	 * Returns the dock manager that manages the dock widget or 0 if the widget
+	 * has not been assigned to any dock manager yet
+	 */
+	CDockManager* dockManager() const;
+
+	/**
+	 * Returns the dock container widget this dock area widget belongs to or 0
+	 * if this dock widget has nt been docked yet
+	 */
+	CDockContainerWidget* dockContainer() const;
+
+	/**
+	 * Returns the dock area widget this dock widget belongs to or 0
+	 * if this dock widget has not been docked yet
+	 */
+	CDockAreaWidget* dockAreaWidget() const;
 }; // class DockWidget
 }
  // namespace ads

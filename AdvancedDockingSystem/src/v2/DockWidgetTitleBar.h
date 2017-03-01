@@ -89,6 +89,13 @@ public:
 	 */
 	void setDockAreaWidget(CDockAreaWidget* DockArea);
 
+	/**
+	 * Returns the dock area widget this title bar belongs to.
+	 * \return This function returns 0 if the dock widget that owns this title
+	 * bar widget has not been added to any dock area yet.
+	 */
+	CDockAreaWidget* dockAreaWidget() const;
+
 signals:
 	void activeTabChanged();
 	void clicked();

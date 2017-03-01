@@ -98,6 +98,7 @@ struct DockAreaWidgetPrivate
 	QPushButton* TabsMenuButton;
 	QPushButton* CloseButton;
 	int TabsLayoutInitCount;
+	CDockManager* DockManager = nullptr;
 
 	/**
 	 * Private data constructor
@@ -127,8 +128,11 @@ struct DockAreaWidgetPrivate
 
 	/**
 	 * Adds a tabs menu entry for the given dock widget
+	 * If menu is 0, a menu entry is added to the menu of the TabsMenuButton
+	 * member. If menu is a valid menu pointer, the entry will be added to
+	 * the given menu
 	 */
-	void addTabsMenuEntry(CDockWidget* DockWidget);
+	void addTabsMenuEntry(CDockWidget* DockWidget, QMenu* menu = 0);
 
 	/**
 	 * Returns the tab action of the given dock widget
@@ -145,6 +149,12 @@ struct DockAreaWidgetPrivate
 	{
 		return DockWidget->property(INDEX_PROPERTY).toInt();
 	}
+
+	/**
+	 * Update the tabs menu if dock widget order changed or if dock widget has
+	 * been removed
+	 */
+	void updateTabsMenu();
 };
 // struct DockAreaWidgetPrivate
 
@@ -202,11 +212,26 @@ void DockAreaWidgetPrivate::createTabBar()
 
 
 //============================================================================
-void DockAreaWidgetPrivate::addTabsMenuEntry(CDockWidget* DockWidget)
+void DockAreaWidgetPrivate::addTabsMenuEntry(CDockWidget* DockWidget,
+	QMenu* menu)
 {
-	auto Action = TabsMenuButton->menu()->addAction(DockWidget->windowTitle());
+	menu = menu ? menu : TabsMenuButton->menu();
+	auto Action = menu->addAction(DockWidget->windowTitle());
 	QVariant vAction = QVariant::fromValue(Action);
 	DockWidget->setProperty(ACTION_PROPERTY, vAction);
+}
+
+
+//============================================================================
+void DockAreaWidgetPrivate::updateTabsMenu()
+{
+	QMenu* menu = TabsMenuButton->menu();
+	menu->clear();
+	for (int i = 0; i < ContentsLayout->count(); ++i)
+	{
+		CDockWidget* DockWidget = dockWidgetAt(i);
+		addTabsMenuEntry(dockWidgetAt(i), menu);
+	}
 }
 
 
@@ -215,6 +240,7 @@ CDockAreaWidget::CDockAreaWidget(CDockManager* DockManager, CDockContainerWidget
 	QFrame(parent),
 	d(new DockAreaWidgetPrivate(this))
 {
+	d->DockManager = DockManager;
 	setStyleSheet("ads--CDockAreaWidget {border: 1px solid white;}");
 	d->Layout = new QBoxLayout(QBoxLayout::TopToBottom);
 	d->Layout->setContentsMargins(0, 0, 0, 0);
@@ -232,12 +258,20 @@ CDockAreaWidget::CDockAreaWidget(CDockManager* DockManager, CDockContainerWidget
 //============================================================================
 CDockAreaWidget::~CDockAreaWidget()
 {
+	std::cout << "~CDockAreaWidget()" << std::endl;
 	delete d;
 }
 
 
 //============================================================================
-CDockContainerWidget* CDockAreaWidget::dockContainerWidget() const
+CDockManager* CDockAreaWidget::dockManager() const
+{
+	return d->DockManager;
+}
+
+
+//============================================================================
+CDockContainerWidget* CDockAreaWidget::dockContainer() const
 {
 	QWidget* Parent = parentWidget();
 	while (Parent)
@@ -271,6 +305,25 @@ void CDockAreaWidget::addDockWidget(CDockWidget* DockWidget)
 
 	DockWidget->setProperty(INDEX_PROPERTY, d->ContentsLayout->count() - 1);
 	d->addTabsMenuEntry(DockWidget);
+}
+
+
+//============================================================================
+void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
+{
+	std::cout << "CDockAreaWidget::removeDockWidget" << std::endl;
+	d->ContentsLayout->removeWidget(DockWidget);
+	auto TitleBar = DockWidget->titleBar();
+	d->TabsLayout->removeWidget(TitleBar);
+	disconnect(TitleBar, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
+	d->updateTabsMenu();
+
+	if (d->ContentsLayout->isEmpty())
+	{
+		std::cout << "Dock Area empty" << std::endl;
+		dockContainer()->removeDockArea(this);
+		this->deleteLater();
+	}
 }
 
 

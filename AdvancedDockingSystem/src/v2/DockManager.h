@@ -35,6 +35,7 @@
 namespace ads
 {
 struct DockManagerPrivate;
+class CFloatingDockContainer;
 
 /**
  * The central dock manager that maintains the complete docking system
@@ -46,10 +47,11 @@ private:
 	DockManagerPrivate* d; ///< private data (pimpl)
 	friend class DockManagerPrivate;
 protected:
+
 public:
 	/**
 	 * Default Constructor.
-	 * If the given parent is a QMainWindow, the dck manager sets itself as the
+	 * If the given parent is a QMainWindow, the dock manager sets itself as the
 	 * central widget
 	 */
 	CDockManager(QWidget* parent = 0);
@@ -58,6 +60,12 @@ public:
 	 * Virtual Destructor
 	 */
 	virtual ~CDockManager();
+
+	/**
+	 * Registers the given floating widget in the internal list of
+	 * floating widgets
+	 */
+	void registerFloatingWidget(CFloatingDockContainer* FloatingWidget);
 }; // class DockManager
 } // namespace ads
 //-----------------------------------------------------------------------------

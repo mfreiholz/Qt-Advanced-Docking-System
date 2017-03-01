@@ -49,6 +49,14 @@ QSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent)
 }
 
 //============================================================================
+void replaceSplitterWidget(QSplitter* Splitter, QWidget* From, QWidget* To)
+{
+	int index = Splitter->indexOf(From);
+	From->setParent(0);
+	Splitter->insertWidget(index, To);
+}
+
+//============================================================================
 CDockInsertParam dockAreaInsertParameters(DockWidgetArea Area)
 {
 	switch (Area)
@@ -62,24 +70,6 @@ CDockInsertParam dockAreaInsertParameters(DockWidgetArea Area)
     } // switch (Area)
 
 	return CDockInsertParam(Qt::Vertical, false);
-}
-
-
-//============================================================================
-QSplitter* findParentSplitter(QWidget* w)
-{
-	QWidget* parentWidget = w;
-	do
-	{
-		QSplitter* splitter = dynamic_cast<QSplitter*>(parentWidget);
-		if (splitter)
-		{
-			return splitter;
-		}
-		parentWidget = parentWidget->parentWidget();
-	}
-	while (parentWidget);
-	return 0;
 }
 
 } // namespace internal

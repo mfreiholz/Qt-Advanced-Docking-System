@@ -67,16 +67,26 @@ public:
 	virtual ~CDockAreaWidget();
 
 	/**
+	 * Returns the dock manager object this dock area belongs to
+	 */
+	CDockManager* dockManager() const;
+
+	/**
 	 * Returns the dock container widget this dock area widget belongs to or 0
 	 * if there is no
 	 */
-	CDockContainerWidget* dockContainerWidget() const;
+	CDockContainerWidget* dockContainer() const;
 
 	/**
 	 * Add a new dock widget to dock area.
 	 * All dockwidgets in the dock area tabified in a stacked layout with tabs
 	 */
 	void addDockWidget(CDockWidget* DockWidget);
+
+	/**
+	 * Removes the given dock widget from the dock area
+	 */
+	void removeDockWidget(CDockWidget* DockWidget);
 
 	/**
 	 * Returns the rectangle of the title area

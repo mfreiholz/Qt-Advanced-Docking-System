@@ -31,6 +31,11 @@
 #include "DockManager.h"
 
 #include <QMainWindow>
+#include <QList>
+
+#include <iostream>
+
+#include "FloatingDockContainer.h"
 
 namespace ads
 {
@@ -40,6 +45,7 @@ namespace ads
 struct DockManagerPrivate
 {
 	CDockManager* _this;
+	QList<CFloatingDockContainer*> FloatingWidgets;
 
 	/**
 	 * Private data constructor
@@ -72,6 +78,15 @@ CDockManager::CDockManager(QWidget *parent) :
 CDockManager::~CDockManager()
 {
 	delete d;
+}
+
+
+//============================================================================
+void CDockManager::registerFloatingWidget(CFloatingDockContainer* FloatingWidget)
+{
+	d->FloatingWidgets.append(FloatingWidget);
+	std::cout << "d->FloatingWidgets.count() " << d->FloatingWidgets.count()
+		<< std::endl;
 }
 } // namespace ads
 

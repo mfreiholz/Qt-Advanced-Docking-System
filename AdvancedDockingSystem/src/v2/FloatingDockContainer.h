@@ -22,25 +22,73 @@
 //============================================================================
 /// \file   FloatingDockContainer.h
 /// \author Uwe Kindler
-/// \date   23.02.2017
-/// \brief  Declaration of CFloatingDockContainer
+/// \date   01.03.2017
+/// \brief  Declaration of CFloatingDockContainer class
 //============================================================================
-
 
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <QWidget>
+
 namespace ads
 {
+struct FloatingDockContainerPrivate;
+class CDockAreaWidget;
+class CDockContainerWidget;
+class CDockWidget;
+class CDockManager;
 
 /**
- * @brief
+ * This implements a floating widget that is a dock container that accepts
+ * docking of dock widgets like the main window and that can be docked into
+ * another dock container
  */
-class CFloatingDockContainer
+class CFloatingDockContainer : public QWidget
 {
-};
+	Q_OBJECT
+private:
+	FloatingDockContainerPrivate* d; ///< private data (pimpl)
+	friend class FloatingDockContainerPrivate;
+protected:
+	/**
+	 * Private constructor that is called from public constructors
+	 */
+	CFloatingDockContainer(CDockManager* DockManager);
 
-} // namespace ads
+protected: // reimplements QWidget
+	virtual void changeEvent(QEvent *event) override;
+	virtual void moveEvent(QMoveEvent *event) override;
+	virtual bool event(QEvent *e) override;
+	virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
-//---------------------------------------------------------------------------
+public:
+	/**
+	 * Create floating widget with the given dock area
+	 */
+	CFloatingDockContainer(CDockAreaWidget* DockArea);
+
+	/**
+	 * Create floating widget with the given dock widget
+	 */
+	CFloatingDockContainer(CDockWidget* DockWidget);
+
+	/**
+	 * Virtual Destructor
+	 */
+	virtual ~CFloatingDockContainer();
+
+	/**
+	 * Access function for the internal dock container
+	 */
+	CDockContainerWidget* dockContainer() const;
+
+	/**
+	 * Starts floating at the given global position
+	 */
+	void startFloating(const QPoint& Pos);
+}; // class FloatingDockContainer
+}
+ // namespace ads
+//-----------------------------------------------------------------------------
 #endif // FloatingDockContainerH

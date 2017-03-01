@@ -58,6 +58,11 @@ namespace internal
 QSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent = 0);
 
 /**
+ * Replace the from widget in the given splitter with the To widget
+ */
+void replaceSplitterWidget(QSplitter* Splitter, QWidget* From, QWidget* To);
+
+/**
  * Convenience class for QPair to provide better naming than first and
  * second
  */
@@ -76,10 +81,26 @@ public:
 CDockInsertParam dockAreaInsertParameters(DockWidgetArea Area);
 
 /**
- * Returns the parent splitter of the given widget or 0 if the widget is not
- * child of any splitter
+ * Searches for the parent widget of the given type.
+ * Returns the parent widget of the given widget or 0 if the widget is not
+ * child of any widget of type T
  */
-QSplitter* findParentSplitter(QWidget* w);
+template <class T>
+T findParent(const QWidget* w)
+{
+	QWidget* parentWidget = w->parentWidget();
+	while (parentWidget)
+	{
+		T ParentImpl = dynamic_cast<T>(parentWidget);
+		if (ParentImpl)
+		{
+			return ParentImpl;
+		}
+		parentWidget = parentWidget->parentWidget();
+	}
+	return 0;
+}
+
 } // namespace internal
 } // namespace ads
 

@@ -229,6 +229,26 @@ void FloatingWidget::onCloseButtonClicked()
 }
 
 
+void FloatingWidget::setDraggingActive(bool Active)
+{
+	if (m_DraggingActive == Active)
+	{
+		return;
+	}
+
+	m_DraggingActive = Active;
+	if (Active)
+	{
+		std::cout << "FloatingWidget:: InstallEventFilter" << std::endl;
+		qApp->installEventFilter(this);
+	}
+	else
+	{
+		std::cout << "FloatingWidget:: RemoveEventFilter" << std::endl;
+		qApp->removeEventFilter(this);
+	}
+}
+
 void FloatingWidget::changeEvent(QEvent *event)
 {
 	QWidget::changeEvent(event);
@@ -250,28 +270,6 @@ void FloatingWidget::moveEvent(QMoveEvent *event)
 		updateDropOverlays(QCursor::pos());
 	}
 }
-
-
-void FloatingWidget::setDraggingActive(bool Active)
-{
-	if (m_DraggingActive == Active)
-	{
-		return;
-	}
-
-	m_DraggingActive = Active;
-	if (Active)
-	{
-		std::cout << "FloatingWidget:: InstallEventFilter" << std::endl;
-		qApp->installEventFilter(this);
-	}
-	else
-	{
-		std::cout << "FloatingWidget:: RemoveEventFilter" << std::endl;
-		qApp->removeEventFilter(this);
-	}
-}
-
 
 bool FloatingWidget::event(QEvent *e)
 {

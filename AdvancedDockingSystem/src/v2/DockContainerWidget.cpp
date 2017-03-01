@@ -37,6 +37,7 @@
 
 #include "DockManager.h"
 #include "DockAreaWidget.h"
+#include "DockWidget.h"
 #include "ads_globals.h"
 
 #include <iostream>
@@ -97,6 +98,11 @@ struct DockContainerWidgetPrivate
 	 */
 	CDockAreaWidget* dockWidgetIntoDockArea(DockWidgetArea area, CDockWidget* Dockwidget,
 		CDockAreaWidget* TargetDockArea);
+
+	/**
+	 * Add dock area to this container
+	 */
+	void addDockArea(CDockAreaWidget* NewDockWidget, DockWidgetArea area = CenterDockWidgetArea);
 }; // struct DockContainerWidgetPrivate
 
 
@@ -114,8 +120,15 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoContainer(DockWidgetA
 {
 	CDockAreaWidget* NewDockArea = new CDockAreaWidget(DockManager, _this);
 	NewDockArea->addDockWidget(Dockwidget);
-	auto InsertParam = internal::dockAreaInsertParameters(area);
+	addDockArea(NewDockArea, area);
+	return NewDockArea;
+}
 
+
+//============================================================================
+void DockContainerWidgetPrivate::addDockArea(CDockAreaWidget* NewDockArea, DockWidgetArea area)
+{
+	auto InsertParam = internal::dockAreaInsertParameters(area);
 	if (DockAreas.isEmpty())
 	{
 		Layout->addWidget(NewDockArea, 0, 0);
@@ -156,7 +169,6 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoContainer(DockWidgetA
 	}
 
 	DockAreas.append(NewDockArea);
-	return NewDockArea;
 }
 
 
@@ -173,7 +185,7 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetAr
 	CDockAreaWidget* NewDockArea = new CDockAreaWidget(DockManager, _this);
 	NewDockArea->addDockWidget(Dockwidget);
 	auto InsertParam = internal::dockAreaInsertParameters(area);
-	QSplitter* TargetAreaSplitter = internal::findParentSplitter(TargetDockArea);
+	QSplitter* TargetAreaSplitter = internal::findParent<QSplitter*>(TargetDockArea);
 	int index = TargetAreaSplitter ->indexOf(TargetDockArea);
 	if (TargetAreaSplitter->orientation() == InsertParam.orientation())
 	{
@@ -219,6 +231,13 @@ CDockContainerWidget::~CDockContainerWidget()
 CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockWidget* Dockwidget,
 	CDockAreaWidget* DockAreaWidget)
 {
+	CDockAreaWidget* OldDockArea = Dockwidget->dockAreaWidget();
+	if (OldDockArea)
+	{
+		OldDockArea->removeDockWidget(Dockwidget);
+	}
+
+	Dockwidget->setDockManager(d->DockManager);
 	if (DockAreaWidget)
 	{
 		return d->dockWidgetIntoDockArea(area, Dockwidget, DockAreaWidget);
@@ -258,6 +277,49 @@ bool CDockContainerWidget::event(QEvent *e)
 	}
 
 	return Result;
+}
+
+
+//============================================================================
+void CDockContainerWidget::addDockArea(CDockAreaWidget* DockAreaWidget,
+	DockWidgetArea area)
+{
+	CDockContainerWidget* Container = DockAreaWidget->dockContainer();
+	if (Container && Container != this)
+	{
+		Container->removeDockArea(DockAreaWidget);
+	}
+
+	d->addDockArea(DockAreaWidget);
+}
+
+
+//============================================================================
+void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
+{
+	d->DockAreas.removeAll(area);
+	QSplitter* Splitter = internal::findParent<QSplitter*>(area);
+	area->setParent(0);
+	if (!(Splitter && Splitter->count() == 1))
+	{
+		return;
+	}
+
+	// It the splitter contains only one single widget, then we do not need
+	// it anymore and can replace it with its content
+	std::cout << "Replacing splitter with content" << std::endl;
+	QWidget* widget = Splitter->widget(0);
+	widget->setParent(this);
+	QSplitter* ParentSplitter = internal::findParent<QSplitter*>(Splitter);
+	if (ParentSplitter)
+	{
+		internal::replaceSplitterWidget(ParentSplitter, Splitter, widget);
+	}
+	else
+	{
+		d->Layout->replaceWidget(Splitter, widget);
+	}
+	delete Splitter;
 }
 } // namespace ads
 

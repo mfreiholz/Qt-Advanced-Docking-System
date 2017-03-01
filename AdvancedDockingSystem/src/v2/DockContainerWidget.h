@@ -79,6 +79,16 @@ public:
 		CDockAreaWidget* DockAreaWidget = nullptr);
 
 	/**
+	 * Adds the given dock area to this container widget
+	 */
+	void addDockArea(CDockAreaWidget* DockAreaWidget, DockWidgetArea area = CenterDockWidgetArea);
+
+	/**
+	 * Removes the given dock area from this container
+	 */
+	void removeDockArea(CDockAreaWidget* area);
+
+	/**
 	 * Returns the current zOrderIndex
 	 */
 	unsigned int zOrderIndex() const;
