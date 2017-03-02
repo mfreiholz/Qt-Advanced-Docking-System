@@ -84,16 +84,16 @@ FloatingDockContainerPrivate::FloatingDockContainerPrivate(CFloatingDockContaine
 void FloatingDockContainerPrivate::titleMouseReleaseEvent()
 {
 	setDraggingActive(false);
-	/*if (!m_DropContainer)
+	if (!DropContainer)
 	{
 		return;
 	}
 
 	std::cout << "Dropped" << std::endl;
-	CMainContainerWidget* MainContainerWidget = mainContainerWidget();
-	m_DropContainer->dropFloatingWidget(this, QCursor::pos());
-	MainContainerWidget->dropOverlay()->hideDropOverlay();
-	MainContainerWidget->sectionDropOverlay()->hideDropOverlay();*/
+	/*CMainContainerWidget* MainContainerWidget = mainContainerWidget();
+	m_DropContainer->dropFloatingWidget(this, QCursor::pos());*/
+	DockManager->containerOverlay()->hideOverlay();
+	DockManager->dockAreaOverlay()->hideOverlay();
 }
 
 
@@ -123,7 +123,6 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
     	QPoint MappedPos = ContainerWidget->mapFromGlobal(GlobalPos);
     	if (ContainerWidget->rect().contains(MappedPos))
     	{
-    		std::cout << "Container " <<  ContainerWidget << " contains mousepos" << std::endl;
     		if (!TopContainer || ContainerWidget->isInFrontOf(TopContainer))
     		{
     			TopContainer = ContainerWidget;
@@ -148,7 +147,7 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
     auto DockArea = TopContainer->dockAreaAt(GlobalPos);
     if (DockArea)
     {
-    	//SectionOverlay->setAllowedAreas(AllAreas);
+    	DockAreaOverlay->setAllowedAreas(AllDockAreas);
         DockAreaOverlay->showOverlay(DockArea);
     }
     else
@@ -172,22 +171,7 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
 //============================================================================
 void FloatingDockContainerPrivate::setDraggingActive(bool Active)
 {
-	if (DraggingActive == Active)
-	{
-		return;
-	}
-
 	DraggingActive = Active;
-	if (Active)
-	{
-		std::cout << "FloatingWidget:: InstallEventFilter" << std::endl;
-		qApp->installEventFilter(_this);
-	}
-	else
-	{
-		std::cout << "FloatingWidget:: RemoveEventFilter" << std::endl;
-		qApp->removeEventFilter(_this);
-	}
 }
 
 
@@ -205,6 +189,8 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager* DockManager) :
     d->DockContainer = new CDockContainerWidget(DockManager, this);
 	l->addWidget(d->DockContainer);
 	DockManager->registerFloatingWidget(this);
+
+	qApp->installEventFilter(this);
 }
 
 

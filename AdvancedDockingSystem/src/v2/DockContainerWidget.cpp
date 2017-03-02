@@ -39,6 +39,7 @@
 #include "DockManager.h"
 #include "DockAreaWidget.h"
 #include "DockWidget.h"
+#include "FloatingDockContainer.h"
 #include "ads_globals.h"
 
 #include <iostream>
@@ -72,6 +73,7 @@ struct DockContainerWidgetPrivate
 	unsigned int zOrderIndex = 0;
 	QList<CDockAreaWidget*> DockAreas;
 	QGridLayout* Layout = nullptr;
+	bool isFloating = false;
 
 	/**
 	 * Private data constructor
@@ -170,6 +172,7 @@ void DockContainerWidgetPrivate::addDockArea(CDockAreaWidget* NewDockArea, DockW
 	}
 
 	DockAreas.append(NewDockArea);
+	NewDockArea->updateDockArea();
 }
 
 
@@ -212,6 +215,8 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 	QFrame(parent),
 	d(new DockContainerWidgetPrivate(this))
 {
+	d->isFloating = dynamic_cast<CFloatingDockContainer*>(parent) != 0;
+
 	//setStyleSheet("background: green;");
 	d->DockManager = DockManager;
 	if (DockManager != this)
@@ -306,6 +311,7 @@ void CDockContainerWidget::addDockArea(CDockAreaWidget* DockAreaWidget,
 //============================================================================
 void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 {
+	std::cout << "CDockContainerWidget::removeDockArea" << std::endl;
 	d->DockAreas.removeAll(area);
 	QSplitter* Splitter = internal::findParent<QSplitter*>(area);
 	area->setParent(0);
@@ -344,6 +350,20 @@ CDockAreaWidget* CDockContainerWidget::dockAreaAt(const QPoint& GlobalPos) const
 	}
 
 	return 0;
+}
+
+
+//============================================================================
+bool CDockContainerWidget::isFloating() const
+{
+	return d->isFloating;
+}
+
+
+//============================================================================
+int CDockContainerWidget::dockAreaCount() const
+{
+	return d->DockAreas.count();
 }
 } // namespace ads
 

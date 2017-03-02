@@ -134,6 +134,11 @@ public slots:
 	 * This sets the index position of the current tab page.
 	 */
 	void setCurrentIndex(int index);
+
+	/**
+	 * Updates the dock area layout and components visibility
+	 */
+	void updateDockArea();
 }; // class DockAreaWidget
 }
  // namespace ads

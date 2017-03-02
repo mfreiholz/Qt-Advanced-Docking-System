@@ -77,8 +77,8 @@ CDockManager::CDockManager(QWidget *parent) :
 		MainWindow->setCentralWidget(this);
 	}
 
-	d->DockAreaOverlay = new CDockOverlay(this);
-	d->ContainerOverlay = new CDockOverlay(this);
+	d->DockAreaOverlay = new CDockOverlay(this, CDockOverlay::ModeDockAreaOverlay);
+	d->ContainerOverlay = new CDockOverlay(this, CDockOverlay::ModeContainerOverlay);
 	d->Containers.append(this);
 }
 

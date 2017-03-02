@@ -104,6 +104,16 @@ public:
 	 * dock area at this position
 	 */
 	CDockAreaWidget* dockAreaAt(const QPoint& GlobalPos) const;
+
+	/**
+	 * Returns the number of dock areas in this container
+	 */
+	int dockAreaCount() const;
+
+	/**
+	 * This function returns true, if this container is in a floating widget
+	 */
+	bool isFloating() const;
 }; // class DockContainerWidget
 } // namespace ads
 //-----------------------------------------------------------------------------

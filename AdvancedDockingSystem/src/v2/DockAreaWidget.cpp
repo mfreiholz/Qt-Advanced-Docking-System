@@ -43,6 +43,8 @@
 #include "DockWidget.h"
 #include "DockWidgetTitleBar.h"
 #include "FloatingDockContainer.h"
+#include "DockManager.h"
+#include "DockOverlay.h"
 
 #include <iostream>
 
@@ -104,7 +106,8 @@ protected:
 	}
 
 	/**
-	 * Starts floating the complete docking area including all dock widgets
+	 * Starts floating the complete docking area including all dock widgets,
+	 * if it is not the last dock area in a floating widget
 	 */
 	virtual void mouseMoveEvent(QMouseEvent* ev) override
 	{
@@ -113,11 +116,24 @@ protected:
 		{
 			return;
 		}
+
+		// If this is the last dock area in a dock container it does not make
+		// sense to move it to a new floating widget and leave this one
+		// empty
+		if (DockArea->dockContainer()->isFloating() && DockArea->dockContainer()->dockAreaCount() == 1)
+		{
+			return;
+		}
+
 		if (!this->geometry().contains(ev->pos()))
 		{
+			std::cout << "CTabsScrollArea::startFloating" << std::endl;
 			QSize Size = DockArea->size();
 			CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(DockArea);
 			FloatingWidget->startFloating(m_DragStartMousePos, Size);
+
+			auto Overlay = DockArea->dockManager()->containerOverlay();
+			Overlay->setAllowedAreas(OuterDockAreas);
 		}
 
 		return;
@@ -142,6 +158,7 @@ struct DockAreaWidgetPrivate
 {
 	CDockAreaWidget* _this;
 	QBoxLayout* Layout;
+	QFrame* TitleBar;
 	QBoxLayout* TopLayout;
 	QStackedLayout* ContentsLayout;
 	QScrollArea* TabsScrollArea;
@@ -207,6 +224,12 @@ struct DockAreaWidgetPrivate
 	 * been removed
 	 */
 	void updateTabsMenu();
+
+	/**
+	 * Updates the tab bar visibility depending on the number of dock widgets
+	 * in this area
+	 */
+	void updateTabBar();
 };
 // struct DockAreaWidgetPrivate
 
@@ -222,10 +245,12 @@ DockAreaWidgetPrivate::DockAreaWidgetPrivate(CDockAreaWidget* _public) :
 //============================================================================
 void DockAreaWidgetPrivate::createTabBar()
 {
+	TitleBar = new QFrame(_this);
 	TopLayout = new QBoxLayout(QBoxLayout::LeftToRight);
 	TopLayout->setContentsMargins(0, 0, 0, 0);
 	TopLayout->setSpacing(0);
-	Layout->addLayout(TopLayout);
+	TitleBar->setLayout(TopLayout);
+	Layout->addWidget(TitleBar);
 
 	TabsScrollArea = new CTabsScrollArea(_this);
 	TopLayout->addWidget(TabsScrollArea, 1);
@@ -260,6 +285,26 @@ void DockAreaWidgetPrivate::createTabBar()
 	//connect(_closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
 
 	TabsLayoutInitCount = TabsLayout->count();
+}
+
+
+//============================================================================
+void DockAreaWidgetPrivate::updateTabBar()
+{
+	CDockContainerWidget* Container = _this->dockContainer();
+	if (!Container)
+	{
+		return;
+	}
+
+	if (Container->isFloating() && (Container->dockAreaCount() == 1) && (_this->count() == 1))
+	{
+		TitleBar->setVisible(false);
+	}
+	else
+	{
+		TitleBar->setVisible(true);
+	}
 }
 
 
@@ -376,6 +421,8 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 		dockContainer()->removeDockArea(this);
 		this->deleteLater();
 	}
+
+	d->updateTabBar();
 }
 
 
@@ -540,6 +587,14 @@ void CDockAreaWidget::onTabsMenuActionTriggered(QAction* Action)
 	int Index = d->TabsMenuButton->menu()->actions().indexOf(Action);
 	setCurrentIndex(Index);
 }
+
+
+//============================================================================
+void CDockAreaWidget::updateDockArea()
+{
+	d->updateTabBar();
+}
+
 } // namespace ads
 
 //---------------------------------------------------------------------------

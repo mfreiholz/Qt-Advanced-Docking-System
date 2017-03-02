@@ -45,6 +45,7 @@ enum DockWidgetArea
 	BottomDockWidgetArea = 0x08,
 	CenterDockWidgetArea = 0x10,
 
+	InvalidDockWidgetArea = NoDockWidgetArea,
 	OuterDockAreas = TopDockWidgetArea | LeftDockWidgetArea | RightDockWidgetArea | BottomDockWidgetArea,
 	AllDockAreas = OuterDockAreas | CenterDockWidgetArea
 };

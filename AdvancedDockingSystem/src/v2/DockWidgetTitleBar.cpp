@@ -43,6 +43,8 @@
 #include "DockWidget.h"
 #include "DockAreaWidget.h"
 #include "FloatingDockContainer.h"
+#include "DockOverlay.h"
+#include "DockManager.h"
 
 namespace ads
 {
@@ -107,8 +109,10 @@ struct DockWidgetTitleBarPrivate
 
 	/**
 	 * Starts floating of the dock widget that belongs to this title bar
+	 * Returns true, if floating has been started and false if floating
+	 * is not possible for any reason
 	 */
-	void startFloating(const QPoint& GlobalPos);
+	bool startFloating(const QPoint& GlobalPos);
 };
 // struct DockWidgetTitleBarPrivate
 
@@ -153,8 +157,21 @@ void DockWidgetTitleBarPrivate::moveTab(QMouseEvent* ev)
 
 
 //============================================================================
-void DockWidgetTitleBarPrivate::startFloating(const QPoint& GlobalPos)
+bool DockWidgetTitleBarPrivate::startFloating(const QPoint& GlobalPos)
 {
+	std::cout << "isFloating " << DockWidget->dockContainer()->isFloating() << std::endl;
+	std::cout << "areaCount " << DockWidget->dockContainer()->dockAreaCount() << std::endl;
+	std::cout << "widgetCount " << DockWidget->dockAreaWidget()->count() << std::endl;
+	// if this is the last dock widget inside of this floating widget,
+	// then it does not make any sense, to make if floating because
+	// it is already floating
+	 if (DockWidget->dockContainer()->isFloating()
+	 && (DockWidget->dockContainer()->dockAreaCount() == 1)
+	 && (DockWidget->dockAreaWidget()->count() == 1))
+	{
+		return false;
+	}
+
 	std::cout << "startFloating" << std::endl;
 	DragState = DraggingFloatingWidget;
 	QSize Size = DockArea->size();
@@ -166,6 +183,7 @@ void DockWidgetTitleBarPrivate::startFloating(const QPoint& GlobalPos)
 	}
 	else
 	{
+		std::cout << "DockWidgetTitleBarPrivate::startFloating DockArea" << std::endl;
 		// If section widget has only one content widget, we can move the complete
 		// section widget into floating widget
 		auto splitter = internal::findParent<QSplitter*>(DockArea);
@@ -173,13 +191,9 @@ void DockWidgetTitleBarPrivate::startFloating(const QPoint& GlobalPos)
 	}
 
     FloatingWidget->startFloating(DragStartMousePosition, Size);
-
-    /*
-     *     DropOverlay* ContainerDropOverlay = cw->dropOverlay();
-	ContainerDropOverlay->setAllowedAreas(OuterAreas);
-	ContainerDropOverlay->showDropOverlay(this);
-	ContainerDropOverlay->raise();
-     */
+    auto Overlay = DockWidget->dockManager()->containerOverlay();
+	Overlay->setAllowedAreas(OuterDockAreas);
+	return true;
 }
 
 
@@ -188,6 +202,7 @@ CDockWidgetTitleBar::CDockWidgetTitleBar(CDockWidget* DockWidget, QWidget *paren
 	QFrame(parent),
 	d(new DockWidgetTitleBarPrivate(this))
 {
+	setAttribute(Qt::WA_NoMousePropagation, true);
 	d->DockWidget = DockWidget;
 	d->createLayout();
 }
@@ -271,9 +286,12 @@ void CDockWidgetTitleBar::mouseMoveEvent(QMouseEvent* ev)
     if (!MouseInsideTitleArea)
 	{
     	d->startFloating(ev->globalPos());
-		return;
+    	// do not delegate handling of mouse move event base class to prevent
+    	// move events for the title area
+    	return;
 	}
-    else if ((ev->pos() - d->DragStartMousePosition).manhattanLength() >= QApplication::startDragDistance()) // Wait a few pixels before start moving
+    else if (d->DockArea->count() > 1
+     && (ev->pos() - d->DragStartMousePosition).manhattanLength() >= QApplication::startDragDistance()) // Wait a few pixels before start moving
 	{
         d->DragState = DraggingTab;
 		return;
