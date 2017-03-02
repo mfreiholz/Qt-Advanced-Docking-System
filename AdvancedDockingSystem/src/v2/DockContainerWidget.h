@@ -40,6 +40,7 @@ struct DockContainerWidgetPrivate;
 class CDockAreaWidget;
 class CDockWidget;
 class CDockManager;
+class CFloatingDockContainer;
 
 /**
  * Container that manages a number of dock areas with single dock widgets
@@ -69,6 +70,11 @@ public:
 	virtual ~CDockContainerWidget();
 
 	/**
+	 * Drop floating widget into the container
+	 */
+	void dropFloatingWidget(CFloatingDockContainer* FloatingWidget, const QPoint& TargetPos);
+
+	/**
 	 * Adds dockwidget into the given area.
 	 * If DockAreaWidget is not null, then the area parameter indicates the area
 	 * into the DockAreaWidget. If DockAreaWidget is null, the Dockwidget will
@@ -91,7 +97,7 @@ public:
 	/**
 	 * Returns the current zOrderIndex
 	 */
-	unsigned int zOrderIndex() const;
+	virtual unsigned int zOrderIndex() const;
 
 	/**
 	 * This function returns true if this container widgets z order index is

@@ -219,6 +219,7 @@ void CDockWidgetTitleBar::mousePressEvent(QMouseEvent* ev)
 {
 	if (ev->button() == Qt::LeftButton)
 	{
+		std::cout << "CDockWidgetTitleBar::mousePressEvent" << std::endl;
 		ev->accept();
         d->DragStartMousePosition = ev->pos();
         d->DragState = DraggingMousePressed;
@@ -263,6 +264,8 @@ void CDockWidgetTitleBar::mouseReleaseEvent(QMouseEvent* ev)
 //============================================================================
 void CDockWidgetTitleBar::mouseMoveEvent(QMouseEvent* ev)
 {
+	std::cout << "CDockWidgetTitleBar::mouseMoveEventmouseMoveEvent DragState "
+		<< d->DragState << std::endl;
     if (!(ev->buttons() & Qt::LeftButton) || d->isDraggingState(DraggingInactive))
     {
     	d->DragState = DraggingInactive;
@@ -286,8 +289,6 @@ void CDockWidgetTitleBar::mouseMoveEvent(QMouseEvent* ev)
     if (!MouseInsideTitleArea)
 	{
     	d->startFloating(ev->globalPos());
-    	// do not delegate handling of mouse move event base class to prevent
-    	// move events for the title area
     	return;
 	}
     else if (d->DockArea->count() > 1

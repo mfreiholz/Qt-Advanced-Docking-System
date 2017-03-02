@@ -60,6 +60,7 @@ protected: // reimplements QWidget
 	virtual void changeEvent(QEvent *event) override;
 	virtual void moveEvent(QMoveEvent *event) override;
 	virtual bool event(QEvent *e) override;
+	virtual void closeEvent(QCloseEvent *event) override;
 	virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
 public:

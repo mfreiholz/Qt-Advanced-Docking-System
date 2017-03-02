@@ -90,8 +90,7 @@ void FloatingDockContainerPrivate::titleMouseReleaseEvent()
 	}
 
 	std::cout << "Dropped" << std::endl;
-	/*CMainContainerWidget* MainContainerWidget = mainContainerWidget();
-	m_DropContainer->dropFloatingWidget(this, QCursor::pos());*/
+	DropContainer->dropFloatingWidget(_this, QCursor::pos());
 	DockManager->containerOverlay()->hideOverlay();
 	DockManager->dockAreaOverlay()->hideOverlay();
 }
@@ -257,6 +256,13 @@ void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 	{
 		d->updateDropOverlays(QCursor::pos());
 	}
+}
+
+//============================================================================
+void CFloatingDockContainer::closeEvent(QCloseEvent *event)
+{
+	d->setDraggingActive(false);
+	QWidget::closeEvent(event);
 }
 
 

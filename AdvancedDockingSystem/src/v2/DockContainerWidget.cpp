@@ -40,6 +40,7 @@
 #include "DockAreaWidget.h"
 #include "DockWidget.h"
 #include "FloatingDockContainer.h"
+#include "DockOverlay.h"
 #include "ads_globals.h"
 
 #include <iostream>
@@ -51,7 +52,7 @@ static unsigned int zOrderCounter = 0;
 /**
  * Helper function to ease insertion of dock area into splitter
  */
-static void insertDockAreaIntoSplitter(QSplitter* Splitter, QWidget* widget, bool Append)
+static void insertWidgetIntoSplitter(QSplitter* Splitter, QWidget* widget, bool Append)
 {
 	if (Append)
 	{
@@ -106,12 +107,103 @@ struct DockContainerWidgetPrivate
 	 * Add dock area to this container
 	 */
 	void addDockArea(CDockAreaWidget* NewDockWidget, DockWidgetArea area = CenterDockWidgetArea);
+
+	/**
+	 * Drop floating widget into container
+	 */
+	void dropIntoContainer(CFloatingDockContainer* FloatingWidget, DockWidgetArea area);
+
+	/**
+	 * Drop floating widget into dock area
+	 */
+	void dropIntoSection(CFloatingDockContainer* FloatingWidget,
+		CDockAreaWidget* targetSection, DockWidgetArea area);
 }; // struct DockContainerWidgetPrivate
 
 
 //============================================================================
 DockContainerWidgetPrivate::DockContainerWidgetPrivate(CDockContainerWidget* _public) :
 	_this(_public)
+{
+
+}
+
+
+//============================================================================
+void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* FloatingWidget,
+	DockWidgetArea area)
+{
+	QSplitter* OldSplitter = _this->findChild<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
+	auto InsertParam = internal::dockAreaInsertParameters(area);
+	auto NewDockAreas = FloatingWidget->dockContainer()->findChildren<CDockAreaWidget*>(
+		QString(), Qt::FindChildrenRecursively);
+
+	if (DockAreas.isEmpty())
+	{
+		auto Widget = FloatingWidget->dockContainer()->findChild<QWidget*>(QString(), Qt::FindDirectChildrenOnly);
+		Layout->addWidget(Widget, 0, 0);
+	}
+	else
+	{
+		QSplitter* OldSplitter = _this->findChild<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
+		// First replace the dock widget with a splitter
+		if (DockAreas.count() == 1)
+		{
+			auto DockArea = dynamic_cast<CDockAreaWidget*>(Layout->itemAtPosition(0, 0)->widget());
+			QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
+			Layout->replaceWidget(DockArea, NewSplitter);
+			NewSplitter->addWidget(DockArea);
+			OldSplitter = NewSplitter;
+		}
+		else if (OldSplitter->orientation() != InsertParam.orientation())
+		{
+			QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
+			QLayoutItem* li = Layout->replaceWidget(OldSplitter, NewSplitter);
+			NewSplitter->addWidget(OldSplitter);
+			OldSplitter = NewSplitter;
+		}
+
+		auto Widget = FloatingWidget->dockContainer()->findChild<QWidget*>(QString(), Qt::FindDirectChildrenOnly);
+		auto FloatingSplitter = dynamic_cast<QSplitter*>(Widget);
+
+		if (!FloatingSplitter)
+		{
+			insertWidgetIntoSplitter(OldSplitter, Widget, InsertParam.append());
+		}
+		else if (FloatingSplitter->orientation() == InsertParam.orientation())
+		{
+			while (FloatingSplitter->count())
+			{
+				insertWidgetIntoSplitter(OldSplitter, FloatingSplitter->widget(0), InsertParam.append());
+			}
+		}
+		else
+		{
+			insertWidgetIntoSplitter(OldSplitter, FloatingSplitter, InsertParam.append());
+		}
+	}
+
+
+	std::cout << "Adding " << NewDockAreas.count() << " dock areas" << std::endl;
+	int CountBefore = DockAreas.count();
+	int NewAreaCount = NewDockAreas.count();
+	DockAreas.append(NewDockAreas);
+	if (1 == CountBefore)
+	{
+		DockAreas.at(0)->updateDockArea();
+	}
+
+	if (1 == NewAreaCount)
+	{
+		DockAreas.last()->updateDockArea();
+	}
+	FloatingWidget->deleteLater();
+}
+
+
+//============================================================================
+void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* FloatingWidget,
+		CDockAreaWidget* targetSection, DockWidgetArea area)
 {
 
 }
@@ -142,14 +234,14 @@ void DockContainerWidgetPrivate::addDockArea(CDockAreaWidget* NewDockArea, DockW
 		auto DockArea = dynamic_cast<CDockAreaWidget*>(Layout->itemAtPosition(0, 0)->widget());
 		Layout->replaceWidget(DockArea, Splitter);
 		Splitter->addWidget(DockArea);
-		insertDockAreaIntoSplitter(Splitter, NewDockArea, InsertParam.append());
+		insertWidgetIntoSplitter(Splitter, NewDockArea, InsertParam.append());
 	}
 	else
 	{
 		QSplitter* Splitter = _this->findChild<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
 		if (Splitter->orientation() == InsertParam.orientation())
 		{
-			insertDockAreaIntoSplitter(Splitter, NewDockArea, InsertParam.append());
+			insertWidgetIntoSplitter(Splitter, NewDockArea, InsertParam.append());
 		}
 		else
 		{
@@ -201,7 +293,7 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetAr
 		std::cout << "TargetAreaSplitter->orientation() != InsertParam.orientation()" << std::endl;
 		QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
 		NewSplitter->addWidget(TargetDockArea);
-		insertDockAreaIntoSplitter(NewSplitter, NewDockArea, InsertParam.append());
+		insertWidgetIntoSplitter(NewSplitter, NewDockArea, InsertParam.append());
 		TargetAreaSplitter->insertWidget(index, NewSplitter);
 	}
 
@@ -365,6 +457,39 @@ int CDockContainerWidget::dockAreaCount() const
 {
 	return d->DockAreas.count();
 }
+
+
+//============================================================================
+void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWidget,
+	const QPoint& TargetPos)
+{
+	std::cout << "CDockContainerWidget::dropFloatingWidget" << std::endl;
+	CDockAreaWidget* DockArea = dockAreaAt(TargetPos);
+	auto dropArea = InvalidDockWidgetArea;
+	if (DockArea)
+	{
+		auto dropOverlay = d->DockManager->dockAreaOverlay();
+		dropOverlay->setAllowedAreas(AllDockAreas);
+		dropArea = dropOverlay->showOverlay(DockArea);
+		if (dropArea != InvalidDockWidgetArea)
+		{
+			std::cout << "Dock Area Drop Content: " << dropArea << std::endl;
+			d->dropIntoSection(FloatingWidget, DockArea, dropArea);
+		}
+	}
+
+	// mouse is over container
+	if (InvalidDockWidgetArea == dropArea)
+	{
+		dropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
+		std::cout << "Container Drop Content: " << dropArea << std::endl;
+		if (dropArea != InvalidDockWidgetArea)
+		{
+			d->dropIntoContainer(FloatingWidget, dropArea);
+		}
+	}
+}
+
 } // namespace ads
 
 //---------------------------------------------------------------------------

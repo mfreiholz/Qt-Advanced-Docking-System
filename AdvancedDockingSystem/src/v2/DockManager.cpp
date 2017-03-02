@@ -148,6 +148,13 @@ const QList<CFloatingDockContainer*> CDockManager::floatingWidgets() const
 {
 	return d->FloatingWidgets;
 }
+
+
+//============================================================================
+unsigned int CDockManager::zOrderIndex() const
+{
+	return 0;
+}
 } // namespace ads
 
 //---------------------------------------------------------------------------

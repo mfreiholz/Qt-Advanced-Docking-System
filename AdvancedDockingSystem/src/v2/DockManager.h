@@ -108,6 +108,12 @@ public:
 	 * Returns the list of all floating widgets
 	 */
 	const QList<CFloatingDockContainer*> floatingWidgets() const;
+
+	/**
+	 * This function always return 0 because the main window is always behind
+	 * any floating widget
+	 */
+	virtual unsigned int zOrderIndex() const;
 }; // class DockManager
 } // namespace ads
 //-----------------------------------------------------------------------------
