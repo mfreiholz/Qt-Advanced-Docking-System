@@ -78,6 +78,15 @@ public:
 	CDockContainerWidget* dockContainer() const;
 
 	/**
+	 * Inserts a dock widget into dock area.
+	 * All dockwidgets in the dock area tabified in a stacked layout with tabs.
+	 * The index indicates the index of the new dockwidget in the tabbar and
+	 * in the stacked layout. If the Activate parameter is true, the new
+	 * DockWidget will be the active one in the stacked layout
+	 */
+	void insertDockWidget(int index, CDockWidget* DockWidget, bool Activate = true);
+
+	/**
 	 * Add a new dock widget to dock area.
 	 * All dockwidgets in the dock area tabified in a stacked layout with tabs
 	 */
@@ -128,6 +137,11 @@ public:
 	 * Reorder the index position of DockWidget at fromIndx to toIndex.
 	 */
 	void reorderDockWidget(int fromIndex, int toIndex);
+
+	/**
+	 * Returns the index of the current active dock widget
+	 */
+	int currentIndex() const;
 
 public slots:
 	/**

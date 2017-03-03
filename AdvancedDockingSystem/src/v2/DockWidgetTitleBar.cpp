@@ -73,6 +73,7 @@ struct DockWidgetTitleBarPrivate
 	bool IsActiveTab = false;
 	CDockAreaWidget* DockArea = nullptr;
 	eDragState DragState = DraggingInactive;
+	CFloatingDockContainer* FloatingWidget = nullptr;
 
 	/**
 	 * Private data constructor
@@ -193,6 +194,7 @@ bool DockWidgetTitleBarPrivate::startFloating(const QPoint& GlobalPos)
     FloatingWidget->startFloating(DragStartMousePosition, Size);
     auto Overlay = DockWidget->dockManager()->containerOverlay();
 	Overlay->setAllowedAreas(OuterDockAreas);
+	this->FloatingWidget = FloatingWidget;
 	return true;
 }
 
@@ -233,6 +235,7 @@ void CDockWidgetTitleBar::mousePressEvent(QMouseEvent* ev)
 //============================================================================
 void CDockWidgetTitleBar::mouseReleaseEvent(QMouseEvent* ev)
 {
+	std::cout << "CDockWidgetTitleBar::mouseReleaseEvent" << std::endl;
 	// End of tab moving, change order now
 	if (d->isDraggingState(DraggingTab) && d->DockArea)
 	{
@@ -255,8 +258,6 @@ void CDockWidgetTitleBar::mouseReleaseEvent(QMouseEvent* ev)
 
     d->DragStartMousePosition = QPoint();
     d->DragState = DraggingInactive;
-	//mcw->m_SectionDropOverlay->hideDropOverlay();
-	//mcw->hideContainerOverlay();
 	QFrame::mouseReleaseEvent(ev);
 }
 
@@ -275,6 +276,8 @@ void CDockWidgetTitleBar::mouseMoveEvent(QMouseEvent* ev)
 
     if (d->isDraggingState(DraggingFloatingWidget))
     {
+    	std::cout << "DraggingFloatingWidget" << std::endl;
+    	d->FloatingWidget->moveFloating();
         QFrame::mouseMoveEvent(ev);
         return;
     }

@@ -52,6 +52,7 @@ namespace ads
 {
 static const char* const INDEX_PROPERTY = "index";
 static const char* const ACTION_PROPERTY = "action";
+static const int APPEND = -1;
 
 /**
  * Custom scroll bar implementation for dock area tab bar
@@ -62,12 +63,13 @@ class CTabsScrollArea : public QScrollArea
 {
 private:
 	QPoint m_DragStartMousePos;
-	CDockAreaWidget* DockArea;
+	CDockAreaWidget* m_DockArea;
+	CFloatingDockContainer* m_FloatingWidget = nullptr;
 
 public:
 	CTabsScrollArea(CDockAreaWidget* parent)
 		: QScrollArea(parent),
-		  DockArea(parent)
+		  m_DockArea(parent)
 	{
 		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
 		setFrameStyle(QFrame::NoFrame);
@@ -79,6 +81,7 @@ public:
 protected:
 	virtual void wheelEvent(QWheelEvent* Event) override
 	{
+		std::cout << "CTabsScrollArea::wheelEvent" << std::endl;
 		Event->accept();
 		const int direction = Event->angleDelta().y();
 		if (direction < 0)
@@ -106,6 +109,22 @@ protected:
 	}
 
 	/**
+	 * Stores mouse position to detect dragging
+	 */
+	virtual void mouseReleaseEvent(QMouseEvent* ev) override
+	{
+		if (ev->button() == Qt::LeftButton)
+		{
+			std::cout << "CTabsScrollArea::mouseReleaseEvent" << std::endl;
+			ev->accept();
+			m_FloatingWidget = nullptr;
+			m_DragStartMousePos = QPoint();
+			return;
+		}
+		QScrollArea::mouseReleaseEvent(ev);
+	}
+
+	/**
 	 * Starts floating the complete docking area including all dock widgets,
 	 * if it is not the last dock area in a floating widget
 	 */
@@ -117,10 +136,16 @@ protected:
 			return;
 		}
 
+		if (m_FloatingWidget)
+		{
+			m_FloatingWidget->moveFloating();
+			return;
+		}
+
 		// If this is the last dock area in a dock container it does not make
 		// sense to move it to a new floating widget and leave this one
 		// empty
-		if (DockArea->dockContainer()->isFloating() && DockArea->dockContainer()->dockAreaCount() == 1)
+		if (m_DockArea->dockContainer()->isFloating() && m_DockArea->dockContainer()->dockAreaCount() == 1)
 		{
 			return;
 		}
@@ -128,11 +153,8 @@ protected:
 		if (!this->geometry().contains(ev->pos()))
 		{
 			std::cout << "CTabsScrollArea::startFloating" << std::endl;
-			QSize Size = DockArea->size();
-			CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(DockArea);
-			FloatingWidget->startFloating(m_DragStartMousePos, Size);
-
-			auto Overlay = DockArea->dockManager()->containerOverlay();
+			startFloating(m_DragStartMousePos);
+			auto Overlay = m_DockArea->dockManager()->containerOverlay();
 			Overlay->setAllowedAreas(OuterDockAreas);
 		}
 
@@ -144,9 +166,18 @@ protected:
 	 */
 	virtual void mouseDoubleClickEvent(QMouseEvent *event) override
 	{
-		QSize Size = DockArea->size();
-		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(DockArea);
-		FloatingWidget->startFloating(event->pos(), Size);
+		startFloating(event->pos());
+	}
+
+	/**
+	 * Starts floating
+	 */
+	void startFloating(const QPoint& Pos)
+	{
+		QSize Size = m_DockArea->size();
+		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(m_DockArea);
+		FloatingWidget->startFloating(Pos, Size);
+		m_FloatingWidget = FloatingWidget;
 	}
 }; // class CTabsScrollArea
 
@@ -201,7 +232,7 @@ struct DockAreaWidgetPrivate
 	 * member. If menu is a valid menu pointer, the entry will be added to
 	 * the given menu
 	 */
-	void addTabsMenuEntry(CDockWidget* DockWidget, QMenu* menu = 0);
+	void addTabsMenuEntry(CDockWidget* DockWidget, int Index = -1, QMenu* menu = 0);
 
 	/**
 	 * Returns the tab action of the given dock widget
@@ -310,10 +341,19 @@ void DockAreaWidgetPrivate::updateTabBar()
 
 //============================================================================
 void DockAreaWidgetPrivate::addTabsMenuEntry(CDockWidget* DockWidget,
-	QMenu* menu)
+	int Index, QMenu* menu)
 {
 	menu = menu ? menu : TabsMenuButton->menu();
-	auto Action = menu->addAction(DockWidget->windowTitle());
+	QAction* Action;
+	if (Index >= 0 && Index < menu->actions().count())
+	{
+		Action = new QAction(DockWidget->windowTitle());
+		menu->insertAction(menu->actions().at(Index), Action);
+	}
+	else
+	{
+		Action = menu->addAction(DockWidget->windowTitle());
+	}
 	QVariant vAction = QVariant::fromValue(Action);
 	DockWidget->setProperty(ACTION_PROPERTY, vAction);
 }
@@ -327,7 +367,7 @@ void DockAreaWidgetPrivate::updateTabsMenu()
 	for (int i = 0; i < ContentsLayout->count(); ++i)
 	{
 		CDockWidget* DockWidget = dockWidgetAt(i);
-		addTabsMenuEntry(dockWidgetAt(i), menu);
+		addTabsMenuEntry(dockWidgetAt(i), APPEND, menu);
 	}
 }
 
@@ -388,20 +428,26 @@ CDockContainerWidget* CDockAreaWidget::dockContainer() const
 //============================================================================
 void CDockAreaWidget::addDockWidget(CDockWidget* DockWidget)
 {
-	d->ContentsLayout->addWidget(DockWidget);
+	insertDockWidget(d->ContentsLayout->count(), DockWidget);
+
+}
+
+
+//============================================================================
+void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
+	bool Activate)
+{
+	d->ContentsLayout->insertWidget(index, DockWidget);
 	DockWidget->titleBar()->setDockAreaWidget(this);
 	auto TitleBar = DockWidget->titleBar();
-	d->TabsLayout->insertWidget(d->TabsLayout->count() - d->TabsLayoutInitCount,
-		TitleBar);
+	d->TabsLayout->insertWidget(index, TitleBar);
 	connect(TitleBar, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
-	// if this is the first tab, then activate it
-	if (d->ContentsLayout->count() == 1)
+	DockWidget->setProperty(INDEX_PROPERTY, index);
+	if (Activate)
 	{
-		setCurrentIndex(0);
+		setCurrentIndex(index);
 	}
-
-	DockWidget->setProperty(INDEX_PROPERTY, d->ContentsLayout->count() - 1);
-	d->addTabsMenuEntry(DockWidget);
+	d->addTabsMenuEntry(DockWidget, index);
 }
 
 
@@ -413,6 +459,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	auto TitleBar = DockWidget->titleBar();
 	d->TabsLayout->removeWidget(TitleBar);
 	disconnect(TitleBar, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
+	setCurrentIndex(d->ContentsLayout->currentIndex());
 	d->updateTabsMenu();
 
 	if (d->ContentsLayout->isEmpty())
@@ -478,6 +525,13 @@ void CDockAreaWidget::setCurrentIndex(int index)
 	}
 
 	d->ContentsLayout->setCurrentIndex(index);
+}
+
+
+//============================================================================
+int CDockAreaWidget::currentIndex() const
+{
+	return d->ContentsLayout->currentIndex();
 }
 
 

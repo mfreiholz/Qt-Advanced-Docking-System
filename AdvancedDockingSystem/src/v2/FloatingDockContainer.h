@@ -85,9 +85,17 @@ public:
 	CDockContainerWidget* dockContainer() const;
 
 	/**
-	 * Starts floating at the given global position
+	 * Starts floating at the given global position.
+	 * Use moveToGlobalPos() to move the widget to a new position
+	 * depending on the start position given in Pos parameter
 	 */
 	void startFloating(const QPoint& Pos, const QSize& Size = QSize());
+
+	/**
+	 * Moves the widget to a new position relative to the position given when
+	 * startFloating() was called
+	 */
+	void moveFloating();
 }; // class FloatingDockContainer
 }
  // namespace ads

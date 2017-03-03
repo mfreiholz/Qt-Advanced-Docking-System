@@ -189,6 +189,9 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager* DockManager) :
 	l->addWidget(d->DockContainer);
 	DockManager->registerFloatingWidget(this);
 
+	// We install an event filter to detect mouse release events because we
+	// do not receive mouse release event if the floating widget is behind
+	// the drop overlay cross
 	qApp->installEventFilter(this);
 }
 
@@ -300,14 +303,7 @@ bool CFloatingDockContainer::eventFilter(QObject *watched, QEvent *event)
 		std::cout << "FloatingWidget::eventFilter QEvent::MouseButtonRelease" << std::endl;
 		d->titleMouseReleaseEvent();
 	}
-	else if ((event->type() == QEvent::MouseMove) && d->DraggingActive)
-	{
-		QMouseEvent* MouseEvent = dynamic_cast<QMouseEvent*>(event);
-		int BorderSize = (frameSize().width() - size().width()) / 2;
-		const QPoint moveToPos = QCursor::pos() - d->DragStartMousePosition - QPoint(BorderSize, 0);
-		move(moveToPos);
-		return true;
-	}
+
 	return false;
 }
 
@@ -321,6 +317,15 @@ void CFloatingDockContainer::startFloating(const QPoint& Pos, const QSize& Size)
 	move(TargetPos);
     show();
 	d->DragStartMousePosition = Pos;
+}
+
+
+//============================================================================
+void CFloatingDockContainer::moveFloating()
+{
+	int BorderSize = (frameSize().width() - size().width()) / 2;
+	const QPoint moveToPos = QCursor::pos() - d->DragStartMousePosition - QPoint(BorderSize, 0);
+	move(moveToPos);
 }
 } // namespace ads
 
