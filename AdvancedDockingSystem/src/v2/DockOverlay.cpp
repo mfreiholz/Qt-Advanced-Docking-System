@@ -43,18 +43,22 @@ namespace ads
 //============================================================================
 static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size, DockWidgetArea DockWidgetArea)
 {
-	const QColor borderColor = pal.color(QPalette::Active, QPalette::Highlight);
-	const QColor backgroundColor = pal.color(QPalette::Active, QPalette::Base);
-	const QColor areaBackgroundColor = pal.color(QPalette::Active, QPalette::Highlight).lighter(150);
+	QColor borderColor = pal.color(QPalette::Active, QPalette::Highlight);
+	QColor backgroundColor = pal.color(QPalette::Active, QPalette::Base);
+	QColor areaBackgroundColor = pal.color(QPalette::Active, QPalette::Highlight).lighter(150);
 
 	QPixmap pm(size.width(), size.height());
 	pm.fill(QColor(0, 0, 0, 0));
 
 	QPainter p(&pm);
 	QPen pen = p.pen();
-	QRectF baseRect(pm.rect());
+	QRectF ShadowRect(pm.rect());
+	QRectF baseRect;
+	baseRect.setSize(ShadowRect.size() * 0.7);
+	baseRect.moveCenter(ShadowRect.center());
 
 	// Fill
+	p.fillRect(ShadowRect, QColor(0, 0, 0, 64));
 	p.fillRect(baseRect, backgroundColor);
 
 	// Drop area rect.
@@ -71,13 +75,13 @@ static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size
 			gradient.setFinalStop(areaRect.bottomLeft());
 			break;
 		case RightDockWidgetArea:
-			areaRect = QRectF(baseRect.width() * .5f, baseRect.y(), baseRect.width() * .5f, baseRect.height());
+			areaRect = QRectF(ShadowRect.width() * .5f, baseRect.y(), baseRect.width() * .5f, baseRect.height());
 			areaLine = QLineF(areaRect.topLeft(), areaRect.bottomLeft());
 			gradient.setStart(areaRect.topLeft());
 			gradient.setFinalStop(areaRect.topRight());
 			break;
 		case BottomDockWidgetArea:
-			areaRect = QRectF(baseRect.x(), baseRect.height() * .5f, baseRect.width(), baseRect.height() * .5f);
+			areaRect = QRectF(baseRect.x(), ShadowRect.height() * .5f, baseRect.width(), baseRect.height() * .5f);
 			areaLine = QLineF(areaRect.topLeft(), areaRect.topRight());
 			gradient.setStart(areaRect.topLeft());
 			gradient.setFinalStop(areaRect.bottomLeft());
@@ -123,7 +127,7 @@ QWidget* createDropIndicatorWidget(DockWidgetArea DockWidgetArea)
 	QLabel* l = new QLabel();
 	l->setObjectName("DockWidgetAreaLabel");
 
-	const qreal metric = static_cast<qreal>(l->fontMetrics().height()) * 2.f;
+	const qreal metric = static_cast<qreal>(l->fontMetrics().height()) * 3.f;
 	const QSizeF size(metric, metric);
 
 	l->setPixmap(createDropIndicatorPixmap(l->palette(), size, DockWidgetArea));
@@ -423,7 +427,7 @@ CDockOverlayCross::CDockOverlayCross(CDockOverlay* overlay) :
 	setAttribute(Qt::WA_TranslucentBackground);
 
 	d->GridLayout = new QGridLayout();
-	d->GridLayout->setSpacing(6);
+	d->GridLayout->setSpacing(0);
 	setLayout(d->GridLayout);
 }
 

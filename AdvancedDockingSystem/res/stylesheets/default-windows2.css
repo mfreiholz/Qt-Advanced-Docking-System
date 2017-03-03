@@ -17,7 +17,7 @@ ads--CDockContainerWidget QSplitter::handle
 ads--CDockAreaWidget
 {
     background: palette(window);
-    border: 1px solid palette(light);
+    border: 1px solid white;
 }
 
 ads--CDockAreaWidget #tabsMenuButton::menu-indicator
@@ -57,12 +57,10 @@ ads--CDockWidget
     border-width: 1px 0 0 0;
 }
 
-QPushButton#closeButton
-{
-	padding: 0px;
-}
-
+QPushButton#closeButton,
 QPushButton#tabsMenuButton
 {
-    padding: 0px;
+	padding: 1px;
 }
+
+

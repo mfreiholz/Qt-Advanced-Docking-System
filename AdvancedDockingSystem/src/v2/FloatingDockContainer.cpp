@@ -140,11 +140,13 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
     	return;
     }
 
+    ContainerOverlay->setAllowedAreas(TopContainer->dockAreaCount() > 1 ?
+    	OuterDockAreas : AllDockAreas);
 	ContainerOverlay->showOverlay(TopContainer);
 	ContainerOverlay->raise();
 
     auto DockArea = TopContainer->dockAreaAt(GlobalPos);
-    if (DockArea)
+    if (DockArea && TopContainer->dockAreaCount() > 1)
     {
     	DockAreaOverlay->setAllowedAreas(AllDockAreas);
         DockAreaOverlay->showOverlay(DockArea);
@@ -152,17 +154,6 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
     else
     {
     	DockAreaOverlay->hideOverlay();
-    }
-
-
-    if (TopContainer)
-    {
-    	ContainerOverlay->showOverlay(TopContainer);
-		ContainerOverlay->raise();
-    }
-    else
-    {
-    	ContainerOverlay->hideOverlay();
     }
 }
 

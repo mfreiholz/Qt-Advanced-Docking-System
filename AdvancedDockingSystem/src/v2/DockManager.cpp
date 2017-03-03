@@ -85,6 +85,11 @@ CDockManager::CDockManager(QWidget *parent) :
 //============================================================================
 CDockManager::~CDockManager()
 {
+	auto FloatingWidgets = d->FloatingWidgets;
+	for (auto FloatingWidget : FloatingWidgets)
+	{
+		delete FloatingWidget;
+	}
 	delete d;
 }
 

@@ -277,6 +277,7 @@ DockAreaWidgetPrivate::DockAreaWidgetPrivate(CDockAreaWidget* _public) :
 void DockAreaWidgetPrivate::createTabBar()
 {
 	TitleBar = new QFrame(_this);
+	TitleBar->setObjectName("dockAreaTitleBar");
 	TopLayout = new QBoxLayout(QBoxLayout::LeftToRight);
 	TopLayout->setContentsMargins(0, 0, 0, 0);
 	TopLayout->setSpacing(0);
@@ -378,7 +379,6 @@ CDockAreaWidget::CDockAreaWidget(CDockManager* DockManager, CDockContainerWidget
 	d(new DockAreaWidgetPrivate(this))
 {
 	d->DockManager = DockManager;
-	setStyleSheet("ads--CDockAreaWidget {border: 1px solid white;}");
 	d->Layout = new QBoxLayout(QBoxLayout::TopToBottom);
 	d->Layout->setContentsMargins(0, 0, 0, 0);
 	d->Layout->setSpacing(0);
