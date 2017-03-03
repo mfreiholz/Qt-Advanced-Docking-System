@@ -36,6 +36,8 @@
 
 #include <iostream>
 
+#include "DockAreaWidget.h"
+
 namespace ads
 {
 //============================================================================
@@ -223,7 +225,24 @@ DockWidgetAreas CDockOverlay::allowedAreas() const
 //============================================================================
 DockWidgetArea CDockOverlay::dropAreaUnderCursor() const
 {
-	return d->Cross->cursorLocation();
+	DockWidgetArea Result = d->Cross->cursorLocation();
+	if (Result != InvalidDockWidgetArea)
+	{
+		return Result;
+	}
+
+	CDockAreaWidget* DockArea = dynamic_cast<CDockAreaWidget*>(d->TargetWidget.data());
+	if (!DockArea)
+	{
+		return Result;
+	}
+
+	if (DockArea->titleAreaGeometry().contains(DockArea->mapFromGlobal(QCursor::pos())))
+	{
+		return CenterDockWidgetArea;
+	}
+
+	return Result;
 }
 
 
@@ -516,7 +535,11 @@ DockWidgetArea CDockOverlayCross::cursorLocation() const
 void CDockOverlayCross::showEvent(QShowEvent*)
 {
 	resize(d->DockOverlay->size());
-	move(d->DockOverlay->pos());
+	QPoint TopLeft = d->DockOverlay->pos();
+	QPoint Offest((this->width() - d->DockOverlay->width()) / 2,
+		(this->height() - d->DockOverlay->height()) / 2);
+	QPoint CrossTopLeft = TopLeft - Offest;
+	move(CrossTopLeft);
 }
 
 

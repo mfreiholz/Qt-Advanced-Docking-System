@@ -56,3 +56,13 @@ ads--CDockWidget
     border-style: solid;
     border-width: 1px 0 0 0;
 }
+
+QPushButton#closeButton
+{
+	padding: 0px;
+}
+
+QPushButton#tabsMenuButton
+{
+    padding: 0px;
+}
