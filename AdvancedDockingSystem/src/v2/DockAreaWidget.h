@@ -54,6 +54,7 @@ private:
 private slots:
 	void onDockWidgetTitleClicked();
 	void onTabsMenuActionTriggered(QAction* Action);
+	void onCloseButtonClicked();
 
 public:
 	/**
@@ -142,6 +143,11 @@ public:
 	 * Returns the index of the current active dock widget
 	 */
 	int currentIndex() const;
+
+	/**
+	 * Returns the current active dock widget
+	 */
+	CDockWidget* currentDockWidget() const;
 
 public slots:
 	/**

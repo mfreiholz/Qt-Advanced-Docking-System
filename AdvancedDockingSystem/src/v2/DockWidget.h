@@ -53,10 +53,28 @@ private:
 
 protected:
 	friend class CDockContainerWidget;
+	friend class CDockAreaWidget;
+	friend class CFloatingDockContainer;
+
 	/**
 	 * Assigns the dock manager that manages this dock widget
 	 */
 	void setDockManager(CDockManager* DockManager);
+
+	/**
+	 * If this dock widget is inserted into a dock area, the dock area will
+	 * be registered on this widget via this function. If a dock widget is
+	 * removed from a dock area, this function will be called with nullptr
+	 * value.
+	 */
+	void setDockArea(CDockAreaWidget* DockArea);
+
+	/**
+	 * Hide dock widget.
+	 * If RemoveFromDockArea is true, the dock widget will be properly removed
+	 * from dock area.
+	 */
+	void hideDockWidget(bool RemoveFromDockArea = true);
 
 public:
 	enum DockWidgetFeature
@@ -68,6 +86,14 @@ public:
 		NoDockWidgetFeatures = 0x00
 	};
 	Q_DECLARE_FLAGS(DockWidgetFeatures, DockWidgetFeature)
+
+
+	enum eState
+	{
+		StateHidden,
+		StateDocked,
+		StateFloating
+	};
 
 	/**
 	 * Default Constructor
@@ -125,6 +151,25 @@ public:
 	 * if this dock widget has not been docked yet
 	 */
 	CDockAreaWidget* dockAreaWidget() const;
+
+	/**
+	 * This property holds whether the dock widget is floating.
+	 */
+	bool isFloating() const;
+
+	/**
+	 * Returns a checkable action that can be used to show or close this dock widget.
+	 * The action's text is set to the dock widget's window title.
+	 */
+	QAction* toggleViewAction() const;
+
+
+public slots:
+	/**
+	 * This property controls whether the dock widget is open or closed.
+	 * The toogleViewAction triggers this slot
+	 */
+	void toggleView(bool Open);
 }; // class DockWidget
 }
  // namespace ads

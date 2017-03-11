@@ -19,7 +19,7 @@
 
 static int CONTENT_COUNT = 0;
 
-static ads::CDockWidget* createLongTextLabelDockWidget(ads::CDockManager* DockManager)
+static ads::CDockWidget* createLongTextLabelDockWidget(QMenu* ViewMenu)
 {
 	static int LabelCount = 0;
 	QLabel* l = new QLabel();
@@ -37,19 +37,21 @@ static ads::CDockWidget* createLongTextLabelDockWidget(ads::CDockManager* DockMa
 
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Label %1").arg(LabelCount++));
 	DockWidget->setWidget(l);
+	ViewMenu->addAction(DockWidget->toggleViewAction());
 	return DockWidget;
 }
 
-static ads::CDockWidget* createCalendarDockWidget(ads::CDockManager* DockManager)
+static ads::CDockWidget* createCalendarDockWidget(QMenu* ViewMenu)
 {
 	static int CalendarCount = 0;
 	QCalendarWidget* w = new QCalendarWidget();
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Calendar %1").arg(CalendarCount++));
 	DockWidget->setWidget(w);
+	ViewMenu->addAction(DockWidget->toggleViewAction());
 	return DockWidget;
 }
 
-static ads::CDockWidget* createFileSystemTreeDockWidget(ads::CDockManager* DockManager)
+static ads::CDockWidget* createFileSystemTreeDockWidget(QMenu* ViewMenu)
 {
 	static int FileSystemCount = 0;
 	QTreeView* w = new QTreeView();
@@ -59,6 +61,7 @@ static ads::CDockWidget* createFileSystemTreeDockWidget(ads::CDockManager* DockM
 	w->setModel(m);
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Filesystem %1").arg(FileSystemCount++));
 	DockWidget->setWidget(w);
+	ViewMenu->addAction(DockWidget->toggleViewAction());
     return DockWidget;
 }
 
@@ -87,22 +90,23 @@ MainWindow::~MainWindow()
 void MainWindow::createContent()
 {
 	// Test container docking
-	auto DockWidget = createCalendarDockWidget(m_DockManager);
+	QMenu* ViewMenu = this->ui->menuView;
+	auto DockWidget = createCalendarDockWidget(ViewMenu);
 	DockWidget->setFeatures(DockWidget->features().setFlag(ads::CDockWidget::DockWidgetClosable, false));
 	m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
-	m_DockManager->addDockWidget(ads::LeftDockWidgetArea, createLongTextLabelDockWidget(m_DockManager));
-	m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createFileSystemTreeDockWidget(m_DockManager));
-	auto TopDockArea = m_DockManager->addDockWidget(ads::TopDockWidgetArea, createFileSystemTreeDockWidget(m_DockManager));
-	DockWidget = createCalendarDockWidget(m_DockManager);
+	m_DockManager->addDockWidget(ads::LeftDockWidgetArea, createLongTextLabelDockWidget(ViewMenu));
+	m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
+	auto TopDockArea = m_DockManager->addDockWidget(ads::TopDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
+	DockWidget = createCalendarDockWidget(ViewMenu);
 	DockWidget->setFeatures(DockWidget->features().setFlag(ads::CDockWidget::DockWidgetClosable, false));
 	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, DockWidget, TopDockArea);
 
 	// Test dock area docking
-	auto RighDockArea = m_DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(m_DockManager), TopDockArea);
-	m_DockManager->addDockWidget(ads::TopDockWidgetArea, createLongTextLabelDockWidget(m_DockManager), RighDockArea);
-	auto BottomDockArea = m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createLongTextLabelDockWidget(m_DockManager), RighDockArea);
-	m_DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(m_DockManager), RighDockArea);
-	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(m_DockManager), BottomDockArea);
+	auto RighDockArea = m_DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), TopDockArea);
+	m_DockManager->addDockWidget(ads::TopDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
+	auto BottomDockArea = m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
+	m_DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
+	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
 }
 
 

@@ -212,6 +212,7 @@ CDockWidgetTitleBar::CDockWidgetTitleBar(CDockWidget* DockWidget, QWidget *paren
 //============================================================================
 CDockWidgetTitleBar::~CDockWidgetTitleBar()
 {
+	std::cout << "~CDockWidgetTitleBar()" << std::endl;
 	delete d;
 }
 

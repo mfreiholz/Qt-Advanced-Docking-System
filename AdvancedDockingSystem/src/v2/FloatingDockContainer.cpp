@@ -43,6 +43,7 @@
 #include "DockWidget.h"
 #include "DockOverlay.h"
 
+
 namespace ads
 {
 static unsigned int zOrderCounter = 0;
@@ -170,6 +171,7 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager* DockManager) :
 	QWidget(DockManager, Qt::Window),
 	d(new FloatingDockContainerPrivate(this))
 {
+	setAttribute(Qt::WA_DeleteOnClose);
 	d->DockManager = DockManager;
     QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
     l->setContentsMargins(0, 0, 0, 0);
@@ -252,11 +254,30 @@ void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 	}
 }
 
+
 //============================================================================
 void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 {
 	d->setDraggingActive(false);
-	QWidget::closeEvent(event);
+	if (dockContainer()->dockAreaCount() > 1 || dockContainer()->dockArea(0)->count() == 1)
+	{
+		for (int i = 0; i < dockContainer()->dockAreaCount(); ++i)
+		{
+			auto DockWidgets = dockContainer()->dockArea(i)->dockWidgets();
+			for (auto DockWidget : DockWidgets)
+			{
+				DockWidget->hideDockWidget(false);
+			}
+		}
+		QWidget::closeEvent(event);
+	}
+	else
+	{
+		std::cout << "Closing single tab" << std::endl;
+		event->ignore();
+		auto DockArea = dockContainer()->dockArea(0);
+		DockArea->currentDockWidget()->hideDockWidget(true);
+	}
 }
 
 

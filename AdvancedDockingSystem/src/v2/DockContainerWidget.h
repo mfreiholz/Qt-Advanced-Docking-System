@@ -112,6 +112,12 @@ public:
 	CDockAreaWidget* dockAreaAt(const QPoint& GlobalPos) const;
 
 	/**
+	 * Returns the dock area at the given Index or 0 if the index is out of
+	 * range
+	 */
+	CDockAreaWidget* dockArea(int Index) const;
+
+	/**
 	 * Returns the number of dock areas in this container
 	 */
 	int dockAreaCount() const;

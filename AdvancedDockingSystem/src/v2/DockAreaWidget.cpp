@@ -314,7 +314,7 @@ void DockAreaWidgetPrivate::createTabBar()
 	CloseButton->setToolTip(_this->tr("Close"));
 	CloseButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	TopLayout->addWidget(CloseButton, 0);
-	//connect(_closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
+	_this->connect(CloseButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
 
 	TabsLayoutInitCount = TabsLayout->count();
 }
@@ -429,7 +429,6 @@ CDockContainerWidget* CDockAreaWidget::dockContainer() const
 void CDockAreaWidget::addDockWidget(CDockWidget* DockWidget)
 {
 	insertDockWidget(d->ContentsLayout->count(), DockWidget);
-
 }
 
 
@@ -441,6 +440,7 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 	DockWidget->titleBar()->setDockAreaWidget(this);
 	auto TitleBar = DockWidget->titleBar();
 	d->TabsLayout->insertWidget(index, TitleBar);
+	TitleBar->show();
 	connect(TitleBar, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
 	DockWidget->setProperty(INDEX_PROPERTY, index);
 	if (Activate)
@@ -448,6 +448,7 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 		setCurrentIndex(index);
 	}
 	d->addTabsMenuEntry(DockWidget, index);
+	DockWidget->setDockArea(this);
 }
 
 
@@ -457,6 +458,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	std::cout << "CDockAreaWidget::removeDockWidget" << std::endl;
 	d->ContentsLayout->removeWidget(DockWidget);
 	auto TitleBar = DockWidget->titleBar();
+	TitleBar->hide();
 	d->TabsLayout->removeWidget(TitleBar);
 	disconnect(TitleBar, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
 	setCurrentIndex(d->ContentsLayout->currentIndex());
@@ -470,6 +472,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	}
 
 	d->updateTabBar();
+	DockWidget->setDockArea(nullptr);
 }
 
 
@@ -484,6 +487,20 @@ void CDockAreaWidget::onDockWidgetTitleClicked()
 
 	int index = d->TabsLayout->indexOf(TitleWidget);
 	setCurrentIndex(index);
+}
+
+
+//============================================================================
+void CDockAreaWidget::onCloseButtonClicked()
+{
+	currentDockWidget()->toggleView(false);
+}
+
+
+//============================================================================
+CDockWidget* CDockAreaWidget::currentDockWidget() const
+{
+	return dockWidget(currentIndex());
 }
 
 
@@ -630,8 +647,6 @@ void CDockAreaWidget::reorderDockWidget(int fromIndex, int toIndex)
 	liFrom = d->ContentsLayout->takeAt(fromIndex);
 	d->ContentsLayout->insertWidget(toIndex, liFrom->widget());
 	delete liFrom;
-
-	//Menu->removeAction()
 }
 
 

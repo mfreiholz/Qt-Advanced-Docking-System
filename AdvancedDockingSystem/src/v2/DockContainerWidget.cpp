@@ -411,7 +411,7 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 	}
 
 	d->Layout = new QGridLayout();
-	d->Layout->setContentsMargins(0, 1, 0, 0);
+	d->Layout->setContentsMargins(0, 1, 0, 1);
 	d->Layout->setSpacing(0);
 	setLayout(d->Layout);
 }
@@ -536,6 +536,13 @@ CDockAreaWidget* CDockContainerWidget::dockAreaAt(const QPoint& GlobalPos) const
 	}
 
 	return 0;
+}
+
+
+//============================================================================
+CDockAreaWidget* CDockContainerWidget::dockArea(int Index) const
+{
+	return (Index < dockAreaCount()) ? d->DockAreas[Index] : 0;
 }
 
 
