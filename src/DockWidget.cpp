@@ -35,6 +35,7 @@
 #include <QSplitter>
 #include <QStack>
 #include <QTextStream>
+#include <QPointer>
 
 #include <iostream>
 
@@ -61,7 +62,12 @@ struct DockWidgetPrivate
 	CDockManager* DockManager = nullptr;
 	CDockAreaWidget* DockArea = nullptr;
 	QAction* ToggleViewAction;
-	QString CapturedState;
+	struct CapturedState
+	{
+		QString DockTreePosition;
+		QRect GlobalGeometry;
+		QPointer<CDockContainerWidget> DockContainer;
+	}  CapturedState;
 
 	/**
 	 * Private data constructor
@@ -91,67 +97,60 @@ DockWidgetPrivate::DockWidgetPrivate(CDockWidget* _public) :
 //============================================================================
 void DockWidgetPrivate::capturedState()
 {
-	QString CapturedState;
-	QTextStream stream(&CapturedState);
-	stream << (_this->isFloating() ? "F " : "D ");
-	if (_this->isFloating())
-	{
-		CFloatingDockContainer* FloatingWidget = internal::findParent<CFloatingDockContainer*>(_this);
-		QRect Rect = FloatingWidget->geometry();
-		stream << Rect.left() << " " << Rect.top() << " " << Rect.width()
-			<< " " << Rect.height();
-	}
-	else
-	{
-		QWidget* Widget = DockArea;
-		QSplitter* splitter = internal::findParent<QSplitter*>(Widget);
-		QStack<QString> SplitterData;
-		while (splitter)
-		{
-			SplitterData.push(QString("%1%2")
-				.arg((splitter->orientation() == Qt::Horizontal) ? "H" : "V")
-				.arg(splitter->indexOf(Widget)));
-			Widget = splitter;
-			splitter = internal::findParent<QSplitter*>(Widget);
-		}
+	QString DockTreePosition;
+	QTextStream stream(&DockTreePosition);
 
-		QString Separator;
-		while (!SplitterData.isEmpty())
-		{
-			stream << Separator << SplitterData.pop();
-			Separator = " ";
-		}
+	QPoint GlobalTopLeft = _this->mapToGlobal(_this->geometry().topLeft());
+	QRect Rect(GlobalTopLeft, _this->geometry().size());
+	CapturedState.GlobalGeometry = Rect;
+	CapturedState.DockContainer = _this->dockContainer();
+
+	QWidget* Widget = DockArea;
+	QSplitter* splitter = internal::findParent<QSplitter*>(Widget);
+	QStack<QString> SplitterData;
+	while (splitter)
+	{
+		SplitterData.push(QString("%1%2")
+			.arg((splitter->orientation() == Qt::Horizontal) ? "H" : "V")
+			.arg(splitter->indexOf(Widget)));
+		Widget = splitter;
+		splitter = internal::findParent<QSplitter*>(Widget);
 	}
-	this->CapturedState = CapturedState;
-	std::cout << "SerializedPosition: " << CapturedState.toStdString() << std::endl;
+
+	QString Separator;
+	while (!SplitterData.isEmpty())
+	{
+		stream << Separator << SplitterData.pop();
+		Separator = " ";
+	}
+	this->CapturedState.DockTreePosition = DockTreePosition;
+	std::cout << "SerializedPosition: " << DockTreePosition.toStdString() << std::endl;
 }
 
 
 //============================================================================
 void DockWidgetPrivate::showDockWidget()
 {
-	QTextStream stream(&CapturedState);
-	QString DockedState;
-	stream >> DockedState;
-	if (DockedState == "F")
+	if (!CapturedState.DockContainer)
 	{
-		std::cout << "Restoring Floating Dock Widget" << std::endl;
-		QVector<int> v;
-		while (!stream.atEnd())
-		{
-			int Value;
-			stream >> Value;
-			v.append(Value);
-		}
+		auto FloatingWidget = new CFloatingDockContainer(_this);
+		FloatingWidget->setGeometry(CapturedState.GlobalGeometry);
+		FloatingWidget->show();
+		return;
+	}
 
-		if (v.count() == 4)
-		{
-			std::cout << "Rectangle Loaded" << std::endl;
-			QRect Rect(v[0], v[1], v[2], v[3]);
-			auto FloatingWidget = new CFloatingDockContainer(_this);
-			FloatingWidget->setGeometry(Rect);
-			FloatingWidget->show();
-		}
+	CDockContainerWidget* DockContainer = CapturedState.DockContainer.data();
+	QStringList DockTree = this->CapturedState.DockTreePosition.split(' ');
+	QSplitter* splitter = DockContainer->findChild<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
+
+	while (splitter)
+	{
+
+	}
+
+	for (const auto& TreeItem : DockTree)
+	{
+
 	}
 }
 

@@ -50,6 +50,11 @@ class CFloatingDockContainer : public QWidget
 private:
 	FloatingDockContainerPrivate* d; ///< private data (pimpl)
 	friend class FloatingDockContainerPrivate;
+
+private slots:
+	void onDockAreasAddedOrRemoved();
+	void onDockAreaCurrentChanged(int Index);
+
 protected:
 	/**
 	 * Private constructor that is called from public constructors

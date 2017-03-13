@@ -82,16 +82,6 @@ struct DockContainerWidgetPrivate
 	DockContainerWidgetPrivate(CDockContainerWidget* _public);
 
 	/**
-	 * Create a new dock area widget and adds it to the list of doc areas
-	 */
-	CDockAreaWidget* newDockArea()
-	{
-		auto DockAreaWidget = new CDockAreaWidget(DockManager, _this);
-		DockAreas.append(DockAreaWidget);
-		return DockAreaWidget;
-	}
-
-	/**
 	 * Adds dock widget to container and returns the dock area that contains
 	 * the inserted dock widget
 	 */
@@ -289,6 +279,8 @@ void DockContainerWidgetPrivate::addDockAreasToList(const QList<CDockAreaWidget*
 	{
 		DockAreas.last()->updateDockArea();
 	}
+
+	emit _this->dockAreasAdded();
 }
 
 
@@ -348,6 +340,7 @@ void DockContainerWidgetPrivate::addDockArea(CDockAreaWidget* NewDockArea, DockW
 
 	DockAreas.append(NewDockArea);
 	NewDockArea->updateDockArea();
+	emit _this->dockAreasAdded();
 }
 
 
@@ -392,6 +385,7 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetAr
 	}
 
 	DockAreas.append(NewDockArea);
+	emit _this->dockAreasAdded();
 	return NewDockArea;
 }
 
@@ -521,6 +515,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 		d->Layout->replaceWidget(Splitter, widget);
 	}
 	delete Splitter;
+	emit dockAreasRemoved();
 }
 
 

@@ -126,6 +126,19 @@ public:
 	 * This function returns true, if this container is in a floating widget
 	 */
 	bool isFloating() const;
+
+signals:
+	/**
+	 * This signal is emitted if one or multiple dock areas has been added to
+	 * the internal list of dock areas.
+	 * If multiple dock areas are inserted, this signal is emitted only once
+	 */
+	void dockAreasAdded();
+
+	/**
+	 * This signal is emitted if one or multiple dock areas has been removed
+	 */
+	void dockAreasRemoved();
 }; // class DockContainerWidget
 } // namespace ads
 //-----------------------------------------------------------------------------

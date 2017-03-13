@@ -60,6 +60,7 @@ struct FloatingDockContainerPrivate
 	bool DraggingActive = false;
 	QPoint DragStartMousePosition;
 	CDockContainerWidget* DropContainer = nullptr;
+	CDockAreaWidget* SingleDockArea = nullptr;
 
 	/**
 	 * Private data constructor
@@ -179,6 +180,8 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager* DockManager) :
     setLayout(l);
 
     d->DockContainer = new CDockContainerWidget(DockManager, this);
+    connect(d->DockContainer, SIGNAL(dockAreasAdded()), this, SLOT(onDockAreasAddedOrRemoved()));
+    connect(d->DockContainer, SIGNAL(dockAreasRemoved()), this, SLOT(onDockAreasAddedOrRemoved()));
 	l->addWidget(d->DockContainer);
 	DockManager->registerFloatingWidget(this);
 
@@ -339,6 +342,38 @@ void CFloatingDockContainer::moveFloating()
 	const QPoint moveToPos = QCursor::pos() - d->DragStartMousePosition - QPoint(BorderSize, 0);
 	move(moveToPos);
 }
+
+
+//============================================================================
+void CFloatingDockContainer::onDockAreasAddedOrRemoved()
+{
+	if (d->DockContainer->dockAreaCount() == 1)
+	{
+		d->SingleDockArea = d->DockContainer->dockArea(0);
+		this->setWindowTitle(d->SingleDockArea->currentDockWidget()->windowTitle());
+		connect(d->SingleDockArea, SIGNAL(currentChanged(int)), this,
+			SLOT(onDockAreaCurrentChanged(int)));
+	}
+	else
+	{
+		if (d->SingleDockArea)
+		{
+			disconnect(d->SingleDockArea, SIGNAL(currentChanged(int)), this,
+				SLOT(onDockAreaCurrentChanged(int)));
+			d->SingleDockArea = nullptr;
+		}
+		this->setWindowTitle(qApp->applicationDisplayName());
+	}
+}
+
+
+//============================================================================
+void CFloatingDockContainer::onDockAreaCurrentChanged(int Index)
+{
+	this->setWindowTitle(d->SingleDockArea->currentDockWidget()->windowTitle());
+}
+
+
 } // namespace ads
 
 //---------------------------------------------------------------------------
