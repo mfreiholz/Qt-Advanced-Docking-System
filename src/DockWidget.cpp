@@ -131,7 +131,7 @@ void DockWidgetPrivate::capturedState()
 //============================================================================
 void DockWidgetPrivate::showDockWidget()
 {
-	if (!CapturedState.DockContainer)
+	/*if (!CapturedState.DockContainer)
 	{
 		auto FloatingWidget = new CFloatingDockContainer(_this);
 		FloatingWidget->setGeometry(CapturedState.GlobalGeometry);
@@ -151,6 +151,16 @@ void DockWidgetPrivate::showDockWidget()
 	for (const auto& TreeItem : DockTree)
 	{
 
+	}*/
+
+	std::cout << "DockWidgetPrivate::showDockWidget()" << std::endl;
+	_this->show();
+	DockArea->show();
+
+	QSplitter* Splitter = internal::findParent<QSplitter*>(_this);
+	if (Splitter)
+	{
+		Splitter->show();
 	}
 }
 
@@ -270,7 +280,7 @@ QAction* CDockWidget::toggleViewAction() const
 //============================================================================
 void CDockWidget::toggleView(bool Open)
 {
-	if ((d->DockArea != nullptr) == Open)
+	/*if ((d->DockArea != nullptr) == Open)
 	{
 		return;
 	}
@@ -282,6 +292,15 @@ void CDockWidget::toggleView(bool Open)
 	else if (Open && !d->DockArea)
 	{
 		d->showDockWidget();
+	}*/
+
+	if (Open)
+	{
+		d->showDockWidget();
+	}
+	else
+	{
+		hideDockWidget(true);
 	}
 }
 
@@ -298,7 +317,7 @@ void CDockWidget::setDockArea(CDockAreaWidget* DockArea)
 //============================================================================
 void CDockWidget::hideDockWidget(bool RemoveFromDockArea)
 {
-	d->capturedState();
+	/*d->capturedState();
 	if (d->DockArea && RemoveFromDockArea)
 	{
 		d->DockArea->removeDockWidget(this);
@@ -307,7 +326,48 @@ void CDockWidget::hideDockWidget(bool RemoveFromDockArea)
 	this->setDockArea(nullptr);
 	// Remove title from dock area widget to prevent its deletion if dock
 	// area is deleted
-	d->TitleWidget->setParent(this);
+	d->TitleWidget->setParent(this);*/
+
+	std::cout << "CDockWidget::hideDockWidget" << std::endl;
+	this->hide();
+	d->ToggleViewAction->setChecked(false);
+	d->TitleWidget->hide();
+	CDockAreaWidget* DockArea = d->DockArea;
+	for (int i = 0; i < DockArea->count(); ++i)
+	{
+		if (DockArea->dockWidget(i)->isVisible())
+		{
+			return;
+		}
+	}
+
+	if (DockArea->count() > 1)
+	{
+		if (DockArea->currentIndex() == (DockArea->count() - 1))
+		{
+			DockArea->setCurrentIndex(DockArea->currentIndex() - 1);
+		}
+		else
+		{
+			DockArea->setCurrentIndex(DockArea->currentIndex() + 1);
+		}
+	}
+	QSplitter* Splitter = internal::findParent<QSplitter*>(this);
+	if (!Splitter)
+	{
+		return;
+	}
+
+	std::cout << "DockWidgets " << Splitter->count() << std::endl;
+	for (int i = 0; i < Splitter->count(); ++i)
+	{
+		if (Splitter->widget(i)->isVisible())
+		{
+			return;
+		}
+	}
+
+	Splitter->hide();
 }
 
 } // namespace ads
