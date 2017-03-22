@@ -497,6 +497,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 	area->setParent(0);
 	if (!(Splitter && Splitter->count() == 1))
 	{
+		emit dockAreasRemoved();
 		return;
 	}
 
@@ -585,6 +586,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 		}
 	}
 }
+
 
 } // namespace ads
 

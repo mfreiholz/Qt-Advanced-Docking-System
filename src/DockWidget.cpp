@@ -62,6 +62,7 @@ struct DockWidgetPrivate
 	CDockManager* DockManager = nullptr;
 	CDockAreaWidget* DockArea = nullptr;
 	QAction* ToggleViewAction;
+	bool Closed = false;
 	struct CapturedState
 	{
 		QString DockTreePosition;
@@ -83,6 +84,16 @@ struct DockWidgetPrivate
 	 * Show dock widget
 	 */
 	void showDockWidget();
+
+	/**
+	 * Hides a parent splitter if all dock widgets in the splitter are closed
+	 */
+	void hideEmptyParentSplitter();
+
+	/**
+	 * Hides a dock area if all dock widgets in the area are closed
+	 */
+	void hideEmptyParentDockArea();
 };
 // struct DockWidgetPrivate
 
@@ -131,36 +142,59 @@ void DockWidgetPrivate::capturedState()
 //============================================================================
 void DockWidgetPrivate::showDockWidget()
 {
-	/*if (!CapturedState.DockContainer)
-	{
-		auto FloatingWidget = new CFloatingDockContainer(_this);
-		FloatingWidget->setGeometry(CapturedState.GlobalGeometry);
-		FloatingWidget->show();
-		return;
-	}
-
-	CDockContainerWidget* DockContainer = CapturedState.DockContainer.data();
-	QStringList DockTree = this->CapturedState.DockTreePosition.split(' ');
-	QSplitter* splitter = DockContainer->findChild<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
-
-	while (splitter)
-	{
-
-	}
-
-	for (const auto& TreeItem : DockTree)
-	{
-
-	}*/
-
-	std::cout << "DockWidgetPrivate::showDockWidget()" << std::endl;
-	_this->show();
 	DockArea->show();
-
+	DockArea->setCurrentIndex(DockArea->tabIndex(_this));
 	QSplitter* Splitter = internal::findParent<QSplitter*>(_this);
 	if (Splitter)
 	{
 		Splitter->show();
+	}
+}
+
+
+//============================================================================
+void DockWidgetPrivate::hideEmptyParentSplitter()
+{
+	QSplitter* Splitter = internal::findParent<QSplitter*>(_this);
+	if (!Splitter)
+	{
+		return;
+	}
+
+	for (int i = 0; i < Splitter->count(); ++i)
+	{
+		if (Splitter->widget(i)->isVisible())
+		{
+			return;
+		}
+	}
+
+	Splitter->hide();
+}
+
+
+//============================================================================
+void DockWidgetPrivate::hideEmptyParentDockArea()
+{
+	auto OpenDockWidgets = DockArea->openDockWidgets();
+	if (OpenDockWidgets.count() > 1)
+	{
+		CDockWidget* NextDockWidget;
+		if (OpenDockWidgets.last() == _this)
+		{
+			NextDockWidget = OpenDockWidgets[OpenDockWidgets.count() - 2];
+		}
+		else
+		{
+			int NextIndex = OpenDockWidgets.indexOf(_this) + 1;
+			NextDockWidget = OpenDockWidgets[NextIndex];
+		}
+
+		DockArea->setCurrentDockWidget(NextDockWidget);
+	}
+	else
+	{
+		DockArea->hide();
 	}
 }
 
@@ -271,6 +305,13 @@ bool CDockWidget::isFloating() const
 
 
 //============================================================================
+bool CDockWidget::isClosed() const
+{
+	return d->Closed;
+}
+
+
+//============================================================================
 QAction* CDockWidget::toggleViewAction() const
 {
 	return d->ToggleViewAction;
@@ -280,28 +321,15 @@ QAction* CDockWidget::toggleViewAction() const
 //============================================================================
 void CDockWidget::toggleView(bool Open)
 {
-	/*if ((d->DockArea != nullptr) == Open)
-	{
-		return;
-	}
-
-	if (!Open && d->DockArea)
-	{
-		hideDockWidget(true);
-	}
-	else if (Open && !d->DockArea)
-	{
-		d->showDockWidget();
-	}*/
-
 	if (Open)
 	{
 		d->showDockWidget();
 	}
 	else
 	{
-		hideDockWidget(true);
+		hideDockWidget();
 	}
+	d->Closed = !Open;
 }
 
 
@@ -315,59 +343,13 @@ void CDockWidget::setDockArea(CDockAreaWidget* DockArea)
 
 
 //============================================================================
-void CDockWidget::hideDockWidget(bool RemoveFromDockArea)
+void CDockWidget::hideDockWidget()
 {
-	/*d->capturedState();
-	if (d->DockArea && RemoveFromDockArea)
-	{
-		d->DockArea->removeDockWidget(this);
-	}
-	this->setParent(d->DockManager);
-	this->setDockArea(nullptr);
-	// Remove title from dock area widget to prevent its deletion if dock
-	// area is deleted
-	d->TitleWidget->setParent(this);*/
-
-	std::cout << "CDockWidget::hideDockWidget" << std::endl;
-	this->hide();
+	CDockAreaWidget* DockArea = d->DockArea;
 	d->ToggleViewAction->setChecked(false);
 	d->TitleWidget->hide();
-	CDockAreaWidget* DockArea = d->DockArea;
-	for (int i = 0; i < DockArea->count(); ++i)
-	{
-		if (DockArea->dockWidget(i)->isVisible())
-		{
-			return;
-		}
-	}
-
-	if (DockArea->count() > 1)
-	{
-		if (DockArea->currentIndex() == (DockArea->count() - 1))
-		{
-			DockArea->setCurrentIndex(DockArea->currentIndex() - 1);
-		}
-		else
-		{
-			DockArea->setCurrentIndex(DockArea->currentIndex() + 1);
-		}
-	}
-	QSplitter* Splitter = internal::findParent<QSplitter*>(this);
-	if (!Splitter)
-	{
-		return;
-	}
-
-	std::cout << "DockWidgets " << Splitter->count() << std::endl;
-	for (int i = 0; i < Splitter->count(); ++i)
-	{
-		if (Splitter->widget(i)->isVisible())
-		{
-			return;
-		}
-	}
-
-	Splitter->hide();
+	d->hideEmptyParentDockArea();
+	d->hideEmptyParentSplitter();
 }
 
 } // namespace ads

@@ -505,6 +505,18 @@ CDockWidget* CDockAreaWidget::currentDockWidget() const
 
 
 //============================================================================
+void CDockAreaWidget::setCurrentDockWidget(CDockWidget* DockWidget)
+{
+	int Index = tabIndex(DockWidget);
+	if (Index < 0)
+	{
+		return;
+	}
+	setCurrentIndex(Index);
+}
+
+
+//============================================================================
 void CDockAreaWidget::setCurrentIndex(int index)
 {
 	if (index < 0 || index > (d->TabsLayout->count() - 1))
@@ -530,6 +542,7 @@ void CDockAreaWidget::setCurrentIndex(int index)
 
 		if (i == index)
 		{
+			TitleWidget->show();
 			TitleWidget->setActiveTab(true);
 			d->TabsScrollArea->ensureWidgetVisible(TitleWidget);
 			auto Features = TitleWidget->dockWidget()->features();
@@ -542,6 +555,7 @@ void CDockAreaWidget::setCurrentIndex(int index)
 	}
 
 	d->ContentsLayout->setCurrentIndex(index);
+	d->ContentsLayout->currentWidget()->show();
 	emit currentChanged(index);
 }
 
@@ -580,6 +594,22 @@ QList<CDockWidget*> CDockAreaWidget::dockWidgets() const
 	for (int i = 0; i < d->ContentsLayout->count(); ++i)
 	{
 		DockWidgetList.append(dockWidget(i));
+	}
+	return DockWidgetList;
+}
+
+
+//============================================================================
+QList<CDockWidget*> CDockAreaWidget::openDockWidgets() const
+{
+	QList<CDockWidget*> DockWidgetList;
+	for (int i = 0; i < d->ContentsLayout->count(); ++i)
+	{
+		CDockWidget* DockWidget = dockWidget(i);
+		if (!DockWidget->isClosed())
+		{
+			DockWidgetList.append(dockWidget(i));
+		}
 	}
 	return DockWidgetList;
 }
@@ -663,6 +693,22 @@ void CDockAreaWidget::onTabsMenuActionTriggered(QAction* Action)
 void CDockAreaWidget::updateDockArea()
 {
 	d->updateTabBar();
+}
+
+
+//============================================================================
+void CDockAreaWidget::hideEvent(QHideEvent* event)
+{
+	QFrame::hideEvent(event);
+	emit visibilityChanged(isVisible());
+}
+
+
+//============================================================================
+void CDockAreaWidget::showEvent(QShowEvent* event)
+{
+	QFrame::showEvent(event);
+	emit visibilityChanged(isVisible());
 }
 
 } // namespace ads

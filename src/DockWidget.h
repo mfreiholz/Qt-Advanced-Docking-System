@@ -71,10 +71,8 @@ protected:
 
 	/**
 	 * Hide dock widget.
-	 * If RemoveFromDockArea is true, the dock widget will be properly removed
-	 * from dock area.
 	 */
-	void hideDockWidget(bool RemoveFromDockArea = true);
+	void hideDockWidget();
 
 public:
 	enum DockWidgetFeature
@@ -156,6 +154,11 @@ public:
 	 * This property holds whether the dock widget is floating.
 	 */
 	bool isFloating() const;
+
+	/**
+	 * Returns true, if this dock widget is closed.
+	 */
+	bool isClosed() const;
 
 	/**
 	 * Returns a checkable action that can be used to show or close this dock widget.

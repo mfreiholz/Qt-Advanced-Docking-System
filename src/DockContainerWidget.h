@@ -52,6 +52,7 @@ class CDockContainerWidget : public QFrame
 private:
 	DockContainerWidgetPrivate* d; ///< private data (pimpl)
 	friend class DockContainerWidgetPrivate;
+
 protected:
 	/**
 	 * Handles activation events to update zOrderIndex

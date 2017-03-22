@@ -172,7 +172,7 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager* DockManager) :
 	QWidget(DockManager, Qt::Window),
 	d(new FloatingDockContainerPrivate(this))
 {
-	setAttribute(Qt::WA_DeleteOnClose);
+	//setAttribute(Qt::WA_DeleteOnClose);
 	d->DockManager = DockManager;
     QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
     l->setContentsMargins(0, 0, 0, 0);
@@ -210,6 +210,7 @@ CFloatingDockContainer::CFloatingDockContainer(CDockWidget* DockWidget) :
 //============================================================================
 CFloatingDockContainer::~CFloatingDockContainer()
 {
+	std::cout << "~CFloatingDockContainer" << std::endl;
 	if (d->DockManager)
 	{
 		d->DockManager->removeFloatingWidget(this);
@@ -269,17 +270,21 @@ void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 			auto DockWidgets = dockContainer()->dockArea(i)->dockWidgets();
 			for (auto DockWidget : DockWidgets)
 			{
-				DockWidget->hideDockWidget(false);
+				DockWidget->hideDockWidget();
 			}
 		}
 		QWidget::closeEvent(event);
 	}
 	else
 	{
-		std::cout << "Closing single tab" << std::endl;
-		event->ignore();
 		auto DockArea = dockContainer()->dockArea(0);
-		DockArea->currentDockWidget()->hideDockWidget(true);
+		DockArea->currentDockWidget()->hideDockWidget();
+		// As long as there are open dock widgets, we do not close the floating
+		// window
+		if (DockArea->openDockWidgets().count())
+		{
+			event->ignore();
+		}
 	}
 }
 
