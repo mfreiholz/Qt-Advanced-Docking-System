@@ -70,9 +70,10 @@ protected:
 	void setDockArea(CDockAreaWidget* DockArea);
 
 	/**
-	 * Hide dock widget.
+	 * This function changes the toggle view action without emitting any
+	 * signal
 	 */
-	void hideDockWidget();
+	void setToggleViewActionChecked(bool Checked);
 
 public:
 	enum DockWidgetFeature
@@ -173,6 +174,17 @@ public slots:
 	 * The toogleViewAction triggers this slot
 	 */
 	void toggleView(bool Open);
+
+signals:
+	/**
+	 * This signal is emitted if the dock widget is opened or closed
+	 */
+	void viewToggled(bool Open);
+
+	/**
+	 * This signal is emitted if the dock widget is closed
+	 */
+	void closed();
 }; // class DockWidget
 }
  // namespace ads

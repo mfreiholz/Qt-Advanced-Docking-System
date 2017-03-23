@@ -55,10 +55,7 @@ private slots:
 	void onDockWidgetTitleClicked();
 	void onTabsMenuActionTriggered(QAction* Action);
 	void onCloseButtonClicked();
-
-protected:
-	virtual void hideEvent(QHideEvent *) override;
-	virtual void showEvent(QShowEvent *) override;
+	void onDockWidgetViewToggled(bool Open);
 
 public:
 	/**
@@ -132,7 +129,7 @@ public:
 	/**
 	 * Returns a list of dock widgets that are not closed
 	 */
-	QList<CDockWidget*> openDockWidgets() const;
+	QList<CDockWidget*> openedDockWidgets() const;
 
 	/**
 	 * Returns the number of dock widgets in this area
@@ -189,12 +186,11 @@ signals:
 	void currentChanged(int index);
 
 	/**
-	 * This signal is emitted if a dock areas visibility changed.
-	 * The visibility changes, if the last dock widget in a dock area is closed
-	 * or if one dock widget in a dock area with only closed dock widgets
-	 * becomes visible
+	 * This signal is emitted if the dock area is closed or opened.
+	 * The dock area will be closed, if all dock widgets in the dock area are
+	 * closed and will be opened, when the first dock widget is opened
 	 */
-	void visibilityChanged(bool Visible);
+	void viewToggled(bool Open);
 }; // class DockAreaWidget
 }
  // namespace ads

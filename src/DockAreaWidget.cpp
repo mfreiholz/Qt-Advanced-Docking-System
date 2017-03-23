@@ -38,6 +38,8 @@
 #include <QPushButton>
 #include <QDebug>
 #include <QMenu>
+#include <QSplitter>
+
 
 #include "DockContainerWidget.h"
 #include "DockWidget.h"
@@ -442,6 +444,7 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 	d->TabsLayout->insertWidget(index, TitleBar);
 	TitleBar->show();
 	connect(TitleBar, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
+	connect(DockWidget, SIGNAL(viewToggled(bool)), this, SLOT(onDockWidgetViewToggled(bool)));
 	DockWidget->setProperty(INDEX_PROPERTY, index);
 	if (Activate)
 	{
@@ -461,6 +464,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	TitleBar->hide();
 	d->TabsLayout->removeWidget(TitleBar);
 	disconnect(TitleBar, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
+	disconnect(DockWidget, SIGNAL(viewToggled(bool)), this, SLOT(onDockWidgetViewToggled(bool)));
 	setCurrentIndex(d->ContentsLayout->currentIndex());
 	d->updateTabsMenu();
 
@@ -600,7 +604,7 @@ QList<CDockWidget*> CDockAreaWidget::dockWidgets() const
 
 
 //============================================================================
-QList<CDockWidget*> CDockAreaWidget::openDockWidgets() const
+QList<CDockWidget*> CDockAreaWidget::openedDockWidgets() const
 {
 	QList<CDockWidget*> DockWidgetList;
 	for (int i = 0; i < d->ContentsLayout->count(); ++i)
@@ -697,18 +701,9 @@ void CDockAreaWidget::updateDockArea()
 
 
 //============================================================================
-void CDockAreaWidget::hideEvent(QHideEvent* event)
+void CDockAreaWidget::onDockWidgetViewToggled(bool Open)
 {
-	QFrame::hideEvent(event);
-	emit visibilityChanged(isVisible());
-}
-
-
-//============================================================================
-void CDockAreaWidget::showEvent(QShowEvent* event)
-{
-	QFrame::showEvent(event);
-	emit visibilityChanged(isVisible());
+	auto DockWidget = dynamic_cast<CDockWidget*>(sender());
 }
 
 } // namespace ads

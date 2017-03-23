@@ -34,6 +34,7 @@
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPointer>
+#include <QAction>
 
 #include <iostream>
 
@@ -263,27 +264,38 @@ void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 {
 	d->setDraggingActive(false);
-	if (dockContainer()->dockAreaCount() > 1 || dockContainer()->dockArea(0)->count() == 1)
+	QWidget::closeEvent(event);
+
+}
+
+
+//============================================================================
+void CFloatingDockContainer::hideEvent(QHideEvent *event)
+{
+	QWidget::hideEvent(event);
+	auto OpenDockAreas = d->DockContainer->openedDockAreas();
+	for (auto DockArea : OpenDockAreas)
 	{
-		for (int i = 0; i < dockContainer()->dockAreaCount(); ++i)
+		auto OpenDockWidgets = DockArea->openedDockWidgets();
+		for (auto DockWidget : OpenDockWidgets)
 		{
-			auto DockWidgets = dockContainer()->dockArea(i)->dockWidgets();
-			for (auto DockWidget : DockWidgets)
-			{
-				DockWidget->hideDockWidget();
-			}
+			DockWidget->setToggleViewActionChecked(false);
 		}
-		QWidget::closeEvent(event);
 	}
-	else
+}
+
+
+//============================================================================
+void CFloatingDockContainer::showEvent(QShowEvent *event)
+{
+	QWidget::showEvent(event);
+	CDockContainerWidget* DockContainer = dockContainer();
+	for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
 	{
-		auto DockArea = dockContainer()->dockArea(0);
-		DockArea->currentDockWidget()->hideDockWidget();
-		// As long as there are open dock widgets, we do not close the floating
-		// window
-		if (DockArea->openDockWidgets().count())
+		auto DockArea = DockContainer->dockArea(i);
+		for (auto DockWidget : DockArea->openedDockWidgets())
 		{
-			event->ignore();
+			DockWidget->setToggleViewActionChecked(true);
 		}
 	}
 }

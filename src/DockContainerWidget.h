@@ -119,6 +119,12 @@ public:
 	CDockAreaWidget* dockArea(int Index) const;
 
 	/**
+	 * Returns the list of dock areas that are not closed
+	 * If all dock widgets in a dock area are closed, the dock area will be closed
+	 */
+	QList<CDockAreaWidget*> openedDockAreas() const;
+
+	/**
 	 * Returns the number of dock areas in this container
 	 */
 	int dockAreaCount() const;

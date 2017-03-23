@@ -86,6 +86,11 @@ struct DockWidgetPrivate
 	void showDockWidget();
 
 	/**
+	 * Hide dock widget.
+	 */
+	void hideDockWidget();
+
+	/**
 	 * Hides a parent splitter if all dock widgets in the splitter are closed
 	 */
 	void hideEmptyParentSplitter();
@@ -94,6 +99,12 @@ struct DockWidgetPrivate
 	 * Hides a dock area if all dock widgets in the area are closed
 	 */
 	void hideEmptyParentDockArea();
+
+	/**
+	 * Hides a floating widget if all dock areas are empty - that means,
+	 * if all dock widgets in all dock areas are closed
+	 */
+	void hideEmptyFloatingWidget();
 };
 // struct DockWidgetPrivate
 
@@ -149,6 +160,25 @@ void DockWidgetPrivate::showDockWidget()
 	{
 		Splitter->show();
 	}
+
+	CDockContainerWidget* Container = DockArea->dockContainer();
+	if (Container->isFloating())
+	{
+		CFloatingDockContainer* FloatingWidget = internal::findParent<
+				CFloatingDockContainer*>(Container);
+		FloatingWidget->show();
+	}
+}
+
+
+//============================================================================
+void DockWidgetPrivate::hideDockWidget()
+{
+	ToggleViewAction->setChecked(false);
+	TitleWidget->hide();
+	hideEmptyParentDockArea();
+	hideEmptyParentSplitter();
+	hideEmptyFloatingWidget();
 }
 
 
@@ -176,7 +206,7 @@ void DockWidgetPrivate::hideEmptyParentSplitter()
 //============================================================================
 void DockWidgetPrivate::hideEmptyParentDockArea()
 {
-	auto OpenDockWidgets = DockArea->openDockWidgets();
+	auto OpenDockWidgets = DockArea->openedDockWidgets();
 	if (OpenDockWidgets.count() > 1)
 	{
 		CDockWidget* NextDockWidget;
@@ -195,6 +225,18 @@ void DockWidgetPrivate::hideEmptyParentDockArea()
 	else
 	{
 		DockArea->hide();
+	}
+}
+
+
+//============================================================================
+void DockWidgetPrivate::hideEmptyFloatingWidget()
+{
+	CDockContainerWidget* Container = _this->dockContainer();
+	if (Container->isFloating() && Container->openedDockAreas().isEmpty())
+	{
+		CFloatingDockContainer* FloatingWidget = internal::findParent<CFloatingDockContainer*>(Container);
+		FloatingWidget->hide();
 	}
 }
 
@@ -222,6 +264,16 @@ CDockWidget::~CDockWidget()
 {
 	std::cout << "~CDockWidget()" << std::endl;
 	delete d;
+}
+
+
+//============================================================================
+void CDockWidget::setToggleViewActionChecked(bool Checked)
+{
+	QAction* Action = d->ToggleViewAction;
+	Action->blockSignals(true);
+	Action->setChecked(Checked);
+	Action->blockSignals(false);
 }
 
 
@@ -327,9 +379,14 @@ void CDockWidget::toggleView(bool Open)
 	}
 	else
 	{
-		hideDockWidget();
+		d->hideDockWidget();
 	}
 	d->Closed = !Open;
+	if (!Open)
+	{
+		emit closed();
+	}
+	emit viewToggled(Open);
 }
 
 
@@ -340,17 +397,6 @@ void CDockWidget::setDockArea(CDockAreaWidget* DockArea)
 	d->ToggleViewAction->setChecked(DockArea != nullptr);
 }
 
-
-
-//============================================================================
-void CDockWidget::hideDockWidget()
-{
-	CDockAreaWidget* DockArea = d->DockArea;
-	d->ToggleViewAction->setChecked(false);
-	d->TitleWidget->hide();
-	d->hideEmptyParentDockArea();
-	d->hideEmptyParentSplitter();
-}
 
 } // namespace ads
 

@@ -588,6 +588,22 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 }
 
 
+//============================================================================
+QList<CDockAreaWidget*> CDockContainerWidget::openedDockAreas() const
+{
+	QList<CDockAreaWidget*> Result;
+	for (auto DockArea : d->DockAreas)
+	{
+		if (DockArea->isVisible())
+		{
+			Result.append(DockArea);
+		}
+	}
+
+	return Result;
+}
+
+
 } // namespace ads
 
 //---------------------------------------------------------------------------
