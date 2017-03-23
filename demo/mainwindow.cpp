@@ -2,6 +2,8 @@
 
 #include "ui_mainwindow.h"
 
+#include <iostream>
+
 #include <QTime>
 #include <QLabel>
 #include <QTextEdit>
@@ -10,6 +12,7 @@
 #include <QTreeView>
 #include <QFileSystemModel>
 #include <QBoxLayout>
+#include <QSettings>
 
 #include "DockManager.h"
 #include "DockWidget.h"
@@ -40,6 +43,7 @@ static ads::CDockWidget* createLongTextLabelDockWidget(QMenu* ViewMenu)
 
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Label %1").arg(LabelCount++));
 	DockWidget->setWidget(l);
+	DockWidget->setObjectName(DockWidget->windowTitle());
 	ViewMenu->addAction(DockWidget->toggleViewAction());
 	return DockWidget;
 }
@@ -50,6 +54,7 @@ static ads::CDockWidget* createCalendarDockWidget(QMenu* ViewMenu)
 	QCalendarWidget* w = new QCalendarWidget();
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Calendar %1").arg(CalendarCount++));
 	DockWidget->setWidget(w);
+	DockWidget->setObjectName(DockWidget->windowTitle());
 	ViewMenu->addAction(DockWidget->toggleViewAction());
 	return DockWidget;
 }
@@ -64,6 +69,7 @@ static ads::CDockWidget* createFileSystemTreeDockWidget(QMenu* ViewMenu)
 	w->setModel(m);
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Filesystem %1").arg(FileSystemCount++));
 	DockWidget->setWidget(w);
+	DockWidget->setObjectName(DockWidget->windowTitle());
 	ViewMenu->addAction(DockWidget->toggleViewAction());
     return DockWidget;
 }
@@ -112,4 +118,30 @@ void MainWindow::createContent()
 	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
 }
 
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+	QSettings Settings("Settings.ini", QSettings::IniFormat);
+	Settings.setValue("mainWindow/Geometry", saveGeometry());
+	Settings.setValue("mainWindow/DockingState", m_DockManager->saveState());
+	QMainWindow::closeEvent(event);
+}
+
+
+void MainWindow::on_actionSaveState_triggered(bool)
+{
+	std::cout << "MainWindow::on_actionSaveState_triggered" << std::endl;
+	QSettings Settings("Settings.ini", QSettings::IniFormat);
+	Settings.setValue("mainWindow/Geometry", saveGeometry());
+	Settings.setValue("mainWindow/DockingState", m_DockManager->saveState());
+}
+
+
+void MainWindow::on_actionRestoreState_triggered(bool)
+{
+	std::cout << "MainWindow::on_actionRestoreState_triggered" << std::endl;
+	QSettings Settings("Settings.ini", QSettings::IniFormat);
+	restoreGeometry(Settings.value("mainWindow/Geometry").toByteArray());
+	m_DockManager->restoreState(Settings.value("mainWindow/DockingState").toByteArray());
+}
 

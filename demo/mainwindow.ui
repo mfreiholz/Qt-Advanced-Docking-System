@@ -29,6 +29,8 @@
      <string>File</string>
     </property>
     <addaction name="actionExit"/>
+    <addaction name="actionSaveState"/>
+    <addaction name="actionRestoreState"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -47,6 +49,16 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionSaveState">
+   <property name="text">
+    <string>Save State</string>
+   </property>
+  </action>
+  <action name="actionRestoreState">
+   <property name="text">
+    <string>Restore State</string>
    </property>
   </action>
  </widget>

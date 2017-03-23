@@ -161,6 +161,11 @@ public:
 	 */
 	void setCurrentDockWidget(CDockWidget* DockWidget);
 
+	/**
+	 * Saves the state into the given stream
+	 */
+	void saveState(QDataStream& Stream) const;
+
 public slots:
 	/**
 	 * This sets the index position of the current tab page.

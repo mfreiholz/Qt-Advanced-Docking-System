@@ -706,6 +706,17 @@ void CDockAreaWidget::onDockWidgetViewToggled(bool Open)
 	auto DockWidget = dynamic_cast<CDockWidget*>(sender());
 }
 
+
+//============================================================================
+void CDockAreaWidget::saveState(QDataStream& stream) const
+{
+	stream << d->ContentsLayout->count() << d->ContentsLayout->currentIndex();
+	for (int i = 0; i < d->ContentsLayout->count(); ++i)
+	{
+		dockWidget(i)->saveState(stream);
+	}
+}
+
 } // namespace ads
 
 //---------------------------------------------------------------------------

@@ -114,6 +114,20 @@ public:
 	 * any floating widget
 	 */
 	virtual unsigned int zOrderIndex() const;
+
+	/**
+	 * Saves the current state of the dockmanger and all its dock widgets
+	 */
+	QByteArray saveState(int version = 0) const;
+
+	/**
+	 * Restores the state of this dockmanagers dockwidgets.
+	 * The version number is compared with that stored in state. If they do
+	 * not match, the dockmanager's state is left unchanged, and this function
+	 * returns false; otherwise, the state is restored, and this function
+	 * returns true.
+	 */
+	bool restoreState(const QByteArray &state, int version = 0);
 }; // class DockManager
 } // namespace ads
 //-----------------------------------------------------------------------------

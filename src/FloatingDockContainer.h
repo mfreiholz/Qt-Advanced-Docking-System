@@ -55,11 +55,6 @@ private slots:
 	void onDockAreasAddedOrRemoved();
 	void onDockAreaCurrentChanged(int Index);
 
-protected:
-	/**
-	 * Private constructor that is called from public constructors
-	 */
-	CFloatingDockContainer(CDockManager* DockManager);
 
 protected: // reimplements QWidget
 	virtual void changeEvent(QEvent *event) override;
@@ -71,6 +66,11 @@ protected: // reimplements QWidget
 	virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
 public:
+	/**
+	 * Create empty flatingb widget - required for restore state
+	 */
+	CFloatingDockContainer(CDockManager* DockManager);
+
 	/**
 	 * Create floating widget with the given dock area
 	 */

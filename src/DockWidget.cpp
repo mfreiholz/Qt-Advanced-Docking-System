@@ -63,22 +63,11 @@ struct DockWidgetPrivate
 	CDockAreaWidget* DockArea = nullptr;
 	QAction* ToggleViewAction;
 	bool Closed = false;
-	struct CapturedState
-	{
-		QString DockTreePosition;
-		QRect GlobalGeometry;
-		QPointer<CDockContainerWidget> DockContainer;
-	}  CapturedState;
 
 	/**
 	 * Private data constructor
 	 */
 	DockWidgetPrivate(CDockWidget* _public);
-
-	/**
-	 * Saves the current state into CapturedState variable
-	 */
-	void capturedState();
 
 	/**
 	 * Show dock widget
@@ -113,40 +102,6 @@ DockWidgetPrivate::DockWidgetPrivate(CDockWidget* _public) :
 	_this(_public)
 {
 
-}
-
-
-//============================================================================
-void DockWidgetPrivate::capturedState()
-{
-	QString DockTreePosition;
-	QTextStream stream(&DockTreePosition);
-
-	QPoint GlobalTopLeft = _this->mapToGlobal(_this->geometry().topLeft());
-	QRect Rect(GlobalTopLeft, _this->geometry().size());
-	CapturedState.GlobalGeometry = Rect;
-	CapturedState.DockContainer = _this->dockContainer();
-
-	QWidget* Widget = DockArea;
-	QSplitter* splitter = internal::findParent<QSplitter*>(Widget);
-	QStack<QString> SplitterData;
-	while (splitter)
-	{
-		SplitterData.push(QString("%1%2")
-			.arg((splitter->orientation() == Qt::Horizontal) ? "H" : "V")
-			.arg(splitter->indexOf(Widget)));
-		Widget = splitter;
-		splitter = internal::findParent<QSplitter*>(Widget);
-	}
-
-	QString Separator;
-	while (!SplitterData.isEmpty())
-	{
-		stream << Separator << SplitterData.pop();
-		Separator = " ";
-	}
-	this->CapturedState.DockTreePosition = DockTreePosition;
-	std::cout << "SerializedPosition: " << DockTreePosition.toStdString() << std::endl;
 }
 
 
@@ -395,6 +350,15 @@ void CDockWidget::setDockArea(CDockAreaWidget* DockArea)
 {
 	d->DockArea = DockArea;
 	d->ToggleViewAction->setChecked(DockArea != nullptr);
+}
+
+
+//============================================================================
+void CDockWidget::saveState(QDataStream& stream) const
+{
+	std::cout << "CDockWidget::saveState " << objectName().toStdString()
+			<< " closed " << d->Closed << std::endl;
+	stream << objectName() << d->Closed;
 }
 
 

@@ -40,6 +40,13 @@
 
 namespace ads
 {
+
+// sentinel values used to validate state data
+enum VersionMarkers
+{
+	VersionMarker = 0xff
+};
+
 /**
  * Private data class of CDockManager class (pimpl)
  */
@@ -55,6 +62,11 @@ struct DockManagerPrivate
 	 * Private data constructor
 	 */
 	DockManagerPrivate(CDockManager* _public);
+
+	/**
+	 * Restores a non existing container from stream
+	 */
+	bool restoreContainer(QDataStream& Stream);
 };
 // struct DockManagerPrivate
 
@@ -63,6 +75,14 @@ DockManagerPrivate::DockManagerPrivate(CDockManager* _public) :
 	_this(_public)
 {
 
+}
+
+
+//============================================================================
+bool DockManagerPrivate::restoreContainer(QDataStream& Stream)
+{
+	std::cout << "restoreContainer" << std::endl;
+	CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(_this);
 }
 
 
@@ -159,6 +179,61 @@ const QList<CFloatingDockContainer*> CDockManager::floatingWidgets() const
 unsigned int CDockManager::zOrderIndex() const
 {
 	return 0;
+}
+
+
+//============================================================================
+QByteArray CDockManager::saveState(int version) const
+{
+    QByteArray data;
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream << VersionMarker;
+    stream << version;
+
+    stream << d->Containers.count();
+    for (auto Container : d->Containers)
+	{
+		Container->saveState(stream);
+	}
+    return data;
+}
+
+
+//============================================================================
+bool CDockManager::restoreState(const QByteArray &state, int version)
+{
+    if (state.isEmpty())
+    {
+        return false;
+    }
+    QByteArray sd = state;
+    QDataStream stream(&sd, QIODevice::ReadOnly);
+
+    int marker;
+	int v;
+    stream >> marker;
+    stream >> v;
+
+    if (stream.status() != QDataStream::Ok || marker != VersionMarker || v != version)
+    {
+        return false;
+    }
+
+    int ContainerCount;
+    stream >> ContainerCount;
+    std::cout << "ContainerCount " << ContainerCount << std::endl;
+    for (int i = 0; i < ContainerCount; ++i)
+    {
+    	if (i >= d->Containers.count())
+    	{
+    		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(this);
+    	}
+
+    	std::cout << "d->Containers[i]->restoreState " << i << std::endl;
+    	d->Containers[i]->restoreState(stream);
+    }
+
+    return true;
 }
 } // namespace ads
 

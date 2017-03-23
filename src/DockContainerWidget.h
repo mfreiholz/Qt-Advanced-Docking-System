@@ -134,6 +134,16 @@ public:
 	 */
 	bool isFloating() const;
 
+	/**
+	 * Saves the state into the given stream
+	 */
+	void saveState(QDataStream& Stream) const;
+
+	/**
+	 * Restores the state from given stream
+	 */
+	bool restoreState(QDataStream& Stream);
+
 signals:
 	/**
 	 * This signal is emitted if one or multiple dock areas has been added to

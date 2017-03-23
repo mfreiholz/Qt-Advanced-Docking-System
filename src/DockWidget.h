@@ -75,6 +75,11 @@ protected:
 	 */
 	void setToggleViewActionChecked(bool Checked);
 
+	/**
+	 * Saves the state into the given stream
+	 */
+	void saveState(QDataStream& Stream) const;
+
 public:
 	enum DockWidgetFeature
 	{
@@ -166,7 +171,6 @@ public:
 	 * The action's text is set to the dock widget's window title.
 	 */
 	QAction* toggleViewAction() const;
-
 
 public slots:
 	/**
