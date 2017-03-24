@@ -75,7 +75,7 @@ struct DockContainerWidgetPrivate
 	unsigned int zOrderIndex = 0;
 	QList<CDockAreaWidget*> DockAreas;
 	QGridLayout* Layout = nullptr;
-	CDockSplitter* RootSplitter;
+	QSplitter* RootSplitter;
 	bool isFloating = false;
 
 	/**
@@ -143,30 +143,18 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 	auto InsertParam = internal::dockAreaInsertParameters(area);
 	auto NewDockAreas = FloatingWidget->dockContainer()->findChildren<CDockAreaWidget*>(
 		QString(), Qt::FindChildrenRecursively);
-	QSplitter* OldSplitter = nullptr;
+	QSplitter* Splitter = RootSplitter;
 
-	// If the container already contains dock areas, then we need to ensure that
-	// we have a splitter with an orientation that matches the orientation of
-	// the current drop action
-	if (!DockAreas.isEmpty())
+	if (DockAreas.count() <= 1)
 	{
-		OldSplitter = _this->findChild<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
-		// First replace the dock widget with a splitter
-		if (DockAreas.count() == 1)
-		{
-			auto DockArea = dynamic_cast<CDockAreaWidget*>(Layout->itemAtPosition(0, 0)->widget());
-			QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
-			Layout->replaceWidget(DockArea, NewSplitter);
-			NewSplitter->addWidget(DockArea);
-			OldSplitter = NewSplitter;
-		}
-		else if (OldSplitter->orientation() != InsertParam.orientation())
-		{
-			QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
-			QLayoutItem* li = Layout->replaceWidget(OldSplitter, NewSplitter);
-			NewSplitter->addWidget(OldSplitter);
-			OldSplitter = NewSplitter;
-		}
+		Splitter->setOrientation(InsertParam.orientation());
+	}
+	else
+	{
+		QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
+		QLayoutItem* li = Layout->replaceWidget(Splitter, NewSplitter);
+		NewSplitter->addWidget(Splitter);
+		Splitter = NewSplitter;
 	}
 
 	// Now we can insert the floating widget content into this container
@@ -174,25 +162,25 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 	auto FloatingSplitter = dynamic_cast<QSplitter*>(Widget);
 	if (DockAreas.isEmpty())
 	{
-		auto Widget = FloatingWidget->dockContainer()->findChild<QWidget*>(QString(), Qt::FindDirectChildrenOnly);
-		Layout->addWidget(Widget, 0, 0);
+		Splitter->addWidget(Widget);
 	}
-	else if (!FloatingSplitter)
+	else if (FloatingSplitter->count() == 1)
 	{
-		insertWidgetIntoSplitter(OldSplitter, Widget, InsertParam.append());
+		insertWidgetIntoSplitter(Splitter, FloatingSplitter->widget(0), InsertParam.append());
 	}
 	else if (FloatingSplitter->orientation() == InsertParam.orientation())
 	{
 		while (FloatingSplitter->count())
 		{
-			insertWidgetIntoSplitter(OldSplitter, FloatingSplitter->widget(0), InsertParam.append());
+			insertWidgetIntoSplitter(Splitter, FloatingSplitter->widget(0), InsertParam.append());
 		}
 	}
 	else
 	{
-		insertWidgetIntoSplitter(OldSplitter, FloatingSplitter, InsertParam.append());
+		insertWidgetIntoSplitter(Splitter, FloatingSplitter, InsertParam.append());
 	}
 
+	RootSplitter = Splitter;
 	addDockAreasToList(NewDockAreas);
 	FloatingWidget->deleteLater();
 }
@@ -236,7 +224,7 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 
 	if (TargetAreaSplitter->orientation() == InsertParam.orientation())
 	{
-		if (!FloatingSplitter || FloatingSplitter->orientation() != InsertParam.orientation())
+		if ((FloatingSplitter->orientation() != InsertParam.orientation()) && FloatingSplitter->count() > 1)
 		{
 			TargetAreaSplitter->insertWidget(AreaIndex + InsertParam.insertOffset(), Widget);
 		}
@@ -252,7 +240,7 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 	else
 	{
 		QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
-		if (!FloatingSplitter || FloatingSplitter->orientation() != InsertParam.orientation())
+		if ((FloatingSplitter->orientation() != InsertParam.orientation()) && FloatingSplitter->count() > 1)
 		{
 			NewSplitter->addWidget(Widget);
 		}
@@ -405,46 +393,36 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoContainer(DockWidgetA
 void DockContainerWidgetPrivate::addDockArea(CDockAreaWidget* NewDockArea, DockWidgetArea area)
 {
 	auto InsertParam = internal::dockAreaInsertParameters(area);
-	if (DockAreas.isEmpty())
+	// As long as we have only one dock area in the splitter we can adjust
+	// its orientation
+	if (DockAreas.count() <= 1)
 	{
-		QSplitter* Splitter = internal::newSplitter(Qt::Horizontal);
-		Splitter->addWidget(NewDockArea);
-		insertWidgetIntoSplitter(Splitter, NewDockArea, InsertParam.append());
-		_this->layout()->addWidget(Splitter);
+		RootSplitter->setOrientation(InsertParam.orientation());
 	}
-	else if (DockAreas.count() == 1)
+
+	QSplitter* Splitter = RootSplitter;
+	if (Splitter->orientation() == InsertParam.orientation())
 	{
-		QSplitter* Splitter = internal::newSplitter(InsertParam.orientation());
-		auto DockArea = dynamic_cast<CDockAreaWidget*>(Layout->itemAtPosition(0, 0)->widget());
-		Layout->replaceWidget(DockArea, Splitter);
-		Splitter->addWidget(DockArea);
 		insertWidgetIntoSplitter(Splitter, NewDockArea, InsertParam.append());
 	}
 	else
 	{
-		QSplitter* Splitter = _this->findChild<QSplitter*>(QString(), Qt::FindDirectChildrenOnly);
-		if (Splitter->orientation() == InsertParam.orientation())
+		QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
+		if (InsertParam.append())
 		{
-			insertWidgetIntoSplitter(Splitter, NewDockArea, InsertParam.append());
+			QLayoutItem* li = Layout->replaceWidget(Splitter, NewSplitter);
+			NewSplitter->addWidget(Splitter);
+			NewSplitter->addWidget(NewDockArea);
+			delete li;
 		}
 		else
 		{
-			QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
-			if (InsertParam.append())
-			{
-				QLayoutItem* li = Layout->replaceWidget(Splitter, NewSplitter);
-				NewSplitter->addWidget(Splitter);
-				NewSplitter->addWidget(NewDockArea);
-				delete li;
-			}
-			else
-			{
-				NewSplitter->addWidget(NewDockArea);
-				QLayoutItem* li = Layout->replaceWidget(Splitter, NewSplitter);
-				NewSplitter->addWidget(Splitter);
-				delete li;
-			}
+			NewSplitter->addWidget(NewDockArea);
+			QLayoutItem* li = Layout->replaceWidget(Splitter, NewSplitter);
+			NewSplitter->addWidget(Splitter);
+			delete li;
 		}
+		RootSplitter = NewSplitter;
 	}
 
 	DockAreas.append(NewDockArea);
@@ -466,31 +444,21 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetAr
 	CDockAreaWidget* NewDockArea = new CDockAreaWidget(DockManager, _this);
 	NewDockArea->addDockWidget(Dockwidget);
 	auto InsertParam = internal::dockAreaInsertParameters(area);
-	if (DockAreas.count() == 1)
+
+	QSplitter* TargetAreaSplitter = internal::findParent<QSplitter*>(TargetDockArea);
+	int index = TargetAreaSplitter ->indexOf(TargetDockArea);
+	if (TargetAreaSplitter->orientation() == InsertParam.orientation())
 	{
-		QSplitter* Splitter = internal::newSplitter(InsertParam.orientation());
-		auto DockArea = dynamic_cast<CDockAreaWidget*>(Layout->itemAtPosition(0, 0)->widget());
-		Layout->replaceWidget(DockArea, Splitter);
-		Splitter->addWidget(DockArea);
-		insertWidgetIntoSplitter(Splitter, NewDockArea, InsertParam.append());
+		std::cout << "TargetAreaSplitter->orientation() == InsertParam.orientation()" << std::endl;
+		TargetAreaSplitter->insertWidget(index + InsertParam.insertOffset(), NewDockArea);
 	}
 	else
 	{
-		QSplitter* TargetAreaSplitter = internal::findParent<QSplitter*>(TargetDockArea);
-		int index = TargetAreaSplitter ->indexOf(TargetDockArea);
-		if (TargetAreaSplitter->orientation() == InsertParam.orientation())
-		{
-			std::cout << "TargetAreaSplitter->orientation() == InsertParam.orientation()" << std::endl;
-			TargetAreaSplitter->insertWidget(index + InsertParam.insertOffset(), NewDockArea);
-		}
-		else
-		{
-			std::cout << "TargetAreaSplitter->orientation() != InsertParam.orientation()" << std::endl;
-			QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
-			NewSplitter->addWidget(TargetDockArea);
-			insertWidgetIntoSplitter(NewSplitter, NewDockArea, InsertParam.append());
-			TargetAreaSplitter->insertWidget(index, NewSplitter);
-		}
+		std::cout << "TargetAreaSplitter->orientation() != InsertParam.orientation()" << std::endl;
+		QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
+		NewSplitter->addWidget(TargetDockArea);
+		insertWidgetIntoSplitter(NewSplitter, NewDockArea, InsertParam.append());
+		TargetAreaSplitter->insertWidget(index, NewSplitter);
 	}
 
 	DockAreas.append(NewDockArea);
@@ -517,6 +485,9 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 	d->Layout->setContentsMargins(0, 1, 0, 1);
 	d->Layout->setSpacing(0);
 	setLayout(d->Layout);
+
+	d->RootSplitter = internal::newSplitter(Qt::Horizontal);
+	d->Layout->addWidget(d->RootSplitter);
 }
 
 //============================================================================
@@ -604,7 +575,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 	d->DockAreas.removeAll(area);
 	QSplitter* Splitter = internal::findParent<QSplitter*>(area);
 	area->setParent(0);
-	if (!(Splitter && Splitter->count() == 1))
+	if (Splitter == d->RootSplitter || Splitter->count() !=  1)
 	{
 		emit dockAreasRemoved();
 		return;
@@ -616,14 +587,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 	QWidget* widget = Splitter->widget(0);
 	widget->setParent(this);
 	QSplitter* ParentSplitter = internal::findParent<QSplitter*>(Splitter);
-	if (ParentSplitter)
-	{
-		internal::replaceSplitterWidget(ParentSplitter, Splitter, widget);
-	}
-	else
-	{
-		d->Layout->replaceWidget(Splitter, widget);
-	}
+	internal::replaceSplitterWidget(ParentSplitter, Splitter, widget);
 	delete Splitter;
 	emit dockAreasRemoved();
 }
