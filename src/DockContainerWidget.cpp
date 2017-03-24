@@ -291,11 +291,13 @@ void DockContainerWidgetPrivate::saveChildNodesState(QDataStream& stream, QWidge
 	if (Splitter)
 	{
 		stream << NodeSplitter << Splitter->orientation() << Splitter->count();
-		std::cout << "NodeSplitter " << Splitter->orientation() << std::endl;
+		std::cout << "NodeSplitter orient: " << Splitter->orientation()
+			<< " WidgetCont: " << Splitter->count() << std::endl;
 		for (int i = 0; i < Splitter->count(); ++i)
 		{
 			saveChildNodesState(stream, Splitter->widget(i));
 		}
+		stream << Splitter->sizes();
 	}
 	else
 	{
@@ -322,28 +324,34 @@ void DockContainerWidgetPrivate::restoreChildNodes(QDataStream& stream,
 		stream >> Orientation >> WidgetCount;
 		std::cout << "Restore NodeSplitter Orientation: " <<  Orientation <<
 				" WidgetCount: " << WidgetCount << std::endl;
+		QSplitter* Splitter = internal::newSplitter((Qt::Orientation)Orientation);
+		bool Visible = false;
 		for (int i = 0; i < WidgetCount; ++i)
 		{
-			QWidget* Widget;
-			restoreChildNodes(stream, CreatedWidget);
+			QWidget* ChildNode;
+			restoreChildNodes(stream, ChildNode);
+			if (ChildNode)
+			{
+				Splitter->addWidget(ChildNode);
+			}
+			std::cout << "ChildNode isVisible " << ChildNode->isVisible()
+				<< " isVisibleTo " << ChildNode->isVisibleTo(Splitter) << std::endl;
+			Visible |= ChildNode->isVisibleTo(Splitter);
 		}
 
-
-
-		/*std::cout << "Restore NodeSplitter " << Orientation << std::endl;
-		QSplitter* Splitter = internal::newSplitter((Qt::Orientation)Orientation);
-		if (ParentSplitter)
+		QList<int> Sizes;
+		stream >> Sizes;
+		if (!Splitter->count())
 		{
-			ParentSplitter->addWidget(Splitter);
+			delete Splitter;
+			Splitter = nullptr;
 		}
 		else
 		{
-			Parent->layout()->addWidget(Splitter);
+			Splitter->setSizes(Sizes);
+			Splitter->setVisible(Visible);
 		}
-		for (int i = 0; i < Count; ++i)
-		{
-			restoreChildNodes(stream, Splitter);
-		}*/
+		CreatedWidget = Splitter;
 	}
 	else
 	{
@@ -352,6 +360,8 @@ void DockContainerWidgetPrivate::restoreChildNodes(QDataStream& stream,
 		stream >> Tabs >> CurrentIndex;
 		std::cout << "Restore NodeDockArea Tabs: " << Tabs << " CurrentIndex: "
 				<< CurrentIndex << std::endl;
+
+		CDockAreaWidget* DockArea = new CDockAreaWidget(DockManager, _this);
 		for (int i = 0; i < Tabs; ++i)
 		{
 			QString ObjectName;
@@ -369,11 +379,19 @@ void DockContainerWidgetPrivate::restoreChildNodes(QDataStream& stream,
 			{
 				std::cout << "Dock Widget found - parent " << DockWidget->parent()
 					<< std::endl;
+				DockArea->addDockWidget(DockWidget);
 			}
-
-			CDockAreaWidget* DockArea = new CDockAreaWidget(DockManager, _this);
-			DockArea->addDockWidget(DockWidget);
+			DockWidget->toggleView(!Closed);
 		}
+
+		if (!DockArea->count())
+		{
+			delete DockArea;
+			DockArea = nullptr;
+		}
+		CreatedWidget = DockArea;
+		DockAreas.append(DockArea);
+		DockArea->setCurrentIndex(CurrentIndex);
 	}
 }
 
@@ -680,7 +698,8 @@ QList<CDockAreaWidget*> CDockContainerWidget::openedDockAreas() const
 //============================================================================
 void CDockContainerWidget::saveState(QDataStream& stream) const
 {
-	std::cout << "CDockContainerWidget::saveState" << std::endl;
+	std::cout << "CDockContainerWidget::saveState isFloating "
+		<< isFloating() << std::endl;
 	stream << isFloating();
 	if (isFloating())
 	{
@@ -688,11 +707,7 @@ void CDockContainerWidget::saveState(QDataStream& stream) const
 		stream << FloatingWidget->saveGeometry();
 	}
 
-	QWidget* RootChild = d->Layout->itemAt(0)->widget();
-	if (RootChild)
-	{
-		d->saveChildNodesState(stream, RootChild);
-	}
+	d->saveChildNodesState(stream, d->RootSplitter);
 }
 
 
@@ -702,16 +717,10 @@ bool CDockContainerWidget::restoreState(QDataStream& stream)
 	bool IsFloating;
 	stream >> IsFloating;
 	std::cout << "Restore CDockContainerWidget Floating" << IsFloating << std::endl;
-	QWidget* RootChild = d->Layout->itemAt(0)->widget();
-	if (RootChild)
-	{
-		d->DockAreas.clear();
-		delete RootChild;
-	}
-	QWidget* Widget;
-	d->restoreChildNodes(stream, Widget);
 
-	/*if (isFloating())
+	QWidget* NewRootSplitter;
+	d->DockAreas.clear();
+	if (isFloating())
 	{
 		std::cout << "Restore floating widget" << std::endl;
 		CFloatingDockContainer* FloatingWidget = internal::findParent<CFloatingDockContainer*>(this);
@@ -719,8 +728,14 @@ bool CDockContainerWidget::restoreState(QDataStream& stream)
 		stream >> Geometry;
 		FloatingWidget->restoreGeometry(Geometry);
 		FloatingWidget->show();
-	}*/
+	}
 
+	d->restoreChildNodes(stream, NewRootSplitter);
+
+	d->Layout->replaceWidget(d->RootSplitter, NewRootSplitter);
+	QSplitter* OldRoot = d->RootSplitter;
+	d->RootSplitter = dynamic_cast<QSplitter*>(NewRootSplitter);
+	delete OldRoot;
 	return true;
 }
 

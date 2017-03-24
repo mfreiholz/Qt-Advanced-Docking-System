@@ -187,7 +187,7 @@ bool DockWidgetTitleBarPrivate::startFloating(const QPoint& GlobalPos)
 	{
 		std::cout << "DockWidgetTitleBarPrivate::startFloating DockArea" << std::endl;
 		// If section widget has only one content widget, we can move the complete
-		// section widget into floating widget
+		// dock area into floating widget
 		auto splitter = internal::findParent<QSplitter*>(DockArea);
 		FloatingWidget = new CFloatingDockContainer(DockArea);
 	}

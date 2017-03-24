@@ -148,7 +148,7 @@ void DockWidgetPrivate::hideEmptyParentSplitter()
 
 	for (int i = 0; i < Splitter->count(); ++i)
 	{
-		if (Splitter->widget(i)->isVisible())
+		if (Splitter->widget(i)->isVisibleTo(Splitter))
 		{
 			return;
 		}
