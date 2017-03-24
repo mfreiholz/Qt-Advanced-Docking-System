@@ -711,6 +711,8 @@ void CDockAreaWidget::onDockWidgetViewToggled(bool Open)
 void CDockAreaWidget::saveState(QDataStream& stream) const
 {
 	stream << d->ContentsLayout->count() << d->ContentsLayout->currentIndex();
+	std::cout << "CDockAreaWidget::saveState TabCount: " << d->ContentsLayout->count()
+			<< " CurrentIndex: " << d->ContentsLayout->currentIndex() << std::endl;
 	for (int i = 0; i < d->ContentsLayout->count(); ++i)
 	{
 		dockWidget(i)->saveState(stream);

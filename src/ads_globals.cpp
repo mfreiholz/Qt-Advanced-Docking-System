@@ -28,10 +28,11 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include <QSplitter>
 #include <QVariant>
 
+#include "DockSplitter.h"
 #include "ads_globals.h"
+
 
 namespace ads
 {
@@ -41,7 +42,7 @@ namespace internal
 //============================================================================
 QSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent)
 {
-	QSplitter* s = new QSplitter(orientation, parent);
+	QSplitter* s = new CDockSplitter(orientation, parent);
 	s->setProperty("ads-splitter", QVariant(true));
 	s->setChildrenCollapsible(false);
 	s->setOpaqueResize(false);

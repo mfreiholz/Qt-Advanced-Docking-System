@@ -39,6 +39,7 @@ class CDockManager;
 class CDockContainerWidget;
 class CDockWidget;
 
+
 /**
  * DockAreaWidget manages multiple instances of DckWidgets.
  * It displays a title tab, which is clickable and will switch to
