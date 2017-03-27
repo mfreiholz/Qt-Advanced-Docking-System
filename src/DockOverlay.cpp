@@ -41,11 +41,11 @@
 namespace ads
 {
 //============================================================================
-static QPixmap createDropIndicatorPixmap_old(const QPalette& pal, const QSizeF& size, DockWidgetArea DockWidgetArea)
+static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size, DockWidgetArea DockWidgetArea,
+	CDockOverlay::eMode Mode)
 {
 	QColor borderColor = pal.color(QPalette::Active, QPalette::Highlight);
 	QColor backgroundColor = pal.color(QPalette::Active, QPalette::Base);
-	QColor areaBackgroundColor = pal.color(QPalette::Active, QPalette::Highlight).lighter(150);
 
 	QPixmap pm(size.width(), size.height());
 	pm.fill(QColor(0, 0, 0, 0));
@@ -59,114 +59,44 @@ static QPixmap createDropIndicatorPixmap_old(const QPalette& pal, const QSizeF& 
 
 	// Fill
 	p.fillRect(ShadowRect, QColor(0, 0, 0, 64));
-	p.fillRect(baseRect, backgroundColor);
 
 	// Drop area rect.
 	p.save();
 	QRectF areaRect;
 	QLineF areaLine;
-	QLinearGradient gradient;
+	QRectF nonAreaRect;
 	switch (DockWidgetArea)
 	{
 		case TopDockWidgetArea:
 			areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width(), baseRect.height() * .5f);
+			nonAreaRect = QRectF(baseRect.x(), ShadowRect.height() * .5f, baseRect.width(), baseRect.height() * .5f);
 			areaLine = QLineF(areaRect.bottomLeft(), areaRect.bottomRight());
-			gradient.setStart(areaRect.topLeft());
-			gradient.setFinalStop(areaRect.bottomLeft());
 			break;
 		case RightDockWidgetArea:
 			areaRect = QRectF(ShadowRect.width() * .5f, baseRect.y(), baseRect.width() * .5f, baseRect.height());
+			nonAreaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width() * .5f, baseRect.height());
 			areaLine = QLineF(areaRect.topLeft(), areaRect.bottomLeft());
-			gradient.setStart(areaRect.topLeft());
-			gradient.setFinalStop(areaRect.topRight());
 			break;
 		case BottomDockWidgetArea:
 			areaRect = QRectF(baseRect.x(), ShadowRect.height() * .5f, baseRect.width(), baseRect.height() * .5f);
+			nonAreaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width(), baseRect.height() * .5f);
 			areaLine = QLineF(areaRect.topLeft(), areaRect.topRight());
-			gradient.setStart(areaRect.topLeft());
-			gradient.setFinalStop(areaRect.bottomLeft());
 			break;
 		case LeftDockWidgetArea:
 			areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width() * .5f, baseRect.height());
+			nonAreaRect = QRectF(ShadowRect.width() * .5f, baseRect.y(), baseRect.width() * .5f, baseRect.height());
 			areaLine = QLineF(areaRect.topRight(), areaRect.bottomRight());
-			gradient.setStart(areaRect.topLeft());
-			gradient.setFinalStop(areaRect.topRight());
 			break;
 		default:
 			break;
 	}
-	if (areaRect.isValid())
+
+	if (CDockOverlay::ModeContainerOverlay == Mode)
 	{
-		gradient.setColorAt(0.f, areaBackgroundColor);
-		gradient.setColorAt(1.f, areaBackgroundColor.lighter(120));
-		p.fillRect(areaRect, gradient);
-
-		pen = p.pen();
-		pen.setColor(borderColor);
-		pen.setStyle(Qt::DashLine);
-		p.setPen(pen);
-		p.drawLine(areaLine);
+		baseRect = areaRect;
 	}
-	p.restore();
 
-	p.save();
-	pen = p.pen();
-	pen.setColor(borderColor);
-	pen.setWidth(1);
-
-	p.setPen(pen);
-	p.drawRect(baseRect.adjusted(0, 0, -pen.width(), -pen.width()));
-	p.restore();
-	return pm;
-}
-
-
-//============================================================================
-static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size, DockWidgetArea DockWidgetArea)
-{
-	QColor borderColor = pal.color(QPalette::Active, QPalette::Highlight);
-	QColor backgroundColor = pal.color(QPalette::Active, QPalette::Base);
-	//QColor areaBackgroundColor = pal.color(QPalette::Active, QPalette::Highlight).lighter(150);
-
-	QPixmap pm(size.width(), size.height());
-	pm.fill(QColor(0, 0, 0, 0));
-
-	QPainter p(&pm);
-	QPen pen = p.pen();
-	QRectF ShadowRect(pm.rect());
-	QRectF baseRect;
-	baseRect.setSize(ShadowRect.size() * 0.7);
-	baseRect.moveCenter(ShadowRect.center());
-
-	// Fill
-	p.fillRect(ShadowRect, QColor(0, 0, 0, 64));
 	p.fillRect(baseRect, backgroundColor);
-
-	// Drop area rect.
-	p.save();
-	QRectF areaRect;
-	QLineF areaLine;
-	switch (DockWidgetArea)
-	{
-		case TopDockWidgetArea:
-			areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width(), baseRect.height() * .5f);
-			areaLine = QLineF(areaRect.bottomLeft(), areaRect.bottomRight());
-			break;
-		case RightDockWidgetArea:
-			areaRect = QRectF(ShadowRect.width() * .5f, baseRect.y(), baseRect.width() * .5f, baseRect.height());
-			areaLine = QLineF(areaRect.topLeft(), areaRect.bottomLeft());
-			break;
-		case BottomDockWidgetArea:
-			areaRect = QRectF(baseRect.x(), ShadowRect.height() * .5f, baseRect.width(), baseRect.height() * .5f);
-			areaLine = QLineF(areaRect.topLeft(), areaRect.topRight());
-			break;
-		case LeftDockWidgetArea:
-			areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width() * .5f, baseRect.height());
-			areaLine = QLineF(areaRect.topRight(), areaRect.bottomRight());
-			break;
-		default:
-			break;
-	}
 	if (areaRect.isValid())
 	{
 		pen = p.pen();
@@ -186,24 +116,63 @@ static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size
 	p.restore();
 
 	p.save();
+	// Draw outer border
 	pen = p.pen();
 	pen.setColor(borderColor);
 	pen.setWidth(1);
-
 	p.setBrush(Qt::NoBrush);
 	p.setPen(pen);
 	p.drawRect(baseRect);
 
+	// draw window title bar
 	p.setBrush(borderColor);
 	QRectF FrameRect(baseRect.topLeft(), QSizeF(baseRect.width(), baseRect.height() / 10));
 	p.drawRect(FrameRect);
 	p.restore();
+
+	if (CDockOverlay::ModeContainerOverlay == Mode)
+	{
+		QRectF ArrowRect;
+		ArrowRect.setSize(ShadowRect.size() * 0.7);
+		ArrowRect.setWidth(ArrowRect.width() / 4.6);
+		ArrowRect.setHeight(ArrowRect.height() / 2);
+		ArrowRect.moveCenter(QPointF(0, 0));
+		QPolygonF Arrow;
+		Arrow << ArrowRect.topLeft()
+			<< QPointF( ArrowRect.right(),  ArrowRect.center().y())
+			<< ArrowRect.bottomLeft();
+		p.setPen(Qt::NoPen);
+		p.setBrush(backgroundColor);
+		p.setRenderHint(QPainter::Antialiasing, true);
+		p.translate(nonAreaRect.center().x(), nonAreaRect.center().y());
+
+		switch (DockWidgetArea)
+		{
+		case TopDockWidgetArea:
+			 p.rotate(-90);
+			 break;
+		case RightDockWidgetArea:
+			 break;
+		case BottomDockWidgetArea:
+			 p.rotate(90);
+			 break;
+		case LeftDockWidgetArea:
+			p.rotate(180);
+			 break;
+		default:
+			 break;
+		}
+
+		p.drawPolygon(Arrow);
+	}
+
 	return pm;
 }
 
 
 //============================================================================
-QWidget* createDropIndicatorWidget(DockWidgetArea DockWidgetArea)
+QWidget* createDropIndicatorWidget(DockWidgetArea DockWidgetArea,
+	CDockOverlay::eMode Mode)
 {
 	QLabel* l = new QLabel();
 	l->setObjectName("DockWidgetAreaLabel");
@@ -211,7 +180,8 @@ QWidget* createDropIndicatorWidget(DockWidgetArea DockWidgetArea)
 	const qreal metric = static_cast<qreal>(l->fontMetrics().height()) * 3.f;
 	const QSizeF size(metric, metric);
 
-	l->setPixmap(createDropIndicatorPixmap(l->palette(), size, DockWidgetArea));
+	l->setPixmap(createDropIndicatorPixmap(l->palette(), size, DockWidgetArea,
+		Mode));
 	l->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 	l->setAttribute(Qt::WA_TranslucentBackground);
 	return l;
@@ -230,6 +200,7 @@ struct DockOverlayPrivate
 	QRect TargetRect;
 	DockWidgetArea LastLocation = InvalidDockWidgetArea;
 	bool DropPreviewEnabled = true;
+	CDockOverlay::eMode Mode = CDockOverlay::ModeDockAreaOverlay;
 
 	/**
 	 * Private data constructor
@@ -267,6 +238,7 @@ CDockOverlay::CDockOverlay(QWidget* parent, eMode Mode) :
 	QFrame(parent),
 	d(new DockOverlayPrivate(this))
 {
+	d->Mode = Mode;
 	d->Cross = new CDockOverlayCross(this);
 	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 	setWindowOpacity(1);
@@ -359,8 +331,6 @@ DockWidgetArea CDockOverlay::showOverlay(QWidget* target)
 	resize(target->size());
 	QPoint TopLeft = target->mapToGlobal(target->rect().topLeft());
 	move(TopLeft);
-	std::cout << "Overlay top: " << TopLeft.x() << " left: " << TopLeft.y()
-		<< std::endl;
 	show();
 	return dropAreaUnderCursor();
 }
@@ -397,12 +367,16 @@ void CDockOverlay::paintEvent(QPaintEvent* event)
 	QRect r = rect();
 	const DockWidgetArea da = dropAreaUnderCursor();
 	//std::cout << "CursorLocation: " << dropAreaUnderCursor() << std::endl;
+
+	double Factor = (CDockOverlay::ModeContainerOverlay == d->Mode) ?
+		3 : 2;
+
 	switch (da)
 	{
-    case TopDockWidgetArea: r.setHeight(r.height() / 2); break;
-	case RightDockWidgetArea: r.setX(r.width() / 2); break;
-	case BottomDockWidgetArea: r.setY(r.height() / 2); break;
-	case LeftDockWidgetArea: r.setWidth(r.width() / 2); break;
+    case TopDockWidgetArea: r.setHeight(r.height() / Factor); break;
+	case RightDockWidgetArea: r.setX(r.width() * (1 - 1 / Factor)); break;
+	case BottomDockWidgetArea: r.setY(r.height() * (1 - 1 / Factor)); break;
+	case LeftDockWidgetArea: r.setWidth(r.width() / Factor); break;
 	case CenterDockWidgetArea: r = rect();break;
 	default: return;
 	}
@@ -505,11 +479,11 @@ void CDockOverlayCross::setupOverlayCross(CDockOverlay::eMode Mode)
 	d->Mode = Mode;
 
 	QHash<DockWidgetArea, QWidget*> areaWidgets;
-	areaWidgets.insert(TopDockWidgetArea, createDropIndicatorWidget(TopDockWidgetArea));
-	areaWidgets.insert(RightDockWidgetArea, createDropIndicatorWidget(RightDockWidgetArea));
-	areaWidgets.insert(BottomDockWidgetArea, createDropIndicatorWidget(BottomDockWidgetArea));
-	areaWidgets.insert(LeftDockWidgetArea, createDropIndicatorWidget(LeftDockWidgetArea));
-	areaWidgets.insert(CenterDockWidgetArea, createDropIndicatorWidget(CenterDockWidgetArea));
+	areaWidgets.insert(TopDockWidgetArea, createDropIndicatorWidget(TopDockWidgetArea, Mode));
+	areaWidgets.insert(RightDockWidgetArea, createDropIndicatorWidget(RightDockWidgetArea, Mode));
+	areaWidgets.insert(BottomDockWidgetArea, createDropIndicatorWidget(BottomDockWidgetArea, Mode));
+	areaWidgets.insert(LeftDockWidgetArea, createDropIndicatorWidget(LeftDockWidgetArea, Mode));
+	areaWidgets.insert(CenterDockWidgetArea, createDropIndicatorWidget(CenterDockWidgetArea, Mode));
 
 	setAreaWidgets(areaWidgets);
 }
