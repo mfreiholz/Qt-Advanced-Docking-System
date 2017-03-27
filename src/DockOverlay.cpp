@@ -41,7 +41,7 @@
 namespace ads
 {
 //============================================================================
-static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size, DockWidgetArea DockWidgetArea)
+static QPixmap createDropIndicatorPixmap_old(const QPalette& pal, const QSizeF& size, DockWidgetArea DockWidgetArea)
 {
 	QColor borderColor = pal.color(QPalette::Active, QPalette::Highlight);
 	QColor backgroundColor = pal.color(QPalette::Active, QPalette::Base);
@@ -116,6 +116,87 @@ static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size
 
 	p.setPen(pen);
 	p.drawRect(baseRect.adjusted(0, 0, -pen.width(), -pen.width()));
+	p.restore();
+	return pm;
+}
+
+
+//============================================================================
+static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size, DockWidgetArea DockWidgetArea)
+{
+	QColor borderColor = pal.color(QPalette::Active, QPalette::Highlight);
+	QColor backgroundColor = pal.color(QPalette::Active, QPalette::Base);
+	//QColor areaBackgroundColor = pal.color(QPalette::Active, QPalette::Highlight).lighter(150);
+
+	QPixmap pm(size.width(), size.height());
+	pm.fill(QColor(0, 0, 0, 0));
+
+	QPainter p(&pm);
+	QPen pen = p.pen();
+	QRectF ShadowRect(pm.rect());
+	QRectF baseRect;
+	baseRect.setSize(ShadowRect.size() * 0.7);
+	baseRect.moveCenter(ShadowRect.center());
+
+	// Fill
+	p.fillRect(ShadowRect, QColor(0, 0, 0, 64));
+	p.fillRect(baseRect, backgroundColor);
+
+	// Drop area rect.
+	p.save();
+	QRectF areaRect;
+	QLineF areaLine;
+	switch (DockWidgetArea)
+	{
+		case TopDockWidgetArea:
+			areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width(), baseRect.height() * .5f);
+			areaLine = QLineF(areaRect.bottomLeft(), areaRect.bottomRight());
+			break;
+		case RightDockWidgetArea:
+			areaRect = QRectF(ShadowRect.width() * .5f, baseRect.y(), baseRect.width() * .5f, baseRect.height());
+			areaLine = QLineF(areaRect.topLeft(), areaRect.bottomLeft());
+			break;
+		case BottomDockWidgetArea:
+			areaRect = QRectF(baseRect.x(), ShadowRect.height() * .5f, baseRect.width(), baseRect.height() * .5f);
+			areaLine = QLineF(areaRect.topLeft(), areaRect.topRight());
+			break;
+		case LeftDockWidgetArea:
+			areaRect = QRectF(baseRect.x(), baseRect.y(), baseRect.width() * .5f, baseRect.height());
+			areaLine = QLineF(areaRect.topRight(), areaRect.bottomRight());
+			break;
+		default:
+			break;
+	}
+	if (areaRect.isValid())
+	{
+		pen = p.pen();
+		pen.setColor(borderColor);
+		QColor Color = borderColor;
+		Color.setAlpha(64);
+		p.setBrush(Color);
+		p.setPen(Qt::NoPen);
+		p.drawRect(areaRect);
+
+		pen = p.pen();
+		pen.setColor(borderColor);
+		pen.setStyle(Qt::DashLine);
+		p.setPen(pen);
+		p.drawLine(areaLine);
+	}
+	p.restore();
+
+	p.save();
+	pen = p.pen();
+	pen.setColor(borderColor);
+	pen.setWidth(1);
+
+	p.setBrush(Qt::NoBrush);
+	p.setPen(pen);
+	p.drawRect(baseRect);
+
+	p.setBrush(borderColor);
+	QRectF FrameRect(baseRect.topLeft(), QSizeF(baseRect.width(), baseRect.height() / 10));
+	p.drawRect(FrameRect);
 	p.restore();
 	return pm;
 }
@@ -334,19 +415,18 @@ void CDockOverlay::paintEvent(QPaintEvent* event)
 
 
 //============================================================================
-void CDockOverlay::showEvent(QShowEvent*)
+void CDockOverlay::showEvent(QShowEvent* e)
 {
 	d->Cross->show();
-	QWidget* w = parentWidget() ? parentWidget() : d->TargetWidget.data();
-	QRect WidgetRect = w->rect();
-	QPoint Pos(WidgetRect.left(), WidgetRect.center().y());
+	QFrame::showEvent(e);
 }
 
 
 //============================================================================
-void CDockOverlay::hideEvent(QHideEvent*)
+void CDockOverlay::hideEvent(QHideEvent* e)
 {
 	d->Cross->hide();
+	QFrame::hideEvent(e);
 }
 
 
