@@ -91,9 +91,11 @@ static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size
 			break;
 	}
 
-	if (CDockOverlay::ModeContainerOverlay == Mode)
+	QSizeF baseSize = baseRect.size();
+	if (CDockOverlay::ModeContainerOverlay == Mode && DockWidgetArea != CenterDockWidgetArea)
 	{
 		baseRect = areaRect;
+		areaRect = QRectF();
 	}
 
 	p.fillRect(baseRect, backgroundColor);
@@ -126,11 +128,12 @@ static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size
 
 	// draw window title bar
 	p.setBrush(borderColor);
-	QRectF FrameRect(baseRect.topLeft(), QSizeF(baseRect.width(), baseRect.height() / 10));
+	QRectF FrameRect(baseRect.topLeft(), QSizeF(baseRect.width(), baseSize.height() / 10));
 	p.drawRect(FrameRect);
 	p.restore();
 
-	if (CDockOverlay::ModeContainerOverlay == Mode)
+	// Draw arrow for outer container drop indicators
+	if (CDockOverlay::ModeContainerOverlay == Mode && DockWidgetArea != CenterDockWidgetArea)
 	{
 		QRectF ArrowRect;
 		ArrowRect.setSize(ShadowRect.size() * 0.7);

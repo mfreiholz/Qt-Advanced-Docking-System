@@ -168,6 +168,13 @@ protected:
 	 */
 	virtual void mouseDoubleClickEvent(QMouseEvent *event) override
 	{
+		// If this is the last dock area in a dock container it does not make
+		// sense to move it to a new floating widget and leave this one
+		// empty
+		if (m_DockArea->dockContainer()->isFloating() && m_DockArea->dockContainer()->dockAreaCount() == 1)
+		{
+			return;
+		}
 		startFloating(event->pos());
 	}
 
