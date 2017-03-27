@@ -85,21 +85,20 @@ public:
 	DockWidgetArea showOverlay(QWidget* target);
 
 	/**
-	 * Show drop overlay for the given target widget and the given rectangle
-	 */
-	void showOverlay(QWidget* target, const QRect& targetAreaRect);
-
-	/**
 	 * Hides the overlay
 	 */
 	void hideOverlay();
+
+	/**
+	 * Enables / disables the semi transparent overlay rectangle that represents
+	 * the future area of the dropped widget
+	 */
+	void enableDropPreview(bool Enable);
 
 protected:
 	virtual void paintEvent(QPaintEvent *e) override;
 	virtual void showEvent(QShowEvent* e) override;
 	virtual void hideEvent(QHideEvent* e) override;
-	virtual void resizeEvent(QResizeEvent* e) override;
-	virtual void moveEvent(QMoveEvent* e) override;
 };
 
 

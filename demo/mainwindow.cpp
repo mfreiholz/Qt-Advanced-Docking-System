@@ -105,8 +105,8 @@ void MainWindow::createContent()
 	DockWidget->setFeatures(DockWidget->features().setFlag(ads::CDockWidget::DockWidgetClosable, false));
 	m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
 	m_DockManager->addDockWidget(ads::LeftDockWidgetArea, createLongTextLabelDockWidget(ViewMenu));
-	/*m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
-	auto TopDockArea = m_DockManager->addDockWidget(ads::TopDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
+	m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
+	/*auto TopDockArea = m_DockManager->addDockWidget(ads::TopDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
 	DockWidget = createCalendarDockWidget(ViewMenu);
 	DockWidget->setFeatures(DockWidget->features().setFlag(ads::CDockWidget::DockWidgetClosable, false));
 	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, DockWidget, TopDockArea);

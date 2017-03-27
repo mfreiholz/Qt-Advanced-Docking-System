@@ -148,6 +148,7 @@ struct DockOverlayPrivate
 	QPointer<QWidget> TargetWidget;
 	QRect TargetRect;
 	DockWidgetArea LastLocation = InvalidDockWidgetArea;
+	bool DropPreviewEnabled = true;
 
 	/**
 	 * Private data constructor
@@ -187,7 +188,7 @@ CDockOverlay::CDockOverlay(QWidget* parent, eMode Mode) :
 {
 	d->Cross = new CDockOverlayCross(this);
 	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
-	setWindowOpacity(0.2);
+	setWindowOpacity(1);
 	setWindowTitle("DockOverlay");
 	setAttribute(Qt::WA_NoSystemBackground);
 	setAttribute(Qt::WA_TranslucentBackground);
@@ -195,6 +196,8 @@ CDockOverlay::CDockOverlay(QWidget* parent, eMode Mode) :
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
 	l->setSpacing(0);
 	setLayout(l);
+	l->setContentsMargins(QMargins(0, 0, 0, 0));
+	l->addWidget(d->Cross);
 
 	d->Cross->setupOverlayCross(Mode);
 	d->Cross->setVisible(false);
@@ -253,7 +256,6 @@ DockWidgetArea CDockOverlay::dropAreaUnderCursor() const
 //============================================================================
 DockWidgetArea CDockOverlay::showOverlay(QWidget* target)
 {
-    //std::cout << "CDockOverlay::showDockOverlay(QWidget* target)" << std::endl;
 	if (d->TargetWidget == target)
 	{
         qInfo() << "_target == target";
@@ -274,30 +276,12 @@ DockWidgetArea CDockOverlay::showOverlay(QWidget* target)
 
 	// Move it over the target.
 	resize(target->size());
-	move(target->mapToGlobal(target->rect().topLeft()));
+	QPoint TopLeft = target->mapToGlobal(target->rect().topLeft());
+	move(TopLeft);
+	std::cout << "Overlay top: " << TopLeft.x() << " left: " << TopLeft.y()
+		<< std::endl;
 	show();
 	return dropAreaUnderCursor();
-}
-
-
-//============================================================================
-void CDockOverlay::showOverlay(QWidget* target, const QRect& targetAreaRect)
-{
-     qInfo() << "CDockOverlay::showDockOverlay(QWidget* target, const QRect& targetAreaRect)";
-	if (d->TargetWidget == target && d->TargetRect == targetAreaRect)
-	{
-		return;
-	}
-	//hideDockOverlay();
-	d->TargetWidget = target;
-	d->TargetRect = targetAreaRect;
-	d->LastLocation = InvalidDockWidgetArea;
-
-	// Move it over the target's area.
-	resize(targetAreaRect.size());
-	move(target->mapToGlobal(QPoint(targetAreaRect.x(), targetAreaRect.y())));
-	show();
-	return;
 }
 
 
@@ -313,12 +297,25 @@ void CDockOverlay::hideOverlay()
 
 
 //============================================================================
-void CDockOverlay::paintEvent(QPaintEvent*)
+void CDockOverlay::enableDropPreview(bool Enable)
+{
+	d->DropPreviewEnabled = Enable;
+	update();
+}
+
+
+//============================================================================
+void CDockOverlay::paintEvent(QPaintEvent* event)
 {
 	// Draw rect based on location
+	if (!d->DropPreviewEnabled)
+	{
+		return;
+	}
+
 	QRect r = rect();
 	const DockWidgetArea da = dropAreaUnderCursor();
-	std::cout << "CursorLocation: " << dropAreaUnderCursor() << std::endl;
+	//std::cout << "CursorLocation: " << dropAreaUnderCursor() << std::endl;
 	switch (da)
 	{
     case TopDockWidgetArea: r.setHeight(r.height() / 2); break;
@@ -330,9 +327,9 @@ void CDockOverlay::paintEvent(QPaintEvent*)
 	}
 	QPainter painter(this);
     QColor Color = palette().color(QPalette::Active, QPalette::Highlight);
-	painter.fillRect(r, QBrush(Color, Qt::Dense4Pattern));
-	painter.setBrush(QBrush(Color));
-	painter.drawRect(r);
+    Color.setAlpha(64);
+    painter.setPen(Qt::NoPen);
+	painter.fillRect(r, Color);
 }
 
 
@@ -350,23 +347,6 @@ void CDockOverlay::showEvent(QShowEvent*)
 void CDockOverlay::hideEvent(QHideEvent*)
 {
 	d->Cross->hide();
-}
-
-
-
-//============================================================================
-void CDockOverlay::resizeEvent(QResizeEvent* e)
-{
-    qInfo() << "CDockOverlay::resizeEvent" << e->size();
-	d->Cross->resize(e->size());
-}
-
-
-//============================================================================
-void CDockOverlay::moveEvent(QMoveEvent* e)
-{
-    qInfo() << "CDockOverlay::moveEvent" << e->pos();
-	d->Cross->move(e->pos());
 }
 
 
@@ -567,6 +547,8 @@ void CDockOverlayCross::reset()
 		}
 	}
 }
+
+
 
 } // namespace ads
 //----------------------------------------------------------------------------

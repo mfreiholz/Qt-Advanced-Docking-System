@@ -124,7 +124,8 @@ struct DockContainerWidgetPrivate
 	/**
 	 * Restore state of child nodes.
 	 * \param[in] Stream The data stream that contains the serialized state
-	 * \param[out] CreatedWidget The widget created from parsed data
+	 * \param[out] CreatedWidget The widget created from parsed data or 0 if
+	 * the parsed widget was an empty splitter
 	 * \param[in] Testing If Testing is true, only the stream data is
 	 * parsed without modifiying anything.
 	 */
@@ -828,10 +829,18 @@ bool CDockContainerWidget::restoreState(QDataStream& stream, bool Testing)
 		return true;
 	}
 
+	// If the root splitter is empty, rostoreChildNodes returns a 0 pointer
+	// and we need to create a new empty root splitter
+	if (!NewRootSplitter)
+	{
+		NewRootSplitter = internal::newSplitter(Qt::Horizontal);
+	}
+
 	d->Layout->replaceWidget(d->RootSplitter, NewRootSplitter);
 	QSplitter* OldRoot = d->RootSplitter;
 	d->RootSplitter = dynamic_cast<QSplitter*>(NewRootSplitter);
 	OldRoot->deleteLater();
+
 	return true;
 }
 
