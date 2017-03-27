@@ -99,6 +99,23 @@ public:
 	CDockOverlay* dockAreaOverlay() const;
 
 	/**
+	 * Adds dockwidget into the given area.
+	 * If DockAreaWidget is not null, then the area parameter indicates the area
+	 * into the DockAreaWidget. If DockAreaWidget is null, the Dockwidget will
+	 * be dropped into the container.
+	 * \return Returns the dock area widget that contains the new DockWidget
+	 */
+	CDockAreaWidget* addDockWidget(DockWidgetArea area, CDockWidget* Dockwidget,
+		CDockAreaWidget* DockAreaWidget = nullptr);
+
+	/**
+	 * Searches for a registered doc widget with the given ObjectName
+	 * \return Return the found dock widget or nullptr if a dock widget with the
+	 * given name is not registered
+	 */
+	CDockWidget* findDockWidget(const QString& ObjectName);
+
+	/**
 	 * Returns the list of all active and visible dock containers
 	 * Dock containers are the main dock manager and all floating widgets
 	 */

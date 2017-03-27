@@ -51,8 +51,11 @@ enum DockWidgetArea
 };
 Q_DECLARE_FLAGS(DockWidgetAreas, DockWidgetArea)
 
+
 namespace internal
 {
+
+
 /**
  * Helper function to create new splitter widgets
  */

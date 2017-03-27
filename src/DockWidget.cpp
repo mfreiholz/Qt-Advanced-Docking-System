@@ -44,7 +44,7 @@
 #include "DockAreaWidget.h"
 #include "DockManager.h"
 #include "FloatingDockContainer.h"
-
+#include "DockStateSerialization.h"
 #include "ads_globals.h"
 
 namespace ads
@@ -356,6 +356,7 @@ void CDockWidget::setDockArea(CDockAreaWidget* DockArea)
 //============================================================================
 void CDockWidget::saveState(QDataStream& stream) const
 {
+	stream << internal::DockWidgetMarker;
 	std::cout << "CDockWidget::saveState " << objectName().toStdString()
 			<< " closed " << d->Closed << std::endl;
 	stream << objectName() << d->Closed;

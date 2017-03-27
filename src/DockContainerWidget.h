@@ -140,9 +140,12 @@ public:
 	void saveState(QDataStream& Stream) const;
 
 	/**
-	 * Restores the state from given stream
+	 * Restores the state from given stream.
+	 * If Testing is true, the function only parses the data from the given
+	 * stream but does not restore anything. You can use this check for
+	 * faulty files before you start restoring the state
 	 */
-	bool restoreState(QDataStream& Stream);
+	bool restoreState(QDataStream& Stream, bool Testing);
 
 signals:
 	/**

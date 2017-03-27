@@ -34,11 +34,22 @@
 
 namespace ads
 {
-enum eDockTreeNodeType
+
+namespace internal
 {
-	NodeSplitter,
-	NodeDockArea
+// sentinel values used to validate state data
+enum VersionMarkers
+{
+	VersionMarker = 0xff,
+	ContainerMarker = 0xfe,
+	SplitterMarker = 0xfd,
+	DockAreaMarker = 0xfc,
+	DockWidgetMarker = 0xfb
 };
+
+static const bool RestoreTesting = true;
+static const bool Restore = false;
+} // internal
 } // namespace ads
 //-----------------------------------------------------------------------------
 #endif // DockManagerH

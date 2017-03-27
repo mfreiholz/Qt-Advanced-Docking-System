@@ -32,20 +32,18 @@
 
 #include <QMainWindow>
 #include <QList>
+#include <QMap>
 
 #include <iostream>
 
 #include "FloatingDockContainer.h"
 #include "DockOverlay.h"
+#include "DockWidget.h"
+#include "ads_globals.h"
+#include "DockStateSerialization.h"
 
 namespace ads
 {
-
-// sentinel values used to validate state data
-enum VersionMarkers
-{
-	VersionMarker = 0xff
-};
 
 /**
  * Private data class of CDockManager class (pimpl)
@@ -57,6 +55,7 @@ struct DockManagerPrivate
 	QList<CDockContainerWidget*> Containers;
 	CDockOverlay* ContainerOverlay;
 	CDockOverlay* DockAreaOverlay;
+	QMap<QString, CDockWidget*> DockWidgetsMap;
 
 	/**
 	 * Private data constructor
@@ -67,6 +66,17 @@ struct DockManagerPrivate
 	 * Restores a non existing container from stream
 	 */
 	bool restoreContainer(QDataStream& Stream);
+
+	/**
+	 * Checks if the given data stream is a valid docking system state
+	 * file.
+	 */
+	bool checkFormat(const QByteArray &state, int version);
+
+	/**
+	 * Restores the state
+	 */
+	bool restoreState(const QByteArray &state, int version);
 };
 // struct DockManagerPrivate
 
@@ -83,6 +93,97 @@ bool DockManagerPrivate::restoreContainer(QDataStream& Stream)
 {
 	std::cout << "restoreContainer" << std::endl;
 	CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(_this);
+	return true;
+}
+
+
+//============================================================================
+bool DockManagerPrivate::checkFormat(const QByteArray &state, int version)
+{
+    if (state.isEmpty())
+    {
+        return false;
+    }
+    QByteArray sd = state;
+    QDataStream stream(&sd, QIODevice::ReadOnly);
+
+    int marker;
+	int v;
+    stream >> marker;
+    stream >> v;
+
+    if (stream.status() != QDataStream::Ok || marker != internal::VersionMarker || v != version)
+    {
+        return false;
+    }
+
+    int Result = true;
+    int ContainerCount;
+    stream >> ContainerCount;
+    std::cout << "ContainerCount " << ContainerCount << std::endl;
+    int i;
+    for (i = 0; i < ContainerCount; ++i)
+    {
+    	if (!Containers[0]->restoreState(stream, internal::RestoreTesting))
+    	{
+    		Result = false;
+    		break;
+    	}
+    }
+
+    return Result;
+}
+
+
+//============================================================================
+bool DockManagerPrivate::restoreState(const QByteArray &state,  int version)
+{
+    if (state.isEmpty())
+    {
+        return false;
+    }
+    QByteArray sd = state;
+    QDataStream stream(&sd, QIODevice::ReadOnly);
+
+    int marker;
+	int v;
+    stream >> marker;
+    stream >> v;
+
+    if (stream.status() != QDataStream::Ok || marker != internal::VersionMarker || v != version)
+    {
+        return false;
+    }
+
+    int Result = true;
+    int ContainerCount;
+    stream >> ContainerCount;
+    std::cout << "ContainerCount " << ContainerCount << std::endl;
+    int i;
+    for (i = 0; i < ContainerCount; ++i)
+    {
+    	if (i >= Containers.count())
+    	{
+    		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(_this);
+    	}
+
+    	std::cout << "d->Containers[i]->restoreState " << i << std::endl;
+    	if (!Containers[i]->restoreState(stream, internal::Restore))
+    	{
+    		Result = false;
+    		break;
+    	}
+    }
+
+    // Delete remaining empty floating widgets
+    int FloatingWidgetIndex = i - 1;
+    int DeleteCount = FloatingWidgets.count() - FloatingWidgetIndex;
+    for (int i = 0; i < DeleteCount; ++i)
+    {
+    	delete FloatingWidgets[FloatingWidgetIndex];
+    }
+
+    return Result;
 }
 
 
@@ -187,7 +288,7 @@ QByteArray CDockManager::saveState(int version) const
 {
     QByteArray data;
     QDataStream stream(&data, QIODevice::WriteOnly);
-    stream << VersionMarker;
+    stream << internal::VersionMarker;
     stream << version;
 
     stream << d->Containers.count();
@@ -202,38 +303,35 @@ QByteArray CDockManager::saveState(int version) const
 //============================================================================
 bool CDockManager::restoreState(const QByteArray &state, int version)
 {
-    if (state.isEmpty())
+    if (!d->checkFormat(state, version))
     {
-        return false;
-    }
-    QByteArray sd = state;
-    QDataStream stream(&sd, QIODevice::ReadOnly);
-
-    int marker;
-	int v;
-    stream >> marker;
-    stream >> v;
-
-    if (stream.status() != QDataStream::Ok || marker != VersionMarker || v != version)
-    {
-        return false;
+    	std::cout << "checkFormat: Error checking format!!!!!!!" << std::endl;
+    	return false;
     }
 
-    int ContainerCount;
-    stream >> ContainerCount;
-    std::cout << "ContainerCount " << ContainerCount << std::endl;
-    for (int i = 0; i < ContainerCount; ++i)
+    if (!d->restoreState(state, version))
     {
-    	if (i >= d->Containers.count())
-    	{
-    		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(this);
-    	}
-
-    	std::cout << "d->Containers[i]->restoreState " << i << std::endl;
-    	d->Containers[i]->restoreState(stream);
+    	std::cout << "restoreState: Error restoring state!!!!!!!" << std::endl;
+    	return false;
     }
 
     return true;
+}
+
+
+//============================================================================
+CDockAreaWidget* CDockManager::addDockWidget(DockWidgetArea area,
+	CDockWidget* Dockwidget, CDockAreaWidget* DockAreaWidget)
+{
+	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
+	return CDockContainerWidget::addDockWidget(area, Dockwidget, DockAreaWidget);
+}
+
+
+//============================================================================
+CDockWidget* CDockManager::findDockWidget(const QString& ObjectName)
+{
+	return d->DockWidgetsMap.value(ObjectName, nullptr);
 }
 } // namespace ads
 
