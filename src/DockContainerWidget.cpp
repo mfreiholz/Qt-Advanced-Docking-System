@@ -430,7 +430,9 @@ bool DockContainerWidgetPrivate::restoreDockArea(QDataStream& stream,
 
 		qDebug() << "Dock Widget found - parent " << DockWidget->parent();
 		DockArea->addDockWidget(DockWidget);
-		DockWidget->toggleView(!Closed);
+
+		DockArea->hide();
+		DockWidget->setProperty("closed", Closed);
 		DockWidget->setProperty("dirty", false);
 	}
 
@@ -444,9 +446,13 @@ bool DockContainerWidgetPrivate::restoreDockArea(QDataStream& stream,
 		delete DockArea;
 		DockArea = nullptr;
 	}
+	else
+	{
+		DockArea->setProperty("currentIndex", CurrentIndex);
+	}
 	CreatedWidget = DockArea;
 	DockAreas.append(DockArea);
-	DockArea->setCurrentIndex(CurrentIndex);
+	//DockArea->setCurrentIndex(CurrentIndex);
 	return true;
 }
 

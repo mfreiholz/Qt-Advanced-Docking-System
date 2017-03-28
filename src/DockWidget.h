@@ -39,6 +39,7 @@ class CDockWidgetTitleBar;
 class CDockManager;
 class CDockContainerWidget;
 class CDockAreaWidget;
+struct DockContainerWidgetPrivate;
 
 /**
  * The QDockWidget class provides a widget that can be docked inside a
@@ -56,6 +57,7 @@ protected:
 	friend class CDockAreaWidget;
 	friend class CFloatingDockContainer;
 	friend class CDockManager;
+	friend class DockContainerWidgetPrivate;
 
 	/**
 	 * Assigns the dock manager that manages this dock widget

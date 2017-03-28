@@ -37,6 +37,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QApplication>
+#include <QAction>
 
 #include "FloatingDockContainer.h"
 #include "DockOverlay.h"
@@ -44,6 +45,7 @@
 #include "ads_globals.h"
 #include "DockStateSerialization.h"
 #include "DockWidgetTitleBar.h"
+#include "DockAreaWidget.h"
 
 namespace ads
 {
@@ -199,9 +201,11 @@ bool DockManagerPrivate::restoreState(const QByteArray &state,  int version)
     // Delete remaining empty floating widgets
     int FloatingWidgetIndex = i - 1;
     int DeleteCount = FloatingWidgets.count() - FloatingWidgetIndex;
+    /*std::cout << "DeleteCount " << DeleteCount << " FloatingWidgets.count() "
+    	<< FloatingWidgets.count() << " FloatingWdgetIndex " << FloatingWidgetIndex << std::endl;*/
     for (int i = 0; i < DeleteCount; ++i)
     {
-    	FloatingWidgets[FloatingWidgetIndex]->deleteLater();
+    	FloatingWidgets[FloatingWidgetIndex + i]->deleteLater();
     }
 
     return Result;
@@ -335,17 +339,11 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
     	DockWidget->setProperty("dirty", true);
     }
 
-    //this->hide();
-    QMainWindow* MainWindow = internal::findParent<QMainWindow*>(this);
-    MainWindow->hide();
-    QApplication::processEvents();
     if (!d->restoreState(state, version))
     {
     	qDebug() << "restoreState: Error restoring state!!!!!!!";
     	return false;
     }
-    MainWindow->show();
-   // this->show();
 
     // All dock widgets, that have not been processed in the restore state
     // function are invisible to the user now and have no assigned dock area
@@ -356,6 +354,23 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
     	if (DockWidget->property("dirty").toBool())
     	{
     		DockWidget->flagAsUnassigned();
+    	}
+    	else if (!DockWidget->property("closed").toBool())
+    	{
+    		DockWidget->toggleView(true);
+    	}
+    }
+
+    for (auto DockContainer : d->Containers)
+    {
+    	for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
+    	{
+    		CDockAreaWidget* DockArea = DockContainer->dockArea(i);
+    		int CurrentIndex = DockArea->property("currentIndex").toInt();
+    		if (CurrentIndex < DockArea->count() && DockArea->count() > 1 && CurrentIndex > -1)
+    		{
+    			DockArea->setCurrentIndex(CurrentIndex);
+    		}
     	}
     }
 
