@@ -59,6 +59,11 @@ protected:
 	 */
 	virtual bool event(QEvent *e) override;
 
+	/**
+	 * Access function for the internal root splitter
+	 */
+	QSplitter* rootSplitter() const;
+
 public:
 	/**
 	 * Default Constructor
@@ -146,6 +151,11 @@ public:
 	 * faulty files before you start restoring the state
 	 */
 	bool restoreState(QDataStream& Stream, bool Testing);
+
+	/**
+	 * Dumps the layout for debugging purposes
+	 */
+	void dumpLayout();
 
 signals:
 	/**

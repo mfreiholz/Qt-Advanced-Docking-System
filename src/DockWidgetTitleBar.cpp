@@ -267,8 +267,8 @@ void CDockWidgetTitleBar::mouseReleaseEvent(QMouseEvent* ev)
 //============================================================================
 void CDockWidgetTitleBar::mouseMoveEvent(QMouseEvent* ev)
 {
-	std::cout << "CDockWidgetTitleBar::mouseMoveEventmouseMoveEvent DragState "
-		<< d->DragState << std::endl;
+	/*std::cout << "CDockWidgetTitleBar::mouseMoveEventmouseMoveEvent DragState "
+		<< d->DragState << std::endl;*/
     if (!(ev->buttons() & Qt::LeftButton) || d->isDraggingState(DraggingInactive))
     {
     	d->DragState = DraggingInactive;
@@ -278,7 +278,7 @@ void CDockWidgetTitleBar::mouseMoveEvent(QMouseEvent* ev)
 
     if (d->isDraggingState(DraggingFloatingWidget))
     {
-    	std::cout << "DraggingFloatingWidget" << std::endl;
+    	//std::cout << "DraggingFloatingWidget" << std::endl;
     	d->FloatingWidget->moveFloating();
         QFrame::mouseMoveEvent(ev);
         return;

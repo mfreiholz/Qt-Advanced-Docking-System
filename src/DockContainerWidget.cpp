@@ -145,6 +145,11 @@ struct DockContainerWidgetPrivate
 	 */
 	bool restoreDockArea(QDataStream& Stream, QWidget*& CreatedWidget,
 		bool Testing);
+
+	/**
+	 * Helper function for recursive dumping of layout
+	 */
+	void dumpRecursive(int level, QWidget* widget);
 }; // struct DockContainerWidgetPrivate
 
 
@@ -169,7 +174,7 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 	{
 		Splitter->setOrientation(InsertParam.orientation());
 	}
-	else
+	else if (Splitter->orientation() != InsertParam.orientation())
 	{
 		QSplitter* NewSplitter = internal::newSplitter(InsertParam.orientation());
 		QLayoutItem* li = Layout->replaceWidget(Splitter, NewSplitter);
@@ -178,13 +183,8 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 	}
 
 	// Now we can insert the floating widget content into this container
-	auto Widget = FloatingWidget->dockContainer()->findChild<QWidget*>(QString(), Qt::FindDirectChildrenOnly);
-	auto FloatingSplitter = dynamic_cast<QSplitter*>(Widget);
-	if (DockAreas.isEmpty())
-	{
-		Splitter->addWidget(Widget);
-	}
-	else if (FloatingSplitter->count() == 1)
+	auto FloatingSplitter = FloatingWidget->dockContainer()->rootSplitter();
+	if (FloatingSplitter->count() == 1)
 	{
 		insertWidgetIntoSplitter(Splitter, FloatingSplitter->widget(0), InsertParam.append());
 	}
@@ -203,6 +203,7 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 	RootSplitter = Splitter;
 	addDockAreasToList(NewDockAreas);
 	FloatingWidget->deleteLater();
+	_this->dumpLayout();
 }
 
 
@@ -278,6 +279,7 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 
 	FloatingWidget->deleteLater();
 	addDockAreasToList(NewDockAreas);
+	_this->dumpLayout();
 }
 
 
@@ -524,6 +526,33 @@ void DockContainerWidgetPrivate::addDockArea(CDockAreaWidget* NewDockArea, DockW
 
 
 //============================================================================
+void DockContainerWidgetPrivate::dumpRecursive(int level, QWidget* widget)
+{
+	QSplitter* Splitter = dynamic_cast<QSplitter*>(widget);
+	QByteArray buf;
+    buf.fill(' ', level * 4);
+	if (Splitter)
+	{
+		std::cout << buf.toStdString() << "Splitter " << ((Splitter->orientation() == Qt::Vertical)
+			? "-" : "|") << std::endl;
+		for (int i = 0; i < Splitter->count(); ++i)
+		{
+			dumpRecursive(level + 1, Splitter->widget(i));
+		}
+	}
+	else
+	{
+		CDockAreaWidget* DockArea = dynamic_cast<CDockAreaWidget*>(widget);
+		if (!DockArea)
+		{
+			return;
+		}
+		std::cout << buf.toStdString() << "DockArea" << std::endl;
+	}
+}
+
+
+//============================================================================
 CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetArea area,
 	CDockWidget* Dockwidget, CDockAreaWidget* TargetDockArea)
 {
@@ -681,6 +710,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 	QSplitter* ParentSplitter = internal::findParent<QSplitter*>(Splitter);
 	internal::replaceSplitterWidget(ParentSplitter, Splitter, widget);
 	delete Splitter;
+	dumpLayout();
 	emit dockAreasRemoved();
 }
 
@@ -842,6 +872,20 @@ bool CDockContainerWidget::restoreState(QDataStream& stream, bool Testing)
 	OldRoot->deleteLater();
 
 	return true;
+}
+
+
+//============================================================================
+QSplitter* CDockContainerWidget::rootSplitter() const
+{
+	return d->RootSplitter;
+}
+
+
+//============================================================================
+void CDockContainerWidget::dumpLayout()
+{
+	d->dumpRecursive(0, d->RootSplitter);
 }
 
 

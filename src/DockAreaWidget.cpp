@@ -475,15 +475,17 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	setCurrentIndex(d->ContentsLayout->currentIndex());
 	d->updateTabsMenu();
 
+	CDockContainerWidget* DockContainer = dockContainer();
 	if (d->ContentsLayout->isEmpty())
 	{
 		std::cout << "Dock Area empty" << std::endl;
 		dockContainer()->removeDockArea(this);
-		this->deleteLater();
+		this->deleteLater();;
 	}
 
 	d->updateTabBar();
 	DockWidget->setDockArea(nullptr);
+	DockContainer->dumpLayout();
 }
 
 

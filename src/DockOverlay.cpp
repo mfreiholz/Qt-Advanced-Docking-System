@@ -136,7 +136,7 @@ static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size
 	if (CDockOverlay::ModeContainerOverlay == Mode && DockWidgetArea != CenterDockWidgetArea)
 	{
 		QRectF ArrowRect;
-		ArrowRect.setSize(ShadowRect.size() * 0.7);
+		ArrowRect.setSize(baseSize);
 		ArrowRect.setWidth(ArrowRect.width() / 4.6);
 		ArrowRect.setHeight(ArrowRect.height() / 2);
 		ArrowRect.moveCenter(QPointF(0, 0));
