@@ -33,6 +33,7 @@
 #include <QMainWindow>
 #include <QList>
 #include <QMap>
+#include <QVariant>
 
 #include <iostream>
 
@@ -41,6 +42,7 @@
 #include "DockWidget.h"
 #include "ads_globals.h"
 #include "DockStateSerialization.h"
+#include "DockWidgetTitleBar.h"
 
 namespace ads
 {
@@ -77,6 +79,11 @@ struct DockManagerPrivate
 	 * Restores the state
 	 */
 	bool restoreState(const QByteArray &state, int version);
+
+	/**
+	 * Restores the container with the given index
+	 */
+	bool restoreContainer(int Index, QDataStream& stream, bool Testing);
 };
 // struct DockManagerPrivate
 
@@ -136,6 +143,22 @@ bool DockManagerPrivate::checkFormat(const QByteArray &state, int version)
 
 
 //============================================================================
+bool DockManagerPrivate::restoreContainer(int Index, QDataStream& stream, bool Testing)
+{
+	if (Index >= Containers.count())
+	{
+		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(_this);
+		return FloatingWidget->restoreState(stream, internal::Restore);
+	}
+	else
+	{
+		std::cout << "d->Containers[i]->restoreState " << Index << std::endl;
+		return Containers[Index]->restoreState(stream, internal::Restore);
+	}
+}
+
+
+//============================================================================
 bool DockManagerPrivate::restoreState(const QByteArray &state,  int version)
 {
     if (state.isEmpty())
@@ -162,15 +185,9 @@ bool DockManagerPrivate::restoreState(const QByteArray &state,  int version)
     int i;
     for (i = 0; i < ContainerCount; ++i)
     {
-    	if (i >= Containers.count())
+    	Result = restoreContainer(i, stream, internal::Restore);
+    	if (!Result)
     	{
-    		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(_this);
-    	}
-
-    	std::cout << "d->Containers[i]->restoreState " << i << std::endl;
-    	if (!Containers[i]->restoreState(stream, internal::Restore))
-    	{
-    		Result = false;
     		break;
     	}
     }
@@ -180,7 +197,7 @@ bool DockManagerPrivate::restoreState(const QByteArray &state,  int version)
     int DeleteCount = FloatingWidgets.count() - FloatingWidgetIndex;
     for (int i = 0; i < DeleteCount; ++i)
     {
-    	delete FloatingWidgets[FloatingWidgetIndex];
+    	FloatingWidgets[FloatingWidgetIndex]->deleteLater();
     }
 
     return Result;
@@ -309,10 +326,27 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
     	return false;
     }
 
+    for (auto DockWidget : d->DockWidgetsMap)
+    {
+    	DockWidget->setProperty("dirty", true);
+    }
+
     if (!d->restoreState(state, version))
     {
     	std::cout << "restoreState: Error restoring state!!!!!!!" << std::endl;
     	return false;
+    }
+
+    // All dock widgets, that have not been processed in the restore state
+    // function are invisible to the user now and have no assigned dock area
+    // The do not belong to any dock container, until the user toggles the
+    // toggle view action the next time
+    for (auto DockWidget : d->DockWidgetsMap)
+    {
+    	if (DockWidget->property("dirty").toBool())
+    	{
+    		DockWidget->flagAsUnassigned();
+    	}
     }
 
     return true;

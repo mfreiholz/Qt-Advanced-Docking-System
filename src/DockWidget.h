@@ -55,6 +55,7 @@ protected:
 	friend class CDockContainerWidget;
 	friend class CDockAreaWidget;
 	friend class CFloatingDockContainer;
+	friend class CDockManager;
 
 	/**
 	 * Assigns the dock manager that manages this dock widget
@@ -79,6 +80,17 @@ protected:
 	 * Saves the state into the given stream
 	 */
 	void saveState(QDataStream& Stream) const;
+
+	/**
+	 * This is a helper function for the dock manager to flag this widget
+	 * as unassigned.
+	 * When calling the restore function, it may happen, that the saved state
+	 * contains less dock widgets then currently available. All widgets whose
+	 * data is not contained in the saved state, are flagged as unassigned
+	 * after the restore process. If the user shows an unassigned dock widget,
+	 * a floating widget will be created to take up the dock widget.
+	 */
+	void flagAsUnassigned();
 
 public:
 	enum DockWidgetFeature
@@ -172,6 +184,11 @@ public:
 	 */
 	QAction* toggleViewAction() const;
 
+	/**
+	 * Emits titleChanged signal if title change event occures
+	 */
+	virtual bool event(QEvent *e) override;
+
 public slots:
 	/**
 	 * This property controls whether the dock widget is open or closed.
@@ -189,6 +206,12 @@ signals:
 	 * This signal is emitted if the dock widget is closed
 	 */
 	void closed();
+
+	/**
+	 * This signal is emitted if the window title of this dock widget
+	 * changed
+	 */
+	void titleChanged(const QString& Title);
 }; // class DockWidget
 }
  // namespace ads

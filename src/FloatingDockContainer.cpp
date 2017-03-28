@@ -367,6 +367,7 @@ void CFloatingDockContainer::moveFloating()
 //============================================================================
 void CFloatingDockContainer::onDockAreasAddedOrRemoved()
 {
+	std::cout << "CFloatingDockContainer::onDockAreasAddedOrRemoved()" << std::endl;
 	if (d->DockContainer->dockAreaCount() == 1)
 	{
 		d->SingleDockArea = d->DockContainer->dockArea(0);
@@ -391,6 +392,18 @@ void CFloatingDockContainer::onDockAreasAddedOrRemoved()
 void CFloatingDockContainer::onDockAreaCurrentChanged(int Index)
 {
 	this->setWindowTitle(d->SingleDockArea->currentDockWidget()->windowTitle());
+}
+
+
+//============================================================================
+bool CFloatingDockContainer::restoreState(QDataStream& Stream, bool Testing)
+{
+	if (!d->DockContainer->restoreState(Stream, Testing))
+	{
+		return false;
+	}
+	onDockAreasAddedOrRemoved();
+	return true;
 }
 
 

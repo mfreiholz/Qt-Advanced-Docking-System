@@ -36,6 +36,7 @@
 #include <QStack>
 #include <QTextStream>
 #include <QPointer>
+#include <QEvent>
 
 #include <iostream>
 
@@ -108,20 +109,29 @@ DockWidgetPrivate::DockWidgetPrivate(CDockWidget* _public) :
 //============================================================================
 void DockWidgetPrivate::showDockWidget()
 {
-	DockArea->show();
-	DockArea->setCurrentIndex(DockArea->tabIndex(_this));
-	QSplitter* Splitter = internal::findParent<QSplitter*>(_this);
-	if (Splitter)
+	if (!DockArea)
 	{
-		Splitter->show();
-	}
-
-	CDockContainerWidget* Container = DockArea->dockContainer();
-	if (Container->isFloating())
-	{
-		CFloatingDockContainer* FloatingWidget = internal::findParent<
-				CFloatingDockContainer*>(Container);
+		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(_this);
+		FloatingWidget->resize(_this->size());
 		FloatingWidget->show();
+	}
+	else
+	{
+		DockArea->show();
+		DockArea->setCurrentIndex(DockArea->tabIndex(_this));
+		QSplitter* Splitter = internal::findParent<QSplitter*>(_this);
+		if (Splitter)
+		{
+			Splitter->show();
+		}
+
+		CDockContainerWidget* Container = DockArea->dockContainer();
+		if (Container->isFloating())
+		{
+			CFloatingDockContainer* FloatingWidget = internal::findParent<
+					CFloatingDockContainer*>(Container);
+			FloatingWidget->show();
+		}
 	}
 }
 
@@ -361,6 +371,27 @@ void CDockWidget::saveState(QDataStream& stream) const
 			<< " closed " << d->Closed << std::endl;
 	stream << objectName() << d->Closed;
 }
+
+
+//============================================================================
+void CDockWidget::flagAsUnassigned()
+{
+	setParent(d->DockManager);
+	setDockArea(nullptr);
+	titleBar()->setParent(this);
+}
+
+
+//============================================================================
+bool CDockWidget::event(QEvent *e)
+{
+	if (e->type() == QEvent::WindowTitleChange)
+	{
+		emit titleChanged(windowTitle());
+	}
+	return QFrame::event(e);
+}
+
 
 
 } // namespace ads

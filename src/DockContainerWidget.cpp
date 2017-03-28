@@ -34,6 +34,7 @@
 #include <QList>
 #include <QGridLayout>
 #include <QPointer>
+#include <QVariant>
 
 #include "DockManager.h"
 #include "DockAreaWidget.h"
@@ -432,6 +433,7 @@ bool DockContainerWidgetPrivate::restoreDockArea(QDataStream& stream,
 			<< std::endl;
 		DockArea->addDockWidget(DockWidget);
 		DockWidget->toggleView(!Closed);
+		DockWidget->setProperty("dirty", false);
 	}
 
 	if (Testing)
@@ -528,6 +530,7 @@ void DockContainerWidgetPrivate::addDockArea(CDockAreaWidget* NewDockArea, DockW
 //============================================================================
 void DockContainerWidgetPrivate::dumpRecursive(int level, QWidget* widget)
 {
+#if defined(QT_DEBUG)
 	QSplitter* Splitter = dynamic_cast<QSplitter*>(widget);
 	QByteArray buf;
     buf.fill(' ', level * 4);
@@ -549,6 +552,7 @@ void DockContainerWidgetPrivate::dumpRecursive(int level, QWidget* widget)
 		}
 		std::cout << buf.toStdString() << "DockArea" << std::endl;
 	}
+#endif
 }
 
 
