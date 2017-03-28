@@ -10,7 +10,7 @@
 //============================================================================
 #include <DockSplitter.h>
 
-#include <iostream>
+#include <QDebug>
 
 namespace ads
 {
@@ -18,7 +18,7 @@ namespace ads
 //============================================================================
 CDockSplitter::~CDockSplitter()
 {
-	std::cout << "~CDockSplitter" << std::endl;
+	qDebug() << "~CDockSplitter";
 }
 
 } // namespace ads

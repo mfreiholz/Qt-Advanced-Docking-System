@@ -36,8 +36,7 @@
 #include <QStyle>
 #include <QApplication>
 #include <QSplitter>
-
-#include <iostream>
+#include <QDebug>
 
 #include "ads_globals.h"
 #include "DockWidget.h"
@@ -161,9 +160,9 @@ void DockWidgetTitleBarPrivate::moveTab(QMouseEvent* ev)
 //============================================================================
 bool DockWidgetTitleBarPrivate::startFloating(const QPoint& GlobalPos)
 {
-	std::cout << "isFloating " << DockWidget->dockContainer()->isFloating() << std::endl;
-	std::cout << "areaCount " << DockWidget->dockContainer()->dockAreaCount() << std::endl;
-	std::cout << "widgetCount " << DockWidget->dockAreaWidget()->count() << std::endl;
+	qDebug() << "isFloating " << DockWidget->dockContainer()->isFloating();
+	qDebug() << "areaCount " << DockWidget->dockContainer()->dockAreaCount();
+	qDebug() << "widgetCount " << DockWidget->dockAreaWidget()->count();
 	// if this is the last dock widget inside of this floating widget,
 	// then it does not make any sense, to make if floating because
 	// it is already floating
@@ -174,7 +173,7 @@ bool DockWidgetTitleBarPrivate::startFloating(const QPoint& GlobalPos)
 		return false;
 	}
 
-	std::cout << "startFloating" << std::endl;
+	qDebug() << "startFloating";
 	DragState = DraggingFloatingWidget;
 	QSize Size = DockArea->size();
 	CFloatingDockContainer* FloatingWidget = nullptr;
@@ -185,7 +184,7 @@ bool DockWidgetTitleBarPrivate::startFloating(const QPoint& GlobalPos)
 	}
 	else
 	{
-		std::cout << "DockWidgetTitleBarPrivate::startFloating DockArea" << std::endl;
+		qDebug() << "DockWidgetTitleBarPrivate::startFloating DockArea";
 		// If section widget has only one content widget, we can move the complete
 		// dock area into floating widget
 		auto splitter = internal::findParent<QSplitter*>(DockArea);
@@ -213,7 +212,7 @@ CDockWidgetTitleBar::CDockWidgetTitleBar(CDockWidget* DockWidget, QWidget *paren
 //============================================================================
 CDockWidgetTitleBar::~CDockWidgetTitleBar()
 {
-	std::cout << "~CDockWidgetTitleBar()" << std::endl;
+	qDebug() << "~CDockWidgetTitleBar()";
 	delete d;
 }
 
@@ -223,7 +222,7 @@ void CDockWidgetTitleBar::mousePressEvent(QMouseEvent* ev)
 {
 	if (ev->button() == Qt::LeftButton)
 	{
-		std::cout << "CDockWidgetTitleBar::mousePressEvent" << std::endl;
+		qDebug() << "CDockWidgetTitleBar::mousePressEvent";
 		ev->accept();
         d->DragStartMousePosition = ev->pos();
         d->DragState = DraggingMousePressed;
@@ -237,7 +236,7 @@ void CDockWidgetTitleBar::mousePressEvent(QMouseEvent* ev)
 //============================================================================
 void CDockWidgetTitleBar::mouseReleaseEvent(QMouseEvent* ev)
 {
-	std::cout << "CDockWidgetTitleBar::mouseReleaseEvent" << std::endl;
+	qDebug() << "CDockWidgetTitleBar::mouseReleaseEvent";
 	// End of tab moving, change order now
 	if (d->isDraggingState(DraggingTab) && d->DockArea)
 	{
@@ -249,7 +248,7 @@ void CDockWidgetTitleBar::mouseReleaseEvent(QMouseEvent* ev)
         {
             toIndex = d->DockArea->count() - 1;
         }
-        std::cout << "Move tab from " << fromIndex << " to " << toIndex << std::endl;
+        qDebug() << "Move tab from " << fromIndex << " to " << toIndex;
         d->DockArea->reorderDockWidget(fromIndex, toIndex);
 	}
 

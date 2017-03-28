@@ -48,7 +48,6 @@
 #include "DockManager.h"
 #include "DockOverlay.h"
 
-#include <iostream>
 
 namespace ads
 {
@@ -83,7 +82,6 @@ public:
 protected:
 	virtual void wheelEvent(QWheelEvent* Event) override
 	{
-		std::cout << "CTabsScrollArea::wheelEvent" << std::endl;
 		Event->accept();
 		const int direction = Event->angleDelta().y();
 		if (direction < 0)
@@ -117,7 +115,7 @@ protected:
 	{
 		if (ev->button() == Qt::LeftButton)
 		{
-			std::cout << "CTabsScrollArea::mouseReleaseEvent" << std::endl;
+			qDebug() << "CTabsScrollArea::mouseReleaseEvent";
 			ev->accept();
 			m_FloatingWidget = nullptr;
 			m_DragStartMousePos = QPoint();
@@ -154,7 +152,7 @@ protected:
 
 		if (!this->geometry().contains(ev->pos()))
 		{
-			std::cout << "CTabsScrollArea::startFloating" << std::endl;
+			qDebug() << "CTabsScrollArea::startFloating";
 			startFloating(m_DragStartMousePos);
 			auto Overlay = m_DockArea->dockManager()->containerOverlay();
 			Overlay->setAllowedAreas(OuterDockAreas);
@@ -404,7 +402,7 @@ CDockAreaWidget::CDockAreaWidget(CDockManager* DockManager, CDockContainerWidget
 //============================================================================
 CDockAreaWidget::~CDockAreaWidget()
 {
-	std::cout << "~CDockAreaWidget()" << std::endl;
+	qDebug() << "~CDockAreaWidget()";
 	delete d;
 }
 
@@ -465,7 +463,7 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 //============================================================================
 void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 {
-	std::cout << "CDockAreaWidget::removeDockWidget" << std::endl;
+	qDebug() << "CDockAreaWidget::removeDockWidget";
 	d->ContentsLayout->removeWidget(DockWidget);
 	auto TitleBar = DockWidget->titleBar();
 	TitleBar->hide();
@@ -478,7 +476,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	CDockContainerWidget* DockContainer = dockContainer();
 	if (d->ContentsLayout->isEmpty())
 	{
-		std::cout << "Dock Area empty" << std::endl;
+		qDebug() << "Dock Area empty";
 		dockContainer()->removeDockArea(this);
 		this->deleteLater();;
 	}
@@ -720,8 +718,8 @@ void CDockAreaWidget::onDockWidgetViewToggled(bool Open)
 void CDockAreaWidget::saveState(QDataStream& stream) const
 {
 	stream << d->ContentsLayout->count() << d->ContentsLayout->currentIndex();
-	std::cout << "CDockAreaWidget::saveState TabCount: " << d->ContentsLayout->count()
-			<< " CurrentIndex: " << d->ContentsLayout->currentIndex() << std::endl;
+	qDebug() << "CDockAreaWidget::saveState TabCount: " << d->ContentsLayout->count()
+			<< " CurrentIndex: " << d->ContentsLayout->currentIndex();
 	for (int i = 0; i < d->ContentsLayout->count(); ++i)
 	{
 		dockWidget(i)->saveState(stream);

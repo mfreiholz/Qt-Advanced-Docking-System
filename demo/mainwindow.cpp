@@ -24,21 +24,25 @@
 
 static int CONTENT_COUNT = 0;
 
+
 static ads::CDockWidget* createLongTextLabelDockWidget(QMenu* ViewMenu)
 {
 	static int LabelCount = 0;
 	QLabel* l = new QLabel();
 	l->setWordWrap(true);
 	l->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	l->setText(QString("Label %1 %2 - Lorem Ipsum ist ein einfacher Demo-Text für die Print- "
-		"und Schriftindustrie. Lorem Ipsum ist in der Industrie bereits der "
-		"Standard Demo-Text seit 1500, als ein unbekannter Schriftsteller eine "
-		"Hand voll Wörter nahm und diese durcheinander warf um ein Musterbuch zu "
-		"erstellen. Es hat nicht nur 5 Jahrhunderte überlebt, sondern auch in "
-		"Spruch in die elektronische Schriftbearbeitung geschafft (bemerke, nahezu "
-		"unverändert). Bekannt wurde es 1960, mit dem erscheinen von Letrase, "
-		"welches Passagen von Lorem Ipsum enhielt, so wie Desktop Software wie "
-		"Aldus PageMaker - ebenfalls mit Lorem Ipsum.")
+	l->setText(QString("Label %1 %2 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. "
+		"Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque "
+		"penatibus et magnis dis parturient montes, nascetur ridiculus mus. "
+		"Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. "
+		"Nulla consequat massa quis enim. Donec pede justo, fringilla vel, "
+		"aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, "
+		"imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede "
+		"mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum "
+		"semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, "
+		"porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, "
+		"dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla "
+		"ut metus varius laoreet.")
 		.arg(LabelCount)
 		.arg(QTime::currentTime().toString("hh:mm:ss:zzz")));
 
@@ -48,6 +52,7 @@ static ads::CDockWidget* createLongTextLabelDockWidget(QMenu* ViewMenu)
 	ViewMenu->addAction(DockWidget->toggleViewAction());
 	return DockWidget;
 }
+
 
 static ads::CDockWidget* createCalendarDockWidget(QMenu* ViewMenu)
 {

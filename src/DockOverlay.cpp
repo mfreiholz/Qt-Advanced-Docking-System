@@ -34,8 +34,6 @@
 #include <QtGlobal>
 #include <QDebug>
 
-#include <iostream>
-
 #include "DockAreaWidget.h"
 
 namespace ads
@@ -314,12 +312,10 @@ DockWidgetArea CDockOverlay::showOverlay(QWidget* target)
 {
 	if (d->TargetWidget == target)
 	{
-        qInfo() << "_target == target";
 		// Hint: We could update geometry of overlay here.
 		DockWidgetArea da = dropAreaUnderCursor();
 		if (da != d->LastLocation)
 		{
-            qInfo() << "repaint()";
 			repaint();
 			d->LastLocation = da;
 		}
@@ -342,7 +338,6 @@ DockWidgetArea CDockOverlay::showOverlay(QWidget* target)
 //============================================================================
 void CDockOverlay::hideOverlay()
 {
-    qInfo() << "hideDockOverlay() _fullAreaDrop = false";
 	hide();
 	d->TargetWidget.clear();
 	d->TargetRect = QRect();

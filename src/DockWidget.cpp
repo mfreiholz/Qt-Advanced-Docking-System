@@ -37,8 +37,7 @@
 #include <QTextStream>
 #include <QPointer>
 #include <QEvent>
-
-#include <iostream>
+#include <QDebug>
 
 #include "DockWidgetTitleBar.h"
 #include "DockContainerWidget.h"
@@ -227,7 +226,7 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 //============================================================================
 CDockWidget::~CDockWidget()
 {
-	std::cout << "~CDockWidget()" << std::endl;
+	qDebug() << "~CDockWidget()";
 	delete d;
 }
 
@@ -367,8 +366,7 @@ void CDockWidget::setDockArea(CDockAreaWidget* DockArea)
 void CDockWidget::saveState(QDataStream& stream) const
 {
 	stream << internal::DockWidgetMarker;
-	std::cout << "CDockWidget::saveState " << objectName().toStdString()
-			<< " closed " << d->Closed << std::endl;
+	qDebug() << "CDockWidget::saveState " << objectName() << " closed " << d->Closed;
 	stream << objectName() << d->Closed;
 }
 

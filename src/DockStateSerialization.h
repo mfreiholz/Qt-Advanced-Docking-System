@@ -23,7 +23,7 @@
 /// \file   DockStateSerialization.h
 /// \author Uwe Kindler
 /// \date   26.02.2017
-/// \brief
+/// \brief  Declaration of serialization related data, constants and stuff
 //============================================================================
 
 

@@ -34,8 +34,7 @@
 #include <QList>
 #include <QMap>
 #include <QVariant>
-
-#include <iostream>
+#include <QDebug>
 
 #include "FloatingDockContainer.h"
 #include "DockOverlay.h"
@@ -65,11 +64,6 @@ struct DockManagerPrivate
 	DockManagerPrivate(CDockManager* _public);
 
 	/**
-	 * Restores a non existing container from stream
-	 */
-	bool restoreContainer(QDataStream& Stream);
-
-	/**
 	 * Checks if the given data stream is a valid docking system state
 	 * file.
 	 */
@@ -96,15 +90,6 @@ DockManagerPrivate::DockManagerPrivate(CDockManager* _public) :
 
 
 //============================================================================
-bool DockManagerPrivate::restoreContainer(QDataStream& Stream)
-{
-	std::cout << "restoreContainer" << std::endl;
-	CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(_this);
-	return true;
-}
-
-
-//============================================================================
 bool DockManagerPrivate::checkFormat(const QByteArray &state, int version)
 {
     if (state.isEmpty())
@@ -127,7 +112,6 @@ bool DockManagerPrivate::checkFormat(const QByteArray &state, int version)
     int Result = true;
     int ContainerCount;
     stream >> ContainerCount;
-    std::cout << "ContainerCount " << ContainerCount << std::endl;
     int i;
     for (i = 0; i < ContainerCount; ++i)
     {
@@ -152,7 +136,7 @@ bool DockManagerPrivate::restoreContainer(int Index, QDataStream& stream, bool T
 	}
 	else
 	{
-		std::cout << "d->Containers[i]->restoreState " << Index << std::endl;
+		qDebug() << "d->Containers[i]->restoreState ";
 		return Containers[Index]->restoreState(stream, internal::Restore);
 	}
 }
@@ -181,7 +165,7 @@ bool DockManagerPrivate::restoreState(const QByteArray &state,  int version)
     int Result = true;
     int ContainerCount;
     stream >> ContainerCount;
-    std::cout << "ContainerCount " << ContainerCount << std::endl;
+    qDebug() << "ContainerCount " << ContainerCount;
     int i;
     for (i = 0; i < ContainerCount; ++i)
     {
@@ -236,8 +220,7 @@ CDockManager::~CDockManager()
 void CDockManager::registerFloatingWidget(CFloatingDockContainer* FloatingWidget)
 {
 	d->FloatingWidgets.append(FloatingWidget);
-	std::cout << "d->FloatingWidgets.count() " << d->FloatingWidgets.count()
-		<< std::endl;
+	qDebug() << "d->FloatingWidgets.count() " << d->FloatingWidgets.count();
 }
 
 
@@ -322,7 +305,7 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
 {
     if (!d->checkFormat(state, version))
     {
-    	std::cout << "checkFormat: Error checking format!!!!!!!" << std::endl;
+    	qDebug() << "checkFormat: Error checking format!!!!!!!";
     	return false;
     }
 
@@ -333,7 +316,7 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
 
     if (!d->restoreState(state, version))
     {
-    	std::cout << "restoreState: Error restoring state!!!!!!!" << std::endl;
+    	qDebug() << "restoreState: Error restoring state!!!!!!!";
     	return false;
     }
 
