@@ -5,17 +5,6 @@
 
 #include "mainwindow.h"
 
-static void initStyleSheet(QApplication& a)
-{
-	QFile f(":ads/stylesheets/default-windows2.css");
-	if (f.open(QFile::ReadOnly))
-	{
-		const QByteArray ba = f.readAll();
-		f.close();
-		a.setStyleSheet(QString(ba));
-	}
-}
-
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -46,7 +35,6 @@ int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 	a.setQuitOnLastWindowClosed(true);
-	initStyleSheet(a);
 	qInstallMessageHandler(myMessageOutput);
 	qDebug() << "Message handler test";
 

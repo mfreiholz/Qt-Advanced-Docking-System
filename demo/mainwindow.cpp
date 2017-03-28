@@ -111,7 +111,7 @@ void MainWindow::createContent()
 	m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
 	m_DockManager->addDockWidget(ads::LeftDockWidgetArea, createLongTextLabelDockWidget(ViewMenu));
 	m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
-	/*auto TopDockArea = m_DockManager->addDockWidget(ads::TopDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
+	auto TopDockArea = m_DockManager->addDockWidget(ads::TopDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
 	DockWidget = createCalendarDockWidget(ViewMenu);
 	DockWidget->setFeatures(DockWidget->features().setFlag(ads::CDockWidget::DockWidgetClosable, false));
 	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, DockWidget, TopDockArea);
@@ -121,15 +121,15 @@ void MainWindow::createContent()
 	m_DockManager->addDockWidget(ads::TopDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	auto BottomDockArea = m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	m_DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
-	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);*/
+	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
 }
 
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-	/*QSettings Settings("Settings.ini", QSettings::IniFormat);
+	QSettings Settings("Settings.ini", QSettings::IniFormat);
 	Settings.setValue("mainWindow/Geometry", saveGeometry());
-	Settings.setValue("mainWindow/DockingState", m_DockManager->saveState());*/
+	Settings.setValue("mainWindow/DockingState", m_DockManager->saveState());
 	QMainWindow::closeEvent(event);
 }
 

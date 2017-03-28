@@ -35,6 +35,8 @@
 #include <QMap>
 #include <QVariant>
 #include <QDebug>
+#include <QFile>
+#include <QApplication>
 
 #include "FloatingDockContainer.h"
 #include "DockOverlay.h"
@@ -78,6 +80,11 @@ struct DockManagerPrivate
 	 * Restores the container with the given index
 	 */
 	bool restoreContainer(int Index, QDataStream& stream, bool Testing);
+
+	/**
+	 * Loads the stylesheet
+	 */
+	void loadStylesheet();
 };
 // struct DockManagerPrivate
 
@@ -86,6 +93,19 @@ DockManagerPrivate::DockManagerPrivate(CDockManager* _public) :
 	_this(_public)
 {
 
+}
+
+
+//============================================================================
+void DockManagerPrivate::loadStylesheet()
+{
+	QString Result;
+	QFile StyleSheetFile(":ads/stylesheets/default.css");
+	StyleSheetFile.open(QIODevice::ReadOnly);
+	QTextStream StyleSheetStream(&StyleSheetFile);
+	Result = StyleSheetStream.readAll();
+	StyleSheetFile.close();
+	_this->setStyleSheet(Result);
 }
 
 
@@ -202,6 +222,7 @@ CDockManager::CDockManager(QWidget *parent) :
 	d->DockAreaOverlay = new CDockOverlay(this, CDockOverlay::ModeDockAreaOverlay);
 	d->ContainerOverlay = new CDockOverlay(this, CDockOverlay::ModeContainerOverlay);
 	d->Containers.append(this);
+	d->loadStylesheet();
 }
 
 //============================================================================
@@ -314,11 +335,17 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
     	DockWidget->setProperty("dirty", true);
     }
 
+    //this->hide();
+    QMainWindow* MainWindow = internal::findParent<QMainWindow*>(this);
+    MainWindow->hide();
+    QApplication::processEvents();
     if (!d->restoreState(state, version))
     {
     	qDebug() << "restoreState: Error restoring state!!!!!!!";
     	return false;
     }
+    MainWindow->show();
+   // this->show();
 
     // All dock widgets, that have not been processed in the restore state
     // function are invisible to the user now and have no assigned dock area
