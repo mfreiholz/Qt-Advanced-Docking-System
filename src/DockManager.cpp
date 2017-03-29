@@ -361,6 +361,9 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
     	}
     }
 
+    // Now all dock areas are properly restored and we setup the index of
+    // The dock areas because the previous toggleView() action has changed
+    // the dock area index
     for (auto DockContainer : d->Containers)
     {
     	for (int i = 0; i < DockContainer->dockAreaCount(); ++i)

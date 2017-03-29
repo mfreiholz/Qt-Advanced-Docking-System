@@ -452,7 +452,6 @@ bool DockContainerWidgetPrivate::restoreDockArea(QDataStream& stream,
 	}
 	CreatedWidget = DockArea;
 	DockAreas.append(DockArea);
-	//DockArea->setCurrentIndex(CurrentIndex);
 	return true;
 }
 
