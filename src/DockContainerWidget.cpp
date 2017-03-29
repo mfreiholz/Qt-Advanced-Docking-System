@@ -433,6 +433,7 @@ bool DockContainerWidgetPrivate::restoreDockArea(QDataStream& stream,
 		DockArea->addDockWidget(DockWidget);
 
 		DockArea->hide();
+		DockWidget->setToggleViewActionChecked(!Closed);
 		DockWidget->setProperty("closed", Closed);
 		DockWidget->setProperty("dirty", false);
 	}
@@ -759,6 +760,21 @@ bool CDockContainerWidget::isFloating() const
 int CDockContainerWidget::dockAreaCount() const
 {
 	return d->DockAreas.count();
+}
+
+
+//============================================================================
+int CDockContainerWidget::visibleDockAreaCount() const
+{
+	// TODO Cache or precalculate this to speed it up because it is used during
+	// movement of floating widget
+	int Result = 0;
+	for (auto DockArea : d->DockAreas)
+	{
+		Result += DockArea->isVisible() ? 1 : 0;
+	}
+
+	return Result;
 }
 
 

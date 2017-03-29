@@ -28,6 +28,11 @@ public:
 	 * Prints debug info
 	 */
 	virtual ~CDockSplitter();
+
+	/**
+	 * Returns true, if any of the internal widgets is visible
+	 */
+	bool hasVisibleContent() const;
 }; // class CDockSplitter
 
 } // namespace ads

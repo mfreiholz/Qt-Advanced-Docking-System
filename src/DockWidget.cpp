@@ -45,6 +45,7 @@
 #include "DockManager.h"
 #include "FloatingDockContainer.h"
 #include "DockStateSerialization.h"
+#include "DockSplitter.h"
 #include "ads_globals.h"
 
 namespace ads
@@ -82,7 +83,7 @@ struct DockWidgetPrivate
 	/**
 	 * Hides a parent splitter if all dock widgets in the splitter are closed
 	 */
-	void hideEmptyParentSplitter();
+	void hideEmptyParentSplitters();
 
 	/**
 	 * Hides a dock area if all dock widgets in the area are closed
@@ -119,9 +120,10 @@ void DockWidgetPrivate::showDockWidget()
 		DockArea->show();
 		DockArea->setCurrentIndex(DockArea->tabIndex(_this));
 		QSplitter* Splitter = internal::findParent<QSplitter*>(_this);
-		if (Splitter)
+		while (Splitter && !Splitter->isVisible())
 		{
 			Splitter->show();
+			Splitter = internal::findParent<QSplitter*>(Splitter);
 		}
 
 		CDockContainerWidget* Container = DockArea->dockContainer();
@@ -138,32 +140,25 @@ void DockWidgetPrivate::showDockWidget()
 //============================================================================
 void DockWidgetPrivate::hideDockWidget()
 {
-	ToggleViewAction->setChecked(false);
 	TitleWidget->hide();
 	hideEmptyParentDockArea();
-	hideEmptyParentSplitter();
+	hideEmptyParentSplitters();
 	hideEmptyFloatingWidget();
 }
 
 
 //============================================================================
-void DockWidgetPrivate::hideEmptyParentSplitter()
+void DockWidgetPrivate::hideEmptyParentSplitters()
 {
-	QSplitter* Splitter = internal::findParent<QSplitter*>(_this);
-	if (!Splitter)
+	auto Splitter = internal::findParent<CDockSplitter*>(_this);
+	while (Splitter && Splitter->isVisible())
 	{
-		return;
-	}
-
-	for (int i = 0; i < Splitter->count(); ++i)
-	{
-		if (Splitter->widget(i)->isVisibleTo(Splitter))
+		if (!Splitter->hasVisibleContent())
 		{
-			return;
+			Splitter->hide();
 		}
+		Splitter = internal::findParent<CDockSplitter*>(Splitter);
 	}
-
-	Splitter->hide();
 }
 
 
@@ -346,6 +341,9 @@ void CDockWidget::toggleView(bool Open)
 		d->hideDockWidget();
 	}
 	d->Closed = !Open;
+	d->ToggleViewAction->blockSignals(true);
+	d->ToggleViewAction->setChecked(Open);
+	d->ToggleViewAction->blockSignals(false);
 	if (!Open)
 	{
 		emit closed();

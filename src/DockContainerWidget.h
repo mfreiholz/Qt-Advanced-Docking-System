@@ -135,6 +135,11 @@ public:
 	int dockAreaCount() const;
 
 	/**
+	 * Returns the number of visible dock areas
+	 */
+	int visibleDockAreaCount() const;
+
+	/**
 	 * This function returns true, if this container is in a floating widget
 	 */
 	bool isFloating() const;
