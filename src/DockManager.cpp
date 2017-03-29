@@ -154,12 +154,12 @@ bool DockManagerPrivate::restoreContainer(int Index, QDataStream& stream, bool T
 	if (Index >= Containers.count())
 	{
 		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(_this);
-		return FloatingWidget->restoreState(stream, internal::Restore);
+		return FloatingWidget->restoreState(stream, Testing);
 	}
 	else
 	{
 		qDebug() << "d->Containers[i]->restoreState ";
-		return Containers[Index]->restoreState(stream, internal::Restore);
+		return Containers[Index]->restoreState(stream, Testing);
 	}
 }
 
@@ -201,8 +201,6 @@ bool DockManagerPrivate::restoreState(const QByteArray &state,  int version)
     // Delete remaining empty floating widgets
     int FloatingWidgetIndex = i - 1;
     int DeleteCount = FloatingWidgets.count() - FloatingWidgetIndex;
-    /*std::cout << "DeleteCount " << DeleteCount << " FloatingWidgets.count() "
-    	<< FloatingWidgets.count() << " FloatingWdgetIndex " << FloatingWidgetIndex << std::endl;*/
     for (int i = 0; i < DeleteCount; ++i)
     {
     	FloatingWidgets[FloatingWidgetIndex + i]->deleteLater();

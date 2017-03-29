@@ -56,7 +56,6 @@ private slots:
 	void onDockWidgetTitleClicked();
 	void onTabsMenuActionTriggered(QAction* Action);
 	void onCloseButtonClicked();
-	void onDockWidgetViewToggled(bool Open);
 
 public:
 	/**
@@ -190,13 +189,6 @@ signals:
 	 * @param index
 	 */
 	void currentChanged(int index);
-
-	/**
-	 * This signal is emitted if the dock area is closed or opened.
-	 * The dock area will be closed, if all dock widgets in the dock area are
-	 * closed and will be opened, when the first dock widget is opened
-	 */
-	void viewToggled(bool Open);
 }; // class DockAreaWidget
 }
  // namespace ads

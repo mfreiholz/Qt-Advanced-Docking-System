@@ -1,14 +1,13 @@
-include($$(cetoni_repository)/build/qt/qtprojectsettings/shared_library.pri)
-include(src/v2/v2.pri)
+ADS_ROOT = $${PWD}/..
+ADS_OUT_ROOT = $${OUT_PWD}/..
 
 TARGET = $$qtLibraryTarget(AdvancedDockingSystem)
 TEMPLATE = lib
-#VERSION = 1.0.0
+DESTDIR = $${ADS_OUT_ROOT}/lib
+QT += core gui widgets
 
 CONFIG += adsBuildShared
 
-QT += core gui widgets
-DEFINES += ADS_NAMESPACE_ENABLED
 
 adsBuildShared {
 	CONFIG += shared

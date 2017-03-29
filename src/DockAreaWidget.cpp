@@ -374,7 +374,6 @@ void DockAreaWidgetPrivate::updateTabsMenu()
 	menu->clear();
 	for (int i = 0; i < ContentsLayout->count(); ++i)
 	{
-		CDockWidget* DockWidget = dockWidgetAt(i);
 		addTabsMenuEntry(dockWidgetAt(i), APPEND, menu);
 	}
 }
@@ -449,7 +448,6 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 	d->TabsLayout->insertWidget(index, TitleBar);
 	TitleBar->show();
 	connect(TitleBar, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
-	connect(DockWidget, SIGNAL(viewToggled(bool)), this, SLOT(onDockWidgetViewToggled(bool)));
 	DockWidget->setProperty(INDEX_PROPERTY, index);
 	if (Activate)
 	{
@@ -469,7 +467,6 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	TitleBar->hide();
 	d->TabsLayout->removeWidget(TitleBar);
 	disconnect(TitleBar, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
-	disconnect(DockWidget, SIGNAL(viewToggled(bool)), this, SLOT(onDockWidgetViewToggled(bool)));
 	setCurrentIndex(d->ContentsLayout->currentIndex());
 	d->updateTabsMenu();
 
@@ -704,13 +701,6 @@ void CDockAreaWidget::onTabsMenuActionTriggered(QAction* Action)
 void CDockAreaWidget::updateDockArea()
 {
 	d->updateTabBar();
-}
-
-
-//============================================================================
-void CDockAreaWidget::onDockWidgetViewToggled(bool Open)
-{
-	auto DockWidget = dynamic_cast<CDockWidget*>(sender());
 }
 
 

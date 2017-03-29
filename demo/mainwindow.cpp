@@ -2,7 +2,6 @@
 
 #include "ui_mainwindow.h"
 
-#include <iostream>
 
 #include <QTime>
 #include <QLabel>
@@ -14,15 +13,13 @@
 #include <QBoxLayout>
 #include <QSettings>
 #include <QDockWidget>
+#include <QDebug>
 
 #include "DockManager.h"
 #include "DockWidget.h"
 #include "DockAreaWidget.h"
 
 
-///////////////////////////////////////////////////////////////////////
-
-static int CONTENT_COUNT = 0;
 
 
 static ads::CDockWidget* createLongTextLabelDockWidget(QMenu* ViewMenu)
@@ -82,8 +79,6 @@ static ads::CDockWidget* createFileSystemTreeDockWidget(QMenu* ViewMenu)
 
 
 
-///////////////////////////////////////////////////////////////////////
-
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
@@ -127,16 +122,16 @@ void MainWindow::createContent()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-	QSettings Settings("Settings.ini", QSettings::IniFormat);
+	/*QSettings Settings("Settings.ini", QSettings::IniFormat);
 	Settings.setValue("mainWindow/Geometry", saveGeometry());
-	Settings.setValue("mainWindow/DockingState", m_DockManager->saveState());
+	Settings.setValue("mainWindow/DockingState", m_DockManager->saveState());*/
 	QMainWindow::closeEvent(event);
 }
 
 
 void MainWindow::on_actionSaveState_triggered(bool)
 {
-	std::cout << "MainWindow::on_actionSaveState_triggered" << std::endl;
+	qDebug() << "MainWindow::on_actionSaveState_triggered";
 	QSettings Settings("Settings.ini", QSettings::IniFormat);
 	Settings.setValue("mainWindow/Geometry", saveGeometry());
 	Settings.setValue("mainWindow/DockingState", m_DockManager->saveState());
@@ -145,7 +140,7 @@ void MainWindow::on_actionSaveState_triggered(bool)
 
 void MainWindow::on_actionRestoreState_triggered(bool)
 {
-	std::cout << "MainWindow::on_actionRestoreState_triggered" << std::endl;
+	qDebug() << "MainWindow::on_actionRestoreState_triggered";
 	QSettings Settings("Settings.ini", QSettings::IniFormat);
 	restoreGeometry(Settings.value("mainWindow/Geometry").toByteArray());
 	m_DockManager->restoreState(Settings.value("mainWindow/DockingState").toByteArray());

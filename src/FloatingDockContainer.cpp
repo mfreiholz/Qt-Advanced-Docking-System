@@ -331,6 +331,7 @@ bool CFloatingDockContainer::event(QEvent *e)
 //============================================================================
 bool CFloatingDockContainer::eventFilter(QObject *watched, QEvent *event)
 {
+	Q_UNUSED(watched);
 	if (event->type() == QEvent::MouseButtonRelease && d->DraggingActive)
 	{
 		qDebug() << "FloatingWidget::eventFilter QEvent::MouseButtonRelease";
@@ -389,6 +390,7 @@ void CFloatingDockContainer::onDockAreasAddedOrRemoved()
 //============================================================================
 void CFloatingDockContainer::onDockAreaCurrentChanged(int Index)
 {
+	Q_UNUSED(Index);
 	this->setWindowTitle(d->SingleDockArea->currentDockWidget()->windowTitle());
 }
 

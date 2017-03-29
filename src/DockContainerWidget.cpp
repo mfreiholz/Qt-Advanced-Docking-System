@@ -181,6 +181,7 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 		QLayoutItem* li = Layout->replaceWidget(Splitter, NewSplitter);
 		NewSplitter->addWidget(Splitter);
 		Splitter = NewSplitter;
+		delete li;
 	}
 
 	// Now we can insert the floating widget content into this container
@@ -555,6 +556,9 @@ void DockContainerWidgetPrivate::dumpRecursive(int level, QWidget* widget)
 		}
 		qDebug("%sDockArea", (const char*)buf);
 	}
+#else
+	Q_UNUSED(level);
+	Q_UNUSED(widget);
 #endif
 }
 
@@ -692,7 +696,7 @@ void CDockContainerWidget::addDockArea(CDockAreaWidget* DockAreaWidget,
 		Container->removeDockArea(DockAreaWidget);
 	}
 
-	d->addDockArea(DockAreaWidget);
+	d->addDockArea(DockAreaWidget, area);
 }
 
 

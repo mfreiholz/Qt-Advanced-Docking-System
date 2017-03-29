@@ -356,6 +356,7 @@ void CDockOverlay::enableDropPreview(bool Enable)
 //============================================================================
 void CDockOverlay::paintEvent(QPaintEvent* event)
 {
+	Q_UNUSED(event);
 	// Draw rect based on location
 	if (!d->DropPreviewEnabled)
 	{

@@ -1,9 +1,9 @@
-include($$(cetoni_repository)/build/qt/qtprojectsettings/common.pri)
+ADS_ROOT = $${PWD}/..
+ADS_OUT_ROOT = $${OUT_PWD}/..
 
 TARGET = AdvancedDockingSystemDemo
-
+DESTDIR = $${ADS_OUT_ROOT}/lib
 QT += core gui widgets
-DEFINES += ADS_NAMESPACE_ENABLED
 
 windows {
 	# MinGW
@@ -26,12 +26,12 @@ HEADERS += \
 FORMS += \
 	mainwindow.ui
 
+LIBS += -L$${ADS_OUT_ROOT}/lib
 
 # Dependency: AdvancedDockingSystem (shared)
-win32:CONFIG(release, debug|release): LIBS += -l$$qtLinkLibrary(AdvancedDockingSystem)
-else:win32:CONFIG(debug, debug|release): LIBS += -l$$qtLinkLibrary(AdvancedDockingSystem)
-else:unix: LIBS += -L$$OUT_PWD/../AdvancedDockingSystem/ -lAdvancedDockingSystem
+win32:CONFIG(release, debug|release): LIBS += -lAdvancedDockingSystem
+else:win32:CONFIG(debug, debug|release): LIBS += -lAdvancedDockingSystemd
+else:unix: LIBS += -lAdvancedDockingSystem
 
 INCLUDEPATH += ../src
-
 DEPENDPATH += ../src

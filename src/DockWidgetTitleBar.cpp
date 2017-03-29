@@ -112,7 +112,7 @@ struct DockWidgetTitleBarPrivate
 	 * Returns true, if floating has been started and false if floating
 	 * is not possible for any reason
 	 */
-	bool startFloating(const QPoint& GlobalPos);
+	bool startFloating();
 };
 // struct DockWidgetTitleBarPrivate
 
@@ -158,7 +158,7 @@ void DockWidgetTitleBarPrivate::moveTab(QMouseEvent* ev)
 
 
 //============================================================================
-bool DockWidgetTitleBarPrivate::startFloating(const QPoint& GlobalPos)
+bool DockWidgetTitleBarPrivate::startFloating()
 {
 	qDebug() << "isFloating " << DockWidget->dockContainer()->isFloating();
 	qDebug() << "areaCount " << DockWidget->dockContainer()->dockAreaCount();
@@ -187,7 +187,6 @@ bool DockWidgetTitleBarPrivate::startFloating(const QPoint& GlobalPos)
 		qDebug() << "DockWidgetTitleBarPrivate::startFloating DockArea";
 		// If section widget has only one content widget, we can move the complete
 		// dock area into floating widget
-		auto splitter = internal::findParent<QSplitter*>(DockArea);
 		FloatingWidget = new CFloatingDockContainer(DockArea);
 	}
 
@@ -292,7 +291,7 @@ void CDockWidgetTitleBar::mouseMoveEvent(QMouseEvent* ev)
     bool MouseInsideTitleArea = d->titleAreaGeometryContains(ev->globalPos());
     if (!MouseInsideTitleArea)
 	{
-    	d->startFloating(ev->globalPos());
+    	d->startFloating();
     	return;
 	}
     else if (d->DockArea->count() > 1
