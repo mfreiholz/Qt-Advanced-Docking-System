@@ -167,7 +167,7 @@ bool DockWidgetTitleBarPrivate::startFloating()
 	// then it does not make any sense, to make if floating because
 	// it is already floating
 	 if (DockWidget->dockContainer()->isFloating()
-	 && (DockWidget->dockContainer()->dockAreaCount() == 1)
+	 && (DockWidget->dockContainer()->visibleDockAreaCount() == 1)
 	 && (DockWidget->dockAreaWidget()->count() == 1))
 	{
 		return false;

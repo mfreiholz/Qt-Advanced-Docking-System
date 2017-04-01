@@ -93,7 +93,6 @@ static QPixmap createDropIndicatorPixmap(const QPalette& pal, const QSizeF& size
 	if (CDockOverlay::ModeContainerOverlay == Mode && DockWidgetArea != CenterDockWidgetArea)
 	{
 		baseRect = areaRect;
-		areaRect = QRectF();
 	}
 
 	p.fillRect(baseRect, backgroundColor);
