@@ -34,6 +34,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/QtAdvancedDockingSystem/demo}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${QTDIR}/include&quot;"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.preprocessor.def.56223209" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1318830536" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.base.389117097" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.base">
@@ -42,6 +43,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/QtAdvancedDockingSystem/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${QTDIR}/include&quot;"/>
 								</option>
+								<option id="gnu.c.compiler.option.preprocessor.def.symbols.806805509" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1568363924" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.base.1734874312" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.base"/>

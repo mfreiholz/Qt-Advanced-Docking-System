@@ -14,6 +14,7 @@
 
 namespace ads
 {
+struct DockSplitterPrivate;
 
 /**
  * Splitter used internally instead of QSplitter
@@ -21,8 +22,13 @@ namespace ads
 class CDockSplitter : public QSplitter
 {
 	Q_OBJECT
+private:
+	DockSplitterPrivate* d;
+	friend class DockSplitterPrivate;
+
 public:
-	using QSplitter::QSplitter;
+	CDockSplitter(QWidget *parent = Q_NULLPTR);
+	CDockSplitter(Qt::Orientation orientation, QWidget *parent = Q_NULLPTR);
 
 	/**
 	 * Prints debug info

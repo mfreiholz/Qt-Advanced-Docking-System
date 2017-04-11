@@ -201,6 +201,7 @@ struct DockOverlayPrivate
 	DockWidgetArea LastLocation = InvalidDockWidgetArea;
 	bool DropPreviewEnabled = true;
 	CDockOverlay::eMode Mode = CDockOverlay::ModeDockAreaOverlay;
+	QRect DropAreaRect;
 
 	/**
 	 * Private data constructor
@@ -245,12 +246,6 @@ CDockOverlay::CDockOverlay(QWidget* parent, eMode Mode) :
 	setWindowTitle("DockOverlay");
 	setAttribute(Qt::WA_NoSystemBackground);
 	setAttribute(Qt::WA_TranslucentBackground);
-
-	QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
-	l->setSpacing(0);
-	setLayout(l);
-	l->setContentsMargins(QMargins(0, 0, 0, 0));
-	l->addWidget(d->Cross);
 
 	d->Cross->setupOverlayCross(Mode);
 	d->Cross->setVisible(false);
@@ -330,6 +325,7 @@ DockWidgetArea CDockOverlay::showOverlay(QWidget* target)
 	QPoint TopLeft = target->mapToGlobal(target->rect().topLeft());
 	move(TopLeft);
 	show();
+	d->Cross->updatePosition();
 	return dropAreaUnderCursor();
 }
 
@@ -359,13 +355,12 @@ void CDockOverlay::paintEvent(QPaintEvent* event)
 	// Draw rect based on location
 	if (!d->DropPreviewEnabled)
 	{
+		d->DropAreaRect = QRect();
 		return;
 	}
 
 	QRect r = rect();
 	const DockWidgetArea da = dropAreaUnderCursor();
-	//std::cout << "CursorLocation: " << dropAreaUnderCursor() << std::endl;
-
 	double Factor = (CDockOverlay::ModeContainerOverlay == d->Mode) ?
 		3 : 2;
 
@@ -383,6 +378,14 @@ void CDockOverlay::paintEvent(QPaintEvent* event)
     Color.setAlpha(64);
     painter.setPen(Qt::NoPen);
 	painter.fillRect(r, Color);
+	d->DropAreaRect = r;
+}
+
+
+//============================================================================
+QRect CDockOverlay::dropOverlayRect() const
+{
+	return d->DropAreaRect;
 }
 
 
@@ -569,6 +572,13 @@ DockWidgetArea CDockOverlayCross::cursorLocation() const
 
 //============================================================================
 void CDockOverlayCross::showEvent(QShowEvent*)
+{
+	this->updatePosition();
+}
+
+
+//============================================================================
+void CDockOverlayCross::updatePosition()
 {
 	resize(d->DockOverlay->size());
 	QPoint TopLeft = d->DockOverlay->pos();

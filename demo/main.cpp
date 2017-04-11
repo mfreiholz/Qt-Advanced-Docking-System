@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QDebug>
 
+#include <memory>
+
 #include "mainwindow.h"
 
 
@@ -33,6 +35,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 int main(int argc, char *argv[])
 {
+	std::shared_ptr<int> b;
 	QApplication a(argc, argv);
 	a.setQuitOnLastWindowClosed(true);
 	qInstallMessageHandler(myMessageOutput);

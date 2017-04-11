@@ -8,17 +8,48 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include <DockSplitter.h>
+#include "DockSplitter.h"
 
 #include <QDebug>
+#include <QChildEvent>
+
+#include "DockAreaWidget.h"
 
 namespace ads
 {
+/**
+ * Private dock splitter data
+ */
+struct DockSplitterPrivate
+{
+	CDockSplitter* _this;
+	int VisibleContentCount = 0;
+
+	DockSplitterPrivate(CDockSplitter* _public) : _this(_public) {}
+};
+
+//============================================================================
+CDockSplitter::CDockSplitter(QWidget *parent)
+	: QSplitter(parent),
+	  d(new DockSplitterPrivate(this))
+{
+
+}
+
+
+//============================================================================
+CDockSplitter::CDockSplitter(Qt::Orientation orientation, QWidget *parent)
+	: QSplitter(orientation, parent),
+	  d(new DockSplitterPrivate(this))
+{
+
+}
 
 //============================================================================
 CDockSplitter::~CDockSplitter()
 {
 	qDebug() << "~CDockSplitter";
+	delete d;
 }
 
 

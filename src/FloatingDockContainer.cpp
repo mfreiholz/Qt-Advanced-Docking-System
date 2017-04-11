@@ -43,6 +43,7 @@
 #include "DockWidget.h"
 #include "DockOverlay.h"
 
+#include <iostream>
 
 namespace ads
 {
@@ -91,6 +92,18 @@ void FloatingDockContainerPrivate::titleMouseReleaseEvent()
 		return;
 	}
 
+	// Resize the floating widget to the size of the highlighted drop area
+	// rectangle
+	QRect Rect = DockManager->containerOverlay()->dropOverlayRect();
+	if (!Rect.isValid())
+	{
+		Rect = DockManager->dockAreaOverlay()->rect();
+	}
+
+	if (Rect.isValid())
+	{
+		_this->resize(Rect.size());
+	}
 	DropContainer->dropFloatingWidget(_this, QCursor::pos());
 	DockManager->containerOverlay()->hideOverlay();
 	DockManager->dockAreaOverlay()->hideOverlay();

@@ -95,6 +95,11 @@ public:
 	 */
 	void enableDropPreview(bool Enable);
 
+	/**
+	 * The drop overlay rectangle for the target area
+	 */
+	QRect dropOverlayRect() const;
+
 protected:
 	virtual void paintEvent(QPaintEvent *e) override;
 	virtual void showEvent(QShowEvent* e) override;
@@ -143,6 +148,11 @@ public:
 	 * Resets and updates the
 	 */
 	void reset();
+
+	/**
+	 * Updates the current position
+	 */
+	void updatePosition();
 
 protected:
 	virtual void showEvent(QShowEvent* e) override;
