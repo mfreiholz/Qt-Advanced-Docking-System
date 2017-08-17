@@ -49,5 +49,5 @@ You can run the demo project and test it yourself.
 - Manuel Freiholz 
 
 ## License information
-This project uses the [GPLv3 license](gnu-gpl-v3.0.md)
+This project uses the [LGPLv2.1 license](gnu-lgpl-v2.1.md)
 
