@@ -785,11 +785,17 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	qDebug() << "CDockContainerWidget::dropFloatingWidget";
 	CDockAreaWidget* DockArea = dockAreaAt(TargetPos);
 	auto dropArea = InvalidDockWidgetArea;
+	auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
 	if (DockArea)
 	{
 		auto dropOverlay = d->DockManager->dockAreaOverlay();
 		dropOverlay->setAllowedAreas(AllDockAreas);
 		dropArea = dropOverlay->showOverlay(DockArea);
+		if ((ContainerDropArea != InvalidDockWidgetArea) && (dropArea == CenterDockWidgetArea))
+		{
+			dropArea = InvalidDockWidgetArea;
+		}
+
 		if (dropArea != InvalidDockWidgetArea)
 		{
 			qDebug() << "Dock Area Drop Content: " << dropArea;
@@ -800,7 +806,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	// mouse is over container
 	if (InvalidDockWidgetArea == dropArea)
 	{
-		dropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
+		dropArea = ContainerDropArea;
 		qDebug()  << "Container Drop Content: " << dropArea;
 		if (dropArea != InvalidDockWidgetArea)
 		{

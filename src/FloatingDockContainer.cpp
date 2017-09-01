@@ -157,15 +157,29 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
     int VisibleDockAreas = TopContainer->visibleDockAreaCount();
     ContainerOverlay->setAllowedAreas(VisibleDockAreas > 1 ?
     	OuterDockAreas : AllDockAreas);
-	ContainerOverlay->showOverlay(TopContainer);
+	DockWidgetArea ContainerArea = ContainerOverlay->showOverlay(TopContainer);
 
     auto DockArea = TopContainer->dockAreaAt(GlobalPos);
     if (DockArea && DockArea->isVisible() && VisibleDockAreas > 0)
     {
+    	DockAreaOverlay->enableDropPreview(true);
     	DockAreaOverlay->setAllowedAreas((VisibleDockAreas == 1) ?
     		NoDockWidgetArea : AllDockAreas);
         DockWidgetArea Area = DockAreaOverlay->showOverlay(DockArea);
-        ContainerOverlay->enableDropPreview(InvalidDockWidgetArea == Area);
+
+        // A CenterDockWidgetArea for the dockAreaOverlay() indicates that
+        // the mouse is in the title bar. If the ContainerArea is valid
+        // then we ignore the dock area of the dockAreaOverlay() and disable
+        // the drop preview
+        if ((Area == CenterDockWidgetArea) && (ContainerArea != InvalidDockWidgetArea))
+        {
+        	DockAreaOverlay->enableDropPreview(false);
+        	ContainerOverlay->enableDropPreview(true);
+        }
+        else
+        {
+            ContainerOverlay->enableDropPreview(InvalidDockWidgetArea == Area);
+        }
     }
     else
     {
