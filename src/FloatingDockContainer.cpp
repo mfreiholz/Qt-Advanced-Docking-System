@@ -59,6 +59,7 @@ struct FloatingDockContainerPrivate
 	unsigned int zOrderIndex = ++zOrderCounter;
 	QPointer<CDockManager> DockManager;
 	bool DraggingActive = false;
+	bool NonClientAreaMouseButtonPress = false;
 	QPoint DragStartMousePosition;
 	CDockContainerWidget* DropContainer = nullptr;
 	CDockAreaWidget* SingleDockArea = nullptr;
@@ -92,19 +93,24 @@ void FloatingDockContainerPrivate::titleMouseReleaseEvent()
 		return;
 	}
 
-	// Resize the floating widget to the size of the highlighted drop area
-	// rectangle
-	QRect Rect = DockManager->containerOverlay()->dropOverlayRect();
-	if (!Rect.isValid())
+	if (DockManager->dockAreaOverlay()->dropAreaUnderCursor() != InvalidDockWidgetArea
+	 || DockManager->containerOverlay()->dropAreaUnderCursor() != InvalidDockWidgetArea)
 	{
-		Rect = DockManager->dockAreaOverlay()->rect();
+		// Resize the floating widget to the size of the highlighted drop area
+		// rectangle
+		QRect Rect = DockManager->containerOverlay()->dropOverlayRect();
+		if (!Rect.isValid())
+		{
+			Rect = DockManager->dockAreaOverlay()->rect();
+		}
+
+		if (Rect.isValid())
+		{
+			_this->resize(Rect.size());
+		}
+		DropContainer->dropFloatingWidget(_this, QCursor::pos());
 	}
 
-	if (Rect.isValid())
-	{
-		_this->resize(Rect.size());
-	}
-	DropContainer->dropFloatingWidget(_this, QCursor::pos());
 	DockManager->containerOverlay()->hideOverlay();
 	DockManager->dockAreaOverlay()->hideOverlay();
 }
@@ -192,6 +198,10 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
 void FloatingDockContainerPrivate::setDraggingActive(bool Active)
 {
 	DraggingActive = Active;
+	if (!DraggingActive)
+	{
+		NonClientAreaMouseButtonPress = false;
+	}
 }
 
 
@@ -331,12 +341,13 @@ void CFloatingDockContainer::showEvent(QShowEvent *event)
 //============================================================================
 bool CFloatingDockContainer::event(QEvent *e)
 {
-	if ((e->type() == QEvent::NonClientAreaMouseButtonPress))
+	if (e->type() == QEvent::NonClientAreaMouseButtonPress)
 	{
 		if (QGuiApplication::mouseButtons() == Qt::LeftButton)
 		{
 			qDebug() << "FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type();
 			d->setDraggingActive(true);
+			d->NonClientAreaMouseButtonPress = true;
 		}
 	}
 	else if (e->type() == QEvent::NonClientAreaMouseButtonDblClick)
@@ -348,6 +359,12 @@ bool CFloatingDockContainer::event(QEvent *e)
 	{
 		qDebug() << "FloatingWidget::event QEvent::NonClientAreaMouseButtonRelease";
 		d->titleMouseReleaseEvent();
+	}
+	else if (d->NonClientAreaMouseButtonPress && (e->type() == QEvent::Resize))
+	{
+		// If user resizes the floating widget, we do not want to show any
+		// drop overlays or drop overlay icons
+		d->setDraggingActive(false);
 	}
 
 	return QWidget::event(e);
