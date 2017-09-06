@@ -169,6 +169,7 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 	auto InsertParam = internal::dockAreaInsertParameters(area);
 	auto NewDockAreas = FloatingWidget->dockContainer()->findChildren<CDockAreaWidget*>(
 		QString(), Qt::FindChildrenRecursively);
+	CDockWidget* DockWidget = FloatingWidget->dockContainer()->findChild<CDockWidget*>();
 	QSplitter* Splitter = RootSplitter;
 
 	if (DockAreas.count() <= 1)
@@ -205,6 +206,10 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 	RootSplitter = Splitter;
 	addDockAreasToList(NewDockAreas);
 	FloatingWidget->deleteLater();
+	if (DockWidget)
+	{
+		DockWidget->toggleView(true);
+	}
 	_this->dumpLayout();
 }
 
@@ -541,8 +546,11 @@ void DockContainerWidgetPrivate::dumpRecursive(int level, QWidget* widget)
     buf.fill(' ', level * 4);
 	if (Splitter)
 	{
-		qDebug("%sSplitter %s", (const char*)buf,  (Splitter->orientation() == Qt::Vertical)
-			? "-" : "|");
+		qDebug("%sSplitter %s v: %s c: %s",
+			(const char*)buf,
+			(Splitter->orientation() == Qt::Vertical) ? "-" : "|",
+			 Splitter->isVisibleTo(Splitter->parentWidget()) ? "1" : "0",
+			 QString::number(Splitter->count()).toStdString().c_str());
 		for (int i = 0; i < Splitter->count(); ++i)
 		{
 			dumpRecursive(level + 1, Splitter->widget(i));
@@ -706,22 +714,59 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 {
 	qDebug() << "CDockContainerWidget::removeDockArea";
 	d->DockAreas.removeAll(area);
-	QSplitter* Splitter = internal::findParent<QSplitter*>(area);
+	CDockSplitter* Splitter = internal::findParent<CDockSplitter*>(area);
+
+	// Remove are from parent splitter and hide splitter if it has no visible
+	// content
 	area->setParent(0);
-	if (Splitter == d->RootSplitter || Splitter->count() !=  1)
+	Splitter->setVisible(Splitter->hasVisibleContent());
+
+	// If splitter has more than 1 widgets, we are finished and can leave
+	if (Splitter->count() >  1)
 	{
-		emit dockAreasRemoved();
-		return;
+		goto emitAndExit;
 	}
 
-	// It the splitter contains only one single widget, then we do not need
-	// it anymore and can replace it with its content
-	qDebug() << "Replacing splitter with content";
-	QWidget* widget = Splitter->widget(0);
-	widget->setParent(this);
-	QSplitter* ParentSplitter = internal::findParent<QSplitter*>(Splitter);
-	internal::replaceSplitterWidget(ParentSplitter, Splitter, widget);
+	// If this is the RootSplitter we need to remove empty splitters to
+	// avoid too many empty splitters
+	if (Splitter == d->RootSplitter)
+	{
+		qDebug() << "Removed from RootSplitter";
+		// If splitter is empty, we are finished
+		if (!Splitter->count())
+		{
+			Splitter->hide();
+			goto emitAndExit;
+		}
+
+		QWidget* widget = Splitter->widget(0);
+		QSplitter* ChildSplitter = dynamic_cast<QSplitter*>(widget);
+		// If the one and only content widget of the splitter is not a splitter
+		// then we are finished
+		if (!ChildSplitter)
+		{
+			goto emitAndExit;
+		}
+
+		// We replace the superfluous RootSplitter with the ChildSplitter
+		ChildSplitter->setParent(0);
+		QLayoutItem* li = d->Layout->replaceWidget(Splitter, ChildSplitter);
+		d->RootSplitter = ChildSplitter;
+		delete li;
+		qDebug() << "RootSplitter replaced by child splitter";
+	}
+	else if (Splitter->count() == 1)
+	{
+		qDebug() << "Replacing splitter with content";
+		QWidget* widget = Splitter->widget(0);
+		widget->setParent(this);
+		QSplitter* ParentSplitter = internal::findParent<QSplitter*>(Splitter);
+		internal::replaceSplitterWidget(ParentSplitter, Splitter, widget);
+	}
+
 	delete Splitter;
+
+emitAndExit:
 	dumpLayout();
 	emit dockAreasRemoved();
 }
@@ -732,7 +777,7 @@ CDockAreaWidget* CDockContainerWidget::dockAreaAt(const QPoint& GlobalPos) const
 {
 	for (const auto& DockArea : d->DockAreas)
 	{
-		if (DockArea->rect().contains(DockArea->mapFromGlobal(GlobalPos)))
+		if (DockArea->isVisible() && DockArea->rect().contains(DockArea->mapFromGlobal(GlobalPos)))
 		{
 			return DockArea;
 		}
@@ -791,7 +836,8 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 		auto dropOverlay = d->DockManager->dockAreaOverlay();
 		dropOverlay->setAllowedAreas(AllDockAreas);
 		dropArea = dropOverlay->showOverlay(DockArea);
-		if ((ContainerDropArea != InvalidDockWidgetArea) && (dropArea == CenterDockWidgetArea))
+		if (ContainerDropArea != InvalidDockWidgetArea &&
+			ContainerDropArea != dropArea)
 		{
 			dropArea = InvalidDockWidgetArea;
 		}
@@ -918,7 +964,9 @@ QSplitter* CDockContainerWidget::rootSplitter() const
 //============================================================================
 void CDockContainerWidget::dumpLayout()
 {
+	qDebug("\n\nDumping layout --------------------------");
 	d->dumpRecursive(0, d->RootSplitter);
+	qDebug("--------------------------\n\n");
 }
 
 

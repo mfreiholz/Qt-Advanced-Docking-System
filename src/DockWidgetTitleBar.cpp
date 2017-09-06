@@ -164,7 +164,7 @@ bool DockWidgetTitleBarPrivate::startFloating()
 	qDebug() << "areaCount " << DockWidget->dockContainer()->dockAreaCount();
 	qDebug() << "widgetCount " << DockWidget->dockAreaWidget()->count();
 	// if this is the last dock widget inside of this floating widget,
-	// then it does not make any sense, to make if floating because
+	// then it does not make any sense, to make it floating because
 	// it is already floating
 	 if (DockWidget->dockContainer()->isFloating()
 	 && (DockWidget->dockContainer()->visibleDockAreaCount() == 1)
