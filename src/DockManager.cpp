@@ -345,7 +345,7 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
 
     // All dock widgets, that have not been processed in the restore state
     // function are invisible to the user now and have no assigned dock area
-    // The do not belong to any dock container, until the user toggles the
+    // They do not belong to any dock container, until the user toggles the
     // toggle view action the next time
     for (auto DockWidget : d->DockWidgetsMap)
     {
