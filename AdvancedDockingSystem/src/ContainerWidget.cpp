@@ -46,6 +46,12 @@ ContainerWidget::ContainerWidget(QWidget *parent) :
 	setLayout(_mainLayout);
 }
 
+void ContainerWidget::updateSectionContentTabMenus()
+{
+    for(auto& section : _sections)
+        section->updateTabsMenu();
+}
+
 ContainerWidget::~ContainerWidget()
 {
 	// Note: It's required to delete in 2 steps

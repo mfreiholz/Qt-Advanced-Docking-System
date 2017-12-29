@@ -118,6 +118,8 @@ public:
 	QList<SectionContent::RefPtr> contents() const;
 
 	QPointer<DropOverlay> dropOverlay() const;
+    
+    void updateSectionContentTabMenus();
 
 private:
 	//
