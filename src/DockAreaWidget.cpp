@@ -39,6 +39,7 @@
 #include <QDebug>
 #include <QMenu>
 #include <QSplitter>
+#include <QXmlStreamWriter>
 
 
 #include "DockContainerWidget.h"
@@ -706,15 +707,18 @@ void CDockAreaWidget::updateDockArea()
 
 
 //============================================================================
-void CDockAreaWidget::saveState(QDataStream& stream) const
+void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 {
-	stream << d->ContentsLayout->count() << d->ContentsLayout->currentIndex();
+	s.writeStartElement("DockAreaWidget");
+	s.writeAttribute("Tabs", QString::number(d->ContentsLayout->count()));
+	s.writeAttribute("CurrentIndex", QString::number(d->ContentsLayout->currentIndex()));
 	qDebug() << "CDockAreaWidget::saveState TabCount: " << d->ContentsLayout->count()
 			<< " CurrentIndex: " << d->ContentsLayout->currentIndex();
 	for (int i = 0; i < d->ContentsLayout->count(); ++i)
 	{
-		dockWidget(i)->saveState(stream);
+		dockWidget(i)->saveState(s);
 	}
+	s.writeEndElement();
 }
 
 } // namespace ads

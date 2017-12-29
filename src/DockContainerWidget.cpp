@@ -30,12 +30,15 @@
 //============================================================================
 #include "DockContainerWidget.h"
 
+#include <iostream>
+
 #include <QEvent>
 #include <QList>
 #include <QGridLayout>
 #include <QPointer>
 #include <QVariant>
 #include <QDebug>
+#include <QXmlStreamWriter>
 
 #include "DockManager.h"
 #include "DockAreaWidget.h"
@@ -120,7 +123,7 @@ struct DockContainerWidgetPrivate
 	/**
 	 * Save state of child nodes
 	 */
-	void saveChildNodesState(QDataStream& Stream, QWidget* Widget);
+	void saveChildNodesState(QXmlStreamWriter& Stream, QWidget* Widget);
 
 	/**
 	 * Restore state of child nodes.
@@ -130,21 +133,21 @@ struct DockContainerWidgetPrivate
 	 * \param[in] Testing If Testing is true, only the stream data is
 	 * parsed without modifiying anything.
 	 */
-	bool restoreChildNodes(QDataStream& Stream, QWidget*& CreatedWidget,
+	bool restoreChildNodes(QXmlStreamReader& Stream, QWidget*& CreatedWidget,
 		bool Testing);
 
 	/**
 	 * Restores a splitter.
 	 * \see restoreChildNodes() for details
 	 */
-	bool restoreSplitter(QDataStream& Stream, QWidget*& CreatedWidget,
+	bool restoreSplitter(QXmlStreamReader& Stream, QWidget*& CreatedWidget,
 		bool Testing);
 
 	/**
 	 * Restores a dock area.
 	 * \see restoreChildNodes() for details
 	 */
-	bool restoreDockArea(QDataStream& Stream, QWidget*& CreatedWidget,
+	bool restoreDockArea(QXmlStreamReader& Stream, QWidget*& CreatedWidget,
 		bool Testing);
 
 	/**
@@ -314,39 +317,56 @@ void DockContainerWidgetPrivate::addDockAreasToList(const QList<CDockAreaWidget*
 
 
 //============================================================================
-void DockContainerWidgetPrivate::saveChildNodesState(QDataStream& stream, QWidget* Widget)
+void DockContainerWidgetPrivate::saveChildNodesState(QXmlStreamWriter& s, QWidget* Widget)
 {
 	QSplitter* Splitter = dynamic_cast<QSplitter*>(Widget);
 	if (Splitter)
 	{
-		stream << internal::SplitterMarker << Splitter->orientation() << Splitter->count();
+		s.writeStartElement("Splitter");
+		s.writeAttribute("Orientation", QString::number(Splitter->orientation()));
+		s.writeAttribute("Count", QString::number(Splitter->count()));
 		qDebug() << "NodeSplitter orient: " << Splitter->orientation()
 			<< " WidgetCont: " << Splitter->count();
-		for (int i = 0; i < Splitter->count(); ++i)
-		{
-			saveChildNodesState(stream, Splitter->widget(i));
-		}
-		stream << Splitter->sizes();
+			for (int i = 0; i < Splitter->count(); ++i)
+			{
+				saveChildNodesState(s, Splitter->widget(i));
+			}
+
+			s.writeStartElement("Sizes");
+			for (auto Size : Splitter->sizes())
+			{
+				s.writeCharacters(QString::number(Size) + " ");
+			}
+			s.writeEndElement();
+		s.writeEndElement();
 	}
 	else
 	{
-		stream << internal::DockAreaMarker;
 		CDockAreaWidget* DockArea = dynamic_cast<CDockAreaWidget*>(Widget);
 		if (DockArea)
 		{
-			DockArea->saveState(stream);
+			DockArea->saveState(s);
 		}
 	}
 }
 
 
 //============================================================================
-bool DockContainerWidgetPrivate::restoreSplitter(QDataStream& stream,
+bool DockContainerWidgetPrivate::restoreSplitter(QXmlStreamReader& s,
 	QWidget*& CreatedWidget, bool Testing)
 {
-	int Orientation;
-	int WidgetCount;
-	stream >> Orientation >> WidgetCount;
+	bool Ok;
+	int Orientation  = s.attributes().value("Orientation").toInt(&Ok);
+	if (!Ok)
+	{
+		return false;
+	}
+
+	int WidgetCount = s.attributes().value("Count").toInt(&Ok);
+	if (!Ok)
+	{
+		return false;
+	}
 	qDebug() << "Restore NodeSplitter Orientation: " <<  Orientation <<
 			" WidgetCount: " << WidgetCount;
 	QSplitter* Splitter = nullptr;
@@ -355,15 +375,42 @@ bool DockContainerWidgetPrivate::restoreSplitter(QDataStream& stream,
 		Splitter = internal::newSplitter((Qt::Orientation)Orientation);
 	}
 	bool Visible = false;
-	for (int i = 0; i < WidgetCount; ++i)
+	QList<int> Sizes;
+	while (s.readNextStartElement())
 	{
-		QWidget* ChildNode;
-		if (!restoreChildNodes(stream, ChildNode, Testing))
+		QWidget* ChildNode = nullptr;
+		bool Result = true;
+		if (s.name() == "Splitter")
+		{
+			Result = restoreSplitter(s, ChildNode, Testing);
+		}
+		else if (s.name() == "DockAreaWidget")
+		{
+			Result = restoreDockArea(s, ChildNode, Testing);
+		}
+		else if (s.name() == "Sizes")
+		{
+			QString sSizes = s.readElementText().trimmed();
+			qDebug() << "Sizes: " << sSizes;
+			QTextStream TextStream(&sSizes);
+			while (!TextStream.atEnd())
+			{
+				int value;
+				TextStream >> value;
+				Sizes.append(value);
+			}
+		}
+		else
+		{
+			s.skipCurrentElement();
+		}
+
+		if (!Result)
 		{
 			return false;
 		}
 
-		if (Testing)
+		if (Testing || !ChildNode)
 		{
 			continue;
 		}
@@ -374,8 +421,11 @@ bool DockContainerWidgetPrivate::restoreSplitter(QDataStream& stream,
 		Visible |= ChildNode->isVisibleTo(Splitter);
 	}
 
-	QList<int> Sizes;
-	stream >> Sizes;
+	if (Sizes.count() != WidgetCount)
+	{
+		return false;
+	}
+
 	if (!Testing)
 	{
 		if (!Splitter->count())
@@ -394,17 +444,27 @@ bool DockContainerWidgetPrivate::restoreSplitter(QDataStream& stream,
 	{
 		CreatedWidget = nullptr;
 	}
+
 	return true;
 }
 
 
 //============================================================================
-bool DockContainerWidgetPrivate::restoreDockArea(QDataStream& stream,
+bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 	QWidget*& CreatedWidget, bool Testing)
 {
-	int Tabs;
-	int CurrentIndex;
-	stream >> Tabs >> CurrentIndex;
+	bool Ok;
+	int Tabs = s.attributes().value("Tabs").toInt(&Ok);
+	if (!Ok)
+	{
+		return false;
+	}
+
+	int CurrentIndex = s.attributes().value("CurrentIndex").toInt(&Ok);
+	if (!Ok)
+	{
+		return false;
+	}
 	qDebug() << "Restore NodeDockArea Tabs: " << Tabs << " CurrentIndex: "
 			<< CurrentIndex;
 
@@ -414,21 +474,27 @@ bool DockContainerWidgetPrivate::restoreDockArea(QDataStream& stream,
 		DockArea = new CDockAreaWidget(DockManager, _this);
 	}
 
-	for (int i = 0; i < Tabs; ++i)
+	while (s.readNextStartElement())
 	{
-		int Marker;
-		stream >> Marker;
-		if (Marker != internal::DockWidgetMarker)
+		if (s.name() != "DockWidget")
+		{
+			continue;
+		}
+
+		auto ObjectName = s.attributes().value("ObjectName");
+		if (ObjectName.isEmpty())
 		{
 			return false;
 		}
 
-		QString ObjectName;
-		bool Closed;
-		stream >> ObjectName >> Closed;
-		qDebug() << "Restore DockWidget " << ObjectName << " Closed: " << Closed;
+		bool Closed = s.attributes().value("Closed").toInt(&Ok);
+		if (!Ok)
+		{
+			return false;
+		}
 
-		CDockWidget* DockWidget = DockManager->findDockWidget(ObjectName);
+		s.skipCurrentElement();
+		CDockWidget* DockWidget = DockManager->findDockWidget(ObjectName.toString());
 		if (!DockWidget || Testing)
 		{
 			continue;
@@ -464,23 +530,30 @@ bool DockContainerWidgetPrivate::restoreDockArea(QDataStream& stream,
 
 
 //============================================================================
-bool DockContainerWidgetPrivate::restoreChildNodes(QDataStream& stream,
+bool DockContainerWidgetPrivate::restoreChildNodes(QXmlStreamReader& s,
 	QWidget*& CreatedWidget, bool Testing)
 {
-	int Marker;
-	stream >> Marker;
-	if (internal::SplitterMarker == Marker)
+	bool Result = true;
+	while (s.readNextStartElement())
 	{
-		return restoreSplitter(stream, CreatedWidget, Testing);
+		if (s.name() == "Splitter")
+		{
+			Result = restoreSplitter(s, CreatedWidget, Testing);
+			qDebug() << "Splitter";
+		}
+		else if (s.name() == "DockAreaWidget")
+		{
+			Result = restoreDockArea(s, CreatedWidget, Testing);
+			qDebug() << "DockAreaWidget";
+		}
+		else
+		{
+			s.skipCurrentElement();
+			qDebug() << "Unknown element";
+		}
 	}
-	else if (internal::DockAreaMarker == Marker)
-	{
-		return restoreDockArea(stream, CreatedWidget, Testing);
-	}
-	else
-	{
-		return false;
-	}
+
+	return Result;
 }
 
 
@@ -879,37 +952,31 @@ QList<CDockAreaWidget*> CDockContainerWidget::openedDockAreas() const
 
 
 //============================================================================
-void CDockContainerWidget::saveState(QDataStream& stream) const
+void CDockContainerWidget::saveState(QXmlStreamWriter& s) const
 {
 	qDebug() << "CDockContainerWidget::saveState isFloating "
 		<< isFloating();
-	stream << internal::ContainerMarker;
-	stream << isFloating();
+
+	s.writeStartElement("DockContainerWidget");
+	s.writeAttribute("Floating", QString::number(isFloating() ? 1 : 0));
 	if (isFloating())
 	{
 		CFloatingDockContainer* FloatingWidget = internal::findParent<CFloatingDockContainer*>(this);
-		stream << FloatingWidget->saveGeometry();
+		QByteArray Geometry = FloatingWidget->saveGeometry();
+		s.writeTextElement("Geometry", Geometry.toHex(' '));
 	}
-
-	d->saveChildNodesState(stream, d->RootSplitter);
+	d->saveChildNodesState(s, d->RootSplitter);
+	s.writeEndElement();
 }
 
 
 //============================================================================
-bool CDockContainerWidget::restoreState(QDataStream& stream, bool Testing)
+bool CDockContainerWidget::restoreState(QXmlStreamReader& s, bool Testing)
 {
-	bool IsFloating;
-	int Marker;
-	stream >> Marker;
-	if (Marker != internal::ContainerMarker)
-	{
-		return false;
-	}
-
-	stream >> IsFloating;
+	bool IsFloating = s.attributes().value("Floating").toInt();
 	qDebug() << "Restore CDockContainerWidget Floating" << IsFloating;
 
-	QWidget* NewRootSplitter;
+	QWidget*NewRootSplitter {};
 	if (!Testing)
 	{
 		d->DockAreas.clear();
@@ -918,8 +985,19 @@ bool CDockContainerWidget::restoreState(QDataStream& stream, bool Testing)
 	if (IsFloating)
 	{
 		qDebug() << "Restore floating widget";
-		QByteArray Geometry;
-		stream >> Geometry;
+		if (!s.readNextStartElement() || s.name() != "Geometry")
+		{
+			return false;
+		}
+
+		QByteArray GeometryString = s.readElementText(QXmlStreamReader::ErrorOnUnexpectedElement).toLocal8Bit();
+		QByteArray Geometry = QByteArray::fromHex(GeometryString);
+		std::cout << "Geometry: " << Geometry.toHex(' ').toStdString() << std::endl;
+		if (Geometry.isEmpty())
+		{
+			return false;
+		}
+
 		if (!Testing)
 		{
 			CFloatingDockContainer* FloatingWidget = internal::findParent<CFloatingDockContainer*>(this);
@@ -928,7 +1006,7 @@ bool CDockContainerWidget::restoreState(QDataStream& stream, bool Testing)
 		}
 	}
 
-	if (!d->restoreChildNodes(stream, NewRootSplitter, Testing))
+	if (!d->restoreChildNodes(s, NewRootSplitter, Testing))
 	{
 		return false;
 	}

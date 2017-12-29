@@ -38,6 +38,7 @@
 #include <QPointer>
 #include <QEvent>
 #include <QDebug>
+#include <QXmlStreamWriter>
 
 #include "DockWidgetTitleBar.h"
 #include "DockContainerWidget.h"
@@ -361,11 +362,12 @@ void CDockWidget::setDockArea(CDockAreaWidget* DockArea)
 
 
 //============================================================================
-void CDockWidget::saveState(QDataStream& stream) const
+void CDockWidget::saveState(QXmlStreamWriter& s) const
 {
-	stream << internal::DockWidgetMarker;
-	qDebug() << "CDockWidget::saveState " << objectName() << " closed " << d->Closed;
-	stream << objectName() << d->Closed;
+	s.writeStartElement("DockWidget");
+	s.writeAttribute("ObjectName", objectName());
+	s.writeAttribute("Closed", QString::number(d->Closed ? 1 : 0));
+	s.writeEndElement();
 }
 
 

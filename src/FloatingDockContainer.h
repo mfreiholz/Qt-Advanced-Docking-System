@@ -31,6 +31,8 @@
 //============================================================================
 #include <QWidget>
 
+class QXmlStreamReader;
+
 namespace ads
 {
 struct FloatingDockContainerPrivate;
@@ -110,7 +112,7 @@ public:
 	 * stream but does not restore anything. You can use this check for
 	 * faulty files before you start restoring the state
 	 */
-	bool restoreState(QDataStream& Stream, bool Testing);
+	bool restoreState(QXmlStreamReader& Stream, bool Testing);
 }; // class FloatingDockContainer
 }
  // namespace ads

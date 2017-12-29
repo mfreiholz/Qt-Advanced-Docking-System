@@ -32,6 +32,8 @@
 //============================================================================
 #include <QFrame>
 
+class QXmlStreamWriter;
+
 namespace ads
 {
 struct DockWidgetPrivate;
@@ -81,7 +83,7 @@ protected:
 	/**
 	 * Saves the state into the given stream
 	 */
-	void saveState(QDataStream& Stream) const;
+	void saveState(QXmlStreamWriter& Stream) const;
 
 	/**
 	 * This is a helper function for the dock manager to flag this widget

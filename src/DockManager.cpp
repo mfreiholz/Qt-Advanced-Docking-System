@@ -30,6 +30,8 @@
 //============================================================================
 #include "DockManager.h"
 
+#include <iostream>
+
 #include <QMainWindow>
 #include <QList>
 #include <QMap>
@@ -38,6 +40,8 @@
 #include <QFile>
 #include <QApplication>
 #include <QAction>
+#include <QXmlStreamWriter>
+#include <QXmlStreamReader>
 
 #include "FloatingDockContainer.h"
 #include "DockOverlay.h"
@@ -76,12 +80,12 @@ struct DockManagerPrivate
 	/**
 	 * Restores the state
 	 */
-	bool restoreState(const QByteArray &state, int version);
+	bool restoreState(const QByteArray &state, int version, bool Testing = internal::Restore);
 
 	/**
 	 * Restores the container with the given index
 	 */
-	bool restoreContainer(int Index, QDataStream& stream, bool Testing);
+	bool restoreContainer(int Index, QXmlStreamReader& stream, bool Testing);
 
 	/**
 	 * Loads the stylesheet
@@ -112,45 +116,13 @@ void DockManagerPrivate::loadStylesheet()
 
 
 //============================================================================
-bool DockManagerPrivate::checkFormat(const QByteArray &state, int version)
+bool DockManagerPrivate::restoreContainer(int Index, QXmlStreamReader& stream, bool Testing)
 {
-    if (state.isEmpty())
-    {
-        return false;
-    }
-    QByteArray sd = state;
-    QDataStream stream(&sd, QIODevice::ReadOnly);
+	if (Testing)
+	{
+		Index = 0;
+	}
 
-    int marker;
-	int v;
-    stream >> marker;
-    stream >> v;
-
-    if (stream.status() != QDataStream::Ok || marker != internal::VersionMarker || v != version)
-    {
-        return false;
-    }
-
-    int Result = true;
-    int ContainerCount;
-    stream >> ContainerCount;
-    int i;
-    for (i = 0; i < ContainerCount; ++i)
-    {
-    	if (!Containers[0]->restoreState(stream, internal::RestoreTesting))
-    	{
-    		Result = false;
-    		break;
-    	}
-    }
-
-    return Result;
-}
-
-
-//============================================================================
-bool DockManagerPrivate::restoreContainer(int Index, QDataStream& stream, bool Testing)
-{
 	if (Index >= Containers.count())
 	{
 		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(_this);
@@ -165,45 +137,60 @@ bool DockManagerPrivate::restoreContainer(int Index, QDataStream& stream, bool T
 
 
 //============================================================================
-bool DockManagerPrivate::restoreState(const QByteArray &state,  int version)
+bool DockManagerPrivate::checkFormat(const QByteArray &state, int version)
+{
+    return restoreState(state, version, internal::RestoreTesting);
+}
+
+
+//============================================================================
+bool DockManagerPrivate::restoreState(const QByteArray &state,  int version,
+	bool Testing)
 {
     if (state.isEmpty())
     {
         return false;
     }
-    QByteArray sd = state;
-    QDataStream stream(&sd, QIODevice::ReadOnly);
-
-    int marker;
-	int v;
-    stream >> marker;
-    stream >> v;
-
-    if (stream.status() != QDataStream::Ok || marker != internal::VersionMarker || v != version)
+    QXmlStreamReader s(state);
+    s.readNextStartElement();
+    if (s.name() != "QtAdvancedDockingSystem")
     {
-        return false;
+    	return false;
+    }
+    qDebug() << s.attributes().value("Version");
+    bool ok;
+    int v = s.attributes().value("Version").toInt(&ok);
+    if (!ok || v != version)
+    {
+    	return false;
     }
 
-    int Result = true;
-    int ContainerCount;
-    stream >> ContainerCount;
-    qDebug() << "ContainerCount " << ContainerCount;
-    int i;
-    for (i = 0; i < ContainerCount; ++i)
+    bool Result = true;
+    int  DockContainers = s.attributes().value("DockContainers").toInt();
+    qDebug() << DockContainers;
+    int DockContainerCount = 0;
+    while (s.readNextStartElement())
     {
-    	Result = restoreContainer(i, stream, internal::Restore);
-    	if (!Result)
+    	if (s.name() == "DockContainerWidget")
     	{
-    		break;
+    		Result = restoreContainer(DockContainerCount, s, Testing);
+			if (!Result)
+			{
+				break;
+			}
+			DockContainerCount++;
     	}
     }
 
-    // Delete remaining empty floating widgets
-    int FloatingWidgetIndex = i - 1;
-    int DeleteCount = FloatingWidgets.count() - FloatingWidgetIndex;
-    for (int i = 0; i < DeleteCount; ++i)
+    if (!Testing)
     {
-    	FloatingWidgets[FloatingWidgetIndex + i]->deleteLater();
+		// Delete remaining empty floating widgets
+		int FloatingWidgetIndex = DockContainerCount - 1;
+		int DeleteCount = FloatingWidgets.count() - FloatingWidgetIndex;
+		for (int i = 0; i < DeleteCount; ++i)
+		{
+			FloatingWidgets[FloatingWidgetIndex + i]->deleteLater();
+		}
     }
 
     return Result;
@@ -309,17 +296,23 @@ unsigned int CDockManager::zOrderIndex() const
 //============================================================================
 QByteArray CDockManager::saveState(int version) const
 {
-    QByteArray data;
-    QDataStream stream(&data, QIODevice::WriteOnly);
-    stream << internal::VersionMarker;
-    stream << version;
+    QByteArray xmldata;
+    QXmlStreamWriter s(&xmldata);
+	s.setAutoFormatting(true);
+    s.writeStartDocument();
+		s.writeStartElement("QtAdvancedDockingSystem");
+		s.writeAttribute("Version", QString::number(version));
+		s.writeAttribute("DockContainers", QString::number(d->Containers.count()));
+		for (auto Container : d->Containers)
+		{
+			Container->saveState(s);
+		}
 
-    stream << d->Containers.count();
-    for (auto Container : d->Containers)
-	{
-		Container->saveState(stream);
-	}
-    return data;
+		s.writeEndElement();
+    s.writeEndDocument();
+
+    std::cout << xmldata.toStdString() << std::endl;
+    return xmldata;
 }
 
 

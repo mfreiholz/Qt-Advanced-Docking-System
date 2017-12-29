@@ -32,6 +32,8 @@
 //============================================================================
 #include <QFrame>
 
+class QXmlStreamWriter;
+
 namespace ads
 {
 struct DockAreaWidgetPrivate;
@@ -164,7 +166,7 @@ public:
 	/**
 	 * Saves the state into the given stream
 	 */
-	void saveState(QDataStream& Stream) const;
+	void saveState(QXmlStreamWriter& Stream) const;
 
 public slots:
 	/**

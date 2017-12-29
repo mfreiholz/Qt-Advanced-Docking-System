@@ -34,6 +34,9 @@
 
 #include "ads_globals.h"
 
+class QXmlStreamWriter;
+class QXmlStreamReader;
+
 namespace ads
 {
 struct DockContainerWidgetPrivate;
@@ -147,7 +150,7 @@ public:
 	/**
 	 * Saves the state into the given stream
 	 */
-	void saveState(QDataStream& Stream) const;
+	void saveState(QXmlStreamWriter& Stream) const;
 
 	/**
 	 * Restores the state from given stream.
@@ -155,7 +158,7 @@ public:
 	 * stream but does not restore anything. You can use this check for
 	 * faulty files before you start restoring the state
 	 */
-	bool restoreState(QDataStream& Stream, bool Testing);
+	bool restoreState(QXmlStreamReader& Stream, bool Testing);
 
 	/**
 	 * Dumps the layout for debugging purposes
