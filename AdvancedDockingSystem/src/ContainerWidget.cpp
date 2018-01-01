@@ -486,6 +486,11 @@ SectionWidget* ContainerWidget::newSectionWidget()
 	return sw;
 }
 
+const QList<SectionWidget*>& ContainerWidget::sectionWidgets() const
+{
+    return _sections;
+}
+
 SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive)
 {
 	ADS_Expects(targetSection != NULL);
