@@ -116,6 +116,20 @@ public:
 	};
 
 	/**
+	 * This mode configures the behavior of the toggle view action.
+	 * If the mode if ActionModeToggle, then the toggle view action is
+	 * a checkable action to show / hide the dock widget. If the mode
+	 * is ActionModeShow, then the action is not checkable an it will
+	 * always show the dock widget if clicked. If the mode is ActionModeShow,
+	 * the user can only close the DockWidget with the close button.
+	 */
+	enum eToggleViewActionMode
+	{
+		ActionModeToggle,//!< ActionModeToggle
+		ActionModeShow   //!< ActionModeShow
+	};
+
+	/**
 	 * Default Constructor
 	 */
 	CDockWidget(const QString &title, QWidget* parent = 0);
@@ -189,16 +203,28 @@ public:
 	QAction* toggleViewAction() const;
 
 	/**
-	 * Emits titleChanged signal if title change event occures
+	 * Configures the behavior of the toggle view action.
+	 * \see eToggleViewActionMode for a detailed description
+	 */
+	void setToggleViewActionMode(eToggleViewActionMode Mode);
+
+	/**
+	 * Emits titleChanged signal if title change event occurs
 	 */
 	virtual bool event(QEvent *e) override;
+
+	/**
+	 * Sets the dock widget icon that is shown in tabs and in toggle view
+	 * actions
+	 */
+	void setIcon(const QIcon& Icon);
 
 public slots:
 	/**
 	 * This property controls whether the dock widget is open or closed.
 	 * The toogleViewAction triggers this slot
 	 */
-	void toggleView(bool Open);
+	void toggleView(bool Open = true);
 
 signals:
 	/**

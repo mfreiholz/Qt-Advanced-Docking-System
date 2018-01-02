@@ -331,8 +331,30 @@ QAction* CDockWidget::toggleViewAction() const
 
 
 //============================================================================
+void CDockWidget::setToggleViewActionMode(eToggleViewActionMode Mode)
+{
+	if (ActionModeToggle == Mode)
+	{
+		d->ToggleViewAction->setCheckable(true);
+		d->ToggleViewAction->setIcon(QIcon());
+	}
+	else
+	{
+		d->ToggleViewAction->setCheckable(false);
+		d->ToggleViewAction->setIcon(d->TitleWidget->icon());
+	}
+}
+
+
+//============================================================================
 void CDockWidget::toggleView(bool Open)
 {
+	QAction* Sender = qobject_cast<QAction*>(sender());
+	if (Sender == d->ToggleViewAction && !d->ToggleViewAction->isCheckable())
+	{
+		Open = true;
+	}
+
 	if (Open)
 	{
 		d->showDockWidget();
@@ -388,6 +410,17 @@ bool CDockWidget::event(QEvent *e)
 		emit titleChanged(windowTitle());
 	}
 	return QFrame::event(e);
+}
+
+
+//============================================================================
+void CDockWidget::setIcon(const QIcon& Icon)
+{
+	d->TitleWidget->setIcon(Icon);
+	if (!d->ToggleViewAction->isCheckable())
+	{
+		d->ToggleViewAction->setIcon(Icon);
+	}
 }
 
 

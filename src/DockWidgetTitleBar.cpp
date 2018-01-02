@@ -73,6 +73,7 @@ struct DockWidgetTitleBarPrivate
 	CDockAreaWidget* DockArea = nullptr;
 	eDragState DragState = DraggingInactive;
 	CFloatingDockContainer* FloatingWidget = nullptr;
+	QIcon Icon;
 
 	/**
 	 * Private data constructor
@@ -346,6 +347,22 @@ void CDockWidgetTitleBar::setDockAreaWidget(CDockAreaWidget* DockArea)
 CDockAreaWidget* CDockWidgetTitleBar::dockAreaWidget() const
 {
 	return d->DockArea;
+}
+
+
+//============================================================================
+void CDockWidgetTitleBar::setIcon(const QIcon& Icon)
+{
+	d->Icon = Icon;
+	d->IconLabel->setPixmap(Icon.pixmap(this->windowHandle(), QSize(16, 16)));
+	d->IconLabel->setVisible(true);
+}
+
+
+//============================================================================
+const QIcon& CDockWidgetTitleBar::icon() const
+{
+	return d->Icon;
 }
 } // namespace ads
 

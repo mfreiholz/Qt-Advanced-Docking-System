@@ -58,6 +58,7 @@ static ads::CDockWidget* createCalendarDockWidget(QMenu* ViewMenu)
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Calendar %1").arg(CalendarCount++));
 	DockWidget->setWidget(w);
 	DockWidget->setObjectName(DockWidget->windowTitle());
+	DockWidget->setToggleViewActionMode(ads::CDockWidget::ActionModeShow);
 	ViewMenu->addAction(DockWidget->toggleViewAction());
 	return DockWidget;
 }
@@ -84,6 +85,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+	ui->toolBar->addAction(ui->actionSaveState);
+	ui->actionSaveState->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
+	ui->toolBar->addAction(ui->actionRestoreState);
+	ui->actionRestoreState->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
 
 	m_DockManager = new ads::CDockManager(this);
 	createContent();
@@ -102,10 +107,11 @@ void MainWindow::createContent()
 	// Test container docking
 	QMenu* ViewMenu = this->ui->menuView;
 	auto DockWidget = createCalendarDockWidget(ViewMenu);
+	DockWidget->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
 	DockWidget->setFeatures(DockWidget->features().setFlag(ads::CDockWidget::DockWidgetClosable, false));
 	m_DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
 	m_DockManager->addDockWidget(ads::LeftDockWidgetArea, createLongTextLabelDockWidget(ViewMenu));
-	/*m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
+	m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
 	auto TopDockArea = m_DockManager->addDockWidget(ads::TopDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
 	DockWidget = createCalendarDockWidget(ViewMenu);
 	DockWidget->setFeatures(DockWidget->features().setFlag(ads::CDockWidget::DockWidgetClosable, false));
@@ -116,7 +122,7 @@ void MainWindow::createContent()
 	m_DockManager->addDockWidget(ads::TopDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	auto BottomDockArea = m_DockManager->addDockWidget(ads::BottomDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	m_DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
-	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);*/
+	m_DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
 }
 
 

@@ -96,6 +96,16 @@ public:
 	 */
 	CDockAreaWidget* dockAreaWidget() const;
 
+	/**
+	 * Sets the icon to show in title bar
+	 */
+	void setIcon(const QIcon& Icon);
+
+	/**
+	 * Returns the icon
+	 */
+	const QIcon& icon() const;
+
 signals:
 	void activeTabChanged();
 	void clicked();
