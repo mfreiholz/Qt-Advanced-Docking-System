@@ -37,11 +37,11 @@ a floating widget or from one dock area to another one.
 ![Grouped dragging](grouped-dragging.png)
 
 ### Perspectives for fast switching of the complete main window layout
-A perspective defines the set and layout of dock windows views in the main
+A perspective defines the set and layout of dock windows in the main
 window. You can save the current layout of the dockmanager into a named
 perspective to make your own custom perspective. Later you can simply
-select a perspective from the list to quickly switch the complete main
-window layout.
+select a perspective from the perspective list to quickly switch the complete 
+main window layout.
 
 ![Perspective](perspectives.png)
 
