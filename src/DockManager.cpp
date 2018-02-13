@@ -42,6 +42,7 @@
 #include <QAction>
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
+#include <QSettings>
 
 #include "FloatingDockContainer.h"
 #include "DockOverlay.h"
@@ -53,7 +54,6 @@
 
 namespace ads
 {
-
 /**
  * Private data class of CDockManager class (pimpl)
  */
@@ -65,6 +65,7 @@ struct DockManagerPrivate
 	CDockOverlay* ContainerOverlay;
 	CDockOverlay* DockAreaOverlay;
 	QMap<QString, CDockWidget*> DockWidgetsMap;
+	QMap<QString, QByteArray> Perspectives;
 
 	/**
 	 * Private data constructor
@@ -385,6 +386,80 @@ CDockAreaWidget* CDockManager::addDockWidget(DockWidgetArea area,
 CDockWidget* CDockManager::findDockWidget(const QString& ObjectName)
 {
 	return d->DockWidgetsMap.value(ObjectName, nullptr);
+}
+
+
+//============================================================================
+void CDockManager::addPerspective(const QString& UniquePrespectiveName)
+{
+	d->Perspectives.insert(UniquePrespectiveName, saveState());
+	emit perspectiveListChanged();
+}
+
+
+//============================================================================
+QStringList CDockManager::perspectiveNames() const
+{
+	return d->Perspectives.keys();
+}
+
+
+//============================================================================
+void CDockManager::openPerspective(const QString& PerspectiveName)
+{
+	std::cout << "CDockManager::openPerspective " << PerspectiveName.toStdString() << std::endl;
+	const auto Iterator = d->Perspectives.find(PerspectiveName);
+	if (d->Perspectives.end() == Iterator)
+	{
+		return;
+	}
+
+	std::cout << "CDockManager::openPerspective - restoring state" << std::endl;
+	restoreState(Iterator.value());
+}
+
+
+//============================================================================
+void CDockManager::savePerspectives(QSettings& Settings) const
+{
+	Settings.beginWriteArray("Perspectives", d->Perspectives.size());
+	int i = 0;
+	for (auto it = d->Perspectives.constBegin(); it != d->Perspectives.constEnd(); ++it)
+	{
+		Settings.setArrayIndex(i);
+		Settings.setValue("Name", it.key());
+		Settings.setValue("State", it.value());
+		++i;
+	}
+	Settings.endArray();
+}
+
+
+//============================================================================
+void CDockManager::loadPerspectives(QSettings& Settings)
+{
+	d->Perspectives.clear();
+	int Size = Settings.beginReadArray("Perspectives");
+	if (!Size)
+	{
+		Settings.endArray();
+		return;
+	}
+
+	for (int i = 0; i < Size; ++i)
+	{
+		Settings.setArrayIndex(i);
+		QString Name = Settings.value("Name").toString();
+		QByteArray Data = Settings.value("State").toByteArray();
+		if (Name.isEmpty() || Data.isEmpty())
+		{
+			continue;
+		}
+
+		d->Perspectives.insert(Name, Data);
+	}
+
+	Settings.endArray();
 }
 } // namespace ads
 

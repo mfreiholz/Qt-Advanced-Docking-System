@@ -32,6 +32,8 @@
 //============================================================================
 #include "DockContainerWidget.h"
 
+class QSettings;
+
 namespace ads
 {
 struct DockManagerPrivate;
@@ -134,6 +136,7 @@ public:
 
 	/**
 	 * Saves the current state of the dockmanger and all its dock widgets
+	 * into the returned QByteArray
 	 */
 	QByteArray saveState(int version = 0) const;
 
@@ -145,6 +148,43 @@ public:
 	 * returns true.
 	 */
 	bool restoreState(const QByteArray &state, int version = 0);
+
+	/**
+	 * Saves the current perspective to the internal list of perspectives.
+	 * A perspective is the current state of the dock manager assigned
+	 * with a certain name. This makes it possible for the user,
+	 * to switch between different perspectives quickly.
+	 * If a perspective with the given name already exists, then
+	 * it will be overwritten with the new state.
+	 */
+	void addPerspective(const QString& UniquePrespectiveName);
+
+	/**
+	 * Returns the names of all available perspectives
+	 */
+	QStringList perspectiveNames() const;
+
+	/**
+	 * Saves the perspectives to the given settings file.
+	 */
+	void savePerspectives(QSettings& Settings) const;
+
+	/**
+	 * Loads the perspectives from the given settings file
+	 */
+	void loadPerspectives(QSettings& Settings);
+
+public slots:
+	/**
+	 * Opens the perspective with the given name.
+	 */
+	void openPerspective(const QString& PerspectiveName);
+
+signals:
+	/**
+	 * This signal is emitted if the list of perspectives changed
+	 */
+	void perspectiveListChanged();
 }; // class DockManager
 } // namespace ads
 //-----------------------------------------------------------------------------

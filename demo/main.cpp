@@ -1,3 +1,4 @@
+#include <MainWindow.h>
 #include <QString>
 #include <QFile>
 #include <QApplication>
@@ -5,7 +6,6 @@
 
 #include <memory>
 
-#include "mainwindow.h"
 
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 	qInstallMessageHandler(myMessageOutput);
 	qDebug() << "Message handler test";
 
-	MainWindow mw;
+	CMainWindow mw;
 	mw.show();
 	return a.exec();
 }

@@ -4,24 +4,16 @@ ADS_OUT_ROOT = $${OUT_PWD}/..
 TARGET = AdvancedDockingSystemDemo
 DESTDIR = $${ADS_OUT_ROOT}/lib
 QT += core gui widgets
+CONFIG *= c++14
 
-windows {
-	# MinGW
-	*-g++* {
-		QMAKE_CXXFLAGS += -std=c++11
-	}
-	# MSVC
-	*-msvc* {
-	}
-}
 
 SOURCES += \
 	main.cpp \
-	mainwindow.cpp
+	MainWindow.cpp
 
 
 HEADERS += \
-	mainwindow.h
+	MainWindow.h
 
 FORMS += \
 	mainwindow.ui

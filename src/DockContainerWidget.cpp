@@ -522,9 +522,10 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 	else
 	{
 		DockArea->setProperty("currentIndex", CurrentIndex);
+		DockAreas.append(DockArea);
 	}
+
 	CreatedWidget = DockArea;
-	DockAreas.append(DockArea);
 	return true;
 }
 
