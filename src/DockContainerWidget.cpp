@@ -1002,7 +1002,6 @@ bool CDockContainerWidget::restoreState(QXmlStreamReader& s, bool Testing)
 		{
 			CFloatingDockContainer* FloatingWidget = internal::findParent<CFloatingDockContainer*>(this);
 			FloatingWidget->restoreGeometry(Geometry);
-			FloatingWidget->show();
 		}
 	}
 

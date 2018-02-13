@@ -2,6 +2,7 @@
 
 #include "ui_mainwindow.h"
 
+#include <iostream>
 
 #include <QTime>
 #include <QLabel>
@@ -14,6 +15,7 @@
 #include <QSettings>
 #include <QDockWidget>
 #include <QDebug>
+#include <QResizeEvent>
 
 #include "DockManager.h"
 #include "DockWidget.h"
@@ -89,6 +91,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->actionSaveState->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
 	ui->toolBar->addAction(ui->actionRestoreState);
 	ui->actionRestoreState->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
+
+	m_SavePerspectiveAction = new QAction("Save Perspective", this);
+	m_PerspectiveListAction = new QWidgetAction(this);
+	m_PerspectiveComboBox = new QComboBox(this);
+	m_PerspectiveListAction->setDefaultWidget(m_PerspectiveComboBox);
+	ui->toolBar->addSeparator();
+	ui->toolBar->addAction(m_PerspectiveListAction);
+	ui->toolBar->addAction(m_SavePerspectiveAction);
 
 	m_DockManager = new ads::CDockManager(this);
 	createContent();

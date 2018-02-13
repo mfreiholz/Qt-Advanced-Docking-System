@@ -300,15 +300,16 @@ void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 //============================================================================
 void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 {
+	std::cout << "closeEvent" << std::endl;
 	d->setDraggingActive(false);
 	QWidget::closeEvent(event);
-
 }
 
 
 //============================================================================
 void CFloatingDockContainer::hideEvent(QHideEvent *event)
 {
+	std::cout << "hideEvent" << std::endl;
 	QWidget::hideEvent(event);
 	auto OpenDockAreas = d->DockContainer->openedDockAreas();
 	for (auto DockArea : OpenDockAreas)
@@ -316,7 +317,7 @@ void CFloatingDockContainer::hideEvent(QHideEvent *event)
 		auto OpenDockWidgets = DockArea->openedDockWidgets();
 		for (auto DockWidget : OpenDockWidgets)
 		{
-			DockWidget->setToggleViewActionChecked(false);
+			DockWidget->toggleView(false);
 		}
 	}
 }

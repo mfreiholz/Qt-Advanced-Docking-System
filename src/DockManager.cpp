@@ -346,9 +346,9 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
     	{
     		DockWidget->flagAsUnassigned();
     	}
-    	else if (!DockWidget->property("closed").toBool())
+    	else
     	{
-    		DockWidget->toggleView(true);
+    		DockWidget->toggleView(!DockWidget->property("closed").toBool());
     	}
     }
 
