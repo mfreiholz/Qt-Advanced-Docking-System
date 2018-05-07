@@ -3,17 +3,17 @@
 /*******************************************************************************
 ** Qt Advanced Docking System
 ** Copyright (C) 2017 Uwe Kindler
-** 
+**
 ** This library is free software; you can redistribute it and/or
 ** modify it under the terms of the GNU Lesser General Public
 ** License as published by the Free Software Foundation; either
 ** version 2.1 of the License, or (at your option) any later version.
-** 
+**
 ** This library is distributed in the hope that it will be useful,
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ** Lesser General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU Lesser General Public
 ** License along with this library; If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
@@ -44,7 +44,7 @@ class CDockOverlay : public QFrame
 	Q_OBJECT
 private:
 	DockOverlayPrivate* d; //< private data class
-	friend class DockOverlayPrivate;
+	friend struct DockOverlayPrivate;
 	friend class DockOverlayCross;
 
 public:
@@ -118,7 +118,7 @@ class CDockOverlayCross : public QWidget
 	Q_OBJECT
 private:
 	DockOverlayCrossPrivate* d;
-	friend class DockOverlayCrossPrivate;
+	friend struct DockOverlayCrossPrivate;
 	friend class CDockOverlay;
 
 public:

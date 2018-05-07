@@ -45,7 +45,7 @@ class CMainWindow : public QMainWindow
 	Q_OBJECT
 private:
 	MainWindowPrivate* d;///< private data - pimpl
-	friend class MainWindowPrivate;
+	friend struct MainWindowPrivate;
 
 protected:
 	virtual void closeEvent(QCloseEvent* event) override;
