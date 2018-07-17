@@ -31,6 +31,13 @@
 //                                   INCLUDES
 //============================================================================
 #include <QPair>
+#include <QtCore/QtGlobal>
+
+#ifdef ADS_SHARED_EXPORT
+#define ADS_EXPORT Q_DECL_EXPORT
+#else
+#define ADS_EXPORT Q_DECL_IMPORT
+#endif
 
 class QSplitter;
 

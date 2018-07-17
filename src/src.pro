@@ -11,7 +11,7 @@ CONFIG += adsBuildShared
 
 adsBuildShared {
 	CONFIG += shared
-	DEFINES += ADS_EXPORT
+    DEFINES += ADS_SHARED_EXPORT
 }
 !adsBuildShared {
 	CONFIG += staticlib

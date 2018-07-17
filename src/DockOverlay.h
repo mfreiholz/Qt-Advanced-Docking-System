@@ -39,7 +39,7 @@ class CDockOverlayCross;
  * DockOverlay paints a translucent rectangle over another widget. The geometry
  * of the rectangle is based on the mouse location.
  */
-class CDockOverlay : public QFrame
+class ADS_EXPORT CDockOverlay : public QFrame
 {
 	Q_OBJECT
 private:
