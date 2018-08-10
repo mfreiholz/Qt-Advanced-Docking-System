@@ -533,7 +533,9 @@ void CDockAreaWidget::setCurrentIndex(int index)
 	{
 		qWarning() << Q_FUNC_INFO << "Invalid index" << index;
 		return;
-	}
+    }
+
+    emit currentChanging(index);
 
 	// Set active TAB and update all other tabs to be inactive
 	for (int i = 0; i < d->TabsLayout->count(); ++i)

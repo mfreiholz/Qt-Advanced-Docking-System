@@ -187,6 +187,11 @@ signals:
 	 * This signal is emitted if the list of perspectives changed
 	 */
 	void perspectiveListChanged();
+
+    /**
+     * This signal is emitted if the state changed in restoreState
+     */
+    void stateChanged();
 }; // class DockManager
 } // namespace ads
 //-----------------------------------------------------------------------------

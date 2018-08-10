@@ -369,6 +369,8 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
     	}
     }
 
+    emit stateChanged();
+
     return true;
 }
 
