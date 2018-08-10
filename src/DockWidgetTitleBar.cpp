@@ -240,16 +240,19 @@ void CDockWidgetTitleBar::mouseReleaseEvent(QMouseEvent* ev)
 	// End of tab moving, change order now
 	if (d->isDraggingState(DraggingTab) && d->DockArea)
 	{
-		// Find tab under mouse
-		QPoint pos = d->DockArea->mapFromGlobal(ev->globalPos());
-        int fromIndex = d->DockArea->tabIndex(d->DockWidget);
-        int toIndex = d->DockArea->indexOfContentByTitlePos(pos, this);
-        if (-1 == toIndex)
-        {
-            toIndex = d->DockArea->count() - 1;
+        if (d->DockWidget->features() & CDockWidget::DockWidgetMovable) {
+            // Find tab under mouse
+            QPoint pos = d->DockArea->mapFromGlobal(ev->globalPos());
+            int fromIndex = d->DockArea->tabIndex(d->DockWidget);
+            int toIndex = d->DockArea->indexOfContentByTitlePos(pos, this);
+            if (-1 == toIndex)
+            {
+                toIndex = d->DockArea->count() - 1;
+            }
+            qDebug() << "Move tab from " << fromIndex << " to " << toIndex;
+            d->DockArea->reorderDockWidget(fromIndex, toIndex);
         }
-        qDebug() << "Move tab from " << fromIndex << " to " << toIndex;
-        d->DockArea->reorderDockWidget(fromIndex, toIndex);
+
 	}
 
     if (!d->DragStartMousePosition.isNull())
@@ -275,7 +278,9 @@ void CDockWidgetTitleBar::mouseMoveEvent(QMouseEvent* ev)
 
     if (d->isDraggingState(DraggingFloatingWidget))
     {
-    	d->FloatingWidget->moveFloating();
+        if (d->DockWidget->features() & CDockWidget::DockWidgetMovable) {
+            d->FloatingWidget->moveFloating();
+        }
         QFrame::mouseMoveEvent(ev);
         return;
     }
@@ -283,19 +288,25 @@ void CDockWidgetTitleBar::mouseMoveEvent(QMouseEvent* ev)
     // move tab
     if (d->isDraggingState(DraggingTab))
     {
-        d->moveTab(ev);
+        if (d->DockWidget->features() & CDockWidget::DockWidgetMovable) {
+            d->moveTab(ev);
+        }
     }
 
     bool MouseInsideTitleArea = d->titleAreaGeometryContains(ev->globalPos());
     if (!MouseInsideTitleArea)
 	{
-    	d->startFloating();
+        if (d->DockWidget->features() & CDockWidget::DockWidgetMovable) {
+            d->startFloating();
+        }
     	return;
 	}
     else if (d->DockArea->count() > 1
      && (ev->pos() - d->DragStartMousePosition).manhattanLength() >= QApplication::startDragDistance()) // Wait a few pixels before start moving
 	{
-        d->DragState = DraggingTab;
+        if (d->DockWidget->features() & CDockWidget::DockWidgetMovable) {
+            d->DragState = DraggingTab;
+        }
 		return;
 	}
 
