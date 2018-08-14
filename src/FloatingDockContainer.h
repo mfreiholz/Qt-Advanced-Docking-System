@@ -55,6 +55,8 @@ private:
 	FloatingDockContainerPrivate* d; ///< private data (pimpl)
 	friend struct FloatingDockContainerPrivate;
 
+    bool isClosable();
+
 private slots:
 	void onDockAreasAddedOrRemoved();
 	void onDockAreaCurrentChanged(int Index);
