@@ -45,7 +45,7 @@ class CDockWidget;
 
 
 /**
- * DockAreaWidget manages multiple instances of DckWidgets.
+ * DockAreaWidget manages multiple instances of DockWidgets.
  * It displays a title tab, which is clickable and will switch to
  * the contents associated to the title when clicked.
  */

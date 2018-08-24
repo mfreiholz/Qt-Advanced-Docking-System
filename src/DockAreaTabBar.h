@@ -18,9 +18,9 @@ class CDockAreaWidget;
 struct DockAreaTabBarPrivate;
 
 /**
- * Custom scroll bar implementation for dock area tab bar
- * This scroll area enables floating of a whole dock area including all
- * dock widgets
+ * Custom tabbar implementation for tab area that is shown on top of a
+ * dock area widget.
+ * The tabbar displays the tab widgets of the contained dock widgets.
  */
 class CDockAreaTabBar : public QScrollArea
 {

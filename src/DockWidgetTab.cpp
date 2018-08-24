@@ -240,19 +240,16 @@ void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 	// End of tab moving, change order now
 	if (d->isDraggingState(DraggingTab) && d->DockArea)
 	{
-        if (d->DockWidget->features() & CDockWidget::DockWidgetMovable) {
-            // Find tab under mouse
-            QPoint pos = d->DockArea->mapFromGlobal(ev->globalPos());
-            int fromIndex = d->DockArea->tabIndex(d->DockWidget);
-            int toIndex = d->DockArea->indexOfContentByTitlePos(pos, this);
-            if (-1 == toIndex)
-            {
-                toIndex = d->DockArea->count() - 1;
-            }
-            qDebug() << "Move tab from " << fromIndex << " to " << toIndex;
-            d->DockArea->reorderDockWidget(fromIndex, toIndex);
-        }
-
+		// Find tab under mouse
+		QPoint pos = d->DockArea->mapFromGlobal(ev->globalPos());
+		int fromIndex = d->DockArea->tabIndex(d->DockWidget);
+		int toIndex = d->DockArea->indexOfContentByTitlePos(pos, this);
+		if (-1 == toIndex)
+		{
+			toIndex = d->DockArea->count() - 1;
+		}
+		qDebug() << "Move tab from " << fromIndex << " to " << toIndex;
+		d->DockArea->reorderDockWidget(fromIndex, toIndex);
 	}
 
     if (!d->DragStartMousePosition.isNull())
@@ -276,11 +273,10 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
         return;
     }
 
+    // move floating winwdow
     if (d->isDraggingState(DraggingFloatingWidget))
     {
-        if (d->DockWidget->features() & CDockWidget::DockWidgetMovable) {
-            d->FloatingWidget->moveFloating();
-        }
+        d->FloatingWidget->moveFloating();
         QFrame::mouseMoveEvent(ev);
         return;
     }
@@ -288,15 +284,17 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     // move tab
     if (d->isDraggingState(DraggingTab))
     {
-        if (d->DockWidget->features() & CDockWidget::DockWidgetMovable) {
-            d->moveTab(ev);
-        }
+        // Moving the tab is always allowed because it does not mean moving the
+    	// dock widget around
+    	d->moveTab(ev);
     }
 
     bool MouseInsideTitleArea = d->titleAreaGeometryContains(ev->globalPos());
     if (!MouseInsideTitleArea)
 	{
-        if (d->DockWidget->features() & CDockWidget::DockWidgetMovable) {
+    	// Floating is only allowed for widgets that are movable
+        if (d->DockWidget->features().testFlag(CDockWidget::DockWidgetMovable))
+        {
             d->startFloating();
         }
     	return;
@@ -304,9 +302,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     else if (d->DockArea->count() > 1
      && (ev->pos() - d->DragStartMousePosition).manhattanLength() >= QApplication::startDragDistance()) // Wait a few pixels before start moving
 	{
-        if (d->DockWidget->features() & CDockWidget::DockWidgetMovable) {
-            d->DragState = DraggingTab;
-        }
+        d->DragState = DraggingTab;
 		return;
 	}
 
