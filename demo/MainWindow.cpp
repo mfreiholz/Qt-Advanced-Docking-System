@@ -174,13 +174,15 @@ void MainWindowPrivate::createContent()
 	QMenu* ViewMenu = ui.menuView;
 	auto DockWidget = createCalendarDockWidget(ViewMenu);
 	DockWidget->setIcon(_this->style()->standardIcon(QStyle::SP_DialogOpenButton));
-	DockWidget->setFeatures(DockWidget->features().setFlag(ads::CDockWidget::DockWidgetClosable, false));
+	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
 	DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
 	DockManager->addDockWidget(ads::LeftDockWidgetArea, createLongTextLabelDockWidget(ViewMenu));
 	DockManager->addDockWidget(ads::BottomDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
-	auto TopDockArea = DockManager->addDockWidget(ads::TopDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
+	auto FileSystemWidget = createFileSystemTreeDockWidget(ViewMenu);
+	FileSystemWidget->setFeature(ads::CDockWidget::DockWidgetMovable, false);
+	auto TopDockArea = DockManager->addDockWidget(ads::TopDockWidgetArea, FileSystemWidget);
 	DockWidget = createCalendarDockWidget(ViewMenu);
-	DockWidget->setFeatures(DockWidget->features().setFlag(ads::CDockWidget::DockWidgetClosable, false));
+	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
 	DockManager->addDockWidget(ads::CenterDockWidgetArea, DockWidget, TopDockArea);
 
 	// Test dock area docking

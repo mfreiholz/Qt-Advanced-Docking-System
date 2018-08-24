@@ -1,5 +1,5 @@
-#ifndef DockWidgetTitleBarH
-#define DockWidgetTitleBarH
+#ifndef DockWidgetTabH
+#define DockWidgetTabH
 /*******************************************************************************
 ** Qt Advanced Docking System
 ** Copyright (C) 2017 Uwe Kindler
@@ -20,10 +20,10 @@
 
 
 //============================================================================
-/// \file   DockWidgetTitleBar.h
+/// \file   DockWidgetTab.h
 /// \author Uwe Kindler
 /// \date   27.02.2017
-/// \brief  Declaration of CDockWidgetTitleBar class
+/// \brief  Declaration of CDockWidgetTab class
 //============================================================================
 
 
@@ -38,19 +38,21 @@ namespace ads
 {
 class CDockWidget;
 class CDockAreaWidget;
-struct DockWidgetTitleBarPrivate;
+struct DockWidgetTabPrivate;
 
 /**
- * A dock widget title bar that shows a title and an icon
+ * A dock widget tab that shows a title and an icon.
+ * The dock widget tab is shown in the dock area title bar to switch between
+ * tabbed dock widgets
  */
-class ADS_EXPORT CDockWidgetTitleBar : public QFrame
+class ADS_EXPORT CDockWidgetTab : public QFrame
 {
 	Q_OBJECT
 	Q_PROPERTY(bool activeTab READ isActiveTab WRITE setActiveTab NOTIFY activeTabChanged)
 
 private:
-	DockWidgetTitleBarPrivate* d; ///< private data (pimpl)
-	friend struct DockWidgetTitleBarPrivate;
+	DockWidgetTabPrivate* d; ///< private data (pimpl)
+	friend struct DockWidgetTabPrivate;
 
 protected:
 	virtual void mousePressEvent(QMouseEvent* ev) override;
@@ -63,12 +65,12 @@ public:
 	 * param[in] DockWidget The dock widget this title bar belongs to
 	 * param[in] parent The parent widget of this title bar
 	 */
-	CDockWidgetTitleBar(CDockWidget* DockWidget, QWidget* parent = 0);
+	CDockWidgetTab(CDockWidget* DockWidget, QWidget* parent = 0);
 
 	/**
 	 * Virtual Destructor
 	 */
-	virtual ~CDockWidgetTitleBar();
+	virtual ~CDockWidgetTab();
 
 	/**
 	 * Returns true, if this is the active tab
@@ -111,8 +113,8 @@ public:
 signals:
 	void activeTabChanged();
 	void clicked();
-}; // class DockWidgetTitleBar
+}; // class DockWidgetTab
 }
  // namespace ads
 //-----------------------------------------------------------------------------
-#endif // DockWidgetTitleBarH
+#endif // DockWidgetTabH

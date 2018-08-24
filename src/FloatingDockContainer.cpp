@@ -210,7 +210,6 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager* DockManager) :
 	QWidget(DockManager, Qt::Window),
 	d(new FloatingDockContainerPrivate(this))
 {
-	//setAttribute(Qt::WA_DeleteOnClose);
 	d->DockManager = DockManager;
     QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
     l->setContentsMargins(0, 0, 0, 0);
@@ -412,7 +411,7 @@ void CFloatingDockContainer::moveFloating()
 
 
 //============================================================================
-bool CFloatingDockContainer::isClosable()
+bool CFloatingDockContainer::isClosable() const
 {
     auto OpenDockAreas = d->DockContainer->openedDockAreas();
     for (auto DockArea : OpenDockAreas)
@@ -420,13 +419,17 @@ bool CFloatingDockContainer::isClosable()
         auto OpenDockWidgets = DockArea->openedDockWidgets();
         for (auto DockWidget : OpenDockWidgets)
         {
-            if (!(DockWidget->features() & CDockWidget::DockWidgetClosable))
+            if (!DockWidget->features().testFlag(CDockWidget::DockWidgetClosable))
+            {
                 return false;
+            }
         }
     }
     return true;
 }
 
+
+//============================================================================
 void CFloatingDockContainer::onDockAreasAddedOrRemoved()
 {
 	qDebug() << "CFloatingDockContainer::onDockAreasAddedOrRemoved()";

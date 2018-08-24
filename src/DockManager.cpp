@@ -28,6 +28,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <DockWidgetTab.h>
 #include "DockManager.h"
 
 #include <iostream>
@@ -49,7 +50,6 @@
 #include "DockWidget.h"
 #include "ads_globals.h"
 #include "DockStateSerialization.h"
-#include "DockWidgetTitleBar.h"
 #include "DockAreaWidget.h"
 
 namespace ads
@@ -370,7 +370,6 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
     }
 
     emit stateChanged();
-
     return true;
 }
 

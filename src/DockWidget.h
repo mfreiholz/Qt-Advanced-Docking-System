@@ -39,7 +39,7 @@ class QXmlStreamWriter;
 namespace ads
 {
 struct DockWidgetPrivate;
-class CDockWidgetTitleBar;
+class CDockWidgetTab;
 class CDockManager;
 class CDockContainerWidget;
 class CDockAreaWidget;
@@ -155,12 +155,18 @@ public:
 	/**
 	 * Returns the title bar widget of this dock widget
 	 */
-	CDockWidgetTitleBar* titleBar() const;
+	CDockWidgetTab* titleBar() const;
 
 	/**
 	 * Sets, whether the dock widget is movable, closable, and floatable.
 	 */
 	void setFeatures(DockWidgetFeatures features);
+
+	/**
+	 * Sets the feature flag for this dock widget if on is true; otherwise
+	 * clears the flag.
+	 */
+	void setFeature(DockWidgetFeature flag, bool on);
 
 	/**
 	 * This property holds whether the dock widget is movable, closable, and

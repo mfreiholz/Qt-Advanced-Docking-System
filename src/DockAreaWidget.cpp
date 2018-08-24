@@ -28,6 +28,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <DockWidgetTab.h>
 #include "DockAreaWidget.h"
 
 #include <QStackedLayout>
@@ -44,10 +45,10 @@
 
 #include "DockContainerWidget.h"
 #include "DockWidget.h"
-#include "DockWidgetTitleBar.h"
 #include "FloatingDockContainer.h"
 #include "DockManager.h"
 #include "DockOverlay.h"
+#include "DockAreaTabBar.h"
 
 
 namespace ads
@@ -55,140 +56,6 @@ namespace ads
 static const char* const INDEX_PROPERTY = "index";
 static const char* const ACTION_PROPERTY = "action";
 static const int APPEND = -1;
-
-/**
- * Custom scroll bar implementation for dock area tab bar
- * This scroll area enables floating of a whole dock area including all
- * dock widgets
- */
-class CTabsScrollArea : public QScrollArea
-{
-private:
-	QPoint m_DragStartMousePos;
-	CDockAreaWidget* m_DockArea;
-	CFloatingDockContainer* m_FloatingWidget = nullptr;
-
-public:
-	CTabsScrollArea(CDockAreaWidget* parent)
-		: QScrollArea(parent),
-		  m_DockArea(parent)
-	{
-		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
-		setFrameStyle(QFrame::NoFrame);
-		setWidgetResizable(true);
-		setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-		setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	}
-
-protected:
-	virtual void wheelEvent(QWheelEvent* Event) override
-	{
-		Event->accept();
-		const int direction = Event->angleDelta().y();
-		if (direction < 0)
-		{
-			horizontalScrollBar()->setValue(horizontalScrollBar()->value() + 20);
-		}
-		else
-		{
-			horizontalScrollBar()->setValue(horizontalScrollBar()->value() - 20);
-		}
-	}
-
-	/**
-	 * Stores mouse position to detect dragging
-	 */
-	virtual void mousePressEvent(QMouseEvent* ev) override
-	{
-		if (ev->button() == Qt::LeftButton)
-		{
-			ev->accept();
-			m_DragStartMousePos = ev->pos();
-			return;
-		}
-		QScrollArea::mousePressEvent(ev);
-	}
-
-	/**
-	 * Stores mouse position to detect dragging
-	 */
-	virtual void mouseReleaseEvent(QMouseEvent* ev) override
-	{
-		if (ev->button() == Qt::LeftButton)
-		{
-			qDebug() << "CTabsScrollArea::mouseReleaseEvent";
-			ev->accept();
-			m_FloatingWidget = nullptr;
-			m_DragStartMousePos = QPoint();
-			return;
-		}
-		QScrollArea::mouseReleaseEvent(ev);
-	}
-
-	/**
-	 * Starts floating the complete docking area including all dock widgets,
-	 * if it is not the last dock area in a floating widget
-	 */
-	virtual void mouseMoveEvent(QMouseEvent* ev) override
-	{
-		QScrollArea::mouseMoveEvent(ev);
-		if (ev->buttons() != Qt::LeftButton)
-		{
-			return;
-		}
-
-		if (m_FloatingWidget)
-		{
-			m_FloatingWidget->moveFloating();
-			return;
-		}
-
-		// If this is the last dock area in a dock container it does not make
-		// sense to move it to a new floating widget and leave this one
-		// empty
-		if (m_DockArea->dockContainer()->isFloating()
-		 && m_DockArea->dockContainer()->visibleDockAreaCount() == 1)
-		{
-			return;
-		}
-
-		if (!this->geometry().contains(ev->pos()))
-		{
-			qDebug() << "CTabsScrollArea::startFloating";
-			startFloating(m_DragStartMousePos);
-			auto Overlay = m_DockArea->dockManager()->containerOverlay();
-			Overlay->setAllowedAreas(OuterDockAreas);
-		}
-
-		return;
-	}
-
-	/**
-	 * Double clicking the title bar also starts floating of the complete area
-	 */
-	virtual void mouseDoubleClickEvent(QMouseEvent *event) override
-	{
-		// If this is the last dock area in a dock container it does not make
-		// sense to move it to a new floating widget and leave this one
-		// empty
-		if (m_DockArea->dockContainer()->isFloating() && m_DockArea->dockContainer()->dockAreaCount() == 1)
-		{
-			return;
-		}
-		startFloating(event->pos());
-	}
-
-	/**
-	 * Starts floating
-	 */
-	void startFloating(const QPoint& Pos)
-	{
-		QSize Size = m_DockArea->size();
-		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(m_DockArea);
-		FloatingWidget->startFloating(Pos, Size);
-		m_FloatingWidget = FloatingWidget;
-	}
-}; // class CTabsScrollArea
 
 
 /**
@@ -201,7 +68,7 @@ struct DockAreaWidgetPrivate
 	QFrame* TitleBar;
 	QBoxLayout* TopLayout;
 	QStackedLayout* ContentsLayout;
-	QScrollArea* TabsScrollArea;
+	CDockAreaTabBar* TabBar;
 	QWidget* TabsContainerWidget;
 	QBoxLayout* TabsLayout;
 	QPushButton* TabsMenuButton;
@@ -230,7 +97,7 @@ struct DockAreaWidgetPrivate
 	/**
 	 * Convenience function to ease title widget access by index
 	 */
-	CDockWidgetTitleBar* titleWidgetAt(int index)
+	CDockWidgetTab* titleWidgetAt(int index)
 	{
 		return dockWidgetAt(index)->titleBar();
 	}
@@ -293,12 +160,12 @@ void DockAreaWidgetPrivate::createTabBar()
 	TitleBar->setLayout(TopLayout);
 	Layout->addWidget(TitleBar);
 
-	TabsScrollArea = new CTabsScrollArea(_this);
-	TopLayout->addWidget(TabsScrollArea, 1);
+	TabBar = new CDockAreaTabBar(_this);
+	TopLayout->addWidget(TabBar, 1);
 
 	TabsContainerWidget = new QWidget();
 	TabsContainerWidget->setObjectName("tabsContainerWidget");
-	TabsScrollArea->setWidget(TabsContainerWidget);
+	TabBar->setWidget(TabsContainerWidget);
 
 	TabsLayout = new QBoxLayout(QBoxLayout::LeftToRight);
 	TabsLayout->setContentsMargins(0, 0, 0, 0);
@@ -489,7 +356,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 //============================================================================
 void CDockAreaWidget::onDockWidgetTitleClicked()
 {
-	CDockWidgetTitleBar* TitleWidget = qobject_cast<CDockWidgetTitleBar*>(sender());
+	CDockWidgetTab* TitleWidget = qobject_cast<CDockWidgetTab*>(sender());
 	if (!TitleWidget)
 	{
 		return;
@@ -546,7 +413,7 @@ void CDockAreaWidget::setCurrentIndex(int index)
 			continue;
 		}
 
-		auto TitleWidget = dynamic_cast<CDockWidgetTitleBar*>(item->widget());
+		auto TitleWidget = dynamic_cast<CDockWidgetTab*>(item->widget());
 		if (!TitleWidget)
 		{
 			continue;
@@ -556,7 +423,7 @@ void CDockAreaWidget::setCurrentIndex(int index)
 		{
 			TitleWidget->show();
 			TitleWidget->setActiveTab(true);
-			d->TabsScrollArea->ensureWidgetVisible(TitleWidget);
+			d->TabBar->ensureWidgetVisible(TitleWidget);
 			auto Features = TitleWidget->dockWidget()->features();
 			d->CloseButton->setVisible(Features.testFlag(CDockWidget::DockWidgetClosable));
 		}

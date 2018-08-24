@@ -28,6 +28,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <DockWidgetTab.h>
 #include "DockWidget.h"
 
 #include <QBoxLayout>
@@ -40,7 +41,6 @@
 #include <QDebug>
 #include <QXmlStreamWriter>
 
-#include "DockWidgetTitleBar.h"
 #include "DockContainerWidget.h"
 #include "DockAreaWidget.h"
 #include "DockManager.h"
@@ -59,7 +59,7 @@ struct DockWidgetPrivate
 	CDockWidget* _this;
 	QBoxLayout* Layout;
 	QWidget* Widget = nullptr;
-	CDockWidgetTitleBar* TitleWidget;
+	CDockWidgetTab* TitleWidget;
 	CDockWidget::DockWidgetFeatures Features = CDockWidget::AllDockWidgetFeatures;
 	CDockManager* DockManager = nullptr;
 	CDockAreaWidget* DockArea = nullptr;
@@ -212,7 +212,7 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 	setLayout(d->Layout);
 	setWindowTitle(title);
 
-	d->TitleWidget = new CDockWidgetTitleBar(this);
+	d->TitleWidget = new CDockWidgetTab(this);
 	d->ToggleViewAction = new QAction(title);
 	d->ToggleViewAction->setCheckable(true);
 	connect(d->ToggleViewAction, SIGNAL(triggered(bool)), this,
@@ -261,7 +261,7 @@ QWidget* CDockWidget::widget() const
 
 
 //============================================================================
-CDockWidgetTitleBar* CDockWidget::titleBar() const
+CDockWidgetTab* CDockWidget::titleBar() const
 {
 	return d->TitleWidget;
 }
@@ -271,6 +271,13 @@ CDockWidgetTitleBar* CDockWidget::titleBar() const
 void CDockWidget::setFeatures(DockWidgetFeatures features)
 {
 	d->Features = features;
+}
+
+
+//============================================================================
+void CDockWidget::setFeature(DockWidgetFeature flag, bool on)
+{
+	d->Features.setFlag(flag, on);
 }
 
 

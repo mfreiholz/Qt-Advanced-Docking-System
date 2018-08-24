@@ -55,8 +55,6 @@ private:
 	FloatingDockContainerPrivate* d; ///< private data (pimpl)
 	friend struct FloatingDockContainerPrivate;
 
-    bool isClosable();
-
 private slots:
 	void onDockAreasAddedOrRemoved();
 	void onDockAreaCurrentChanged(int Index);
@@ -117,6 +115,12 @@ public:
 	 * faulty files before you start restoring the state
 	 */
 	bool restoreState(QXmlStreamReader& Stream, bool Testing);
+
+	/**
+	 * This function returns true, if it can be closed.
+	 * It can be closed, if all dock widgets in all dock areas can be closed
+	 */
+    bool isClosable() const;
 }; // class FloatingDockContainer
 }
  // namespace ads

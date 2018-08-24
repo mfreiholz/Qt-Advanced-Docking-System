@@ -189,7 +189,9 @@ signals:
 	void perspectiveListChanged();
 
     /**
-     * This signal is emitted if the state changed in restoreState
+     * This signal is emitted if the state changed in restoreState.
+     * The signal is emitted if the restoreState() function is called or
+     * if the openPerspective() function is called
      */
     void stateChanged();
 }; // class DockManager

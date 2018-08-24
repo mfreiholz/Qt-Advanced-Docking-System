@@ -33,10 +33,11 @@ RESOURCES += ads.qrc
 HEADERS += \
     ads_globals.h \
     DockAreaWidget.h \
+    DockAreaTabBar.h \
     DockContainerWidget.h \
     DockManager.h \
     DockWidget.h \
-    DockWidgetTitleBar.h \
+    DockWidgetTab.h \
     FloatingDockContainer.h \
     DockOverlay.h \
     DockSplitter.h
@@ -46,10 +47,11 @@ HEADERS += \
 SOURCES += \
     ads_globals.cpp \
     DockAreaWidget.cpp \
+    DockAreaTabBar.cpp \
     DockContainerWidget.cpp \
     DockManager.cpp \
     DockWidget.cpp \
-    DockWidgetTitleBar.cpp \
+    DockWidgetTab.cpp \
     FloatingDockContainer.cpp \
     DockOverlay.cpp \
     DockSplitter.cpp

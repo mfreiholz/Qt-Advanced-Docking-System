@@ -18,17 +18,17 @@
 
 
 //============================================================================
-/// \file   DockWidgetTitleBar.cpp
+/// \file   DockWidgetTab.cpp
 /// \author Uwe Kindler
 /// \date   27.02.2017
-/// \brief  Implementation of CDockWidgetTitleBar class
+/// \brief  Implementation of CDockWidgetTab class
 //============================================================================
 
 
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include "DockWidgetTitleBar.h"
+#include "DockWidgetTab.h"
 
 #include <QBoxLayout>
 #include <QLabel>
@@ -60,11 +60,11 @@ enum eDragState
 
 
 /**
- * Private data class of CDockWidgetTitleBar class (pimpl)
+ * Private data class of CDockWidgetTab class (pimpl)
  */
-struct DockWidgetTitleBarPrivate
+struct DockWidgetTabPrivate
 {
-	CDockWidgetTitleBar* _this;
+	CDockWidgetTab* _this;
 	CDockWidget* DockWidget;
 	QLabel* IconLabel;
 	QLabel* TitleLabel;
@@ -78,7 +78,7 @@ struct DockWidgetTitleBarPrivate
 	/**
 	 * Private data constructor
 	 */
-	DockWidgetTitleBarPrivate(CDockWidgetTitleBar* _public);
+	DockWidgetTabPrivate(CDockWidgetTab* _public);
 
 	/**
 	 * Creates the complete layout including all controls
@@ -115,11 +115,11 @@ struct DockWidgetTitleBarPrivate
 	 */
 	bool startFloating();
 };
-// struct DockWidgetTitleBarPrivate
+// struct DockWidgetTabPrivate
 
 
 //============================================================================
-DockWidgetTitleBarPrivate::DockWidgetTitleBarPrivate(CDockWidgetTitleBar* _public) :
+DockWidgetTabPrivate::DockWidgetTabPrivate(CDockWidgetTab* _public) :
 	_this(_public)
 {
 
@@ -127,7 +127,7 @@ DockWidgetTitleBarPrivate::DockWidgetTitleBarPrivate(CDockWidgetTitleBar* _publi
 
 
 //============================================================================
-void DockWidgetTitleBarPrivate::createLayout()
+void DockWidgetTabPrivate::createLayout()
 {
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::LeftToRight);
 	l->setContentsMargins(0, 0, 0, 0);
@@ -146,7 +146,7 @@ void DockWidgetTitleBarPrivate::createLayout()
 }
 
 //============================================================================
-void DockWidgetTitleBarPrivate::moveTab(QMouseEvent* ev)
+void DockWidgetTabPrivate::moveTab(QMouseEvent* ev)
 {
     ev->accept();
     int left, top, right, bottom;
@@ -159,7 +159,7 @@ void DockWidgetTitleBarPrivate::moveTab(QMouseEvent* ev)
 
 
 //============================================================================
-bool DockWidgetTitleBarPrivate::startFloating()
+bool DockWidgetTabPrivate::startFloating()
 {
 	qDebug() << "isFloating " << DockWidget->dockContainer()->isFloating();
 	qDebug() << "areaCount " << DockWidget->dockContainer()->dockAreaCount();
@@ -185,7 +185,7 @@ bool DockWidgetTitleBarPrivate::startFloating()
 	}
 	else
 	{
-		qDebug() << "DockWidgetTitleBarPrivate::startFloating DockArea";
+		qDebug() << "DockWidgetTabPrivate::startFloating DockArea";
 		// If section widget has only one content widget, we can move the complete
 		// dock area into floating widget
 		FloatingWidget = new CFloatingDockContainer(DockArea);
@@ -200,9 +200,9 @@ bool DockWidgetTitleBarPrivate::startFloating()
 
 
 //============================================================================
-CDockWidgetTitleBar::CDockWidgetTitleBar(CDockWidget* DockWidget, QWidget *parent) :
+CDockWidgetTab::CDockWidgetTab(CDockWidget* DockWidget, QWidget *parent) :
 	QFrame(parent),
-	d(new DockWidgetTitleBarPrivate(this))
+	d(new DockWidgetTabPrivate(this))
 {
 	setAttribute(Qt::WA_NoMousePropagation, true);
 	d->DockWidget = DockWidget;
@@ -210,19 +210,19 @@ CDockWidgetTitleBar::CDockWidgetTitleBar(CDockWidget* DockWidget, QWidget *paren
 }
 
 //============================================================================
-CDockWidgetTitleBar::~CDockWidgetTitleBar()
+CDockWidgetTab::~CDockWidgetTab()
 {
-	qDebug() << "~CDockWidgetTitleBar()";
+	qDebug() << "~CDockWidgetTab()";
 	delete d;
 }
 
 
 //============================================================================
-void CDockWidgetTitleBar::mousePressEvent(QMouseEvent* ev)
+void CDockWidgetTab::mousePressEvent(QMouseEvent* ev)
 {
 	if (ev->button() == Qt::LeftButton)
 	{
-		qDebug() << "CDockWidgetTitleBar::mousePressEvent";
+		qDebug() << "CDockWidgetTab::mousePressEvent";
 		ev->accept();
         d->DragStartMousePosition = ev->pos();
         d->DragState = DraggingMousePressed;
@@ -234,9 +234,9 @@ void CDockWidgetTitleBar::mousePressEvent(QMouseEvent* ev)
 
 
 //============================================================================
-void CDockWidgetTitleBar::mouseReleaseEvent(QMouseEvent* ev)
+void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 {
-	qDebug() << "CDockWidgetTitleBar::mouseReleaseEvent";
+	qDebug() << "CDockWidgetTab::mouseReleaseEvent";
 	// End of tab moving, change order now
 	if (d->isDraggingState(DraggingTab) && d->DockArea)
 	{
@@ -267,7 +267,7 @@ void CDockWidgetTitleBar::mouseReleaseEvent(QMouseEvent* ev)
 
 
 //============================================================================
-void CDockWidgetTitleBar::mouseMoveEvent(QMouseEvent* ev)
+void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
 {
     if (!(ev->buttons() & Qt::LeftButton) || d->isDraggingState(DraggingInactive))
     {
@@ -315,14 +315,14 @@ void CDockWidgetTitleBar::mouseMoveEvent(QMouseEvent* ev)
 
 
 //============================================================================
-bool CDockWidgetTitleBar::isActiveTab() const
+bool CDockWidgetTab::isActiveTab() const
 {
 	return d->IsActiveTab;
 }
 
 
 //============================================================================
-void CDockWidgetTitleBar::setActiveTab(bool active)
+void CDockWidgetTab::setActiveTab(bool active)
 {
 	if (d->IsActiveTab == active)
 	{
@@ -341,28 +341,28 @@ void CDockWidgetTitleBar::setActiveTab(bool active)
 
 
 //============================================================================
-CDockWidget* CDockWidgetTitleBar::dockWidget() const
+CDockWidget* CDockWidgetTab::dockWidget() const
 {
 	return d->DockWidget;
 }
 
 
 //============================================================================
-void CDockWidgetTitleBar::setDockAreaWidget(CDockAreaWidget* DockArea)
+void CDockWidgetTab::setDockAreaWidget(CDockAreaWidget* DockArea)
 {
 	d->DockArea = DockArea;
 }
 
 
 //============================================================================
-CDockAreaWidget* CDockWidgetTitleBar::dockAreaWidget() const
+CDockAreaWidget* CDockWidgetTab::dockAreaWidget() const
 {
 	return d->DockArea;
 }
 
 
 //============================================================================
-void CDockWidgetTitleBar::setIcon(const QIcon& Icon)
+void CDockWidgetTab::setIcon(const QIcon& Icon)
 {
 	d->Icon = Icon;
 	d->IconLabel->setPixmap(Icon.pixmap(this->windowHandle(), QSize(16, 16)));
@@ -371,11 +371,11 @@ void CDockWidgetTitleBar::setIcon(const QIcon& Icon)
 
 
 //============================================================================
-const QIcon& CDockWidgetTitleBar::icon() const
+const QIcon& CDockWidgetTab::icon() const
 {
 	return d->Icon;
 }
 } // namespace ads
 
 //---------------------------------------------------------------------------
-// EOF DockWidgetTitleBar.cpp
+// EOF DockWidgetTab.cpp
