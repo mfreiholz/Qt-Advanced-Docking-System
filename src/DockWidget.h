@@ -227,6 +227,11 @@ public:
 	 */
 	void setIcon(const QIcon& Icon);
 
+	/**
+	 * Returns tzhe icon that has been assigned to the dock widget
+	 */
+	QIcon icon() const;
+
 public slots:
 	/**
 	 * This property controls whether the dock widget is open or closed.

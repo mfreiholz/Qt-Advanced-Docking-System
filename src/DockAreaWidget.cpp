@@ -224,12 +224,12 @@ void DockAreaWidgetPrivate::addTabsMenuEntry(CDockWidget* DockWidget,
 	QAction* Action;
 	if (Index >= 0 && Index < menu->actions().count())
 	{
-		Action = new QAction(DockWidget->windowTitle());
+		Action = new QAction(DockWidget->icon(), DockWidget->windowTitle());
 		menu->insertAction(menu->actions().at(Index), Action);
 	}
 	else
 	{
-		Action = menu->addAction(DockWidget->windowTitle());
+		Action = menu->addAction(DockWidget->icon(), DockWidget->windowTitle());
 	}
 	QVariant vAction = QVariant::fromValue(Action);
 	DockWidget->setProperty(ACTION_PROPERTY, vAction);

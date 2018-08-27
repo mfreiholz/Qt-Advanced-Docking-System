@@ -431,6 +431,13 @@ void CDockWidget::setIcon(const QIcon& Icon)
 }
 
 
+//============================================================================
+QIcon CDockWidget::icon() const
+{
+	return d->TitleWidget->icon();
+}
+
+
 
 } // namespace ads
 
