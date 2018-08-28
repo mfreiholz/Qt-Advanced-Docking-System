@@ -367,8 +367,16 @@ bool CFloatingDockContainer::event(QEvent *e)
 	else if (d->NonClientAreaMouseButtonPress && (e->type() == QEvent::Resize))
 	{
 		// If user resizes the floating widget, we do not want to show any
-		// drop overlays or drop overlay icons
-		d->setDraggingActive(false);
+		// drop overlays or drop overlay icons. If the window is maximized,
+		// then dragging the window via title bar will cause the widget to
+		// leave the maximized state. This in turn will trigger a resize event.
+		// To know, if the resize event was triggered by user via moving a
+		// corner of the window frame or if it was caused by a windows state
+		// change, we check, if we are not in maximized state.
+		if (!isMaximized())
+		{
+			d->setDraggingActive(false);
+		}
 	}
 
 	return QWidget::event(e);

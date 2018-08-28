@@ -180,6 +180,7 @@ void DockAreaWidgetPrivate::createTabBar()
 	TabsMenuButton->setMaximumWidth(TabsMenuButton->iconSize().width());
 	TabsMenuButton->setMenu(new QMenu(TabsMenuButton));
 	TopLayout->addWidget(TabsMenuButton, 0);
+	TabsMenuButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
 		SLOT(onTabsMenuActionTriggered(QAction*)));
 

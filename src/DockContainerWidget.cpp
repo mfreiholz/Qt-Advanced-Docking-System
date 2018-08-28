@@ -993,7 +993,6 @@ bool CDockContainerWidget::restoreState(QXmlStreamReader& s, bool Testing)
 
 		QByteArray GeometryString = s.readElementText(QXmlStreamReader::ErrorOnUnexpectedElement).toLocal8Bit();
 		QByteArray Geometry = QByteArray::fromHex(GeometryString);
-		std::cout << "Geometry: " << Geometry.toHex(' ').toStdString() << std::endl;
 		if (Geometry.isEmpty())
 		{
 			return false;

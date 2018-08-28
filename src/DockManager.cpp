@@ -312,7 +312,6 @@ QByteArray CDockManager::saveState(int version) const
 		s.writeEndElement();
     s.writeEndDocument();
 
-    std::cout << xmldata.toStdString() << std::endl;
     return xmldata;
 }
 
@@ -408,14 +407,12 @@ QStringList CDockManager::perspectiveNames() const
 //============================================================================
 void CDockManager::openPerspective(const QString& PerspectiveName)
 {
-	std::cout << "CDockManager::openPerspective " << PerspectiveName.toStdString() << std::endl;
 	const auto Iterator = d->Perspectives.find(PerspectiveName);
 	if (d->Perspectives.end() == Iterator)
 	{
 		return;
 	}
 
-	std::cout << "CDockManager::openPerspective - restoring state" << std::endl;
 	restoreState(Iterator.value());
 }
 
