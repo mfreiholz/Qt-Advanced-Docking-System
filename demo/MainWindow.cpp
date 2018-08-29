@@ -83,7 +83,6 @@ static ads::CDockWidget* createLongTextLabelDockWidget(QMenu* ViewMenu)
 
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Label %1").arg(LabelCount++));
 	DockWidget->setWidget(l);
-	DockWidget->setObjectName(DockWidget->windowTitle());
 	ViewMenu->addAction(DockWidget->toggleViewAction());
 	return DockWidget;
 }
@@ -96,7 +95,6 @@ static ads::CDockWidget* createCalendarDockWidget(QMenu* ViewMenu)
 	QCalendarWidget* w = new QCalendarWidget();
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Calendar %1").arg(CalendarCount++));
 	DockWidget->setWidget(w);
-	DockWidget->setObjectName(DockWidget->windowTitle());
 	DockWidget->setToggleViewActionMode(ads::CDockWidget::ActionModeShow);
 	ViewMenu->addAction(DockWidget->toggleViewAction());
 	return DockWidget;
@@ -114,7 +112,6 @@ static ads::CDockWidget* createFileSystemTreeDockWidget(QMenu* ViewMenu)
 	w->setModel(m);
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Filesystem %1").arg(FileSystemCount++));
 	DockWidget->setWidget(w);
-	DockWidget->setObjectName(DockWidget->windowTitle());
 	ViewMenu->addAction(DockWidget->toggleViewAction());
     return DockWidget;
 }
@@ -178,6 +175,7 @@ void MainWindowPrivate::createContent()
 	DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
 	DockManager->addDockWidget(ads::LeftDockWidgetArea, createLongTextLabelDockWidget(ViewMenu));
 	DockManager->addDockWidget(ads::BottomDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
+
 	auto FileSystemWidget = createFileSystemTreeDockWidget(ViewMenu);
 	FileSystemWidget->setFeature(ads::CDockWidget::DockWidgetMovable, false);
 	auto TopDockArea = DockManager->addDockWidget(ads::TopDockWidgetArea, FileSystemWidget);

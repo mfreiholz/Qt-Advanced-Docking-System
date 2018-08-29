@@ -211,6 +211,7 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 	d->Layout->setSpacing(0);
 	setLayout(d->Layout);
 	setWindowTitle(title);
+	setObjectName(title);
 
 	d->TitleWidget = new CDockWidgetTab(this);
 	d->ToggleViewAction = new QAction(title);

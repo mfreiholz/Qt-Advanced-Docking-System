@@ -40,8 +40,13 @@ namespace ads
 {
 struct DockManagerPrivate;
 class CFloatingDockContainer;
+struct FloatingDockContainerPrivate;
 class CDockContainerWidget;
 class CDockOverlay;
+class CDockAreaTabBar;
+class CDockWidgetTab;
+struct DockWidgetTabPrivate;
+struct DockAreaWidgetPrivate;
 
 /**
  * The central dock manager that maintains the complete docking system
@@ -52,23 +57,15 @@ class ADS_EXPORT CDockManager : public CDockContainerWidget
 private:
 	DockManagerPrivate* d; ///< private data (pimpl)
 	friend struct DockManagerPrivate;
+	friend class CFloatingDockContainer;
+	friend struct FloatingDockContainerPrivate;
+	friend class CDockContainerWidget;
+	friend class CDockAreaTabBar;
+	friend class CDockWidgetTab;
+	friend struct DockAreaWidgetPrivate;
+	friend struct DockWidgetTabPrivate;
 
 protected:
-
-
-public:
-	/**
-	 * Default Constructor.
-	 * If the given parent is a QMainWindow, the dock manager sets itself as the
-	 * central widget
-	 */
-	CDockManager(QWidget* parent = 0);
-
-	/**
-	 * Virtual Destructor
-	 */
-	virtual ~CDockManager();
-
 	/**
 	 * Registers the given floating widget in the internal list of
 	 * floating widgets
@@ -102,11 +99,30 @@ public:
 	 */
 	CDockOverlay* dockAreaOverlay() const;
 
+public:
+	/**
+	 * Default Constructor.
+	 * If the given parent is a QMainWindow, the dock manager sets itself as the
+	 * central widget
+	 */
+	CDockManager(QWidget* parent = 0);
+
+	/**
+	 * Virtual Destructor
+	 */
+	virtual ~CDockManager();
+
 	/**
 	 * Adds dockwidget into the given area.
 	 * If DockAreaWidget is not null, then the area parameter indicates the area
 	 * into the DockAreaWidget. If DockAreaWidget is null, the Dockwidget will
-	 * be dropped into the container.
+	 * be dropped into the container. If you would like to add a dock widget
+	 * tabified, then you need to add it to an existing dock area object
+	 * into the CenterDockWidgetArea. The following code shows this:
+	 * \code
+	 * DockManager->addDockWidget(ads::CenterDockWidgetArea, NewDockWidget,
+	 * 	   ExisitingDockArea);
+	 * \endcode
 	 * \return Returns the dock area widget that contains the new DockWidget
 	 */
 	CDockAreaWidget* addDockWidget(DockWidgetArea area, CDockWidget* Dockwidget,

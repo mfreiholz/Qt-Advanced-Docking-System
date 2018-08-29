@@ -132,7 +132,16 @@ public:
 	};
 
 	/**
-	 * Default Constructor
+	 * This constructor creates a dock widget with the given title.
+	 * The title is the text that is shown in the window title when the dock
+	 * widget is floating and it is the title that is shown in the titlebar
+	 * or the tab of this dock widget if it is tabified.
+	 * The object name of the dock widget is also set to the title. The
+	 * object name is required by the dock manager to properly save and restore
+	 * the state of the dock widget. That means, the title needs to be unique.
+	 * If your title is not unique or if you would like to change the title
+	 * during runtime, you need to set a unique object name explicitely
+	 * by calling setObjectName() after construction.
 	 */
 	CDockWidget(const QString &title, QWidget* parent = 0);
 
@@ -217,11 +226,6 @@ public:
 	void setToggleViewActionMode(eToggleViewActionMode Mode);
 
 	/**
-	 * Emits titleChanged signal if title change event occurs
-	 */
-	virtual bool event(QEvent *e) override;
-
-	/**
 	 * Sets the dock widget icon that is shown in tabs and in toggle view
 	 * actions
 	 */
@@ -231,6 +235,13 @@ public:
 	 * Returns tzhe icon that has been assigned to the dock widget
 	 */
 	QIcon icon() const;
+
+
+public: // reimplements QFrame -----------------------------------------------
+	/**
+	 * Emits titleChanged signal if title change event occurs
+	 */
+	virtual bool event(QEvent *e) override;
 
 public slots:
 	/**

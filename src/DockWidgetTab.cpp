@@ -138,6 +138,7 @@ void DockWidgetTabPrivate::createLayout()
 	l->addWidget(IconLabel, Qt::AlignVCenter);
 
 	TitleLabel = new QLabel();
+	TitleLabel->setObjectName("dockWidgetTabLabel");
 	l->addWidget(TitleLabel, 1);
 
 	IconLabel->setVisible(false);

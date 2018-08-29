@@ -38,10 +38,15 @@ class QXmlStreamReader;
 namespace ads
 {
 struct FloatingDockContainerPrivate;
+class CDockManager;
+struct DockManagerPrivate;
 class CDockAreaWidget;
 class CDockContainerWidget;
 class CDockWidget;
 class CDockManager;
+class CDockAreaTabBar;
+class CDockWidgetTab;
+struct DockWidgetTabPrivate;
 
 /**
  * This implements a floating widget that is a dock container that accepts
@@ -54,10 +59,37 @@ class ADS_EXPORT CFloatingDockContainer : public QWidget
 private:
 	FloatingDockContainerPrivate* d; ///< private data (pimpl)
 	friend struct FloatingDockContainerPrivate;
+	friend class CDockManager;
+	friend struct DockManagerPrivate;
+	friend class CDockAreaTabBar;
+	friend struct DockWidgetTabPrivate;
+	friend class CDockWidgetTab;
 
 private slots:
 	void onDockAreasAddedOrRemoved();
 	void onDockAreaCurrentChanged(int Index);
+
+protected:
+	/**
+	 * Starts floating at the given global position.
+	 * Use moveToGlobalPos() to move the widget to a new position
+	 * depending on the start position given in Pos parameter
+	 */
+	void startFloating(const QPoint& Pos, const QSize& Size = QSize());
+
+	/**
+	 * Moves the widget to a new position relative to the position given when
+	 * startFloating() was called
+	 */
+	void moveFloating();
+
+	/**
+	 * Restores the state from given stream.
+	 * If Testing is true, the function only parses the data from the given
+	 * stream but does not restore anything. You can use this check for
+	 * faulty files before you start restoring the state
+	 */
+	bool restoreState(QXmlStreamReader& Stream, bool Testing);
 
 
 protected: // reimplements QWidget
@@ -94,27 +126,6 @@ public:
 	 * Access function for the internal dock container
 	 */
 	CDockContainerWidget* dockContainer() const;
-
-	/**
-	 * Starts floating at the given global position.
-	 * Use moveToGlobalPos() to move the widget to a new position
-	 * depending on the start position given in Pos parameter
-	 */
-	void startFloating(const QPoint& Pos, const QSize& Size = QSize());
-
-	/**
-	 * Moves the widget to a new position relative to the position given when
-	 * startFloating() was called
-	 */
-	void moveFloating();
-
-	/**
-	 * Restores the state from given stream.
-	 * If Testing is true, the function only parses the data from the given
-	 * stream but does not restore anything. You can use this check for
-	 * faulty files before you start restoring the state
-	 */
-	bool restoreState(QXmlStreamReader& Stream, bool Testing);
 
 	/**
 	 * This function returns true, if it can be closed.

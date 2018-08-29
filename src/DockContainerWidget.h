@@ -44,7 +44,9 @@ struct DockContainerWidgetPrivate;
 class CDockAreaWidget;
 class CDockWidget;
 class CDockManager;
+struct DockManagerPrivate;
 class CFloatingDockContainer;
+struct FloatingDockContainerPrivate;
 
 /**
  * Container that manages a number of dock areas with single dock widgets
@@ -56,6 +58,11 @@ class ADS_EXPORT CDockContainerWidget : public QFrame
 private:
 	DockContainerWidgetPrivate* d; ///< private data (pimpl)
 	friend struct DockContainerWidgetPrivate;
+	friend class CDockManager;
+	friend struct DockManagerPrivate;
+	friend class CDockAreaWidget;
+	friend class CFloatingDockContainer;
+	friend struct FloatingDockContainerPrivate;
 
 protected:
 	/**
@@ -67,6 +74,34 @@ protected:
 	 * Access function for the internal root splitter
 	 */
 	QSplitter* rootSplitter() const;
+
+	/**
+	 * Drop floating widget into the container
+	 */
+	void dropFloatingWidget(CFloatingDockContainer* FloatingWidget, const QPoint& TargetPos);
+
+	/**
+	 * Adds the given dock area to this container widget
+	 */
+	void addDockArea(CDockAreaWidget* DockAreaWidget, DockWidgetArea area = CenterDockWidgetArea);
+
+	/**
+	 * Removes the given dock area from this container
+	 */
+	void removeDockArea(CDockAreaWidget* area);
+
+	/**
+	 * Saves the state into the given stream
+	 */
+	void saveState(QXmlStreamWriter& Stream) const;
+
+	/**
+	 * Restores the state from given stream.
+	 * If Testing is true, the function only parses the data from the given
+	 * stream but does not restore anything. You can use this check for
+	 * faulty files before you start restoring the state
+	 */
+	bool restoreState(QXmlStreamReader& Stream, bool Testing);
 
 public:
 	/**
@@ -80,11 +115,6 @@ public:
 	virtual ~CDockContainerWidget();
 
 	/**
-	 * Drop floating widget into the container
-	 */
-	void dropFloatingWidget(CFloatingDockContainer* FloatingWidget, const QPoint& TargetPos);
-
-	/**
 	 * Adds dockwidget into the given area.
 	 * If DockAreaWidget is not null, then the area parameter indicates the area
 	 * into the DockAreaWidget. If DockAreaWidget is null, the Dockwidget will
@@ -93,16 +123,6 @@ public:
 	 */
 	CDockAreaWidget* addDockWidget(DockWidgetArea area, CDockWidget* Dockwidget,
 		CDockAreaWidget* DockAreaWidget = nullptr);
-
-	/**
-	 * Adds the given dock area to this container widget
-	 */
-	void addDockArea(CDockAreaWidget* DockAreaWidget, DockWidgetArea area = CenterDockWidgetArea);
-
-	/**
-	 * Removes the given dock area from this container
-	 */
-	void removeDockArea(CDockAreaWidget* area);
 
 	/**
 	 * Returns the current zOrderIndex
@@ -147,19 +167,6 @@ public:
 	 * This function returns true, if this container is in a floating widget
 	 */
 	bool isFloating() const;
-
-	/**
-	 * Saves the state into the given stream
-	 */
-	void saveState(QXmlStreamWriter& Stream) const;
-
-	/**
-	 * Restores the state from given stream.
-	 * If Testing is true, the function only parses the data from the given
-	 * stream but does not restore anything. You can use this check for
-	 * faulty files before you start restoring the state
-	 */
-	bool restoreState(QXmlStreamReader& Stream, bool Testing);
 
 	/**
 	 * Dumps the layout for debugging purposes

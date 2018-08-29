@@ -41,6 +41,7 @@ namespace ads
 struct DockAreaWidgetPrivate;
 class CDockManager;
 class CDockContainerWidget;
+struct DockContainerWidgetPrivate;
 class CDockWidget;
 
 
@@ -55,11 +56,47 @@ class ADS_EXPORT CDockAreaWidget : public QFrame
 private:
 	DockAreaWidgetPrivate* d; ///< private data (pimpl)
 	friend struct DockAreaWidgetPrivate;
+	friend class CDockContainerWidget;
+	friend class DockContainerWidgetPrivate;
+	friend class CDockWidgetTab;
 
 private slots:
 	void onDockWidgetTitleClicked();
 	void onTabsMenuActionTriggered(QAction* Action);
 	void onCloseButtonClicked();
+
+protected:
+	/**
+	 * Inserts a dock widget into dock area.
+	 * All dockwidgets in the dock area tabified in a stacked layout with tabs.
+	 * The index indicates the index of the new dockwidget in the tabbar and
+	 * in the stacked layout. If the Activate parameter is true, the new
+	 * DockWidget will be the active one in the stacked layout
+	 */
+	void insertDockWidget(int index, CDockWidget* DockWidget, bool Activate = true);
+
+	/**
+	 * Add a new dock widget to dock area.
+	 * All dockwidgets in the dock area tabified in a stacked layout with tabs
+	 */
+	void addDockWidget(CDockWidget* DockWidget);
+
+	/**
+	 * Removes the given dock widget from the dock area
+	 */
+	void removeDockWidget(CDockWidget* DockWidget);
+
+	/**
+	 * Returns the index of contents of the title widget that is located at
+	 * mouse position pos
+	 */
+	int indexOfContentByTitlePos(const QPoint& pos, QWidget* exclude = nullptr) const;
+
+	/**
+	 * Reorder the index position of DockWidget at fromIndx to toIndex.
+	 */
+	void reorderDockWidget(int fromIndex, int toIndex);
+
 
 public:
 	/**
@@ -84,26 +121,6 @@ public:
 	CDockContainerWidget* dockContainer() const;
 
 	/**
-	 * Inserts a dock widget into dock area.
-	 * All dockwidgets in the dock area tabified in a stacked layout with tabs.
-	 * The index indicates the index of the new dockwidget in the tabbar and
-	 * in the stacked layout. If the Activate parameter is true, the new
-	 * DockWidget will be the active one in the stacked layout
-	 */
-	void insertDockWidget(int index, CDockWidget* DockWidget, bool Activate = true);
-
-	/**
-	 * Add a new dock widget to dock area.
-	 * All dockwidgets in the dock area tabified in a stacked layout with tabs
-	 */
-	void addDockWidget(CDockWidget* DockWidget);
-
-	/**
-	 * Removes the given dock widget from the dock area
-	 */
-	void removeDockWidget(CDockWidget* DockWidget);
-
-	/**
 	 * Returns the rectangle of the title area
 	 */
 	QRect titleAreaGeometry() const;
@@ -117,12 +134,6 @@ public:
 	 * Returns the tab index of the given DockWidget
 	 */
 	int tabIndex(CDockWidget* DockWidget);
-
-	/**
-	 * Returns the index of contents of the title widget that is located at
-	 * mouse position pos
-	 */
-	int indexOfContentByTitlePos(const QPoint& pos, QWidget* exclude = nullptr) const;
 
 	/**
 	 * Returns a list of all dock widgets in this dock area.
@@ -146,11 +157,6 @@ public:
 	CDockWidget* dockWidget(int Index) const;
 
 	/**
-	 * Reorder the index position of DockWidget at fromIndx to toIndex.
-	 */
-	void reorderDockWidget(int fromIndex, int toIndex);
-
-	/**
 	 * Returns the index of the current active dock widget
 	 */
 	int currentIndex() const;
@@ -161,7 +167,7 @@ public:
 	CDockWidget* currentDockWidget() const;
 
 	/**
-	 * Shows the tab with tghe given dock widget
+	 * Shows the tab with the given dock widget
 	 */
 	void setCurrentDockWidget(CDockWidget* DockWidget);
 
