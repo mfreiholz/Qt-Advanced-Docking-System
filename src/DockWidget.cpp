@@ -49,6 +49,8 @@
 #include "DockSplitter.h"
 #include "ads_globals.h"
 
+#include <iostream>
+
 namespace ads
 {
 /**
@@ -121,7 +123,7 @@ void DockWidgetPrivate::showDockWidget()
 	else
 	{
 		DockArea->show();
-		DockArea->setCurrentIndex(DockArea->tabIndex(_this));
+		DockArea->setCurrentDockWidget(_this);
 		QSplitter* Splitter = internal::findParent<QSplitter*>(_this);
 		while (Splitter && !Splitter->isVisible())
 		{
@@ -380,6 +382,8 @@ void CDockWidget::setToggleViewActionMode(eToggleViewActionMode Mode)
 //============================================================================
 void CDockWidget::toggleView(bool Open)
 {
+	std::cout << "CDockWidget::toggleView " << objectName().toStdString()
+		<< " " << Open << std::endl;
 	QAction* Sender = qobject_cast<QAction*>(sender());
 	if (Sender == d->ToggleViewAction && !d->ToggleViewAction->isCheckable())
 	{
@@ -412,7 +416,7 @@ void CDockWidget::toggleView(bool Open)
 void CDockWidget::setDockArea(CDockAreaWidget* DockArea)
 {
 	d->DockArea = DockArea;
-	d->ToggleViewAction->setChecked(DockArea != nullptr);
+	d->ToggleViewAction->setChecked(DockArea != nullptr && !this->isClosed());
 }
 
 

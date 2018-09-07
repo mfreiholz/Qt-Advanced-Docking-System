@@ -113,6 +113,16 @@ protected:
 	 */
 	CDockWidget* nextOpenDockWidget(CDockWidget* DockWidget) const;
 
+	/**
+	 * Returns the index of the given DockWidget in the internal layout
+	 */
+	int index(CDockWidget* DockWidget);
+
+	/**
+	 * Returns the tab index for the given dock widget
+	 */
+	int tabIndex(CDockWidget* DockWidget);
+
 public:
 	/**
 	 * Default Constructor
@@ -144,11 +154,6 @@ public:
 	 * Returns the rectangle of the content
 	 */
 	QRect contentAreaGeometry() const;
-
-	/**
-	 * Returns the tab index of the given DockWidget
-	 */
-	int tabIndex(CDockWidget* DockWidget);
 
 	/**
 	 * Returns a list of all dock widgets in this dock area.

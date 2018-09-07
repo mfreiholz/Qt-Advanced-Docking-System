@@ -244,14 +244,14 @@ void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 	{
 		// Find tab under mouse
 		QPoint pos = d->DockArea->mapFromGlobal(ev->globalPos());
-		int fromIndex = d->DockArea->tabIndex(d->DockWidget);
+		int fromIndex = d->DockArea->index(d->DockWidget);
 		int toIndex = d->DockArea->indexOfContentByTitlePos(pos, this);
 		if (-1 == toIndex)
 		{
 			toIndex = d->DockArea->count() - 1;
 		}
 		qDebug() << "Move tab from " << fromIndex << " to " << toIndex;
-		d->DockArea->reorderDockWidget(fromIndex, toIndex);
+		//d->DockArea->reorderDockWidget(fromIndex, toIndex);
 	}
 
     if (!d->DragStartMousePosition.isNull())

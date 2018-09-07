@@ -348,7 +348,7 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 	DockWidget->tabWidget()->setDockAreaWidget(this);
 	auto TabWidget = DockWidget->tabWidget();
 	d->TabsLayout->insertWidget(index, TabWidget);
-	TabWidget->show();
+	TabWidget->setVisible(!DockWidget->isClosed());
 	connect(TabWidget, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
 	DockWidget->setProperty(INDEX_PROPERTY, index);
 	if (Activate)
@@ -421,7 +421,7 @@ CDockWidget* CDockAreaWidget::currentDockWidget() const
 //============================================================================
 void CDockAreaWidget::setCurrentDockWidget(CDockWidget* DockWidget)
 {
-	int Index = tabIndex(DockWidget);
+	int Index = index(DockWidget);
 	if (Index < 0)
 	{
 		return;
@@ -497,9 +497,16 @@ QRect CDockAreaWidget::contentAreaGeometry() const
 
 
 //============================================================================
-int CDockAreaWidget::tabIndex(CDockWidget* DockWidget)
+int CDockAreaWidget::index(CDockWidget* DockWidget)
 {
 	return d->ContentsLayout->indexOf(DockWidget);
+}
+
+
+//============================================================================
+int CDockAreaWidget::tabIndex(CDockWidget* DockWidget)
+{
+
 }
 
 
