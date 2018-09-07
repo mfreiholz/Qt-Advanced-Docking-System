@@ -132,6 +132,21 @@ public:
 	 * It can be closed, if all dock widgets in all dock areas can be closed
 	 */
     bool isClosable() const;
+
+    /**
+     * This function returns true, if this floating widget has only one single
+     * dock widget in a single dock area.
+     * The single dock widget is a real top level floating widget because no
+     * other widgets are docked.
+     */
+    bool hasSingleDockWidget() const;
+
+    /**
+     * This function returns the first dock widget in the first dock area.
+     * If the function hasSingleDockWidget() returns true, then this function
+     * returns this single dock widget.
+     */
+    CDockWidget* firstDockWidget() const;
 }; // class FloatingDockContainer
 }
  // namespace ads

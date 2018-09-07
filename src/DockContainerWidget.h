@@ -103,6 +103,13 @@ protected:
 	 */
 	bool restoreState(QXmlStreamReader& Stream, bool Testing);
 
+	/**
+	 * This function returns the last added dock area widget for the given
+	 * area identifier or 0 if no dock area widget has been added for the given
+	 * area
+	 */
+	CDockAreaWidget* lastAddedDockAreaWidget(DockWidgetArea area) const;
+
 public:
 	/**
 	 * Default Constructor

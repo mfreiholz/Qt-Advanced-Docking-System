@@ -361,7 +361,8 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
     	{
     		CDockAreaWidget* DockArea = DockContainer->dockArea(i);
     		int CurrentIndex = DockArea->property("currentIndex").toInt();
-    		if (CurrentIndex < DockArea->count() && DockArea->count() > 1 && CurrentIndex > -1)
+    		int OpenDockWidgetCount = DockArea->openedDockWidgets().count();
+    		if (CurrentIndex < OpenDockWidgetCount && OpenDockWidgetCount > 1 && CurrentIndex > -1)
     		{
     			DockArea->setCurrentIndex(CurrentIndex);
     		}
@@ -379,6 +380,30 @@ CDockAreaWidget* CDockManager::addDockWidget(DockWidgetArea area,
 {
 	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
 	return CDockContainerWidget::addDockWidget(area, Dockwidget, DockAreaWidget);
+}
+
+
+//============================================================================
+CDockAreaWidget* CDockManager::addDockWidgetTab(DockWidgetArea area,
+	CDockWidget* Dockwidget)
+{
+	CDockAreaWidget* AreaWidget = lastAddedDockAreaWidget(area);
+	if (AreaWidget)
+	{
+		return addDockWidget(ads::CenterDockWidgetArea, Dockwidget, AreaWidget);
+	}
+	else
+	{
+		return addDockWidget(area, Dockwidget, AreaWidget);
+	}
+}
+
+
+//============================================================================
+CDockAreaWidget* CDockManager::addDockWidgetTabToArea(CDockWidget* Dockwidget,
+	CDockAreaWidget* DockAreaWidget)
+{
+	return addDockWidget(ads::CenterDockWidgetArea, Dockwidget, DockAreaWidget);
 }
 
 

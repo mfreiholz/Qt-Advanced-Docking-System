@@ -59,7 +59,7 @@ struct DockWidgetPrivate
 	CDockWidget* _this;
 	QBoxLayout* Layout;
 	QWidget* Widget = nullptr;
-	CDockWidgetTab* TitleWidget;
+	CDockWidgetTab* TabWidget;
 	CDockWidget::DockWidgetFeatures Features = CDockWidget::AllDockWidgetFeatures;
 	CDockManager* DockManager = nullptr;
 	CDockAreaWidget* DockArea = nullptr;
@@ -87,9 +87,11 @@ struct DockWidgetPrivate
 	void hideEmptyParentSplitters();
 
 	/**
-	 * Hides a dock area if all dock widgets in the area are closed
+	 * Hides a dock area if all dock widgets in the area are closed.
+	 * This function updates the current selected tab and hides the parent
+	 * dock area if it is empty
 	 */
-	void hideEmptyParentDockArea();
+	void updateParentDockArea();
 
 	/**
 	 * Hides a floating widget if all dock areas are empty - that means,
@@ -141,8 +143,8 @@ void DockWidgetPrivate::showDockWidget()
 //============================================================================
 void DockWidgetPrivate::hideDockWidget()
 {
-	TitleWidget->hide();
-	hideEmptyParentDockArea();
+	TabWidget->hide();
+	updateParentDockArea();
 	hideEmptyParentSplitters();
 	hideEmptyFloatingWidget();
 }
@@ -164,22 +166,11 @@ void DockWidgetPrivate::hideEmptyParentSplitters()
 
 
 //============================================================================
-void DockWidgetPrivate::hideEmptyParentDockArea()
+void DockWidgetPrivate::updateParentDockArea()
 {
-	auto OpenDockWidgets = DockArea->openedDockWidgets();
-	if (OpenDockWidgets.count() > 1)
+	auto NextDockWidget = DockArea->nextOpenDockWidget(_this);
+	if (NextDockWidget)
 	{
-		CDockWidget* NextDockWidget;
-		if (OpenDockWidgets.last() == _this)
-		{
-			NextDockWidget = OpenDockWidgets[OpenDockWidgets.count() - 2];
-		}
-		else
-		{
-			int NextIndex = OpenDockWidgets.indexOf(_this) + 1;
-			NextDockWidget = OpenDockWidgets[NextIndex];
-		}
-
 		DockArea->setCurrentDockWidget(NextDockWidget);
 	}
 	else
@@ -213,7 +204,7 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 	setWindowTitle(title);
 	setObjectName(title);
 
-	d->TitleWidget = new CDockWidgetTab(this);
+	d->TabWidget = new CDockWidgetTab(this);
 	d->ToggleViewAction = new QAction(title);
 	d->ToggleViewAction->setCheckable(true);
 	connect(d->ToggleViewAction, SIGNAL(triggered(bool)), this,
@@ -262,9 +253,9 @@ QWidget* CDockWidget::widget() const
 
 
 //============================================================================
-CDockWidgetTab* CDockWidget::titleBar() const
+CDockWidgetTab* CDockWidget::tabWidget() const
 {
-	return d->TitleWidget;
+	return d->TabWidget;
 }
 
 
@@ -320,7 +311,39 @@ CDockAreaWidget* CDockWidget::dockAreaWidget() const
 //============================================================================
 bool CDockWidget::isFloating() const
 {
-	return dockContainer() ? dockContainer()->isFloating() : false;
+	if (!isInFloatingContainer())
+	{
+		return false;
+	}
+
+	if (dockContainer()->dockAreaCount() != 1)
+	{
+		return false;
+	}
+
+	if (dockContainer()->dockArea(0)->count() != 1)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+
+//============================================================================
+bool CDockWidget::isInFloatingContainer() const
+{
+	if (!dockContainer())
+	{
+		return false;
+	}
+
+	if (!dockContainer()->isFloating())
+	{
+		return false;
+	}
+
+	return true;
 }
 
 
@@ -349,7 +372,7 @@ void CDockWidget::setToggleViewActionMode(eToggleViewActionMode Mode)
 	else
 	{
 		d->ToggleViewAction->setCheckable(false);
-		d->ToggleViewAction->setIcon(d->TitleWidget->icon());
+		d->ToggleViewAction->setIcon(d->TabWidget->icon());
 	}
 }
 
@@ -375,6 +398,8 @@ void CDockWidget::toggleView(bool Open)
 	d->ToggleViewAction->blockSignals(true);
 	d->ToggleViewAction->setChecked(Open);
 	d->ToggleViewAction->blockSignals(false);
+	d->DockArea->toggleDockWidgetView(this, Open);
+
 	if (!Open)
 	{
 		emit closed();
@@ -406,7 +431,7 @@ void CDockWidget::flagAsUnassigned()
 {
 	setParent(d->DockManager);
 	setDockArea(nullptr);
-	titleBar()->setParent(this);
+	tabWidget()->setParent(this);
 }
 
 
@@ -424,7 +449,7 @@ bool CDockWidget::event(QEvent *e)
 //============================================================================
 void CDockWidget::setIcon(const QIcon& Icon)
 {
-	d->TitleWidget->setIcon(Icon);
+	d->TabWidget->setIcon(Icon);
 	if (!d->ToggleViewAction->isCheckable())
 	{
 		d->ToggleViewAction->setIcon(Icon);
@@ -435,7 +460,7 @@ void CDockWidget::setIcon(const QIcon& Icon)
 //============================================================================
 QIcon CDockWidget::icon() const
 {
-	return d->TitleWidget->icon();
+	return d->TabWidget->icon();
 }
 
 

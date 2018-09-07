@@ -59,11 +59,14 @@ private:
 	friend class CDockContainerWidget;
 	friend class DockContainerWidgetPrivate;
 	friend class CDockWidgetTab;
+	friend struct DockWidgetPrivate;
+	friend class CDockWidget;
 
 private slots:
 	void onDockWidgetTitleClicked();
 	void onTabsMenuActionTriggered(QAction* Action);
 	void onCloseButtonClicked();
+	void onTabsMenuAboutToShow();
 
 protected:
 	/**
@@ -97,6 +100,18 @@ protected:
 	 */
 	void reorderDockWidget(int fromIndex, int toIndex);
 
+	/**
+	 * Called from dock widget if it is opened or closed
+	 */
+	void toggleDockWidgetView(CDockWidget* DockWidget, bool Open);
+
+	/**
+	 * This is a helper function to get the next open dock widget to activate
+	 * if the given DockWidget will be closed or removed.
+	 * The function returns the next widget that should be activated or
+	 * nullptr in case there are no more open widgets in this area.
+	 */
+	CDockWidget* nextOpenDockWidget(CDockWidget* DockWidget) const;
 
 public:
 	/**
@@ -178,7 +193,9 @@ public:
 
 public slots:
 	/**
-	 * This sets the index position of the current tab page.
+	 * This activates the tab for the given tab index.
+	 * If the dock widget for the given tab is not visible, the this function
+	 * call will make it visible.
 	 */
 	void setCurrentIndex(int index);
 

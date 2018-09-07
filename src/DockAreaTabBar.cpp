@@ -18,6 +18,7 @@
 #include "DockAreaWidget.h"
 #include "DockOverlay.h"
 #include "DockManager.h"
+#include "DockWidget.h"
 
 namespace ads
 {
@@ -166,6 +167,10 @@ void CDockAreaTabBar::startFloating(const QPoint& Pos)
 	CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(d->DockArea);
 	FloatingWidget->startFloating(Pos, Size);
 	d->FloatingWidget = FloatingWidget;
+	if (d->FloatingWidget->hasSingleDockWidget())
+	{
+		emit d->FloatingWidget->firstDockWidget()->topLevelChanged(true);
+	}
 }
 } // namespace ads
 

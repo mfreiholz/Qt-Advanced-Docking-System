@@ -129,6 +129,22 @@ public:
 		CDockAreaWidget* DockAreaWidget = nullptr);
 
 	/**
+	 * This function will add the given Dockwidget to the given dock area as
+	 * a new tab.
+	 * If no dock area widget exists for the given area identifier, a new
+	 * dock area widget is created.
+	 */
+	CDockAreaWidget* addDockWidgetTab(DockWidgetArea area,
+		CDockWidget* Dockwidget);
+
+	/**
+	 * This function will add the given Dockwidget to the given DockAreaWidget
+	 * as a new tab.
+	 */
+	CDockAreaWidget* addDockWidgetTabToArea(CDockWidget* Dockwidget,
+		CDockAreaWidget* DockAreaWidget);
+
+	/**
 	 * Searches for a registered doc widget with the given ObjectName
 	 * \return Return the found dock widget or nullptr if a dock widget with the
 	 * given name is not registered

@@ -164,7 +164,7 @@ public:
 	/**
 	 * Returns the title bar widget of this dock widget
 	 */
-	CDockWidgetTab* titleBar() const;
+	CDockWidgetTab* tabWidget() const;
 
 	/**
 	 * Sets, whether the dock widget is movable, closable, and floatable.
@@ -193,7 +193,7 @@ public:
 
 	/**
 	 * Returns the dock container widget this dock area widget belongs to or 0
-	 * if this dock widget has nt been docked yet
+	 * if this dock widget has not been docked yet
 	 */
 	CDockContainerWidget* dockContainer() const;
 
@@ -205,8 +205,18 @@ public:
 
 	/**
 	 * This property holds whether the dock widget is floating.
+	 * A dock widget is only floating, if it is the one and only widget inside
+	 * of a floating container. If there are more than one dock widget in a
+	 * floating container, the all dock widgets are docked and not floating.
 	 */
 	bool isFloating() const;
+
+	/**
+	 * This function returns true, if this dock widget is in a floating.
+	 * The function returns true, if the dock widget is floating and it also
+	 * returns true if it is docked inside of a floating container.
+	 */
+	bool isInFloatingContainer() const;
 
 	/**
 	 * Returns true, if this dock widget is closed.
@@ -266,6 +276,13 @@ signals:
 	 * changed
 	 */
 	void titleChanged(const QString& Title);
+
+	/**
+	 * This signal is emitted when the floating property changes.
+	 * The topLevel parameter is true if the dock widget is now floating;
+	 * otherwise it is false.
+	 */
+	void topLevelChanged(bool topLevel);
 }; // class DockWidget
 }
  // namespace ads

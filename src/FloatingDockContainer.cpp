@@ -481,6 +481,25 @@ bool CFloatingDockContainer::restoreState(QXmlStreamReader& Stream, bool Testing
 }
 
 
+//============================================================================
+bool CFloatingDockContainer::hasSingleDockWidget() const
+{
+	if (d->DockContainer->dockAreaCount() != 1)
+	{
+		return false;
+	}
+
+	return d->DockContainer->dockArea(0)->count() == 1;
+}
+
+
+//============================================================================
+CDockWidget* CFloatingDockContainer::firstDockWidget() const
+{
+	return d->DockContainer->dockArea(0)->dockWidget(0);
+}
+
+
 } // namespace ads
 
 //---------------------------------------------------------------------------

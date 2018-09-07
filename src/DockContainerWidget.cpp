@@ -54,6 +54,26 @@ namespace ads
 {
 static unsigned int zOrderCounter = 0;
 
+
+/**
+ * Converts dock area ID to an index for array access
+ */
+static int areaIdToIndex(DockWidgetArea area)
+{
+	switch (area)
+	{
+	case LeftDockWidgetArea: return 0;
+	case RightDockWidgetArea: return 1;
+	case TopDockWidgetArea: return 2;
+	case BottomDockWidgetArea: return 3;
+	case CenterDockWidgetArea: return 4;
+	default:
+		return 4;
+	}
+
+	return 4;
+}
+
 /**
  * Helper function to ease insertion of dock area into splitter
  */
@@ -81,6 +101,7 @@ struct DockContainerWidgetPrivate
 	QGridLayout* Layout = nullptr;
 	QSplitter* RootSplitter;
 	bool isFloating = false;
+	CDockAreaWidget* LastAddedAreaCache[5]{0, 0, 0, 0, 0};
 
 	/**
 	 * Private data constructor
@@ -172,7 +193,6 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 	auto InsertParam = internal::dockAreaInsertParameters(area);
 	auto NewDockAreas = FloatingWidget->dockContainer()->findChildren<CDockAreaWidget*>(
 		QString(), Qt::FindChildrenRecursively);
-	CDockWidget* DockWidget = FloatingWidget->dockContainer()->findChild<CDockWidget*>();
 	QSplitter* Splitter = RootSplitter;
 
 	if (DockAreas.count() <= 1)
@@ -209,9 +229,12 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 	RootSplitter = Splitter;
 	addDockAreasToList(NewDockAreas);
 	FloatingWidget->deleteLater();
-	if (DockWidget)
+	// If we dropped the floating widget into the main dock container that does
+	// not contain any dock widgets, then splitter is invisible and we need to
+	// show it to display the docked widgets
+	if (!Splitter->isVisible())
 	{
-		DockWidget->toggleView(true);
+		Splitter->show();
 	}
 	_this->dumpLayout();
 }
@@ -503,6 +526,8 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 		qDebug() << "Dock Widget found - parent " << DockWidget->parent();
 		DockArea->addDockWidget(DockWidget);
 
+		// We hide the DockArea here to prevent the short display (the flashing)
+		// of the dock areas during application startup
 		DockArea->hide();
 		DockWidget->setToggleViewActionChecked(!Closed);
 		DockWidget->setProperty("closed", Closed);
@@ -565,6 +590,7 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoContainer(DockWidgetA
 	CDockAreaWidget* NewDockArea = new CDockAreaWidget(DockManager, _this);
 	NewDockArea->addDockWidget(Dockwidget);
 	addDockArea(NewDockArea, area);
+	LastAddedAreaCache[areaIdToIndex(area)] = NewDockArea;
 	return NewDockArea;
 }
 
@@ -689,7 +715,6 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 {
 	d->isFloating = dynamic_cast<CFloatingDockContainer*>(parent) != 0;
 
-	//setStyleSheet("background: green;");
 	d->DockManager = DockManager;
 	if (DockManager != this)
 	{
@@ -905,6 +930,8 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	CDockAreaWidget* DockArea = dockAreaAt(TargetPos);
 	auto dropArea = InvalidDockWidgetArea;
 	auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
+	CDockWidget* TopLevelDockWidget = FloatingWidget->hasSingleDockWidget() ?
+		FloatingWidget->firstDockWidget() : nullptr;
 	if (DockArea)
 	{
 		auto dropOverlay = d->DockManager->dockAreaOverlay();
@@ -932,6 +959,13 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 		{
 			d->dropIntoContainer(FloatingWidget, dropArea);
 		}
+	}
+
+	// If we drop a floating widget with only one single dock widget, then we
+	// drop a top level widget that changes from floating to docked now
+	if (TopLevelDockWidget)
+	{
+		emit TopLevelDockWidget->topLevelChanged(false);
 	}
 }
 
@@ -1044,6 +1078,13 @@ void CDockContainerWidget::dumpLayout()
 	qDebug("\n\nDumping layout --------------------------");
 	d->dumpRecursive(0, d->RootSplitter);
 	qDebug("--------------------------\n\n");
+}
+
+
+//============================================================================
+CDockAreaWidget* CDockContainerWidget::lastAddedDockAreaWidget(DockWidgetArea area) const
+{
+	return d->LastAddedAreaCache[areaIdToIndex(area)];
 }
 
 
