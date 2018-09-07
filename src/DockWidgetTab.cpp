@@ -373,6 +373,22 @@ const QIcon& CDockWidgetTab::icon() const
 {
 	return d->Icon;
 }
+
+
+//============================================================================
+void CDockWidgetTab::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	// If this is the last dock area in a dock container it does not make
+	// sense to move it to a new floating widget and leave this one
+	// empty
+	if (!d->DockArea->dockContainer()->isFloating() || d->DockArea->count() > 1)
+	{
+		d->startFloating();
+	}
+
+	Super::mouseDoubleClickEvent(event);
+}
+
 } // namespace ads
 
 //---------------------------------------------------------------------------

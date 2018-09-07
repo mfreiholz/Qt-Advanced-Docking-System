@@ -59,7 +59,13 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent* ev) override;
 	virtual void mouseMoveEvent(QMouseEvent* ev) override;
 
+	/**
+	 * Double clicking the tab widget makes the assigned dock widget floating
+	 */
+	virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
+
 public:
+	using Super = QFrame;
 	/**
 	 * Default Constructor
 	 * param[in] DockWidget The dock widget this title bar belongs to
