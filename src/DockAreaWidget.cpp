@@ -43,15 +43,12 @@
 #include <QXmlStreamWriter>
 #include <QVector>
 
-
 #include "DockContainerWidget.h"
 #include "DockWidget.h"
 #include "FloatingDockContainer.h"
 #include "DockManager.h"
 #include "DockOverlay.h"
 #include "DockAreaTabBar.h"
-
-#include <iostream>
 
 
 namespace ads
@@ -103,7 +100,7 @@ struct DockAreaWidgetPrivate
 	/**
 	 * Convenience function to ease title widget access by index
 	 */
-	CDockWidgetTab* titleWidgetAt(int index)
+	CDockWidgetTab* tabWidgetAt(int index)
 	{
 		return dockWidgetAt(index)->tabWidget();
 	}
@@ -504,13 +501,6 @@ int CDockAreaWidget::index(CDockWidget* DockWidget)
 
 
 //============================================================================
-int CDockAreaWidget::tabIndex(CDockWidget* DockWidget)
-{
-
-}
-
-
-//============================================================================
 QList<CDockWidget*> CDockAreaWidget::dockWidgets() const
 {
 	QList<CDockWidget*> DockWidgetList;
@@ -543,8 +533,8 @@ int CDockAreaWidget::indexOfContentByTitlePos(const QPoint& p, QWidget* exclude)
 {
 	for (int i = 0; i < d->ContentsLayout->count(); ++i)
 	{
-		auto TitleWidget = d->titleWidgetAt(i);
-		if (TitleWidget->geometry().contains(p) && (!exclude || TitleWidget != exclude))
+		auto TabWidget = d->tabWidgetAt(i);
+		if (TabWidget->isVisible() && TabWidget->geometry().contains(p) && (!exclude || TabWidget != exclude))
 		{
 			return i;
 		}
@@ -673,7 +663,6 @@ CDockWidget* CDockAreaWidget::nextOpenDockWidget(CDockWidget* DockWidget) const
 //============================================================================
 void CDockAreaWidget::onTabsMenuAboutToShow()
 {
-	std::cout << "CDockAreaWidget::onTabsMenuAboutToShow()" << std::endl;
 	d->updateTabsMenu();
 }
 

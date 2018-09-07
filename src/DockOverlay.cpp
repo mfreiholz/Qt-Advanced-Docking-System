@@ -37,8 +37,6 @@
 
 #include "DockAreaWidget.h"
 
-#include <iostream>
-
 namespace ads
 {
 

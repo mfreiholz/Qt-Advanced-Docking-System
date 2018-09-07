@@ -43,7 +43,6 @@
 #include "DockWidget.h"
 #include "DockOverlay.h"
 
-#include <iostream>
 
 namespace ads
 {

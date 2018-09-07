@@ -118,11 +118,6 @@ protected:
 	 */
 	int index(CDockWidget* DockWidget);
 
-	/**
-	 * Returns the tab index for the given dock widget
-	 */
-	int tabIndex(CDockWidget* DockWidget);
-
 public:
 	/**
 	 * Default Constructor

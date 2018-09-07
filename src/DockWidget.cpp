@@ -49,7 +49,6 @@
 #include "DockSplitter.h"
 #include "ads_globals.h"
 
-#include <iostream>
 
 namespace ads
 {
@@ -382,8 +381,6 @@ void CDockWidget::setToggleViewActionMode(eToggleViewActionMode Mode)
 //============================================================================
 void CDockWidget::toggleView(bool Open)
 {
-	std::cout << "CDockWidget::toggleView " << objectName().toStdString()
-		<< " " << Open << std::endl;
 	QAction* Sender = qobject_cast<QAction*>(sender());
 	if (Sender == d->ToggleViewAction && !d->ToggleViewAction->isCheckable())
 	{

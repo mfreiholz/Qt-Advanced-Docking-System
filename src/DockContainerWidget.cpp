@@ -30,8 +30,6 @@
 //============================================================================
 #include "DockContainerWidget.h"
 
-#include <iostream>
-
 #include <QEvent>
 #include <QList>
 #include <QGridLayout>

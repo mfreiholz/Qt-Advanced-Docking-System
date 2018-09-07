@@ -251,7 +251,7 @@ void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 			toIndex = d->DockArea->count() - 1;
 		}
 		qDebug() << "Move tab from " << fromIndex << " to " << toIndex;
-		//d->DockArea->reorderDockWidget(fromIndex, toIndex);
+		d->DockArea->reorderDockWidget(fromIndex, toIndex);
 	}
 
     if (!d->DragStartMousePosition.isNull())

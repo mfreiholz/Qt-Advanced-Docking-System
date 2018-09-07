@@ -31,7 +31,6 @@
 #include <DockWidgetTab.h>
 #include "DockManager.h"
 
-#include <iostream>
 
 #include <QMainWindow>
 #include <QList>
