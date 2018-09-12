@@ -34,6 +34,7 @@
 
 #include "ads_globals.h"
 
+class QToolBar;
 class QXmlStreamWriter;
 
 namespace ads
@@ -55,6 +56,12 @@ class ADS_EXPORT CDockWidget : public QFrame
 private:
 	DockWidgetPrivate* d; ///< private data (pimpl)
 	friend struct DockWidgetPrivate;
+
+private slots:
+	/**
+	 * Adjusts the toolbar icon sizes according to the floating state
+	 */
+	void setToolbarFloatingStyle(bool topLevel);
 
 protected:
 	friend class CDockContainerWidget;
@@ -109,13 +116,33 @@ public:
 	};
 	Q_DECLARE_FLAGS(DockWidgetFeatures, DockWidgetFeature)
 
-
 	enum eState
 	{
 		StateHidden,
 		StateDocked,
 		StateFloating
 	};
+
+	/**
+	 * Use the layout flags to configure the layout of the dock widget.
+	 * The content of a dock widget should be resizable do a very small size to
+	 * prevent the dock widget from blocking the resizing. To ensure, that a
+	 * dock widget can be resized very well, it is better to insert the content+
+	 * widget into a scroll area. Enable the WithScrollArea
+	 * feature to use this feature. If your content widget is already in a
+	 * scroll area or if it is a derived class like QTableView, the you should
+	 * disable the WithScrollArea flag.
+	 * Often dock widgets need a ToolBar for control of operations in the dock
+	 * widget. Use the WithToolBar feature to enable a tool bar that is placed
+	 * on top of the dock widget content. If this flag is disabled, the toolBar()
+	 * function returns a nullptr.
+	 */
+	enum LayoutFlag
+	{
+		WithScrollArea = 0x01,
+		WithTopToolBar = 0x02
+	};
+	Q_DECLARE_FLAGS(LayoutFlags, LayoutFlag)
 
 	/**
 	 * This mode configures the behavior of the toggle view action.
@@ -131,6 +158,7 @@ public:
 		ActionModeShow   //!< ActionModeShow
 	};
 
+
 	/**
 	 * This constructor creates a dock widget with the given title.
 	 * The title is the text that is shown in the window title when the dock
@@ -142,8 +170,10 @@ public:
 	 * If your title is not unique or if you would like to change the title
 	 * during runtime, you need to set a unique object name explicitely
 	 * by calling setObjectName() after construction.
+	 * Use the layoutFlags to configure the layout of the dock widget.
 	 */
-	CDockWidget(const QString &title, QWidget* parent = 0);
+	CDockWidget(const QString &title, QWidget* parent = 0,
+		LayoutFlags layoutFlags = 0);
 
 	/**
 	 * Virtual Destructor
@@ -245,6 +275,50 @@ public:
 	 * Returns tzhe icon that has been assigned to the dock widget
 	 */
 	QIcon icon() const;
+
+	/**
+	 * If the WithToolBar layout flag is enabled, then this function returns
+	 * the dock widget toolbar. If the flag is disabled, the function returns
+	 * a nullptr.
+	 */
+	QToolBar* toolBar() const;
+
+	/**
+	 * Assign a new tool bar that is shown above the content widget.
+	 * The dock widget will become the owner of the tool bar and deletes it
+	 * on destruction
+	 */
+	void setToolBar(QToolBar* ToolBar);
+
+	/**
+	 * This function sets the tool button style for the given dock widget state.
+	 * It is possible to switch the tool button style depending on the state.
+	 * If a dock widget is floating, then here are more space and it is
+	 * possible to select a style that requires more space like
+	 * Qt::ToolButtonTextUnderIcon. For the docked state Qt::ToolButtonIconOnly
+	 * might be better.
+	 */
+	void setToolBarStyle(Qt::ToolButtonStyle Style, eState State);
+
+	/**
+	 * Returns the tool button style for the given docking state.
+	 * \see setToolBarStyle()
+	 */
+	Qt::ToolButtonStyle toolBarStyle(eState State) const;
+
+	/**
+	 * This function sets the tool button icon size for the given state.
+	 * If a dock widget is floating, there is more space an increasing the
+	 * icon size is possible. For docked widgets, small icon sizes, eg. 16 x 16
+	 * might be better.
+	 */
+	void setToolBarIconSize(const QSize& IconSize, eState State);
+
+	/**
+	 * Returns the icon size for a given docking state.
+	 * \see setToolBarIconSize()
+	 */
+	QSize toolBarIconSize(eState State) const;
 
 
 public: // reimplements QFrame -----------------------------------------------

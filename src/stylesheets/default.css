@@ -63,4 +63,10 @@ QPushButton#tabsMenuButton
 	padding: 2px;
 }
 
+QScrollArea#dockWidgetScrollArea
+{
+	padding: 0px;
+	border: none;
+}
+
 

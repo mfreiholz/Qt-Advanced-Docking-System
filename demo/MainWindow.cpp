@@ -93,7 +93,8 @@ static ads::CDockWidget* createCalendarDockWidget(QMenu* ViewMenu)
 {
 	static int CalendarCount = 0;
 	QCalendarWidget* w = new QCalendarWidget();
-	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Calendar %1").arg(CalendarCount++));
+	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Calendar %1").arg(CalendarCount++),
+		nullptr, ads::CDockWidget::WithScrollArea);
 	DockWidget->setWidget(w);
 	DockWidget->setToggleViewActionMode(ads::CDockWidget::ActionModeShow);
 	ViewMenu->addAction(DockWidget->toggleViewAction());
@@ -110,7 +111,8 @@ static ads::CDockWidget* createFileSystemTreeDockWidget(QMenu* ViewMenu)
 	QFileSystemModel* m = new QFileSystemModel(w);
 	m->setRootPath(QDir::currentPath());
 	w->setModel(m);
-	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Filesystem %1").arg(FileSystemCount++));
+	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Filesystem %1").arg(FileSystemCount++),
+		nullptr, ads::CDockWidget::WithTopToolBar);
 	DockWidget->setWidget(w);
 	ViewMenu->addAction(DockWidget->toggleViewAction());
     return DockWidget;
@@ -174,9 +176,16 @@ void MainWindowPrivate::createContent()
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
 	DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
 	DockManager->addDockWidget(ads::LeftDockWidgetArea, createLongTextLabelDockWidget(ViewMenu));
-	DockManager->addDockWidget(ads::BottomDockWidgetArea, createFileSystemTreeDockWidget(ViewMenu));
-
 	auto FileSystemWidget = createFileSystemTreeDockWidget(ViewMenu);
+	auto ToolBar = FileSystemWidget->toolBar();
+	ToolBar->addAction(ui.actionSaveState);
+	ToolBar->addAction(ui.actionRestoreState);
+	DockManager->addDockWidget(ads::BottomDockWidgetArea, FileSystemWidget);
+
+	FileSystemWidget = createFileSystemTreeDockWidget(ViewMenu);
+	ToolBar = FileSystemWidget->toolBar();
+	ToolBar->addAction(ui.actionSaveState);
+	ToolBar->addAction(ui.actionRestoreState);
 	FileSystemWidget->setFeature(ads::CDockWidget::DockWidgetMovable, false);
 	auto TopDockArea = DockManager->addDockWidget(ads::TopDockWidgetArea, FileSystemWidget);
 	DockWidget = createCalendarDockWidget(ViewMenu);

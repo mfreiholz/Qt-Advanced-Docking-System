@@ -35,10 +35,12 @@
 #include <QAction>
 #include <QSplitter>
 #include <QStack>
+#include <QScrollArea>
 #include <QTextStream>
 #include <QPointer>
 #include <QEvent>
 #include <QDebug>
+#include <QToolBar>
 #include <QXmlStreamWriter>
 
 #include "DockContainerWidget.h"
@@ -66,6 +68,13 @@ struct DockWidgetPrivate
 	CDockAreaWidget* DockArea = nullptr;
 	QAction* ToggleViewAction;
 	bool Closed = false;
+	CDockWidget::LayoutFlags LayoutFlags;
+	QScrollArea* ScrollArea = nullptr;
+	QToolBar* ToolBar = nullptr;
+	Qt::ToolButtonStyle ToolBarStyleDocked = Qt::ToolButtonIconOnly;
+	Qt::ToolButtonStyle ToolBarStyleFloating = Qt::ToolButtonTextUnderIcon;
+	QSize ToolBarIconSizeDocked = QSize(16, 16);
+	QSize ToolBarIconSizeFloating = QSize(24, 24);
 
 	/**
 	 * Private data constructor
@@ -99,6 +108,16 @@ struct DockWidgetPrivate
 	 * if all dock widgets in all dock areas are closed
 	 */
 	void hideEmptyFloatingWidget();
+
+	/**
+	 * Setup the top tool bar
+	 */
+	void setupToolBar();
+
+	/**
+	 * Setup the main scroll area
+	 */
+	void setupScrollArea();
 };
 // struct DockWidgetPrivate
 
@@ -194,22 +213,61 @@ void DockWidgetPrivate::hideEmptyFloatingWidget()
 
 
 //============================================================================
-CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
+void DockWidgetPrivate::setupToolBar()
+{
+	if (!LayoutFlags.testFlag(CDockWidget::WithTopToolBar))
+	{
+		return;
+	}
+
+	ToolBar = new QToolBar(_this);
+	ToolBar->setObjectName("dockWidgetToolBar");
+	Layout->addWidget(ToolBar);
+	ToolBar->setIconSize(QSize(16, 16));
+	ToolBar->toggleViewAction()->setEnabled(false);
+	ToolBar->toggleViewAction()->setVisible(false);
+	_this->connect(_this, SIGNAL(topLevelChanged(bool)), SLOT(setToolbarFloatingStyle(bool)));
+}
+
+
+
+//============================================================================
+void DockWidgetPrivate::setupScrollArea()
+{
+	if (!LayoutFlags.testFlag(CDockWidget::WithScrollArea))
+	{
+		return;
+	}
+
+	ScrollArea = new QScrollArea(_this);
+	ScrollArea->setObjectName("dockWidgetScrollArea");
+	ScrollArea->setWidgetResizable(true);
+	Layout->addWidget(ScrollArea);
+}
+
+
+//============================================================================
+CDockWidget::CDockWidget(const QString &title, QWidget *parent,
+	LayoutFlags layoutFlags) :
 	QFrame(parent),
 	d(new DockWidgetPrivate(this))
 {
+	d->LayoutFlags = layoutFlags;
 	d->Layout = new QBoxLayout(QBoxLayout::TopToBottom);
 	d->Layout->setContentsMargins(0, 0, 0, 0);
 	d->Layout->setSpacing(0);
 	setLayout(d->Layout);
 	setWindowTitle(title);
 	setObjectName(title);
+	d->setupToolBar();
+	d->setupScrollArea();
 
 	d->TabWidget = new CDockWidgetTab(this);
 	d->ToggleViewAction = new QAction(title);
 	d->ToggleViewAction->setCheckable(true);
 	connect(d->ToggleViewAction, SIGNAL(triggered(bool)), this,
 		SLOT(toggleView(bool)));
+	setToolbarFloatingStyle(false);
 }
 
 //============================================================================
@@ -233,7 +291,11 @@ void CDockWidget::setToggleViewActionChecked(bool Checked)
 //============================================================================
 void CDockWidget::setWidget(QWidget* widget)
 {
-	if (d->Widget)
+	if (d->LayoutFlags.testFlag(WithScrollArea))
+	{
+		d->ScrollArea->setWidget(widget);
+	}
+	else if (d->Widget)
 	{
 		d->Layout->replaceWidget(d->Widget, widget);
 	}
@@ -243,6 +305,7 @@ void CDockWidget::setWidget(QWidget* widget)
 	}
 
 	d->Widget = widget;
+	d->Widget->setProperty("dockWidgetContent", true);
 }
 
 
@@ -464,6 +527,109 @@ QIcon CDockWidget::icon() const
 	return d->TabWidget->icon();
 }
 
+
+//============================================================================
+QToolBar* CDockWidget::toolBar() const
+{
+	return d->ToolBar;
+}
+
+
+//============================================================================
+void CDockWidget::setToolBar(QToolBar* ToolBar)
+{
+	if (d->ToolBar)
+	{
+		delete d->ToolBar;
+	}
+
+	d->ToolBar = ToolBar;
+	d->Layout->insertWidget(0, d->ToolBar);
+	this->connect(this, SIGNAL(topLevelChanged(bool)), SLOT(setToolbarFloatingStyle(bool)));
+	setToolbarFloatingStyle(isFloating());
+}
+
+
+//============================================================================
+void CDockWidget::setToolBarStyle(Qt::ToolButtonStyle Style, eState State)
+{
+	if (StateFloating == State)
+	{
+		d->ToolBarStyleFloating = Style;
+	}
+	else
+	{
+		d->ToolBarStyleDocked = Style;
+	}
+
+	setToolbarFloatingStyle(isFloating());
+}
+
+
+//============================================================================
+Qt::ToolButtonStyle CDockWidget::toolBarStyle(eState State) const
+{
+	if (StateFloating == State)
+	{
+		return d->ToolBarStyleFloating;
+	}
+	else
+	{
+		return d->ToolBarStyleDocked;
+	}
+}
+
+
+//============================================================================
+void CDockWidget::setToolBarIconSize(const QSize& IconSize, eState State)
+{
+	if (StateFloating == State)
+	{
+		d->ToolBarIconSizeFloating = IconSize;
+	}
+	else
+	{
+		d->ToolBarIconSizeDocked = IconSize;
+	}
+
+	setToolbarFloatingStyle(isFloating());
+}
+
+
+//============================================================================
+QSize CDockWidget::toolBarIconSize(eState State) const
+{
+	if (StateFloating == State)
+	{
+		return d->ToolBarIconSizeFloating;
+	}
+	else
+	{
+		return d->ToolBarIconSizeDocked;
+	}
+}
+
+
+//============================================================================
+void CDockWidget::setToolbarFloatingStyle(bool Floating)
+{
+	if (!d->ToolBar)
+	{
+		return;
+	}
+
+	auto IconSize = Floating ? d->ToolBarIconSizeFloating : d->ToolBarIconSizeDocked;
+	if (IconSize != d->ToolBar->iconSize())
+	{
+		d->ToolBar->setIconSize(IconSize);
+	}
+
+	auto ButtonStyle = Floating ? d->ToolBarStyleFloating : d->ToolBarStyleDocked;
+	if (ButtonStyle != d->ToolBar->toolButtonStyle())
+	{
+		d->ToolBar->setToolButtonStyle(ButtonStyle);
+	}
+}
 
 
 } // namespace ads
