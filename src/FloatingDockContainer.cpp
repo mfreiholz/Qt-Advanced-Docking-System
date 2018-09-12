@@ -47,6 +47,15 @@
 namespace ads
 {
 static unsigned int zOrderCounter = 0;
+/**
+ * The different dragging states
+ */
+enum eDragState
+{
+	StateInactive,     //!< DraggingInactive
+	StateMousePressed, //!< DraggingMousePressed
+	StateDraggingActive//!< DraggingFloatingWidget
+};
 
 /**
  * Private data class of CFloatingDockContainer class (pimpl)
@@ -196,6 +205,7 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
 //============================================================================
 void FloatingDockContainerPrivate::setDraggingActive(bool Active)
 {
+	qDebug() << "FloatingDockContainerPrivate::setDraggingActive " << Active;
 	DraggingActive = Active;
 	if (!DraggingActive)
 	{
@@ -349,7 +359,6 @@ bool CFloatingDockContainer::event(QEvent *e)
 		if (QGuiApplication::mouseButtons() == Qt::LeftButton)
 		{
 			qDebug() << "FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type();
-			d->setDraggingActive(true);
 			d->NonClientAreaMouseButtonPress = true;
 		}
 	}
@@ -363,21 +372,16 @@ bool CFloatingDockContainer::event(QEvent *e)
 		qDebug() << "FloatingWidget::event QEvent::NonClientAreaMouseButtonRelease";
 		d->titleMouseReleaseEvent();
 	}
-	else if (d->NonClientAreaMouseButtonPress && (e->type() == QEvent::Resize))
+	else if (!d->DraggingActive && d->NonClientAreaMouseButtonPress && (e->type() == QEvent::Resize))
 	{
-		// If user resizes the floating widget, we do not want to show any
-		// drop overlays or drop overlay icons. If the window is maximized,
-		// then dragging the window via title bar will cause the widget to
-		// leave the maximized state. This in turn will trigger a resize event.
-		// To know, if the resize event was triggered by user via moving a
-		// corner of the window frame or if it was caused by a windows state
-		// change, we check, if we are not in maximized state.
-		if (!isMaximized())
-		{
-			d->setDraggingActive(false);
-		}
+		d->NonClientAreaMouseButtonPress = false;
+	}
+	else if (!d->DraggingActive && d->NonClientAreaMouseButtonPress && (e->type() == QEvent::Move))
+	{
+		d->setDraggingActive(true);
 	}
 
+	qDebug() << "CFloatingDockContainer::event " << e->type();
 	return QWidget::event(e);
 }
 
