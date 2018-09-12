@@ -66,8 +66,7 @@ struct FloatingDockContainerPrivate
 	CDockContainerWidget* DockContainer;
 	unsigned int zOrderIndex = ++zOrderCounter;
 	QPointer<CDockManager> DockManager;
-	bool DraggingActive = false;
-	bool NonClientAreaMouseButtonPress = false;
+	eDragState DraggingState = StateInactive;
 	QPoint DragStartMousePosition;
 	CDockContainerWidget* DropContainer = nullptr;
 	CDockAreaWidget* SingleDockArea = nullptr;
@@ -79,9 +78,23 @@ struct FloatingDockContainerPrivate
 
 	void titleMouseReleaseEvent();
 	void updateDropOverlays(const QPoint& GlobalPos);
-	void setDraggingActive(bool Active);
+
+	/**
+	 * Tests is a certain state is active
+	 */
+	bool isState(eDragState StateId) const
+	{
+		return StateId == DraggingState;
+	}
+
+	void setState(eDragState StateId)
+	{
+		DraggingState = StateId;
+	}
 };
 // struct FloatingDockContainerPrivate
+
+
 
 //============================================================================
 FloatingDockContainerPrivate::FloatingDockContainerPrivate(CFloatingDockContainer* _public) :
@@ -95,7 +108,7 @@ FloatingDockContainerPrivate::FloatingDockContainerPrivate(CFloatingDockContaine
 //============================================================================
 void FloatingDockContainerPrivate::titleMouseReleaseEvent()
 {
-	setDraggingActive(false);
+	setState(StateInactive);
 	if (!DropContainer)
 	{
 		return;
@@ -203,18 +216,6 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
 
 
 //============================================================================
-void FloatingDockContainerPrivate::setDraggingActive(bool Active)
-{
-	qDebug() << "FloatingDockContainerPrivate::setDraggingActive " << Active;
-	DraggingActive = Active;
-	if (!DraggingActive)
-	{
-		NonClientAreaMouseButtonPress = false;
-	}
-}
-
-
-//============================================================================
 CFloatingDockContainer::CFloatingDockContainer(CDockManager* DockManager) :
 	QWidget(DockManager, Qt::Window),
 	d(new FloatingDockContainerPrivate(this))
@@ -289,18 +290,18 @@ void CFloatingDockContainer::changeEvent(QEvent *event)
 void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 {
 	QWidget::moveEvent(event);
-	if (!qApp->mouseButtons().testFlag(Qt::LeftButton))
+	switch (d->DraggingState)
 	{
-		if (d->DraggingActive)
-		{
-			d->setDraggingActive(false);
-		}
-		return;
-	}
+	case StateMousePressed:
+		 d->setState(StateDraggingActive);
+		 d->updateDropOverlays(QCursor::pos());
+		 break;
 
-	if (d->DraggingActive)
-	{
-		d->updateDropOverlays(QCursor::pos());
+	case StateDraggingActive:
+		 d->updateDropOverlays(QCursor::pos());
+		 break;
+	default:
+		break;
 	}
 }
 
@@ -309,12 +310,16 @@ void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 {
     qDebug() << "CFloatingDockContainer closeEvent";
-	d->setDraggingActive(false);
+	d->setState(StateInactive);
 
     if (isClosable())
-        QWidget::closeEvent(event);
+    {
+    	QWidget::closeEvent(event);
+    }
     else
+    {
         event->ignore();
+    }
 }
 
 
@@ -354,31 +359,45 @@ void CFloatingDockContainer::showEvent(QShowEvent *event)
 //============================================================================
 bool CFloatingDockContainer::event(QEvent *e)
 {
-	if (e->type() == QEvent::NonClientAreaMouseButtonPress)
+	switch (d->DraggingState)
 	{
-		if (QGuiApplication::mouseButtons() == Qt::LeftButton)
+	case StateInactive:
+		if (e->type() == QEvent::NonClientAreaMouseButtonPress && QGuiApplication::mouseButtons() == Qt::LeftButton)
 		{
 			qDebug() << "FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type();
-			d->NonClientAreaMouseButtonPress = true;
+			d->setState(StateMousePressed);
 		}
-	}
-	else if (e->type() == QEvent::NonClientAreaMouseButtonDblClick)
-	{
-		qDebug() << "FloatingWidget::event QEvent::NonClientAreaMouseButtonDblClick";
-		d->setDraggingActive(false);
-	}
-	else if ((e->type() == QEvent::NonClientAreaMouseButtonRelease) && d->DraggingActive)
-	{
-		qDebug() << "FloatingWidget::event QEvent::NonClientAreaMouseButtonRelease";
-		d->titleMouseReleaseEvent();
-	}
-	else if (!d->DraggingActive && d->NonClientAreaMouseButtonPress && (e->type() == QEvent::Resize))
-	{
-		d->NonClientAreaMouseButtonPress = false;
-	}
-	else if (!d->DraggingActive && d->NonClientAreaMouseButtonPress && (e->type() == QEvent::Move))
-	{
-		d->setDraggingActive(true);
+	break;
+
+	case StateMousePressed:
+		switch (e->type())
+		{
+		case QEvent::NonClientAreaMouseButtonDblClick:
+			 qDebug() << "FloatingWidget::event QEvent::NonClientAreaMouseButtonDblClick";
+			 d->setState(StateInactive);
+			 break;
+
+		case QEvent::Resize:
+			 // If the first event after the mouse press is a resize event, then
+			 // the user resizes the window instead of dragging it around
+			 d->setState(StateInactive);
+			 break;
+
+		default:
+			break;
+		}
+	break;
+
+	case StateDraggingActive:
+		if (e->type() == QEvent::NonClientAreaMouseButtonRelease)
+		{
+			qDebug() << "FloatingWidget::event QEvent::NonClientAreaMouseButtonRelease";
+			d->titleMouseReleaseEvent();
+		}
+	break;
+
+	default:
+		break;
 	}
 
 	qDebug() << "CFloatingDockContainer::event " << e->type();
@@ -390,7 +409,7 @@ bool CFloatingDockContainer::event(QEvent *e)
 bool CFloatingDockContainer::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched);
-	if (event->type() == QEvent::MouseButtonRelease && d->DraggingActive)
+	if (event->type() == QEvent::MouseButtonRelease && d->isState(StateDraggingActive))
 	{
 		qDebug() << "FloatingWidget::eventFilter QEvent::MouseButtonRelease";
 		d->titleMouseReleaseEvent();
@@ -404,7 +423,7 @@ bool CFloatingDockContainer::eventFilter(QObject *watched, QEvent *event)
 void CFloatingDockContainer::startFloating(const QPoint& Pos, const QSize& Size)
 {
 	resize(Size);
-	d->setDraggingActive(true);
+	d->setState(StateDraggingActive);
 	QPoint TargetPos = QCursor::pos() - Pos;
 	move(TargetPos);
     show();
