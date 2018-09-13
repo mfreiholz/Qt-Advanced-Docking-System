@@ -31,10 +31,12 @@
 //                                   INCLUDES
 //============================================================================
 #include "DockContainerWidget.h"
+#include <QIcon>
 
 #include "ads_globals.h"
 
 class QSettings;
+class QMenu;
 
 namespace ads
 {
@@ -100,6 +102,18 @@ protected:
 	CDockOverlay* dockAreaOverlay() const;
 
 public:
+	enum eViewMenuInsertionOrder
+	{
+		MenuSortedByInsertion,
+		MenuAlphabeticallySorted
+	};
+
+	enum eXmlMode
+	{
+		XmlAutoFormattingDisabled,
+		XmlAutoFormattingEnabled
+	};
+
 	/**
 	 * Default Constructor.
 	 * If the given parent is a QMainWindow, the dock manager sets itself as the
@@ -170,9 +184,13 @@ public:
 
 	/**
 	 * Saves the current state of the dockmanger and all its dock widgets
-	 * into the returned QByteArray
+	 * into the returned QByteArray.
+	 * The XmlMode enables / disables the auto formatting for the XmlStreamWriter.
+	 * If auto formatting is enabled, the output is intended and line wrapped.
+	 * The XmlMode XmlAutoFormattingDisabled is better if you would like to have
+	 * a more compact XML output - i.e. for storage in ini files.
 	 */
-	QByteArray saveState(int version = 0) const;
+	QByteArray saveState(eXmlMode XmlMode = XmlAutoFormattingDisabled, int version = 0) const;
 
 	/**
 	 * Restores the state of this dockmanagers dockwidgets.
@@ -207,6 +225,41 @@ public:
 	 * Loads the perspectives from the given settings file
 	 */
 	void loadPerspectives(QSettings& Settings);
+
+	/**
+	 * Adds a toggle view action to the the internal view menu.
+	 * You can either manage the insertion of the toggle view actions in your
+	 * application or you can add the actions to the internal view menu and
+	 * then simply insert the menu object into your.
+	 * \param[in] ToggleViewAction The action to insert. If no group is provided
+	 *            the action is directly inserted into the menu. If a group
+	 *            is provided, the action is inserted into the group and the
+	 *            group is inserted into the menu if it is not existing yet.
+	 * \param[in] Group This is the text used for the group menu item
+	 * \param[in] GroupIcon The icon used for grouping the workbenches in the
+	 *            view menu. I.e. if there is a workbench for each device
+	 *            like for spectrometer devices, it is good to group all these
+	 *            workbenches under a menu item
+	 */
+	void addToggleViewActionToMenu(QAction* ToggleViewAction,
+		const QString& Group = QString(), const QIcon& GroupIcon = QIcon());
+
+	/**
+	 * This function returns the internal view menu.
+	 * To fill the view menu, you can use the addToggleViewActionToMenu()
+	 * function.
+	 */
+	QMenu* viewMenu() const;
+
+	/**
+	 * Define the insertion order for toggle view menu items.
+	 * The order defines how the actions are added to the view menu.
+	 * The default insertion order is MenuAlphabeticallySorted to make it
+	 * easier for users to find the menu entry for a certain dock widget.
+	 * You need to call this function befor you insert the first menu item
+	 * into the view menu.
+	 */
+	void setViewMenuInsertionOrder(eViewMenuInsertionOrder Order);
 
 public slots:
 	/**

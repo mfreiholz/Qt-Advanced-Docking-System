@@ -379,8 +379,17 @@ bool CFloatingDockContainer::event(QEvent *e)
 
 		case QEvent::Resize:
 			 // If the first event after the mouse press is a resize event, then
-			 // the user resizes the window instead of dragging it around
-			 d->setState(StateInactive);
+			 // the user resizes the window instead of dragging it around.
+			 // But there is one exception. If the window is maximized,
+		     // then dragging the window via title bar will cause the widget to
+		     // leave the maximized state. This in turn will trigger a resize event.
+		     // To know, if the resize event was triggered by user via moving a
+		     // corner of the window frame or if it was caused by a windows state
+		     // change, we check, if we are not in maximized state.
+			 if (!isMaximized())
+			 {
+				 d->setState(StateInactive);
+			 }
 			 break;
 
 		default:

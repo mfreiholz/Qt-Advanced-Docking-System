@@ -31,6 +31,8 @@
 #include <DockWidgetTab.h>
 #include "DockManager.h"
 
+#include <algorithm>
+
 
 #include <QMainWindow>
 #include <QList>
@@ -43,6 +45,7 @@
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 #include <QSettings>
+#include <QMenu>
 
 #include "FloatingDockContainer.h"
 #include "DockOverlay.h"
@@ -50,6 +53,8 @@
 #include "ads_globals.h"
 #include "DockStateSerialization.h"
 #include "DockAreaWidget.h"
+
+#include <iostream>
 
 namespace ads
 {
@@ -65,6 +70,9 @@ struct DockManagerPrivate
 	CDockOverlay* DockAreaOverlay;
 	QMap<QString, CDockWidget*> DockWidgetsMap;
 	QMap<QString, QByteArray> Perspectives;
+	QMap<QString, QMenu*> ViewMenuGroups;
+	QMenu* ViewMenu;
+	CDockManager::eViewMenuInsertionOrder MenuInsertionOrder = CDockManager::MenuAlphabeticallySorted;
 
 	/**
 	 * Private data constructor
@@ -91,6 +99,11 @@ struct DockManagerPrivate
 	 * Loads the stylesheet
 	 */
 	void loadStylesheet();
+
+	/**
+	 * Adds action to menu - optionally in sorted order
+	 */
+	void addActionToMenu(QAction* Action, QMenu* Menu, bool InsertSorted);
 };
 // struct DockManagerPrivate
 
@@ -198,6 +211,35 @@ bool DockManagerPrivate::restoreState(const QByteArray &state,  int version,
 
 
 //============================================================================
+void DockManagerPrivate::addActionToMenu(QAction* Action, QMenu* Menu, bool InsertSorted)
+{
+	if (InsertSorted)
+	{
+		auto Actions = Menu->actions();
+		auto it = std::find_if(Actions.begin(), Actions.end(),
+			[&Action](const QAction* a)
+			{
+				return a->text().compare(Action->text(), Qt::CaseInsensitive) > 0;
+			});
+
+		if (it == Actions.end())
+		{
+			Menu->addAction(Action);
+		}
+		else
+		{
+			Menu->insertAction(*it, Action);
+		}
+	}
+	else
+	{
+		Menu->addAction(Action);
+	}
+}
+
+
+
+//============================================================================
 CDockManager::CDockManager(QWidget *parent) :
 	CDockContainerWidget(this, parent),
 	d(new DockManagerPrivate(this))
@@ -208,6 +250,7 @@ CDockManager::CDockManager(QWidget *parent) :
 		MainWindow->setCentralWidget(this);
 	}
 
+	d->ViewMenu = new QMenu(tr("Show View"), this);
 	d->DockAreaOverlay = new CDockOverlay(this, CDockOverlay::ModeDockAreaOverlay);
 	d->ContainerOverlay = new CDockOverlay(this, CDockOverlay::ModeContainerOverlay);
 	d->Containers.append(this);
@@ -294,11 +337,11 @@ unsigned int CDockManager::zOrderIndex() const
 
 
 //============================================================================
-QByteArray CDockManager::saveState(int version) const
+QByteArray CDockManager::saveState(eXmlMode XmlMode, int version) const
 {
     QByteArray xmldata;
     QXmlStreamWriter s(&xmldata);
-	s.setAutoFormatting(true);
+	s.setAutoFormatting(XmlAutoFormattingEnabled == XmlMode);
     s.writeStartDocument();
 		s.writeStartElement("QtAdvancedDockingSystem");
 		s.writeAttribute("Version", QString::number(version));
@@ -483,6 +526,45 @@ void CDockManager::loadPerspectives(QSettings& Settings)
 
 	Settings.endArray();
 }
+
+//============================================================================
+void CDockManager::addToggleViewActionToMenu(QAction* ToggleViewAction,
+	const QString& Group, const QIcon& GroupIcon)
+{
+	bool AlphabeticallySorted = (MenuAlphabeticallySorted == d->MenuInsertionOrder);
+	if (!Group.isEmpty())
+	{
+		QMenu* GroupMenu = d->ViewMenuGroups.value(Group, 0);
+		if (!GroupMenu)
+		{
+			GroupMenu = new QMenu(Group, this);
+			GroupMenu->setIcon(GroupIcon);
+			d->addActionToMenu(GroupMenu->menuAction(), d->ViewMenu, AlphabeticallySorted);
+			d->ViewMenuGroups.insert(Group, GroupMenu);
+		}
+
+		d->addActionToMenu(ToggleViewAction, GroupMenu, AlphabeticallySorted);
+	}
+	else
+	{
+		d->addActionToMenu(ToggleViewAction, d->ViewMenu, AlphabeticallySorted);
+	}
+}
+
+
+//============================================================================
+QMenu* CDockManager::viewMenu() const
+{
+	return d->ViewMenu;
+}
+
+
+//============================================================================
+void CDockManager::setViewMenuInsertionOrder(eViewMenuInsertionOrder Order)
+{
+	d->MenuInsertionOrder = Order;
+}
+
 } // namespace ads
 
 //---------------------------------------------------------------------------
