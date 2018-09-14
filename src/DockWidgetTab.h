@@ -116,6 +116,9 @@ public:
 	 */
 	const QIcon& icon() const;
 
+public slots:
+	virtual void setVisible(bool visible);
+
 signals:
 	void activeTabChanged();
 	void clicked();

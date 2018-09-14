@@ -216,14 +216,7 @@ void DockAreaWidgetPrivate::updateTabBar()
 		return;
 	}
 
-	if (Container->isFloating() && (Container->dockAreaCount() == 1) && (_this->dockWidgetsCount() == 1))
-	{
-		TitleBar->setVisible(false);
-	}
-	else
-	{
-		TitleBar->setVisible(true);
-	}
+	TitleBar->setVisible(!Container->isFloating() || !Container->hasSingleVisibleDockWidget());
 }
 
 
@@ -360,27 +353,25 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 {
 	qDebug() << "CDockAreaWidget::removeDockWidget";
-	auto NextDockWidget = nextOpenDockWidget(DockWidget);
+	auto NextOpenDockWidget = nextOpenDockWidget(DockWidget);
 
 	d->ContentsLayout->removeWidget(DockWidget);
-	auto TitleBar = DockWidget->tabWidget();
-	TitleBar->hide();
-	d->TabsLayout->removeWidget(TitleBar);
-	disconnect(TitleBar, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
-	if (NextDockWidget)
+	auto TabWidget = DockWidget->tabWidget();
+	TabWidget->hide();
+	d->TabsLayout->removeWidget(TabWidget);
+	disconnect(TabWidget, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
+	if (NextOpenDockWidget)
 	{
-		setCurrentDockWidget(NextDockWidget);
+		setCurrentDockWidget(NextOpenDockWidget);
 		d->markTabsMenuOutdated();
 	}
-
-	CDockContainerWidget* DockContainer = dockContainer();
-	if (d->ContentsLayout->isEmpty())
+	else if (d->ContentsLayout->isEmpty())
 	{
 		qDebug() << "Dock Area empty";
 		dockContainer()->removeDockArea(this);
-		this->deleteLater();;
+		this->deleteLater();
 	}
-	else if (!NextDockWidget)
+	else
 	{
 		// if contents layout is not empty but there are no more open dock
 		// widgets, then we need to hide the dock area because it does not
@@ -390,7 +381,11 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 
 	d->updateTabBar();
 	DockWidget->setDockArea(nullptr);
+
+#if (ADS_DEBUG_LEVEL > 0)
+	CDockContainerWidget* DockContainer = dockContainer();
 	DockContainer->dumpLayout();
+#endif
 }
 
 
@@ -656,6 +651,7 @@ void CDockAreaWidget::toggleDockWidgetView(CDockWidget* DockWidget, bool Open)
 {
 	Q_UNUSED(DockWidget);
 	Q_UNUSED(Open);
+	updateDockArea();
 	d->markTabsMenuOutdated();
 }
 

@@ -328,7 +328,7 @@ CDockContainerWidget* CDockWidget::dockContainer() const
 //============================================================================
 CDockAreaWidget* CDockWidget::dockAreaWidget() const
 {
-	return internal::findParent<CDockAreaWidget*>(this);
+	return d->DockArea;
 }
 
 
@@ -345,7 +345,7 @@ bool CDockWidget::isFloating() const
 		return false;
 	}
 
-	if (dockContainer()->dockArea(0)->dockWidgetsCount() != 1)
+	if (d->DockArea->openDockWidgetsCount() != 1)
 	{
 		return false;
 	}
@@ -357,12 +357,13 @@ bool CDockWidget::isFloating() const
 //============================================================================
 bool CDockWidget::isInFloatingContainer() const
 {
-	if (!dockContainer())
+	auto Container = dockContainer();
+	if (!Container)
 	{
 		return false;
 	}
 
-	if (!dockContainer()->isFloating())
+	if (!Container->isFloating())
 	{
 		return false;
 	}
@@ -405,6 +406,13 @@ void CDockWidget::setToggleViewActionMode(eToggleViewActionMode Mode)
 void CDockWidget::toggleView(bool Open)
 {
 	QAction* Sender = qobject_cast<QAction*>(sender());
+	CDockContainerWidget* DockContainer = dockContainer();
+	CDockWidget* SingleDockWidget = nullptr;;
+	if (Open)
+	{
+		SingleDockWidget = DockContainer->singleVisibleDockWidget();
+	}
+
 	if (Sender == d->ToggleViewAction && !d->ToggleViewAction->isCheckable())
 	{
 		Open = true;
@@ -423,6 +431,16 @@ void CDockWidget::toggleView(bool Open)
 	d->ToggleViewAction->setChecked(Open);
 	d->ToggleViewAction->blockSignals(false);
 	d->DockArea->toggleDockWidgetView(this, Open);
+
+	if (!Open)
+	{
+		SingleDockWidget = DockContainer->singleVisibleDockWidget();
+	}
+
+	if (SingleDockWidget)
+	{
+		SingleDockWidget->dockAreaWidget()->updateDockArea();
+	}
 
 	if (!Open)
 	{

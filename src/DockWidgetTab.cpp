@@ -162,14 +162,15 @@ void DockWidgetTabPrivate::moveTab(QMouseEvent* ev)
 //============================================================================
 bool DockWidgetTabPrivate::startFloating()
 {
-	qDebug() << "isFloating " << DockWidget->dockContainer()->isFloating();
-	qDebug() << "areaCount " << DockWidget->dockContainer()->dockAreaCount();
+	auto dockContainer = DockWidget->dockContainer();
+	qDebug() << "isFloating " << dockContainer->isFloating();
+	qDebug() << "areaCount " << dockContainer->dockAreaCount();
 	qDebug() << "widgetCount " << DockWidget->dockAreaWidget()->dockWidgetsCount();
 	// if this is the last dock widget inside of this floating widget,
 	// then it does not make any sense, to make it floating because
 	// it is already floating
-	 if (DockWidget->dockContainer()->isFloating()
-	 && (DockWidget->dockContainer()->visibleDockAreaCount() == 1)
+	 if (dockContainer->isFloating()
+	 && (dockContainer->visibleDockAreaCount() == 1)
 	 && (DockWidget->dockAreaWidget()->dockWidgetsCount() == 1))
 	{
 		return false;
@@ -397,6 +398,17 @@ void CDockWidgetTab::mouseDoubleClickEvent(QMouseEvent *event)
 	}
 
 	Super::mouseDoubleClickEvent(event);
+}
+
+
+//============================================================================
+void CDockWidgetTab::setVisible(bool visible)
+{
+	if (!visible)
+	{
+		qDebug() << "CDockWidgetTab::setVisible " << visible;
+	}
+	Super::setVisible(visible);
 }
 
 } // namespace ads

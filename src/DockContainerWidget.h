@@ -61,8 +61,10 @@ private:
 	friend class CDockManager;
 	friend struct DockManagerPrivate;
 	friend class CDockAreaWidget;
+	friend struct DockAreaWidgetPrivate;
 	friend class CFloatingDockContainer;
 	friend struct FloatingDockContainerPrivate;
+	friend class CDockWidget;
 
 protected:
 	/**
@@ -109,6 +111,25 @@ protected:
 	 * area
 	 */
 	CDockAreaWidget* lastAddedDockAreaWidget(DockWidgetArea area) const;
+
+	/**
+	 * This function returns true if this dock area has only one single
+	 * visible dock widget.
+	 */
+	bool hasSingleVisibleDockWidget() const;
+
+	/**
+	 * If hasSingleVisibleDockWidget() returns true, this function returns the
+	 * one and only visible dock widget. Otherwise it returns a nullptr.
+	 */
+	CDockWidget* singleVisibleDockWidget() const;
+
+	/**
+	 * Returns the first visible dock widget.
+	 * If the function hasSingleVisibleDockWidget() returns true, then this
+	 * function returns the one and only visible dock widget
+	 */
+	CDockWidget* firstVisibleDockWidget() const;
 
 public:
 	/**
