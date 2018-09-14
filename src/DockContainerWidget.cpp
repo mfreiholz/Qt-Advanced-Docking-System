@@ -281,7 +281,6 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 		Splitter->addWidget(TargetArea);
 		TargetAreaSplitter = Splitter;
 	}
-
 	int AreaIndex = TargetAreaSplitter->indexOf(TargetArea);
 	auto Widget = FloatingWidget->dockContainer()->findChild<QWidget*>(QString(), Qt::FindDirectChildrenOnly);
 	auto FloatingSplitter = dynamic_cast<QSplitter*>(Widget);
@@ -316,8 +315,8 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 			}
 		}
 
-		insertWidgetIntoSplitter(NewSplitter, TargetArea, !InsertParam.append());
 		TargetAreaSplitter->insertWidget(AreaIndex, NewSplitter);
+		insertWidgetIntoSplitter(NewSplitter, TargetArea, !InsertParam.append());
 	}
 
 	FloatingWidget->deleteLater();
