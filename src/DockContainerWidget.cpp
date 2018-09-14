@@ -537,7 +537,7 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 		return true;
 	}
 
-	if (!DockArea->count())
+	if (!DockArea->dockWidgetsCount())
 	{
 		delete DockArea;
 		DockArea = nullptr;
@@ -1073,9 +1073,11 @@ QSplitter* CDockContainerWidget::rootSplitter() const
 //============================================================================
 void CDockContainerWidget::dumpLayout()
 {
+#if (ADS_DEBUG_LEVEL > 0)
 	qDebug("\n\nDumping layout --------------------------");
 	d->dumpRecursive(0, d->RootSplitter);
 	qDebug("--------------------------\n\n");
+#endif
 }
 
 

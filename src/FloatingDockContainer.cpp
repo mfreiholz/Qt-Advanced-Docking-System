@@ -409,7 +409,9 @@ bool CFloatingDockContainer::event(QEvent *e)
 		break;
 	}
 
+#if (ADS_DEBUG_LEVEL > 0)
 	qDebug() << "CFloatingDockContainer::event " << e->type();
+#endif
 	return QWidget::event(e);
 }
 
@@ -520,7 +522,7 @@ bool CFloatingDockContainer::hasSingleDockWidget() const
 		return false;
 	}
 
-	return d->DockContainer->dockArea(0)->count() == 1;
+	return d->DockContainer->dockArea(0)->dockWidgetsCount() == 1;
 }
 
 

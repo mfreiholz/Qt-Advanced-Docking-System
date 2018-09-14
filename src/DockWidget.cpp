@@ -92,22 +92,11 @@ struct DockWidgetPrivate
 	void hideDockWidget();
 
 	/**
-	 * Hides a parent splitter if all dock widgets in the splitter are closed
-	 */
-	void hideEmptyParentSplitters();
-
-	/**
 	 * Hides a dock area if all dock widgets in the area are closed.
 	 * This function updates the current selected tab and hides the parent
 	 * dock area if it is empty
 	 */
 	void updateParentDockArea();
-
-	/**
-	 * Hides a floating widget if all dock areas are empty - that means,
-	 * if all dock widgets in all dock areas are closed
-	 */
-	void hideEmptyFloatingWidget();
 
 	/**
 	 * Setup the top tool bar
@@ -165,23 +154,6 @@ void DockWidgetPrivate::hideDockWidget()
 {
 	TabWidget->hide();
 	updateParentDockArea();
-	hideEmptyParentSplitters();
-	hideEmptyFloatingWidget();
-}
-
-
-//============================================================================
-void DockWidgetPrivate::hideEmptyParentSplitters()
-{
-	auto Splitter = internal::findParent<CDockSplitter*>(_this);
-	while (Splitter && Splitter->isVisible())
-	{
-		if (!Splitter->hasVisibleContent())
-		{
-			Splitter->hide();
-		}
-		Splitter = internal::findParent<CDockSplitter*>(Splitter);
-	}
 }
 
 
@@ -195,19 +167,7 @@ void DockWidgetPrivate::updateParentDockArea()
 	}
 	else
 	{
-		DockArea->hide();
-	}
-}
-
-
-//============================================================================
-void DockWidgetPrivate::hideEmptyFloatingWidget()
-{
-	CDockContainerWidget* Container = _this->dockContainer();
-	if (Container->isFloating() && Container->openedDockAreas().isEmpty())
-	{
-		CFloatingDockContainer* FloatingWidget = internal::findParent<CFloatingDockContainer*>(Container);
-		FloatingWidget->hide();
+		DockArea->hideAreaWithNoVisibleContent();
 	}
 }
 
@@ -385,7 +345,7 @@ bool CDockWidget::isFloating() const
 		return false;
 	}
 
-	if (dockContainer()->dockArea(0)->count() != 1)
+	if (dockContainer()->dockArea(0)->dockWidgetsCount() != 1)
 	{
 		return false;
 	}

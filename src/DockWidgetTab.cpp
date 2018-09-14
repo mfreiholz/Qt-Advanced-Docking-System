@@ -164,13 +164,13 @@ bool DockWidgetTabPrivate::startFloating()
 {
 	qDebug() << "isFloating " << DockWidget->dockContainer()->isFloating();
 	qDebug() << "areaCount " << DockWidget->dockContainer()->dockAreaCount();
-	qDebug() << "widgetCount " << DockWidget->dockAreaWidget()->count();
+	qDebug() << "widgetCount " << DockWidget->dockAreaWidget()->dockWidgetsCount();
 	// if this is the last dock widget inside of this floating widget,
 	// then it does not make any sense, to make it floating because
 	// it is already floating
 	 if (DockWidget->dockContainer()->isFloating()
 	 && (DockWidget->dockContainer()->visibleDockAreaCount() == 1)
-	 && (DockWidget->dockAreaWidget()->count() == 1))
+	 && (DockWidget->dockAreaWidget()->dockWidgetsCount() == 1))
 	{
 		return false;
 	}
@@ -179,7 +179,7 @@ bool DockWidgetTabPrivate::startFloating()
 	DragState = DraggingFloatingWidget;
 	QSize Size = DockArea->size();
 	CFloatingDockContainer* FloatingWidget = nullptr;
-	if (DockArea->count() > 1)
+	if (DockArea->dockWidgetsCount() > 1)
 	{
 		// If section widget has multiple tabs, we take only one tab
 		FloatingWidget = new CFloatingDockContainer(DockWidget);
@@ -248,7 +248,7 @@ void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 		int toIndex = d->DockArea->indexOfContentByTitlePos(pos, this);
 		if (-1 == toIndex)
 		{
-			toIndex = d->DockArea->count() - 1;
+			toIndex = d->DockArea->dockWidgetsCount() - 1;
 		}
 		qDebug() << "Move tab from " << fromIndex << " to " << toIndex;
 		d->DockArea->reorderDockWidget(fromIndex, toIndex);
@@ -294,6 +294,16 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     bool MouseInsideTitleArea = d->titleAreaGeometryContains(ev->globalPos());
     if (!MouseInsideTitleArea)
 	{
+		// If this is the last dock area in a dock container with only
+    	// one single dock widget it does not make  sense to move it to a new
+    	// floating widget and leave this one empty
+		if (d->DockArea->dockContainer()->isFloating()
+		 && d->DockArea->openDockWidgetsCount() == 1
+		 && d->DockArea->dockContainer()->visibleDockAreaCount() == 1)
+		{
+			return;
+		}
+
     	// Floating is only allowed for widgets that are movable
         if (d->DockWidget->features().testFlag(CDockWidget::DockWidgetMovable))
         {
@@ -301,7 +311,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
         }
     	return;
 	}
-    else if (d->DockArea->count() > 1
+    else if (d->DockArea->openDockWidgetsCount() > 1
      && (ev->pos() - d->DragStartMousePosition).manhattanLength() >= QApplication::startDragDistance()) // Wait a few pixels before start moving
 	{
         d->DragState = DraggingTab;
@@ -381,7 +391,7 @@ void CDockWidgetTab::mouseDoubleClickEvent(QMouseEvent *event)
 	// If this is the last dock area in a dock container it does not make
 	// sense to move it to a new floating widget and leave this one
 	// empty
-	if (!d->DockArea->dockContainer()->isFloating() || d->DockArea->count() > 1)
+	if (!d->DockArea->dockContainer()->isFloating() || d->DockArea->dockWidgetsCount() > 1)
 	{
 		d->startFloating();
 	}

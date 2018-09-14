@@ -39,6 +39,8 @@
 #define ADS_EXPORT Q_DECL_IMPORT
 #endif
 
+#define ADS_DEBUG_LEVEL 0
+
 class QSplitter;
 
 namespace ads

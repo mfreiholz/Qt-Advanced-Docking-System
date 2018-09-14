@@ -118,6 +118,19 @@ protected:
 	 */
 	int index(CDockWidget* DockWidget);
 
+	/**
+	 * Call this function, if you already know, that the dock does not
+	 * contain any visible content (any open dock widgets).
+	 */
+	void hideAreaWithNoVisibleContent();
+
+	/**
+	 * This function checks, if the dock area has visible content, that means
+	 * if any dock widget is open, and then calls hideAreaWithNoVisibleContent()
+	 * if it does not find any visible content
+	 */
+	void hideAreaIfNoVisibleContent();
+
 public:
 	/**
 	 * Default Constructor
@@ -151,20 +164,25 @@ public:
 	QRect contentAreaGeometry() const;
 
 	/**
+	 * Returns the number of dock widgets in this area
+	 */
+	int dockWidgetsCount() const;
+
+	/**
 	 * Returns a list of all dock widgets in this dock area.
 	 * This list contains open and closed dock widgets.
 	 */
 	QList<CDockWidget*> dockWidgets() const;
 
 	/**
+	 * Returns the number of dock widgets in this area
+	 */
+	int openDockWidgetsCount() const;
+
+	/**
 	 * Returns a list of dock widgets that are not closed
 	 */
 	QList<CDockWidget*> openedDockWidgets() const;
-
-	/**
-	 * Returns the number of dock widgets in this area
-	 */
-	int count() const;
 
 	/**
 	 * Returns a dock widget by its index

@@ -49,6 +49,7 @@
 #include "DockManager.h"
 #include "DockOverlay.h"
 #include "DockAreaTabBar.h"
+#include "DockSplitter.h"
 
 
 namespace ads
@@ -76,7 +77,6 @@ struct DockAreaWidgetPrivate
 	QPushButton* CloseButton;
 	int TabsLayoutInitCount;
 	CDockManager* DockManager = nullptr;
-	QVector<CDockWidget*> OpenDockWidgets;
 	bool MenuOutdated = true;
 
 	/**
@@ -216,7 +216,7 @@ void DockAreaWidgetPrivate::updateTabBar()
 		return;
 	}
 
-	if (Container->isFloating() && (Container->dockAreaCount() == 1) && (_this->count() == 1))
+	if (Container->isFloating() && (Container->dockAreaCount() == 1) && (_this->dockWidgetsCount() == 1))
 	{
 		TitleBar->setVisible(false);
 	}
@@ -380,10 +380,53 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 		dockContainer()->removeDockArea(this);
 		this->deleteLater();;
 	}
+	else if (!NextDockWidget)
+	{
+		// if contents layout is not empty but there are no more open dock
+		// widgets, then we need to hide the dock area because it does not
+		// contain any visible content
+		hideAreaWithNoVisibleContent();
+	}
 
 	d->updateTabBar();
 	DockWidget->setDockArea(nullptr);
 	DockContainer->dumpLayout();
+}
+
+
+//============================================================================
+void CDockAreaWidget::hideAreaWithNoVisibleContent()
+{
+	this->hide();
+
+	// Hide empty parent splitter
+	auto Splitter = internal::findParent<CDockSplitter*>(this);
+	while (Splitter && Splitter->isVisible())
+	{
+		if (!Splitter->hasVisibleContent())
+		{
+			Splitter->hide();
+		}
+		Splitter = internal::findParent<CDockSplitter*>(Splitter);
+	}
+
+	//Hide empty floating widget
+	CDockContainerWidget* Container = this->dockContainer();
+	if (Container->isFloating() && Container->openedDockAreas().isEmpty())
+	{
+		CFloatingDockContainer* FloatingWidget = internal::findParent<CFloatingDockContainer*>(Container);
+		FloatingWidget->hide();
+	}
+}
+
+
+//============================================================================
+void CDockAreaWidget::hideAreaIfNoVisibleContent()
+{
+	if (openedDockWidgets().isEmpty())
+	{
+		hideAreaIfNoVisibleContent();
+	}
 }
 
 
@@ -513,6 +556,21 @@ QList<CDockWidget*> CDockAreaWidget::dockWidgets() const
 
 
 //============================================================================
+int CDockAreaWidget::openDockWidgetsCount() const
+{
+	int Count = 0;
+	for (int i = 0; i < d->ContentsLayout->count(); ++i)
+	{
+		if (!dockWidget(i)->isClosed())
+		{
+			++Count;
+		}
+	}
+	return Count;
+}
+
+
+//============================================================================
 QList<CDockWidget*> CDockAreaWidget::openedDockWidgets() const
 {
 	QList<CDockWidget*> DockWidgetList;
@@ -544,7 +602,7 @@ int CDockAreaWidget::indexOfContentByTitlePos(const QPoint& p, QWidget* exclude)
 
 
 //============================================================================
-int CDockAreaWidget::count() const
+int CDockAreaWidget::dockWidgetsCount() const
 {
 	return d->ContentsLayout->count();
 }
