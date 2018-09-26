@@ -167,9 +167,10 @@ void CDockAreaTabBar::startFloating(const QPoint& Pos)
 	CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(d->DockArea);
 	FloatingWidget->startFloating(Pos, Size);
 	d->FloatingWidget = FloatingWidget;
-	if (d->FloatingWidget->hasSingleDockWidget())
+	auto TopLevelDockWidget = d->FloatingWidget->topLevelDockWidget();
+	if (TopLevelDockWidget)
 	{
-		emit d->FloatingWidget->firstDockWidget()->topLevelChanged(true);
+		TopLevelDockWidget->emitTopLevelChanged(true);
 	}
 }
 } // namespace ads

@@ -115,21 +115,16 @@ protected:
 	/**
 	 * This function returns true if this dock area has only one single
 	 * visible dock widget.
+	 * A top level widget is a real floating widget. Only the isFloating()
+	 * function of top level widgets may returns true.
 	 */
-	bool hasSingleVisibleDockWidget() const;
+	bool hasTopLevelDockWidget() const;
 
 	/**
 	 * If hasSingleVisibleDockWidget() returns true, this function returns the
 	 * one and only visible dock widget. Otherwise it returns a nullptr.
 	 */
-	CDockWidget* singleVisibleDockWidget() const;
-
-	/**
-	 * Returns the first visible dock widget.
-	 * If the function hasSingleVisibleDockWidget() returns true, then this
-	 * function returns the one and only visible dock widget
-	 */
-	CDockWidget* firstVisibleDockWidget() const;
+	CDockWidget* topLevelDockWidget() const;
 
 public:
 	/**

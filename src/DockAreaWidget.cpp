@@ -216,7 +216,7 @@ void DockAreaWidgetPrivate::updateTabBar()
 		return;
 	}
 
-	TitleBar->setVisible(!Container->isFloating() || !Container->hasSingleVisibleDockWidget());
+	TitleBar->setVisible(!Container->isFloating() || !Container->hasTopLevelDockWidget());
 }
 
 
@@ -287,6 +287,7 @@ CDockAreaWidget::CDockAreaWidget(CDockManager* DockManager, CDockContainerWidget
 	d->ContentsLayout = new QStackedLayout();
 	d->ContentsLayout->setContentsMargins(0, 0, 0, 0);
 	d->ContentsLayout->setSpacing(0);
+	d->ContentsLayout->setSizeConstraint(QLayout::SetNoConstraint);
 	d->Layout->addLayout(d->ContentsLayout, 1);
 }
 
@@ -651,7 +652,7 @@ void CDockAreaWidget::toggleDockWidgetView(CDockWidget* DockWidget, bool Open)
 {
 	Q_UNUSED(DockWidget);
 	Q_UNUSED(Open);
-	updateDockArea();
+	updateTabBarVisibility();
 	d->markTabsMenuOutdated();
 }
 
@@ -666,7 +667,7 @@ void CDockAreaWidget::onTabsMenuActionTriggered(QAction* Action)
 
 
 //============================================================================
-void CDockAreaWidget::updateDockArea()
+void CDockAreaWidget::updateTabBarVisibility()
 {
 	d->updateTabBar();
 }
@@ -692,7 +693,7 @@ void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 CDockWidget* CDockAreaWidget::nextOpenDockWidget(CDockWidget* DockWidget) const
 {
 	auto OpenDockWidgets = openedDockWidgets();
-	if (OpenDockWidgets.count() > 1)
+	if (OpenDockWidgets.count() > 1 || (OpenDockWidgets.count() == 1 && OpenDockWidgets[0] != DockWidget))
 	{
 		CDockWidget* NextDockWidget;
 		if (OpenDockWidgets.last() == DockWidget)

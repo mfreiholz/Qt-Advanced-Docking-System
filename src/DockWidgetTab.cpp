@@ -197,7 +197,7 @@ bool DockWidgetTabPrivate::startFloating()
     auto Overlay = DockWidget->dockManager()->containerOverlay();
 	Overlay->setAllowedAreas(OuterDockAreas);
 	this->FloatingWidget = FloatingWidget;
-	emit DockWidget->topLevelChanged(true);
+	DockWidget->emitTopLevelChanged(true);
 	return true;
 }
 

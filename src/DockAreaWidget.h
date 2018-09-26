@@ -131,6 +131,11 @@ protected:
 	 */
 	void hideAreaIfNoVisibleContent();
 
+	/**
+	 * Updates the dock area layout and components visibility
+	 */
+	void updateTabBarVisibility();
+
 public:
 	/**
 	 * Default Constructor
@@ -216,11 +221,6 @@ public slots:
 	 * call will make it visible.
 	 */
 	void setCurrentIndex(int index);
-
-	/**
-	 * Updates the dock area layout and components visibility
-	 */
-	void updateDockArea();
 
 signals:
 	/**

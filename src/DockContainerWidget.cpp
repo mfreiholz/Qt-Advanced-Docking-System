@@ -192,8 +192,8 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 	CDockContainerWidget* FloatingDockContainer = FloatingWidget->dockContainer();
 	auto NewDockAreas = FloatingDockContainer->findChildren<CDockAreaWidget*>(
 		QString(), Qt::FindChildrenRecursively);
-	CDockWidget* SingleDoppedDockWidget = FloatingDockContainer->singleVisibleDockWidget();
-	CDockWidget* SingleDockWidget = _this->singleVisibleDockWidget();
+	CDockWidget* SingleDroppedDockWidget = FloatingDockContainer->topLevelDockWidget();
+	CDockWidget* SingleDockWidget = _this->topLevelDockWidget();
 	QSplitter* Splitter = RootSplitter;
 
 	if (DockAreas.count() <= 1)
@@ -230,15 +230,9 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 	RootSplitter = Splitter;
 	addDockAreasToList(NewDockAreas);
 	FloatingWidget->deleteLater();
-	if (SingleDoppedDockWidget)
-	{
-		SingleDoppedDockWidget->dockAreaWidget()->updateDockArea();
-	}
+	CDockWidget::emitTopLevelEventForWidget(SingleDroppedDockWidget, false);
+	CDockWidget::emitTopLevelEventForWidget(SingleDockWidget, false);
 
-	if (SingleDockWidget)
-	{
-		SingleDockWidget->dockAreaWidget()->updateDockArea();
-	}
 	// If we dropped the floating widget into the main dock container that does
 	// not contain any dock widgets, then splitter is invisible and we need to
 	// show it to display the docked widgets
@@ -265,7 +259,7 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 		}
 		TargetArea->setCurrentIndex(0); // make the topmost widget active
 		FloatingWidget->deleteLater();
-		TargetArea->updateDockArea();
+		TargetArea->updateTabBarVisibility();
 		return;
 	}
 
@@ -336,12 +330,12 @@ void DockContainerWidgetPrivate::addDockAreasToList(const QList<CDockAreaWidget*
 	// is invisible, if the dock are is a single dock area in a floating widget.
 	if (1 == CountBefore)
 	{
-		DockAreas.at(0)->updateDockArea();
+		DockAreas.at(0)->updateTabBarVisibility();
 	}
 
 	if (1 == NewAreaCount)
 	{
-		DockAreas.last()->updateDockArea();
+		DockAreas.last()->updateTabBarVisibility();
 	}
 
 	emit _this->dockAreasAdded();
@@ -539,6 +533,7 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 		// of the dock areas during application startup
 		DockArea->hide();
 		DockWidget->setToggleViewActionChecked(!Closed);
+		DockWidget->setClosedState(Closed);
 		DockWidget->setProperty("closed", Closed);
 		DockWidget->setProperty("dirty", false);
 	}
@@ -599,7 +594,7 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoContainer(DockWidgetA
 	CDockAreaWidget* NewDockArea = new CDockAreaWidget(DockManager, _this);
 	NewDockArea->addDockWidget(Dockwidget);
 	addDockArea(NewDockArea, area);
-	NewDockArea->updateDockArea();
+	NewDockArea->updateTabBarVisibility();
 	LastAddedAreaCache[areaIdToIndex(area)] = NewDockArea;
 	return NewDockArea;
 }
@@ -642,7 +637,7 @@ void DockContainerWidgetPrivate::addDockArea(CDockAreaWidget* NewDockArea, DockW
 	}
 
 	DockAreas.append(NewDockArea);
-	NewDockArea->updateDockArea();
+	NewDockArea->updateTabBarVisibility();
 	emit _this->dockAreasAdded();
 }
 
@@ -876,12 +871,11 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 	delete Splitter;
 
 emitAndExit:
-    // Updated the title bar visibility of the dock widget if there is only
+	CDockWidget* TopLevelWidget = topLevelDockWidget();
+
+	// Updated the title bar visibility of the dock widget if there is only
     // one single visible dock widget
-	if (hasSingleVisibleDockWidget())
-	{
-		openedDockAreas()[0]->updateDockArea();
-	}
+	CDockWidget::emitTopLevelEventForWidget(TopLevelWidget, true);
 	dumpLayout();
 	emit dockAreasRemoved();
 }
@@ -931,7 +925,7 @@ int CDockContainerWidget::visibleDockAreaCount() const
 	int Result = 0;
 	for (auto DockArea : d->DockAreas)
 	{
-		Result += DockArea->isVisible() ? 1 : 0;
+		Result += DockArea->isVisibleTo(this) ? 1 : 0;
 	}
 
 	return Result;
@@ -946,8 +940,8 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	CDockAreaWidget* DockArea = dockAreaAt(TargetPos);
 	auto dropArea = InvalidDockWidgetArea;
 	auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
-	CDockWidget* TopLevelDockWidget = FloatingWidget->hasSingleDockWidget() ?
-		FloatingWidget->firstDockWidget() : nullptr;
+	CDockWidget* TopLevelDockWidget = FloatingWidget->hasTopLevelDockWidget() ?
+		FloatingWidget->topLevelDockWidget() : nullptr;
 	if (DockArea)
 	{
 		auto dropOverlay = d->DockManager->dockAreaOverlay();
@@ -981,7 +975,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	// drop a top level widget that changes from floating to docked now
 	if (TopLevelDockWidget)
 	{
-		emit TopLevelDockWidget->topLevelChanged(false);
+		TopLevelDockWidget->emitTopLevelChanged(false);
 	}
 }
 
@@ -1107,7 +1101,7 @@ CDockAreaWidget* CDockContainerWidget::lastAddedDockAreaWidget(DockWidgetArea ar
 
 
 //============================================================================
-bool CDockContainerWidget::hasSingleVisibleDockWidget() const
+bool CDockContainerWidget::hasTopLevelDockWidget() const
 {
 	auto DockAreas = openedDockAreas();
 	if (DockAreas.count() != 1)
@@ -1120,14 +1114,7 @@ bool CDockContainerWidget::hasSingleVisibleDockWidget() const
 
 
 //============================================================================
-CDockWidget* CDockContainerWidget::firstVisibleDockWidget() const
-{
-	return openedDockAreas()[0]->openedDockWidgets()[0];
-}
-
-
-//============================================================================
-CDockWidget* CDockContainerWidget::singleVisibleDockWidget() const
+CDockWidget* CDockContainerWidget::topLevelDockWidget() const
 {
 	auto DockAreas = openedDockAreas();
 	if (DockAreas.count() != 1)
@@ -1143,6 +1130,7 @@ CDockWidget* CDockContainerWidget::singleVisibleDockWidget() const
 
 	return DockWidgets[0];
 }
+
 
 
 } // namespace ads

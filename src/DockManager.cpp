@@ -54,7 +54,6 @@
 #include "DockStateSerialization.h"
 #include "DockAreaWidget.h"
 
-#include <iostream>
 
 namespace ads
 {
@@ -390,7 +389,7 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
     	}
     	else
     	{
-    		DockWidget->toggleView(!DockWidget->property("closed").toBool());
+    		DockWidget->toggleViewInternal(!DockWidget->property("closed").toBool());
     	}
     }
 
@@ -403,11 +402,37 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
     	{
     		CDockAreaWidget* DockArea = DockContainer->dockArea(i);
     		int CurrentIndex = DockArea->property("currentIndex").toInt();
-    		int OpenDockWidgetCount = DockArea->openedDockWidgets().count();
-    		if (CurrentIndex < OpenDockWidgetCount && OpenDockWidgetCount > 1 && CurrentIndex > -1)
+    		int DockWidgetCount = DockArea->dockWidgetsCount();
+    		if (CurrentIndex < DockWidgetCount && DockWidgetCount > 1 && CurrentIndex > -1)
     		{
-    			DockArea->setCurrentIndex(CurrentIndex);
+    			auto DockWidget = DockArea->dockWidget(CurrentIndex);
+    			if (!DockWidget->isClosed())
+    			{
+    				DockArea->setCurrentIndex(CurrentIndex);
+    			}
     		}
+    	}
+    }
+
+    // Finally we need to send the topLevelChanged() signals for all dock
+    // widgets if top level changed
+    for (auto DockContainer : d->Containers)
+    {
+    	CDockWidget* TopLevelDockWidget = DockContainer->topLevelDockWidget();
+    	if (TopLevelDockWidget)
+    	{
+    		TopLevelDockWidget->emitTopLevelChanged(true);
+    	}
+    	else
+    	{
+			for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
+			{
+				auto DockArea = DockContainer->dockArea(i);
+				for (auto DockWidget : DockArea->dockWidgets())
+				{
+					DockWidget->emitTopLevelChanged(false);
+				}
+			}
     	}
     }
 
@@ -528,7 +553,7 @@ void CDockManager::loadPerspectives(QSettings& Settings)
 }
 
 //============================================================================
-void CDockManager::addToggleViewActionToMenu(QAction* ToggleViewAction,
+QAction* CDockManager::addToggleViewActionToMenu(QAction* ToggleViewAction,
 	const QString& Group, const QIcon& GroupIcon)
 {
 	bool AlphabeticallySorted = (MenuAlphabeticallySorted == d->MenuInsertionOrder);
@@ -544,10 +569,12 @@ void CDockManager::addToggleViewActionToMenu(QAction* ToggleViewAction,
 		}
 
 		d->addActionToMenu(ToggleViewAction, GroupMenu, AlphabeticallySorted);
+		return GroupMenu->menuAction();
 	}
 	else
 	{
 		d->addActionToMenu(ToggleViewAction, d->ViewMenu, AlphabeticallySorted);
+		return ToggleViewAction;
 	}
 }
 

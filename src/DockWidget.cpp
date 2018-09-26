@@ -75,6 +75,7 @@ struct DockWidgetPrivate
 	Qt::ToolButtonStyle ToolBarStyleFloating = Qt::ToolButtonTextUnderIcon;
 	QSize ToolBarIconSizeDocked = QSize(16, 16);
 	QSize ToolBarIconSizeFloating = QSize(24, 24);
+	bool IsFloatingTopLevel = false;
 
 	/**
 	 * Private data constructor
@@ -160,6 +161,11 @@ void DockWidgetPrivate::hideDockWidget()
 //============================================================================
 void DockWidgetPrivate::updateParentDockArea()
 {
+	if (!DockArea)
+	{
+		return;
+	}
+
 	auto NextDockWidget = DockArea->nextOpenDockWidget(_this);
 	if (NextDockWidget)
 	{
@@ -340,17 +346,7 @@ bool CDockWidget::isFloating() const
 		return false;
 	}
 
-	if (dockContainer()->dockAreaCount() != 1)
-	{
-		return false;
-	}
-
-	if (d->DockArea->openDockWidgetsCount() != 1)
-	{
-		return false;
-	}
-
-	return true;
+	return dockContainer()->topLevelDockWidget() == this;
 }
 
 
@@ -405,17 +401,36 @@ void CDockWidget::setToggleViewActionMode(eToggleViewActionMode Mode)
 //============================================================================
 void CDockWidget::toggleView(bool Open)
 {
+	// If the toggle view action mode is ActionModeShow, then Open is always
+	// true if the sender is the toggle view action
 	QAction* Sender = qobject_cast<QAction*>(sender());
-	CDockContainerWidget* DockContainer = dockContainer();
-	CDockWidget* SingleDockWidget = nullptr;;
-	if (Open)
-	{
-		SingleDockWidget = DockContainer->singleVisibleDockWidget();
-	}
-
 	if (Sender == d->ToggleViewAction && !d->ToggleViewAction->isCheckable())
 	{
 		Open = true;
+	}
+	// If the dock widget state is different, then we really need to toggle
+	// the state. If we are in the right state, then we simply make this
+	// dock widget the current dock widget
+	if (d->Closed != !Open)
+	{
+		toggleViewInternal(Open);
+	}
+	else if (Open && d->DockArea)
+	{
+		d->DockArea->setCurrentDockWidget(this);
+	}
+}
+
+
+//============================================================================
+void CDockWidget::toggleViewInternal(bool Open)
+{
+	CDockContainerWidget* DockContainer = dockContainer();
+	CDockWidget* TopLevelDockWidget = nullptr;;
+
+	if (Open)
+	{
+		TopLevelDockWidget = DockContainer->topLevelDockWidget();
 	}
 
 	if (Open)
@@ -430,16 +445,19 @@ void CDockWidget::toggleView(bool Open)
 	d->ToggleViewAction->blockSignals(true);
 	d->ToggleViewAction->setChecked(Open);
 	d->ToggleViewAction->blockSignals(false);
-	d->DockArea->toggleDockWidgetView(this, Open);
+	if (d->DockArea)
+	{
+		d->DockArea->toggleDockWidgetView(this, Open);
+	}
 
 	if (!Open)
 	{
-		SingleDockWidget = DockContainer->singleVisibleDockWidget();
+		TopLevelDockWidget = DockContainer->topLevelDockWidget();
 	}
 
-	if (SingleDockWidget)
+	if (TopLevelDockWidget)
 	{
-		SingleDockWidget->dockAreaWidget()->updateDockArea();
+		CDockWidget::emitTopLevelEventForWidget(TopLevelDockWidget, !Open);
 	}
 
 	if (!Open)
@@ -471,6 +489,7 @@ void CDockWidget::saveState(QXmlStreamWriter& s) const
 //============================================================================
 void CDockWidget::flagAsUnassigned()
 {
+	d->Closed = true;
 	setParent(d->DockManager);
 	setDockArea(nullptr);
 	tabWidget()->setParent(this);
@@ -609,6 +628,34 @@ void CDockWidget::setToolbarFloatingStyle(bool Floating)
 	}
 }
 
+
+//============================================================================
+void CDockWidget::emitTopLevelEventForWidget(CDockWidget* TopLevelDockWidget, bool Floating)
+{
+	if (TopLevelDockWidget)
+	{
+		TopLevelDockWidget->dockAreaWidget()->updateTabBarVisibility();
+		TopLevelDockWidget->emitTopLevelChanged(Floating);
+	}
+}
+
+
+//============================================================================
+void CDockWidget::emitTopLevelChanged(bool Floating)
+{
+	if (Floating != d->IsFloatingTopLevel)
+	{
+		d->IsFloatingTopLevel = Floating;
+		emit topLevelChanged(d->IsFloatingTopLevel);
+	}
+}
+
+
+//============================================================================
+void CDockWidget::setClosedState(bool Closed)
+{
+	d->Closed = Closed;
+}
 
 } // namespace ads
 

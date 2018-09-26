@@ -37,6 +37,7 @@
 
 #include "DockAreaWidget.h"
 
+
 namespace ads
 {
 
@@ -428,9 +429,16 @@ void CDockOverlay::paintEvent(QPaintEvent* event)
 	}
 	QPainter painter(this);
     QColor Color = palette().color(QPalette::Active, QPalette::Highlight);
+    QPen Pen = painter.pen();
+    Pen.setColor(Color.darker(120));
+    Pen.setStyle(Qt::SolidLine);
+    Pen.setWidth(1);
+    Pen.setCosmetic(true);
+    painter.setPen(Pen);
+    Color = Color.lighter(130);
     Color.setAlpha(64);
-    painter.setPen(Qt::NoPen);
-	painter.fillRect(r, Color);
+    painter.setBrush(Color);
+	painter.drawRect(r.adjusted(0, 0, -1, -1));
 	d->DropAreaRect = r;
 }
 

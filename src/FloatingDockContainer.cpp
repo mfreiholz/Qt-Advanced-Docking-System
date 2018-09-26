@@ -43,6 +43,7 @@
 #include "DockWidget.h"
 #include "DockOverlay.h"
 
+
 namespace ads
 {
 static unsigned int zOrderCounter = 0;
@@ -190,7 +191,7 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
     ContainerOverlay->setAllowedAreas(VisibleDockAreas > 1 ?
     	OuterDockAreas : AllDockAreas);
 	DockWidgetArea ContainerArea = ContainerOverlay->showOverlay(TopContainer);
-
+	ContainerOverlay->enableDropPreview(ContainerArea != InvalidDockWidgetArea);
     auto DockArea = TopContainer->dockAreaAt(GlobalPos);
     if (DockArea && DockArea->isVisible() && VisibleDockAreas > 0)
     {
@@ -520,21 +521,16 @@ bool CFloatingDockContainer::restoreState(QXmlStreamReader& Stream, bool Testing
 
 
 //============================================================================
-bool CFloatingDockContainer::hasSingleDockWidget() const
+bool CFloatingDockContainer::hasTopLevelDockWidget() const
 {
-	if (d->DockContainer->dockAreaCount() != 1)
-	{
-		return false;
-	}
-
-	return d->DockContainer->dockArea(0)->dockWidgetsCount() == 1;
+	return d->DockContainer->hasTopLevelDockWidget();
 }
 
 
 //============================================================================
-CDockWidget* CFloatingDockContainer::firstDockWidget() const
+CDockWidget* CFloatingDockContainer::topLevelDockWidget() const
 {
-	return d->DockContainer->dockArea(0)->dockWidget(0);
+	return d->DockContainer->topLevelDockWidget();
 }
 
 

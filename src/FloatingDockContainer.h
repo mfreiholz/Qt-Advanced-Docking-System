@@ -135,18 +135,18 @@ public:
 
     /**
      * This function returns true, if this floating widget has only one single
-     * dock widget in a single dock area.
+     * visible dock widget in a single visible dock area.
      * The single dock widget is a real top level floating widget because no
      * other widgets are docked.
      */
-    bool hasSingleDockWidget() const;
+    bool hasTopLevelDockWidget() const;
 
     /**
      * This function returns the first dock widget in the first dock area.
      * If the function hasSingleDockWidget() returns true, then this function
      * returns this single dock widget.
      */
-    CDockWidget* firstDockWidget() const;
+    CDockWidget* topLevelDockWidget() const;
 }; // class FloatingDockContainer
 }
  // namespace ads

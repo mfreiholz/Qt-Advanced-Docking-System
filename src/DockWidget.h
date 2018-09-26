@@ -69,6 +69,9 @@ protected:
 	friend class CFloatingDockContainer;
 	friend class CDockManager;
 	friend struct DockContainerWidgetPrivate;
+	friend class CDockAreaTabBar;
+	friend class CDockWidgetTab;
+	friend struct DockWidgetTabPrivate;
 
 	/**
 	 * Assigns the dock manager that manages this dock widget
@@ -104,6 +107,31 @@ protected:
 	 * a floating widget will be created to take up the dock widget.
 	 */
 	void flagAsUnassigned();
+
+	/**
+	 * Call this function to emit a topLevelChanged() signal and to update
+	 * the dock area tool bar visibility
+	 */
+	static void emitTopLevelEventForWidget(CDockWidget* TopLevelDockWidget, bool Floating);
+
+	/**
+	 * Use this function to emit a top level changed event.
+	 * Do never use emit topLevelChanged(). Always use this function because
+	 * it only emits a signal if the floating state has really changed
+	 */
+	void emitTopLevelChanged(bool Floating);
+
+	/**
+	 * Internal function for modifying the closed state when restoring
+	 * a saved docking state
+	 */
+	void setClosedState(bool Closed);
+
+	/**
+	 * Internal toggle view function that does not check if the widget
+	 * already is in the given state
+	 */
+	void toggleViewInternal(bool Open);
 
 public:
 	enum DockWidgetFeature

@@ -240,8 +240,11 @@ public:
 	 *            view menu. I.e. if there is a workbench for each device
 	 *            like for spectrometer devices, it is good to group all these
 	 *            workbenches under a menu item
+	 * \return If Group is not empty, this function returns the GroupAction
+	 *         for this group. If the group is empty, the function returns
+	 *         the given ToggleViewAction.
 	 */
-	void addToggleViewActionToMenu(QAction* ToggleViewAction,
+	QAction* addToggleViewActionToMenu(QAction* ToggleViewAction,
 		const QString& Group = QString(), const QIcon& GroupIcon = QIcon());
 
 	/**
