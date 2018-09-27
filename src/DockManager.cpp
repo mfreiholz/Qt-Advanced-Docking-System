@@ -40,7 +40,6 @@
 #include <QVariant>
 #include <QDebug>
 #include <QFile>
-#include <QApplication>
 #include <QAction>
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
@@ -72,6 +71,7 @@ struct DockManagerPrivate
 	QMap<QString, QMenu*> ViewMenuGroups;
 	QMenu* ViewMenu;
 	CDockManager::eViewMenuInsertionOrder MenuInsertionOrder = CDockManager::MenuAlphabeticallySorted;
+	bool RestoringState = false;
 
 	/**
 	 * Private data constructor
@@ -87,7 +87,12 @@ struct DockManagerPrivate
 	/**
 	 * Restores the state
 	 */
-	bool restoreState(const QByteArray &state, int version, bool Testing = internal::Restore);
+	bool restoreStateFromXml(const QByteArray &state, int version, bool Testing = internal::Restore);
+
+	/**
+	 * Restore state
+	 */
+	bool restoreState(const QByteArray &state, int version);
 
 	/**
 	 * Restores the container with the given index
@@ -151,12 +156,12 @@ bool DockManagerPrivate::restoreContainer(int Index, QXmlStreamReader& stream, b
 //============================================================================
 bool DockManagerPrivate::checkFormat(const QByteArray &state, int version)
 {
-    return restoreState(state, version, internal::RestoreTesting);
+    return restoreStateFromXml(state, version, internal::RestoreTesting);
 }
 
 
 //============================================================================
-bool DockManagerPrivate::restoreState(const QByteArray &state,  int version,
+bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int version,
 	bool Testing)
 {
     if (state.isEmpty())
@@ -206,6 +211,89 @@ bool DockManagerPrivate::restoreState(const QByteArray &state,  int version,
     }
 
     return Result;
+}
+
+
+//============================================================================
+bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
+{
+    if (!checkFormat(state, version))
+    {
+    	qDebug() << "checkFormat: Error checking format!!!!!!!";
+    	return false;
+    }
+
+    for (auto DockWidget : DockWidgetsMap)
+    {
+    	DockWidget->setProperty("dirty", true);
+    }
+
+    if (!restoreStateFromXml(state, version))
+    {
+    	qDebug() << "restoreState: Error restoring state!!!!!!!";
+    	return false;
+    }
+
+    // All dock widgets, that have not been processed in the restore state
+    // function are invisible to the user now and have no assigned dock area
+    // They do not belong to any dock container, until the user toggles the
+    // toggle view action the next time
+    for (auto DockWidget : DockWidgetsMap)
+    {
+    	if (DockWidget->property("dirty").toBool())
+    	{
+    		DockWidget->flagAsUnassigned();
+    	}
+    	else
+    	{
+    		DockWidget->toggleViewInternal(!DockWidget->property("closed").toBool());
+    	}
+    }
+
+    // Now all dock areas are properly restored and we setup the index of
+    // The dock areas because the previous toggleView() action has changed
+    // the dock area index
+    for (auto DockContainer : Containers)
+    {
+    	for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
+    	{
+    		CDockAreaWidget* DockArea = DockContainer->dockArea(i);
+    		int CurrentIndex = DockArea->property("currentIndex").toInt();
+    		int DockWidgetCount = DockArea->dockWidgetsCount();
+    		if (CurrentIndex < DockWidgetCount && DockWidgetCount > 1 && CurrentIndex > -1)
+    		{
+    			auto DockWidget = DockArea->dockWidget(CurrentIndex);
+    			if (!DockWidget->isClosed())
+    			{
+    				DockArea->setCurrentIndex(CurrentIndex);
+    			}
+    		}
+    	}
+    }
+
+    // Finally we need to send the topLevelChanged() signals for all dock
+    // widgets if top level changed
+    for (auto DockContainer : Containers)
+    {
+    	CDockWidget* TopLevelDockWidget = DockContainer->topLevelDockWidget();
+    	if (TopLevelDockWidget)
+    	{
+    		TopLevelDockWidget->emitTopLevelChanged(true);
+    	}
+    	else
+    	{
+			for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
+			{
+				auto DockArea = DockContainer->dockArea(i);
+				for (auto DockWidget : DockArea->dockWidgets())
+				{
+					DockWidget->emitTopLevelChanged(false);
+				}
+			}
+    	}
+    }
+
+    return true;
 }
 
 
@@ -360,84 +448,37 @@ QByteArray CDockManager::saveState(eXmlMode XmlMode, int version) const
 //============================================================================
 bool CDockManager::restoreState(const QByteArray &state, int version)
 {
-    if (!d->checkFormat(state, version))
-    {
-    	qDebug() << "checkFormat: Error checking format!!!!!!!";
-    	return false;
-    }
+	// Prevent multiple calls as long as state is not restore. This may
+	// happen, if QApplication::processEvents() is called somewhere
+	if (d->RestoringState)
+	{
+		return false;
+	}
 
-    for (auto DockWidget : d->DockWidgetsMap)
-    {
-    	DockWidget->setProperty("dirty", true);
-    }
+	// We hide the complete dock manager here. Restoring the state means
+	// that DockWidgets are removed from the DockArea internal stack layout
+	// which in turn  means, that each time a widget is removed the stack
+	// will show and raise the next available widget which in turn
+	// triggers show events for the dock widgets. To avoid this we hide the
+	// dock manager. Because there will be no processing of application
+	// events until this function is finished, the user will not see this
+	// hiding
+	bool IsVisible = this->isVisibleTo(parentWidget());
+	if (IsVisible)
+	{
+		hide();
+	}
+	d->RestoringState = true;
+	emit restoringState();
+	bool Result = d->restoreState(state, version);
+	d->RestoringState = false;
+	emit stateRestored();
+	if (IsVisible)
+	{
+		show();
+	}
 
-    if (!d->restoreState(state, version))
-    {
-    	qDebug() << "restoreState: Error restoring state!!!!!!!";
-    	return false;
-    }
-
-    // All dock widgets, that have not been processed in the restore state
-    // function are invisible to the user now and have no assigned dock area
-    // They do not belong to any dock container, until the user toggles the
-    // toggle view action the next time
-    for (auto DockWidget : d->DockWidgetsMap)
-    {
-    	if (DockWidget->property("dirty").toBool())
-    	{
-    		DockWidget->flagAsUnassigned();
-    	}
-    	else
-    	{
-    		DockWidget->toggleViewInternal(!DockWidget->property("closed").toBool());
-    	}
-    }
-
-    // Now all dock areas are properly restored and we setup the index of
-    // The dock areas because the previous toggleView() action has changed
-    // the dock area index
-    for (auto DockContainer : d->Containers)
-    {
-    	for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
-    	{
-    		CDockAreaWidget* DockArea = DockContainer->dockArea(i);
-    		int CurrentIndex = DockArea->property("currentIndex").toInt();
-    		int DockWidgetCount = DockArea->dockWidgetsCount();
-    		if (CurrentIndex < DockWidgetCount && DockWidgetCount > 1 && CurrentIndex > -1)
-    		{
-    			auto DockWidget = DockArea->dockWidget(CurrentIndex);
-    			if (!DockWidget->isClosed())
-    			{
-    				DockArea->setCurrentIndex(CurrentIndex);
-    			}
-    		}
-    	}
-    }
-
-    // Finally we need to send the topLevelChanged() signals for all dock
-    // widgets if top level changed
-    for (auto DockContainer : d->Containers)
-    {
-    	CDockWidget* TopLevelDockWidget = DockContainer->topLevelDockWidget();
-    	if (TopLevelDockWidget)
-    	{
-    		TopLevelDockWidget->emitTopLevelChanged(true);
-    	}
-    	else
-    	{
-			for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
-			{
-				auto DockArea = DockContainer->dockArea(i);
-				for (auto DockWidget : DockArea->dockWidgets())
-				{
-					DockWidget->emitTopLevelChanged(false);
-				}
-			}
-    	}
-    }
-
-    emit stateChanged();
-    return true;
+	return Result;
 }
 
 
@@ -505,7 +546,9 @@ void CDockManager::openPerspective(const QString& PerspectiveName)
 		return;
 	}
 
+	emit openingPerspective(PerspectiveName);
 	restoreState(Iterator.value());
+	emit perspectiveOpened(PerspectiveName);
 }
 
 

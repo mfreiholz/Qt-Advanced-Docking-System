@@ -276,12 +276,35 @@ signals:
 	 */
 	void perspectiveListChanged();
 
+	/**
+	 * This signal is emitted, if the restore function is called, just before
+	 * the dock manager starts restoring the state.
+	 * If this function is called, nothing has changed yet
+	 */
+	void restoringState();
+
     /**
      * This signal is emitted if the state changed in restoreState.
      * The signal is emitted if the restoreState() function is called or
      * if the openPerspective() function is called
      */
-    void stateChanged();
+    void stateRestored();
+
+    /**
+     * This signal is emitted, if the dock manager starts opening a
+     * perspective.
+     * Opening a perspective may take more than a second if there are
+     * many complex widgets. The application may use this signal
+     * to show some progress indicator or to change the mouse cursor
+     * into a busy cursor.
+     */
+    void openingPerspective(const QString& PerspectiveName);
+
+    /**
+     * This signal is emitted if the dock manager finished opening a
+     * perspective
+     */
+    void perspectiveOpened(const QString& PerspectiveName);
 }; // class DockManager
 } // namespace ads
 //-----------------------------------------------------------------------------

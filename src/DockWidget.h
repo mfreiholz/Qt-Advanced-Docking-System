@@ -68,6 +68,7 @@ protected:
 	friend class CDockAreaWidget;
 	friend class CFloatingDockContainer;
 	friend class CDockManager;
+	friend struct DockManagerPrivate;
 	friend struct DockContainerWidgetPrivate;
 	friend class CDockAreaTabBar;
 	friend class CDockWidgetTab;
