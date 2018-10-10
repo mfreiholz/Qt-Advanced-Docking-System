@@ -327,7 +327,7 @@ void CDockWidget::setDockManager(CDockManager* DockManager)
 //============================================================================
 CDockContainerWidget* CDockWidget::dockContainer() const
 {
-	return internal::findParent<CDockContainerWidget*>(this);
+	return d->DockArea->dockContainer();
 }
 
 

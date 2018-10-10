@@ -13,12 +13,16 @@
 #include <QMouseEvent>
 #include <QScrollBar>
 #include <QDebug>
+#include <QBoxLayout>
 
 #include "FloatingDockContainer.h"
 #include "DockAreaWidget.h"
 #include "DockOverlay.h"
 #include "DockManager.h"
 #include "DockWidget.h"
+#include "DockWidgetTab.h"
+
+#include <iostream>
 
 namespace ads
 {
@@ -31,6 +35,9 @@ struct DockAreaTabBarPrivate
 	QPoint DragStartMousePos;
 	CDockAreaWidget* DockArea;
 	CFloatingDockContainer* FloatingWidget = nullptr;
+	QWidget* TabsContainerWidget;
+	QBoxLayout* TabsLayout;
+	int CurrentIndex = -1;
 
 	/**
 	 * Private data constructor
@@ -57,6 +64,16 @@ CDockAreaTabBar::CDockAreaTabBar(CDockAreaWidget* parent) :
 	setWidgetResizable(true);
 	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+	d->TabsContainerWidget = new QWidget();
+	d->TabsContainerWidget->setObjectName("tabsContainerWidget");
+	setWidget(d->TabsContainerWidget);
+
+	d->TabsLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+	d->TabsLayout->setContentsMargins(0, 0, 0, 0);
+	d->TabsLayout->setSpacing(0);
+	d->TabsLayout->addStretch(1);
+	d->TabsContainerWidget->setLayout(d->TabsLayout);
 }
 
 //============================================================================
@@ -172,6 +189,113 @@ void CDockAreaTabBar::startFloating(const QPoint& Pos)
 	{
 		TopLevelDockWidget->emitTopLevelChanged(true);
 	}
+}
+
+
+//============================================================================
+void CDockAreaTabBar::setCurrentIndex(int index)
+{
+	if (index == d->CurrentIndex)
+	{
+		return;
+	}
+
+	if (index < 0 || index > (d->TabsLayout->count() - 1))
+	{
+		qWarning() << Q_FUNC_INFO << "Invalid index" << index;
+		return;
+    }
+
+    emit currentChanging(index);
+
+	// Set active TAB and update all other tabs to be inactive
+	for (int i = 0; i < d->TabsLayout->count(); ++i)
+	{
+		QLayoutItem* item = d->TabsLayout->itemAt(i);
+		if (!item->widget())
+		{
+			continue;
+		}
+
+		auto TabWidget = dynamic_cast<CDockWidgetTab*>(item->widget());
+		if (!TabWidget)
+		{
+			continue;
+		}
+
+		if (i == index)
+		{
+			TabWidget->show();
+			TabWidget->setActiveTab(true);
+			ensureWidgetVisible(TabWidget);
+		}
+		else
+		{
+			TabWidget->setActiveTab(false);
+		}
+	}
+
+	d->CurrentIndex = index;
+	emit currentChanged(index);
+}
+
+
+//============================================================================
+int CDockAreaTabBar::count() const
+{
+	return d->TabsLayout->count();
+}
+
+
+//===========================================================================
+void CDockAreaTabBar::insertTab(int Index, CDockWidgetTab* Tab)
+{
+	d->TabsLayout->insertWidget(Index, Tab);
+	connect(Tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
+}
+
+
+//===========================================================================
+void CDockAreaTabBar::removeTab(CDockWidgetTab* Tab)
+{
+	d->TabsLayout->removeWidget(Tab);
+	disconnect(Tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
+}
+
+
+//===========================================================================
+int CDockAreaTabBar::currentIndex() const
+{
+	return d->CurrentIndex;
+}
+
+
+//===========================================================================
+CDockWidgetTab* CDockAreaTabBar::currentTab() const
+{
+	return qobject_cast<CDockWidgetTab*>(d->TabsLayout->itemAt(d->CurrentIndex)->widget());
+}
+
+
+//===========================================================================
+void CDockAreaTabBar::onTabClicked()
+{
+	CDockWidgetTab* Tab = qobject_cast<CDockWidgetTab*>(sender());
+	if (!Tab)
+	{
+		return;
+	}
+
+	int index = d->TabsLayout->indexOf(Tab);
+	setCurrentIndex(index);
+	std::cout << "emit tabBarClicked " << index << std::endl;
+ 	emit tabBarClicked(index);
+}
+
+
+void CDockAreaTabBar::closeTabe(int Index)
+{
+
 }
 } // namespace ads
 

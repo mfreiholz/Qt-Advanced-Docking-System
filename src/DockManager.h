@@ -264,6 +264,12 @@ public:
 	 */
 	void setViewMenuInsertionOrder(eViewMenuInsertionOrder Order);
 
+	/**
+	 * This function returns true between the restoringState() and
+	 * stateRestored() signals.
+	 */
+	bool isRestoringState() const;
+
 public slots:
 	/**
 	 * Opens the perspective with the given name.

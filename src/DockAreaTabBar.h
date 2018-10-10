@@ -15,6 +15,7 @@
 namespace ads
 {
 class CDockAreaWidget;
+class CDockWidgetTab;
 struct DockAreaTabBarPrivate;
 
 /**
@@ -28,6 +29,9 @@ class CDockAreaTabBar : public QScrollArea
 private:
 	DockAreaTabBarPrivate* d; ///< private data (pimpl)
 	friend class DockAreaTabBarPrivate;
+
+private slots:
+	void onTabClicked();
 
 protected:
 	virtual void wheelEvent(QWheelEvent* Event) override;
@@ -67,6 +71,61 @@ public:
 	 * Virtual Destructor
 	 */
 	virtual ~CDockAreaTabBar();
+
+	/**
+	 * Inserts the given dock widget tab at the given position
+	 */
+	void insertTab(int Index, CDockWidgetTab* Tab);
+
+	/**
+	 * Removes the given DockWidgetTab from the tabbar
+	 */
+	void removeTab(CDockWidgetTab* Tab);
+
+	/**
+	 * Returns the number of tabs in this tabbar
+	 */
+	int count() const;
+
+	/**
+	 * Returns the current index
+	 */
+	int currentIndex() const;
+
+	/**
+	 * Returns the current tab
+	 */
+	CDockWidgetTab* currentTab() const;
+
+public slots:
+	/**
+	 * This property sets the index of the tab bar's visible tab
+	 */
+	void setCurrentIndex(int Index);
+
+	/**
+	 * This function will close the tab given in Index param.
+	 * Closing a tab means, the tab will be hidden, it will not be removed
+	 */
+	void closeTabe(int Index);
+
+signals:
+    /**
+     * This signal is emitted when the tab bar's current tab is about to be changed. The new
+     * current has the given index, or -1 if there isn't a new one.
+     */
+	void currentChanging(int Index);
+
+	/**
+	 * This signal is emitted when the tab bar's current tab changes. The new
+	 * current has the given index, or -1 if there isn't a new one
+	 */
+	void currentChanged(int Index);
+
+	/**
+	 * This signal is emitted when user clicks on a tab at an index.
+	 */
+	void tabBarClicked(int index);
 }; // class CDockAreaTabBar
 } // namespace ads
 //-----------------------------------------------------------------------------

@@ -104,7 +104,7 @@ T findParent(const QWidget* w)
 	QWidget* parentWidget = w->parentWidget();
 	while (parentWidget)
 	{
-		T ParentImpl = dynamic_cast<T>(parentWidget);
+		T ParentImpl = qobject_cast<T>(parentWidget);
 		if (ParentImpl)
 		{
 			return ParentImpl;

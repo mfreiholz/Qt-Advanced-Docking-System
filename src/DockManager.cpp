@@ -33,7 +33,6 @@
 
 #include <algorithm>
 
-
 #include <QMainWindow>
 #include <QList>
 #include <QMap>
@@ -53,6 +52,8 @@
 #include "DockStateSerialization.h"
 #include "DockAreaWidget.h"
 
+#include <QElapsedTimer>
+#include <iostream>
 
 namespace ads
 {
@@ -448,6 +449,9 @@ QByteArray CDockManager::saveState(eXmlMode XmlMode, int version) const
 //============================================================================
 bool CDockManager::restoreState(const QByteArray &state, int version)
 {
+	QElapsedTimer Timer;
+	Timer.start();
+
 	// Prevent multiple calls as long as state is not restore. This may
 	// happen, if QApplication::processEvents() is called somewhere
 	if (d->RestoringState)
@@ -478,6 +482,7 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
 		show();
 	}
 
+	std::cout << "CDockManager::restoreState " << Timer.restart() << std::endl;
 	return Result;
 }
 
@@ -633,6 +638,13 @@ QMenu* CDockManager::viewMenu() const
 void CDockManager::setViewMenuInsertionOrder(eViewMenuInsertionOrder Order)
 {
 	d->MenuInsertionOrder = Order;
+}
+
+
+//===========================================================================
+bool CDockManager::isRestoringState() const
+{
+	return d->RestoringState;
 }
 
 } // namespace ads

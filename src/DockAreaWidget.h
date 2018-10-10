@@ -63,7 +63,6 @@ private:
 	friend class CDockWidget;
 
 private slots:
-	void onDockWidgetTitleClicked();
 	void onTabsMenuActionTriggered(QAction* Action);
 	void onCloseButtonClicked();
 	void onTabsMenuAboutToShow();

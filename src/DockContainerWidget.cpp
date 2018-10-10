@@ -47,6 +47,9 @@
 #include "ads_globals.h"
 #include "DockSplitter.h"
 
+#include <QElapsedTimer>
+#include <iostream>
+
 
 namespace ads
 {
@@ -936,6 +939,9 @@ int CDockContainerWidget::visibleDockAreaCount() const
 void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWidget,
 	const QPoint& TargetPos)
 {
+	QElapsedTimer Timer;
+	Timer.start();
+
 	qDebug() << "CDockContainerWidget::dropFloatingWidget";
 	CDockAreaWidget* DockArea = dockAreaAt(TargetPos);
 	auto dropArea = InvalidDockWidgetArea;
@@ -977,6 +983,9 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	{
 		TopLevelDockWidget->emitTopLevelChanged(false);
 	}
+
+	std::cout << "CDockContainerWidget::dropFloatingWidget " <<
+		Timer.restart() << std::endl;
 }
 
 

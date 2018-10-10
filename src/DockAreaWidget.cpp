@@ -42,6 +42,8 @@
 #include <QSplitter>
 #include <QXmlStreamWriter>
 #include <QVector>
+#include <QList>
+
 
 #include "DockContainerWidget.h"
 #include "DockWidget.h"
@@ -50,6 +52,8 @@
 #include "DockOverlay.h"
 #include "DockAreaTabBar.h"
 #include "DockSplitter.h"
+
+#include <iostream>
 
 
 namespace ads
@@ -61,6 +65,210 @@ static const int APPEND = -1;
 
 
 /**
+ * Default stack area layout
+ */
+class CStackedDockAreaLayout
+{
+private:
+	QStackedLayout* Layout;
+
+public:
+	CStackedDockAreaLayout(QBoxLayout* ParentLayout)
+	{
+		Layout = new QStackedLayout();
+		Layout->setContentsMargins(0, 0, 0, 0);
+		Layout->setSpacing(0);
+		Layout->setSizeConstraint(QLayout::SetNoConstraint);
+		ParentLayout->addLayout(Layout, 1);
+	}
+
+	int count() const
+	{
+		return Layout->count();
+	}
+
+	void insertWidget(int index, QWidget* Widget)
+	{
+		Layout->insertWidget(index, Widget);
+	}
+
+	void removeWidget(QWidget* Widget)
+	{
+		Layout->removeWidget(Widget);
+	}
+
+	void setCurrentIndex(int Index)
+	{
+		Layout->setCurrentIndex(Index);
+	}
+
+	int currentIndex() const
+	{
+		return Layout->currentIndex();
+	}
+
+	QWidget* currentWidget() const
+	{
+		return Layout->currentWidget();
+	}
+
+	bool isEmpty() const
+	{
+		return Layout->isEmpty();
+	}
+
+	int indexOf(QWidget* w) const
+	{
+		return Layout->indexOf(w);
+	}
+
+	QWidget* widget(int index) const
+	{
+		return Layout->widget(index);
+	}
+
+	QRect geometry() const
+	{
+		return Layout->geometry();
+	}
+};
+
+
+/**
+ * New dock area layout
+ */
+class CDockAreaLayout
+{
+private:
+	QBoxLayout* m_ParentLayout;
+	QList<QWidget*> m_Widgets;
+	int m_CurrentIndex = -1;
+	QWidget* m_CurrentWidget = nullptr;
+
+public:
+	CDockAreaLayout(QBoxLayout* ParentLayout)
+		: m_ParentLayout(ParentLayout)
+	{
+
+	}
+
+	int count() const
+	{
+		return m_Widgets.count();
+	}
+
+	void insertWidget(int index, QWidget* Widget)
+	{
+		if (index < 0)
+		{
+			index = m_Widgets.count();
+		}
+		m_Widgets.insert(index, Widget);
+		if (m_CurrentIndex < 0)
+		{
+			setCurrentIndex(index);
+		}
+		else
+		{
+			if (index <= m_CurrentIndex )
+			{
+				++m_CurrentIndex;
+			}
+		}
+	}
+
+	void removeWidget(QWidget* Widget)
+	{
+		if (currentWidget() == Widget)
+		{
+			auto LayoutItem = m_ParentLayout->takeAt(1);
+			if (LayoutItem)
+			{
+				LayoutItem->widget()->setParent(0);
+			}
+		}
+		m_Widgets.removeOne(Widget);
+		//setCurrentIndex(0);
+	}
+
+	QWidget* currentWidget() const
+	{
+		return m_CurrentWidget;
+	}
+
+	void setCurrentIndex(int index)
+	{
+		std::cout << "setCurrentIndex" << std::endl;
+		QWidget *prev = currentWidget();
+		QWidget *next = widget(index);
+		if (!next || (next == prev && !m_CurrentWidget))
+		{
+			return;
+		}
+
+		bool reenableUpdates = false;
+		QWidget *parent = m_ParentLayout->parentWidget();
+
+		if (parent && parent->updatesEnabled())
+		{
+			reenableUpdates = true;
+			parent->setUpdatesEnabled(false);
+		}
+
+		std::cout << "m_ParentLayout->addWidget(next)" << std::endl;
+		auto LayoutItem = m_ParentLayout->takeAt(1);
+		if (LayoutItem)
+		{
+			LayoutItem->widget()->setParent(0);
+		}
+
+		m_ParentLayout->addWidget(next);
+		if (prev)
+		{
+			prev->hide();
+		}
+		m_CurrentIndex = index;
+		m_CurrentWidget = next;
+
+
+		if (reenableUpdates)
+		{
+			parent->setUpdatesEnabled(true);
+		}
+	}
+
+	int currentIndex() const
+	{
+		return m_CurrentIndex;
+	}
+
+	bool isEmpty() const
+	{
+		return m_Widgets.empty();
+	}
+
+	int indexOf(QWidget* w) const
+	{
+		return m_Widgets.indexOf(w);
+	}
+
+	QWidget* widget(int index) const
+	{
+		return (index < m_Widgets.size()) ? m_Widgets.at(index) : nullptr;
+	}
+
+	QRect geometry() const
+	{
+		return m_Widgets.empty() ? QRect() : currentWidget()->geometry();
+	}
+};
+
+
+
+using DockAreaLayout = CDockAreaLayout;
+
+
+/**
  * Private data class of CDockAreaWidget class (pimpl)
  */
 struct DockAreaWidgetPrivate
@@ -69,13 +277,11 @@ struct DockAreaWidgetPrivate
 	QBoxLayout* Layout;
 	QFrame* TitleBar;
 	QBoxLayout* TopLayout;
-	QStackedLayout* ContentsLayout;
+	DockAreaLayout* ContentsLayout;
 	CDockAreaTabBar* TabBar;
-	QWidget* TabsContainerWidget;
-	QBoxLayout* TabsLayout;
 	QPushButton* TabsMenuButton;
 	QPushButton* CloseButton;
-	int TabsLayoutInitCount;
+	//int TabsLayoutInitCount;
 	CDockManager* DockManager = nullptr;
 	bool MenuOutdated = true;
 
@@ -167,19 +373,11 @@ void DockAreaWidgetPrivate::createTabBar()
 	TopLayout->setSpacing(0);
 	TitleBar->setLayout(TopLayout);
 	Layout->addWidget(TitleBar);
+	TitleBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
 	TabBar = new CDockAreaTabBar(_this);
 	TopLayout->addWidget(TabBar, 1);
-
-	TabsContainerWidget = new QWidget();
-	TabsContainerWidget->setObjectName("tabsContainerWidget");
-	TabBar->setWidget(TabsContainerWidget);
-
-	TabsLayout = new QBoxLayout(QBoxLayout::LeftToRight);
-	TabsLayout->setContentsMargins(0, 0, 0, 0);
-	TabsLayout->setSpacing(0);
-	TabsLayout->addStretch(1);
-	TabsContainerWidget->setLayout(TabsLayout);
+	_this->connect(TabBar, SIGNAL(tabBarClicked(int)), SLOT(setCurrentIndex(int)));
 
 	TabsMenuButton = new QPushButton();
 	TabsMenuButton->setObjectName("tabsMenuButton");
@@ -202,8 +400,6 @@ void DockAreaWidgetPrivate::createTabBar()
 	CloseButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	TopLayout->addWidget(CloseButton, 0);
 	_this->connect(CloseButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
-
-	TabsLayoutInitCount = TabsLayout->count();
 }
 
 
@@ -283,18 +479,14 @@ CDockAreaWidget::CDockAreaWidget(CDockManager* DockManager, CDockContainerWidget
 	setLayout(d->Layout);
 
 	d->createTabBar();
-
-	d->ContentsLayout = new QStackedLayout();
-	d->ContentsLayout->setContentsMargins(0, 0, 0, 0);
-	d->ContentsLayout->setSpacing(0);
-	d->ContentsLayout->setSizeConstraint(QLayout::SetNoConstraint);
-	d->Layout->addLayout(d->ContentsLayout, 1);
+	d->ContentsLayout = new DockAreaLayout(d->Layout);
 }
 
 //============================================================================
 CDockAreaWidget::~CDockAreaWidget()
 {
 	qDebug() << "~CDockAreaWidget()";
+	delete d->ContentsLayout;
 	delete d;
 }
 
@@ -309,18 +501,7 @@ CDockManager* CDockAreaWidget::dockManager() const
 //============================================================================
 CDockContainerWidget* CDockAreaWidget::dockContainer() const
 {
-	QWidget* Parent = parentWidget();
-	while (Parent)
-	{
-		CDockContainerWidget* Container = dynamic_cast<CDockContainerWidget*>(Parent);
-		if (Container)
-		{
-			return Container;
-		}
-		Parent = Parent->parentWidget();
-	}
-
-	return 0;
+	return internal::findParent<CDockContainerWidget*>(this);
 }
 
 
@@ -338,10 +519,10 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 	d->ContentsLayout->insertWidget(index, DockWidget);
 	DockWidget->tabWidget()->setDockAreaWidget(this);
 	auto TabWidget = DockWidget->tabWidget();
-	d->TabsLayout->insertWidget(index, TabWidget);
+	d->TabBar->insertTab(index, TabWidget);
 	TabWidget->setVisible(!DockWidget->isClosed());
-	connect(TabWidget, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
 	DockWidget->setProperty(INDEX_PROPERTY, index);
+	d->markTabsMenuOutdated();
 	if (Activate)
 	{
 		setCurrentIndex(index);
@@ -359,8 +540,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	d->ContentsLayout->removeWidget(DockWidget);
 	auto TabWidget = DockWidget->tabWidget();
 	TabWidget->hide();
-	d->TabsLayout->removeWidget(TabWidget);
-	disconnect(TabWidget, SIGNAL(clicked()), this, SLOT(onDockWidgetTitleClicked()));
+	d->TabBar->removeTab(TabWidget);
 	if (NextOpenDockWidget)
 	{
 		setCurrentDockWidget(NextOpenDockWidget);
@@ -427,20 +607,6 @@ void CDockAreaWidget::hideAreaIfNoVisibleContent()
 
 
 //============================================================================
-void CDockAreaWidget::onDockWidgetTitleClicked()
-{
-	CDockWidgetTab* TitleWidget = qobject_cast<CDockWidgetTab*>(sender());
-	if (!TitleWidget)
-	{
-		return;
-	}
-
-	int index = d->TabsLayout->indexOf(TitleWidget);
-	setCurrentIndex(index);
-}
-
-
-//============================================================================
 void CDockAreaWidget::onCloseButtonClicked()
 {
 	currentDockWidget()->toggleView(false);
@@ -469,45 +635,22 @@ void CDockAreaWidget::setCurrentDockWidget(CDockWidget* DockWidget)
 //============================================================================
 void CDockAreaWidget::setCurrentIndex(int index)
 {
-	if (index < 0 || index > (d->TabsLayout->count() - 1))
+	if (index < 0 || index > (d->TabBar->count() - 1))
 	{
 		qWarning() << Q_FUNC_INFO << "Invalid index" << index;
 		return;
     }
 
     emit currentChanging(index);
+    d->TabBar->setCurrentIndex(index);
+	auto Features = d->TabBar->currentTab()->dockWidget()->features();
+	d->CloseButton->setVisible(Features.testFlag(CDockWidget::DockWidgetClosable));
 
-	// Set active TAB and update all other tabs to be inactive
-	for (int i = 0; i < d->TabsLayout->count(); ++i)
+	if (!dockManager()->isRestoringState())
 	{
-		QLayoutItem* item = d->TabsLayout->itemAt(i);
-		if (!item->widget())
-		{
-			continue;
-		}
-
-		auto TitleWidget = dynamic_cast<CDockWidgetTab*>(item->widget());
-		if (!TitleWidget)
-		{
-			continue;
-		}
-
-		if (i == index)
-		{
-			TitleWidget->show();
-			TitleWidget->setActiveTab(true);
-			d->TabBar->ensureWidgetVisible(TitleWidget);
-			auto Features = TitleWidget->dockWidget()->features();
-			d->CloseButton->setVisible(Features.testFlag(CDockWidget::DockWidgetClosable));
-		}
-		else
-		{
-			TitleWidget->setActiveTab(false);
-		}
+		d->ContentsLayout->setCurrentIndex(index);
+		d->ContentsLayout->currentWidget()->show();
 	}
-
-	d->ContentsLayout->setCurrentIndex(index);
-	d->ContentsLayout->currentWidget()->show();
 	emit currentChanged(index);
 }
 
@@ -618,7 +761,7 @@ void CDockAreaWidget::reorderDockWidget(int fromIndex, int toIndex)
      || toIndex >= d->ContentsLayout->count() || toIndex < 0 || fromIndex == toIndex)
 	{
 		qDebug() << "Invalid index for tab movement" << fromIndex << toIndex;
-		d->TabsLayout->update();
+		//d->TabsLayout->update();
 		return;
 	}
 
@@ -639,11 +782,14 @@ void CDockAreaWidget::reorderDockWidget(int fromIndex, int toIndex)
 
 	// now reorder contents and title bars
 	QLayoutItem* liFrom = nullptr;
-	liFrom = d->TabsLayout->takeAt(fromIndex);
-	d->TabsLayout->insertItem(toIndex, liFrom);
-	liFrom = d->ContentsLayout->takeAt(fromIndex);
-	d->ContentsLayout->insertWidget(toIndex, liFrom->widget());
-	delete liFrom;
+	/*liFrom = d->TabsLayout->takeAt(fromIndex);
+	d->TabsLayout->insertItem(toIndex, liFrom);*/
+	//liFrom = d->ContentsLayout->takeAt(fromIndex);
+	//d->ContentsLayout->insertWidget(toIndex, liFrom->widget());
+	auto Widget = d->ContentsLayout->widget(fromIndex);
+	d->ContentsLayout->removeWidget(Widget);
+	d->ContentsLayout->insertWidget(toIndex, Widget);
+	//delete liFrom;
 }
 
 
