@@ -533,6 +533,12 @@ CDockWidget* CFloatingDockContainer::topLevelDockWidget() const
 	return d->DockContainer->topLevelDockWidget();
 }
 
+//============================================================================
+QList<CDockWidget*> CFloatingDockContainer::dockWidgets() const
+{
+	return d->DockContainer->dockWidgets();
+}
+
 
 } // namespace ads
 

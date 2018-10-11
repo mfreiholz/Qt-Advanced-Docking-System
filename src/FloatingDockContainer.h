@@ -147,6 +147,13 @@ public:
      * returns this single dock widget.
      */
     CDockWidget* topLevelDockWidget() const;
+
+    /**
+     * This function returns a list of all dock widget in this floating widget.
+     * This is a simple convenience function that simply calls the dockWidgets()
+     * function of the internal container widget.
+     */
+    QList<CDockWidget*> dockWidgets() const;
 }; // class FloatingDockContainer
 }
  // namespace ads

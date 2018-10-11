@@ -14,6 +14,7 @@
 #include <QScrollBar>
 #include <QDebug>
 #include <QBoxLayout>
+#include <QMenu>
 
 #include "FloatingDockContainer.h"
 #include "DockAreaWidget.h"
@@ -38,6 +39,8 @@ struct DockAreaTabBarPrivate
 	QWidget* TabsContainerWidget;
 	QBoxLayout* TabsLayout;
 	int CurrentIndex = -1;
+	bool MenuOutdated = true;
+	QMenu* TabsMenu;
 
 	/**
 	 * Private data constructor
@@ -102,6 +105,7 @@ void CDockAreaTabBar::wheelEvent(QWheelEvent* Event)
 //============================================================================
 void CDockAreaTabBar::mousePressEvent(QMouseEvent* ev)
 {
+	std::cout << "CDockAreaTabBar::mousePressEvent" << std::endl;
 	if (ev->button() == Qt::LeftButton)
 	{
 		ev->accept();
@@ -252,6 +256,7 @@ void CDockAreaTabBar::insertTab(int Index, CDockWidgetTab* Tab)
 {
 	d->TabsLayout->insertWidget(Index, Tab);
 	connect(Tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
+	d->MenuOutdated = true;
 }
 
 
@@ -260,6 +265,7 @@ void CDockAreaTabBar::removeTab(CDockWidgetTab* Tab)
 {
 	d->TabsLayout->removeWidget(Tab);
 	disconnect(Tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
+	d->MenuOutdated = true;
 }
 
 
@@ -293,9 +299,14 @@ void CDockAreaTabBar::onTabClicked()
 }
 
 
-void CDockAreaTabBar::closeTabe(int Index)
+//===========================================================================
+void CDockAreaTabBar::closeTab(int Index)
 {
-
+	if (Index < 0 || Index >= d->TabsLayout->count())
+	{
+		return;
+	}
+	emit tabCloseRequested(Index);
 }
 } // namespace ads
 

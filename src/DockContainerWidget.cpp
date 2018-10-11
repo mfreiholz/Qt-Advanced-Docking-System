@@ -254,8 +254,7 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 	CDockContainerWidget* FloatingContainer = FloatingWidget->dockContainer();
 	if (area == CenterDockWidgetArea)
 	{
-		auto NewDockWidgets = FloatingContainer->findChildren<CDockWidget*>(
-			QString(), Qt::FindChildrenRecursively);
+		auto NewDockWidgets = FloatingContainer->dockWidgets();
 		for (auto DockWidget : NewDockWidgets)
 		{
 			TargetArea->insertDockWidget(0, DockWidget, false);
@@ -1138,6 +1137,19 @@ CDockWidget* CDockContainerWidget::topLevelDockWidget() const
 	}
 
 	return DockWidgets[0];
+}
+
+
+//============================================================================
+QList<CDockWidget*> CDockContainerWidget::dockWidgets() const
+{
+	QList<CDockWidget*> Result;
+	for (const auto DockArea : d->DockAreas)
+	{
+		Result.append(DockArea->dockWidgets());
+	}
+
+	return Result;
 }
 
 

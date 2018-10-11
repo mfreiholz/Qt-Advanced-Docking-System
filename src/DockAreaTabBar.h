@@ -107,7 +107,7 @@ public slots:
 	 * This function will close the tab given in Index param.
 	 * Closing a tab means, the tab will be hidden, it will not be removed
 	 */
-	void closeTabe(int Index);
+	void closeTab(int Index);
 
 signals:
     /**
@@ -126,6 +126,12 @@ signals:
 	 * This signal is emitted when user clicks on a tab at an index.
 	 */
 	void tabBarClicked(int index);
+
+	/**
+	 * This signal is emitted when the close button on a tab is clicked.
+	 * The index is the index that should be closed.
+	 */
+	void tabCloseRequested(int index);
 }; // class CDockAreaTabBar
 } // namespace ads
 //-----------------------------------------------------------------------------
