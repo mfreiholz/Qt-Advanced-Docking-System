@@ -254,8 +254,13 @@ bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
     // Now all dock areas are properly restored and we setup the index of
     // The dock areas because the previous toggleView() action has changed
     // the dock area index
+    std::cout << "Restoring dock container indexes" << std::endl;
+    int Count = 0;
     for (auto DockContainer : Containers)
     {
+    	Count++;
+    	std::cout << "Restoring container " << Count << " floating: "
+    		<< DockContainer->isFloating() << " DockAreaCount " <<  DockContainer->dockAreaCount() << std::endl;
     	for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
     	{
     		CDockAreaWidget* DockArea = DockContainer->dockArea(i);

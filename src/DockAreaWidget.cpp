@@ -199,11 +199,12 @@ public:
 
 	void setCurrentIndex(int index)
 	{
-		std::cout << "setCurrentIndex" << std::endl;
+		std::cout << "CDockAreaLayout::setCurrentIndex " << index << std::endl;
 		QWidget *prev = currentWidget();
 		QWidget *next = widget(index);
 		if (!next || (next == prev && !m_CurrentWidget))
 		{
+			std::cout << "return" << std::endl;
 			return;
 		}
 
@@ -629,6 +630,12 @@ void CDockAreaWidget::setCurrentDockWidget(CDockWidget* DockWidget)
 	{
 		return;
 	}
+
+	if (dockManager()->isRestoringState())
+	{
+		return;
+	}
+
 	setCurrentIndex(Index);
 }
 
@@ -636,6 +643,7 @@ void CDockAreaWidget::setCurrentDockWidget(CDockWidget* DockWidget)
 //============================================================================
 void CDockAreaWidget::setCurrentIndex(int index)
 {
+	std::cout << "CDockAreaWidget::setCurrentIndex " << index << std::endl;
 	if (index < 0 || index > (d->TabBar->count() - 1))
 	{
 		qWarning() << Q_FUNC_INFO << "Invalid index" << index;
@@ -648,11 +656,8 @@ void CDockAreaWidget::setCurrentIndex(int index)
 	auto Features = CurrentTab->dockWidget()->features();
 	d->CloseButton->setVisible(Features.testFlag(CDockWidget::DockWidgetClosable));
 
-	if (!dockManager()->isRestoringState())
-	{
-		d->ContentsLayout->setCurrentIndex(index);
-		d->ContentsLayout->currentWidget()->show();
-	}
+	d->ContentsLayout->setCurrentIndex(index);
+	d->ContentsLayout->currentWidget()->show();
 	emit currentChanged(index);
 }
 
