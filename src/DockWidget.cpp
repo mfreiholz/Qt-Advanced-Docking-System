@@ -327,7 +327,14 @@ void CDockWidget::setDockManager(CDockManager* DockManager)
 //============================================================================
 CDockContainerWidget* CDockWidget::dockContainer() const
 {
-	return d->DockArea->dockContainer();
+	if (d->DockArea)
+	{
+		return d->DockArea->dockContainer();
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 
@@ -426,9 +433,9 @@ void CDockWidget::toggleView(bool Open)
 void CDockWidget::toggleViewInternal(bool Open)
 {
 	CDockContainerWidget* DockContainer = dockContainer();
-	CDockWidget* TopLevelDockWidget = nullptr;;
+	CDockWidget* TopLevelDockWidget = nullptr;
 
-	if (Open)
+	if (Open && DockContainer)
 	{
 		TopLevelDockWidget = DockContainer->topLevelDockWidget();
 	}
@@ -450,7 +457,7 @@ void CDockWidget::toggleViewInternal(bool Open)
 		d->DockArea->toggleDockWidgetView(this, Open);
 	}
 
-	if (!Open)
+	if (!Open && DockContainer)
 	{
 		TopLevelDockWidget = DockContainer->topLevelDockWidget();
 	}
@@ -491,6 +498,7 @@ void CDockWidget::flagAsUnassigned()
 {
 	d->Closed = true;
 	setParent(d->DockManager);
+	setVisible(false);
 	setDockArea(nullptr);
 	tabWidget()->setParent(this);
 }

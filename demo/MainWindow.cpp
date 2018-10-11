@@ -235,10 +235,10 @@ void MainWindowPrivate::saveState()
 //============================================================================
 void MainWindowPrivate::restoreState()
 {
-	/*QSettings Settings("Settings.ini", QSettings::IniFormat);
+	QSettings Settings("Settings.ini", QSettings::IniFormat);
 	_this->restoreGeometry(Settings.value("mainWindow/Geometry").toByteArray());
 	_this->restoreState(Settings.value("mainWindow/State").toByteArray());
-	DockManager->restoreState(Settings.value("mainWindow/DockingState").toByteArray());*/
+	DockManager->restoreState(Settings.value("mainWindow/DockingState").toByteArray());
 }
 
 
