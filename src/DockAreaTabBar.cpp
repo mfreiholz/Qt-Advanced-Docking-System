@@ -205,7 +205,7 @@ void CDockAreaTabBar::setCurrentIndex(int index)
 		return;
 	}
 
-	if (index < 0 || index > (d->TabsLayout->count() - 1))
+	if (index < 0 || index > (count() - 1))
 	{
 		qWarning() << Q_FUNC_INFO << "Invalid index" << index;
 		return;
@@ -214,7 +214,7 @@ void CDockAreaTabBar::setCurrentIndex(int index)
     emit currentChanging(index);
 
 	// Set active TAB and update all other tabs to be inactive
-	for (int i = 0; i < d->TabsLayout->count(); ++i)
+	for (int i = 0; i < count(); ++i)
 	{
 		QLayoutItem* item = d->TabsLayout->itemAt(i);
 		if (!item->widget())
@@ -248,7 +248,8 @@ void CDockAreaTabBar::setCurrentIndex(int index)
 //============================================================================
 int CDockAreaTabBar::count() const
 {
-	return d->TabsLayout->count();
+	// The tab bar contains a stretch item as last item
+	return d->TabsLayout->count() - 1;
 }
 
 
@@ -257,6 +258,7 @@ void CDockAreaTabBar::insertTab(int Index, CDockWidgetTab* Tab)
 {
 	d->TabsLayout->insertWidget(Index, Tab);
 	connect(Tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
+	connect(Tab, SIGNAL(moved()), this, SLOT(onTabMoved()));
 	d->MenuOutdated = true;
 	if (Index <= d->CurrentIndex)
 	{
@@ -271,6 +273,7 @@ void CDockAreaTabBar::removeTab(CDockWidgetTab* Tab)
 	std::cout << "CDockAreaTabBar::removeTab " << std::endl;
 	d->TabsLayout->removeWidget(Tab);
 	disconnect(Tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
+	disconnect(Tab, SIGNAL(moved()), this, SLOT(onTabMoved()));
 	d->MenuOutdated = true;
 }
 
@@ -310,9 +313,58 @@ void CDockAreaTabBar::onTabClicked()
 
 
 //===========================================================================
+void CDockAreaTabBar::onTabMoved()
+{
+	CDockWidgetTab* Tab = qobject_cast<CDockWidgetTab*>(sender());
+	if (!Tab)
+	{
+		return;
+	}
+
+	// Find tab under mouse
+	int fromIndex = d->TabsLayout->indexOf(Tab);
+	std::cout << "d->TabsLayout->count() " << count() << std::endl;
+	for (int i = 0; i < count(); ++i)
+	{
+		CDockWidgetTab* Tab2 = qobject_cast<CDockWidgetTab*>(d->TabsLayout->itemAt(i)->widget());
+		if (Tab2 == Tab || !Tab)
+		{
+			continue;
+		}
+		std::cout << "Tab.left " << Tab->pos().x() << " Tab2.left " << Tab2->pos().x()
+			<< std::endl;
+	}
+
+
+/*
+ * 	for (int i = 0; i < d->ContentsLayout->count(); ++i)
+	{
+		auto TabWidget = d->tabWidgetAt(i);
+		if (TabWidget->isVisible() && TabWidget->geometry().contains(p) && (!exclude || TabWidget != exclude))
+		{
+			return i;
+		}
+	}
+ */
+
+	std::cout << "CDockAreaTabBar::onTabMoved from " << fromIndex << std::endl;
+
+	/*QPoint pos = d->DockArea->mapFromGlobal(ev->globalPos());
+	int fromIndex = d->DockArea->index(d->DockWidget);
+	int toIndex = d->DockArea->indexOfContentByTitlePos(pos, this);
+	if (-1 == toIndex)
+	{
+		toIndex = d->DockArea->dockWidgetsCount() - 1;
+	}
+	qDebug() << "Move tab from " << fromIndex << " to " << toIndex;
+	d->DockArea->reorderDockWidget(fromIndex, toIndex);*/
+}
+
+
+//===========================================================================
 void CDockAreaTabBar::closeTab(int Index)
 {
-	if (Index < 0 || Index >= d->TabsLayout->count())
+	if (Index < 0 || Index >= count())
 	{
 		return;
 	}

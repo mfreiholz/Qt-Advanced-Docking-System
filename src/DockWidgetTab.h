@@ -122,6 +122,7 @@ public slots:
 signals:
 	void activeTabChanged();
 	void clicked();
+	void moved();
 }; // class DockWidgetTab
 }
  // namespace ads

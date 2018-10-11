@@ -32,6 +32,7 @@ private:
 
 private slots:
 	void onTabClicked();
+	void onTabMoved();
 
 protected:
 	virtual void wheelEvent(QWheelEvent* Event) override;

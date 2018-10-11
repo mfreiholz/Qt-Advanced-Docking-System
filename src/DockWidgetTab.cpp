@@ -244,7 +244,7 @@ void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 	if (d->isDraggingState(DraggingTab) && d->DockArea)
 	{
 		// Find tab under mouse
-		QPoint pos = d->DockArea->mapFromGlobal(ev->globalPos());
+		/*QPoint pos = d->DockArea->mapFromGlobal(ev->globalPos());
 		int fromIndex = d->DockArea->index(d->DockWidget);
 		int toIndex = d->DockArea->indexOfContentByTitlePos(pos, this);
 		if (-1 == toIndex)
@@ -252,7 +252,8 @@ void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 			toIndex = d->DockArea->dockWidgetsCount() - 1;
 		}
 		qDebug() << "Move tab from " << fromIndex << " to " << toIndex;
-		d->DockArea->reorderDockWidget(fromIndex, toIndex);
+		d->DockArea->reorderDockWidget(fromIndex, toIndex);*/
+		emit moved();
 	}
 
     if (!d->DragStartMousePosition.isNull())
