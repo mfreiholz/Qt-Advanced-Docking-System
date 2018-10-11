@@ -257,6 +257,10 @@ void CDockAreaTabBar::insertTab(int Index, CDockWidgetTab* Tab)
 	d->TabsLayout->insertWidget(Index, Tab);
 	connect(Tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
 	d->MenuOutdated = true;
+	if (Index <= d->CurrentIndex)
+	{
+		d->CurrentIndex++;
+	}
 }
 
 

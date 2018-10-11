@@ -73,7 +73,9 @@ public:
 	virtual ~CDockAreaTabBar();
 
 	/**
-	 * Inserts the given dock widget tab at the given position
+	 * Inserts the given dock widget tab at the given position.
+	 * Inserting a new tab at an index less than or equal to the current index
+	 * will increment the current index, but keep the current tab.
 	 */
 	void insertTab(int Index, CDockWidgetTab* Tab);
 
