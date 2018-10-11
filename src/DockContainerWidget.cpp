@@ -255,9 +255,9 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 	if (area == CenterDockWidgetArea)
 	{
 		auto NewDockWidgets = FloatingContainer->dockWidgets();
-		for (auto DockWidget : NewDockWidgets)
+		for (int i = 0; i < NewDockWidgets.count(); ++i)
 		{
-			TargetArea->insertDockWidget(0, DockWidget, false);
+			TargetArea->insertDockWidget(i, NewDockWidgets[i], false);
 		}
 		TargetArea->setCurrentIndex(0); // make the topmost widget active
 		FloatingWidget->deleteLater();

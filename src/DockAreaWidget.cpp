@@ -159,6 +159,7 @@ public:
 
 	void insertWidget(int index, QWidget* Widget)
 	{
+		Widget->setParent(0);
 		if (index < 0)
 		{
 			index = m_Widgets.count();
@@ -643,7 +644,8 @@ void CDockAreaWidget::setCurrentIndex(int index)
 
     emit currentChanging(index);
     d->TabBar->setCurrentIndex(index);
-	auto Features = d->TabBar->currentTab()->dockWidget()->features();
+    CDockWidgetTab* CurrentTab = d->TabBar->currentTab();
+	auto Features = CurrentTab->dockWidget()->features();
 	d->CloseButton->setVisible(Features.testFlag(CDockWidget::DockWidgetClosable));
 
 	if (!dockManager()->isRestoringState())

@@ -199,6 +199,7 @@ void CDockAreaTabBar::startFloating(const QPoint& Pos)
 //============================================================================
 void CDockAreaTabBar::setCurrentIndex(int index)
 {
+	std::cout << "CDockAreaTabBar::setCurrentIndex " << index << std::endl;
 	if (index == d->CurrentIndex)
 	{
 		return;
@@ -267,6 +268,7 @@ void CDockAreaTabBar::insertTab(int Index, CDockWidgetTab* Tab)
 //===========================================================================
 void CDockAreaTabBar::removeTab(CDockWidgetTab* Tab)
 {
+	std::cout << "CDockAreaTabBar::removeTab " << std::endl;
 	d->TabsLayout->removeWidget(Tab);
 	disconnect(Tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
 	d->MenuOutdated = true;
@@ -297,6 +299,10 @@ void CDockAreaTabBar::onTabClicked()
 	}
 
 	int index = d->TabsLayout->indexOf(Tab);
+	if (index < 0)
+	{
+		return;
+	}
 	setCurrentIndex(index);
 	std::cout << "emit tabBarClicked " << index << std::endl;
  	emit tabBarClicked(index);
