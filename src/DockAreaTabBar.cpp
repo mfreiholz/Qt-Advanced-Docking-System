@@ -265,6 +265,7 @@ void CDockAreaTabBar::insertTab(int Index, CDockWidgetTab* Tab)
 	d->TabsLayout->insertWidget(Index, Tab);
 	connect(Tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
 	connect(Tab, SIGNAL(moved(const QPoint&)), this, SLOT(onTabWidgetMoved(const QPoint&)));
+	Tab->installEventFilter(this);
 	d->MenuOutdated = true;
 	if (Index <= d->CurrentIndex)
 	{
@@ -321,6 +322,7 @@ void CDockAreaTabBar::removeTab(CDockWidgetTab* Tab)
 
 	d->TabsLayout->removeWidget(Tab);
 	Tab->disconnect(this);
+	Tab->removeEventFilter(this);
 	d->MenuOutdated = true;
 	qDebug() << "NewCurrentIndex " << NewCurrentIndex;
 	if (NewCurrentIndex != d->CurrentIndex)
@@ -447,6 +449,26 @@ void CDockAreaTabBar::closeTab(int Index)
 		return;
 	}
 	emit tabCloseRequested(Index);
+}
+
+
+//===========================================================================
+bool CDockAreaTabBar::eventFilter(QObject *watched, QEvent *event)
+{
+	bool Result = Super::eventFilter(watched, event);
+	if (event->type() != QEvent::Hide)
+	{
+		return Result;
+	}
+
+	CDockWidgetTab* Tab = qobject_cast<CDockWidgetTab*>(watched);
+	if (!Tab)
+	{
+		return Result;
+	}
+
+	qDebug() << "Hide event for tab " << Tab->text();
+	return Result;
 }
 } // namespace ads
 

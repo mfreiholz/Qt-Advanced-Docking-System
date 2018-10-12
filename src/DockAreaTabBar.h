@@ -63,6 +63,7 @@ protected:
 	void startFloating(const QPoint& Pos);
 
 public:
+	using Super = QScrollArea;
 	/**
 	 * Default Constructor
 	 */
@@ -104,6 +105,11 @@ public:
 	 * Returns the tab with the given index
 	 */
 	CDockWidgetTab* tab(int Index) const;
+
+	/**
+	 * Filters the tab widget events
+	 */
+	virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
 public slots:
 	/**

@@ -187,9 +187,10 @@ public:
 			{
 				LayoutItem->widget()->setParent(0);
 			}
+			m_CurrentWidget = nullptr;
+			m_CurrentIndex = -1;
 		}
 		m_Widgets.removeOne(Widget);
-		//setCurrentIndex(0);
 	}
 
 	QWidget* currentWidget() const
@@ -379,7 +380,7 @@ void DockAreaWidgetPrivate::createTabBar()
 
 	TabBar = new CDockAreaTabBar(_this);
 	TopLayout->addWidget(TabBar, 1);
-	_this->connect(TabBar, SIGNAL(tabBarClicked(int)), SLOT(setCurrentIndex(int)));
+	_this->connect(TabBar, SIGNAL(currentChanged(int)), SLOT(setCurrentIndex(int)));
 	_this->connect(TabBar, SIGNAL(tabMoved(int, int)), SLOT(reorderDockWidget(int, int)));
 
 	TabsMenuButton = new QPushButton();
