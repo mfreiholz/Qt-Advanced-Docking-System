@@ -40,7 +40,8 @@ HEADERS += \
     DockWidgetTab.h \
     FloatingDockContainer.h \
     DockOverlay.h \
-    DockSplitter.h
+    DockSplitter.h \
+    DockAreaTitleBar.h
     
     
     
@@ -54,4 +55,5 @@ SOURCES += \
     DockWidgetTab.cpp \
     FloatingDockContainer.cpp \
     DockOverlay.cpp \
-    DockSplitter.cpp
+    DockSplitter.cpp \
+    DockAreaTitleBar.cpp

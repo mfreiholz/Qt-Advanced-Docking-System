@@ -39,8 +39,6 @@ struct DockAreaTabBarPrivate
 	QWidget* TabsContainerWidget;
 	QBoxLayout* TabsLayout;
 	int CurrentIndex = -1;
-	bool MenuOutdated = true;
-	QMenu* TabsMenu;
 
 	/**
 	 * Private data constructor
@@ -266,7 +264,7 @@ void CDockAreaTabBar::insertTab(int Index, CDockWidgetTab* Tab)
 	connect(Tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
 	connect(Tab, SIGNAL(moved(const QPoint&)), this, SLOT(onTabWidgetMoved(const QPoint&)));
 	Tab->installEventFilter(this);
-	d->MenuOutdated = true;
+	emit tabInserted(Index);
 	if (Index <= d->CurrentIndex)
 	{
 		setCurrentIndex(d->CurrentIndex++);
@@ -320,10 +318,10 @@ void CDockAreaTabBar::removeTab(CDockWidgetTab* Tab)
 		}
 	}
 
+	emit removingTab(RemoveIndex);
 	d->TabsLayout->removeWidget(Tab);
 	Tab->disconnect(this);
 	Tab->removeEventFilter(this);
-	d->MenuOutdated = true;
 	qDebug() << "NewCurrentIndex " << NewCurrentIndex;
 	if (NewCurrentIndex != d->CurrentIndex)
 	{
@@ -448,7 +446,14 @@ void CDockAreaTabBar::closeTab(int Index)
 	{
 		return;
 	}
+
+	auto Tab = tab(Index);
+	if (!Tab->isVisibleTo(this))
+	{
+		return;
+	}
 	emit tabCloseRequested(Index);
+	Tab->hide();
 }
 
 
@@ -456,19 +461,39 @@ void CDockAreaTabBar::closeTab(int Index)
 bool CDockAreaTabBar::eventFilter(QObject *watched, QEvent *event)
 {
 	bool Result = Super::eventFilter(watched, event);
-	if (event->type() != QEvent::Hide)
-	{
-		return Result;
-	}
-
 	CDockWidgetTab* Tab = qobject_cast<CDockWidgetTab*>(watched);
 	if (!Tab)
 	{
 		return Result;
 	}
 
-	qDebug() << "Hide event for tab " << Tab->text();
+	if (event->type() == QEvent::Hide)
+	{
+		return Result;
+	}
+
+	int TabIndex = d->TabsLayout->indexOf(Tab);
+	switch (event->type())
+	{
+	case QEvent::Hide: emit tabClosed(TabIndex); break;
+	case QEvent::Show: emit tabOpened(TabIndex); break;
+	default:
+		break;
+	}
+
 	return Result;
+}
+
+
+//===========================================================================
+bool CDockAreaTabBar::isTabOpen(int Index) const
+{
+	if (Index < 0 || Index >= count())
+	{
+		return false;
+	}
+
+	return tab(Index)->isVisibleTo(this);
 }
 } // namespace ads
 

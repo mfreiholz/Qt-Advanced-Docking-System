@@ -111,6 +111,13 @@ public:
 	 */
 	virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
+	/**
+	 * This function returns true if the tab is open, that means if it is
+	 * visible to the user. If the function returns false, the tab is
+	 * closed
+	 */
+	bool isTabOpen(int Index) const;
+
 public slots:
 	/**
 	 * This property sets the index of the tab bar's visible tab
@@ -148,10 +155,32 @@ signals:
 	void tabCloseRequested(int index);
 
 	/**
+	 * This signal is emitted if a tab has been closed
+	 */
+	void tabClosed(int index);
+
+	/**
+	 * This signal is emitted if a tab has been opened.
+	 * A tab is opened if it has been made visible
+	 */
+	void tabOpened(int index);
+
+	/**
 	 * This signal is emitted when the tab has moved the tab at index position
 	 * from to index position to.
 	 */
 	void tabMoved(int from, int to);
+
+	/**
+	 * This signal is emitted, just before the tab with the given index is
+	 * removed
+	 */
+	void removingTab(int index);
+
+	/**
+	 * This signal is emitted if a tab has been inserted
+	 */
+	void tabInserted(int index);
 }; // class CDockAreaTabBar
 } // namespace ads
 //-----------------------------------------------------------------------------

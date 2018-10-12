@@ -65,77 +65,8 @@ static const int APPEND = -1;
 
 
 /**
- * Default stack area layout
- */
-class CStackedDockAreaLayout
-{
-private:
-	QStackedLayout* Layout;
-
-public:
-	CStackedDockAreaLayout(QBoxLayout* ParentLayout)
-	{
-		Layout = new QStackedLayout();
-		Layout->setContentsMargins(0, 0, 0, 0);
-		Layout->setSpacing(0);
-		Layout->setSizeConstraint(QLayout::SetNoConstraint);
-		ParentLayout->addLayout(Layout, 1);
-	}
-
-	int count() const
-	{
-		return Layout->count();
-	}
-
-	void insertWidget(int index, QWidget* Widget)
-	{
-		Layout->insertWidget(index, Widget);
-	}
-
-	void removeWidget(QWidget* Widget)
-	{
-		Layout->removeWidget(Widget);
-	}
-
-	void setCurrentIndex(int Index)
-	{
-		Layout->setCurrentIndex(Index);
-	}
-
-	int currentIndex() const
-	{
-		return Layout->currentIndex();
-	}
-
-	QWidget* currentWidget() const
-	{
-		return Layout->currentWidget();
-	}
-
-	bool isEmpty() const
-	{
-		return Layout->isEmpty();
-	}
-
-	int indexOf(QWidget* w) const
-	{
-		return Layout->indexOf(w);
-	}
-
-	QWidget* widget(int index) const
-	{
-		return Layout->widget(index);
-	}
-
-	QRect geometry() const
-	{
-		return Layout->geometry();
-	}
-};
-
-
-/**
- * New dock area layout
+ * New dock area layout mimics stack layout but ony inserts the current
+ * widget
  */
 class CDockAreaLayout
 {
@@ -284,7 +215,6 @@ struct DockAreaWidgetPrivate
 	CDockAreaTabBar* TabBar;
 	QPushButton* TabsMenuButton;
 	QPushButton* CloseButton;
-	//int TabsLayoutInitCount;
 	CDockManager* DockManager = nullptr;
 	bool MenuOutdated = true;
 

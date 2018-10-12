@@ -47,6 +47,8 @@ class CDockManager;
 class CDockAreaTabBar;
 class CDockWidgetTab;
 struct DockWidgetTabPrivate;
+class CDockAreaTitleBar;
+struct DockAreaTitleBarPrivate;
 
 /**
  * This implements a floating widget that is a dock container that accepts
@@ -64,6 +66,8 @@ private:
 	friend class CDockAreaTabBar;
 	friend struct DockWidgetTabPrivate;
 	friend class CDockWidgetTab;
+	friend class CDockAreaTitleBar;
+	friend struct DockAreaTitleBarPrivate;
 
 private slots:
 	void onDockAreasAddedOrRemoved();
