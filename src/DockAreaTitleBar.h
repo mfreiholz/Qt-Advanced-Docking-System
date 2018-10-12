@@ -33,6 +33,7 @@ private slots:
 	void onTabsMenuAboutToShow();
 	void onCloseButtonClicked();
 	void onTabsMenuActionTriggered(QAction* Action);
+	void onCurrentTabChanged(int Index);
 
 public:
 	using Super = QFrame;

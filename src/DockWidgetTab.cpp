@@ -107,7 +107,7 @@ struct DockWidgetTabPrivate
 	 */
 	bool titleAreaGeometryContains(const QPoint& GlobalPos) const
 	{
-		return DockArea->titleAreaGeometry().contains(DockArea->mapFromGlobal(GlobalPos));
+		return DockArea->titleBarGeometry().contains(DockArea->mapFromGlobal(GlobalPos));
 	}
 
 	/**
@@ -227,7 +227,6 @@ void CDockWidgetTab::mousePressEvent(QMouseEvent* ev)
 {
 	if (ev->button() == Qt::LeftButton)
 	{
-		qDebug() << "CDockWidgetTab::mousePressEvent";
 		ev->accept();
         d->DragStartMousePosition = ev->pos();
         d->DragState = DraggingMousePressed;
@@ -242,7 +241,6 @@ void CDockWidgetTab::mousePressEvent(QMouseEvent* ev)
 //============================================================================
 void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 {
-	qDebug() << "CDockWidgetTab::mouseReleaseEvent";
 	// End of tab moving, emit signal
 	if (d->isDraggingState(DraggingTab) && d->DockArea)
 	{

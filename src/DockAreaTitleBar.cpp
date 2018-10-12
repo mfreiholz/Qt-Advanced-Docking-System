@@ -83,7 +83,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	_this->connect(TabsMenu, SIGNAL(aboutToShow()), SLOT(onTabsMenuAboutToShow()));
 	TabsMenuButton->setMenu(TabsMenu);
 	TopLayout->addWidget(TabsMenuButton, 0);
-	TabsMenuButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	TabsMenuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
 		SLOT(onTabsMenuActionTriggered(QAction*)));
 
@@ -92,7 +92,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	CloseButton->setFlat(true);
 	CloseButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarCloseButton));
 	CloseButton->setToolTip(QObject::tr("Close"));
-	CloseButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	TopLayout->addWidget(CloseButton, 0);
 	_this->connect(CloseButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
 }
@@ -103,10 +103,12 @@ void DockAreaTitleBarPrivate::createTabBar()
 {
 	TabBar = new CDockAreaTabBar(DockArea);
 	TopLayout->addWidget(TabBar);
-	_this->connect(TabBar, SIGNAL(tabClosed()), SLOT(markTabsMenuOutdated()));
-	_this->connect(TabBar, SIGNAL(tabOpened()), SLOT(markTabsMenuOutdated()));
-	_this->connect(TabBar, SIGNAL(tabInserted()), SLOT(markTabsMenuOutdated()));
-	_this->connect(TabBar, SIGNAL(tabRemoved()), SLOT(markTabsMenuOutdated()));
+	_this->connect(TabBar, SIGNAL(tabClosed(int)), SLOT(markTabsMenuOutdated()));
+	_this->connect(TabBar, SIGNAL(tabOpened(int)), SLOT(markTabsMenuOutdated()));
+	_this->connect(TabBar, SIGNAL(tabInserted(int)), SLOT(markTabsMenuOutdated()));
+	_this->connect(TabBar, SIGNAL(removingTab(int)), SLOT(markTabsMenuOutdated()));
+	_this->connect(TabBar, SIGNAL(tabMoved(int, int)), SLOT(markTabsMenuOutdated()));
+	_this->connect(TabBar, SIGNAL(currentChanged(int)), SLOT(onCurrentTabChanged(int)));
 }
 
 
@@ -190,6 +192,14 @@ void CDockAreaTitleBar::onTabsMenuActionTriggered(QAction* Action)
 {
 	int Index = Action->data().toInt();
 	d->TabBar->setCurrentIndex(Index);
+}
+
+
+//============================================================================
+void CDockAreaTitleBar::onCurrentTabChanged(int Index)
+{
+	CDockWidget* DockWidget = d->TabBar->tab(Index)->dockWidget();
+	d->CloseButton->setVisible(DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));
 }
 
 

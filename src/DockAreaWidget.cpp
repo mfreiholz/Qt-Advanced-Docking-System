@@ -52,6 +52,7 @@
 #include "DockOverlay.h"
 #include "DockAreaTabBar.h"
 #include "DockSplitter.h"
+#include "DockAreaTitleBar.h"
 
 #include <iostream>
 
@@ -209,14 +210,9 @@ struct DockAreaWidgetPrivate
 {
 	CDockAreaWidget* _this;
 	QBoxLayout* Layout;
-	QFrame* TitleBar;
-	QBoxLayout* TopLayout;
 	DockAreaLayout* ContentsLayout;
-	CDockAreaTabBar* TabBar;
-	QPushButton* TabsMenuButton;
-	QPushButton* CloseButton;
+	CDockAreaTitleBar* TitleBar;
 	CDockManager* DockManager = nullptr;
-	bool MenuOutdated = true;
 
 	/**
 	 * Private data constructor
@@ -226,7 +222,7 @@ struct DockAreaWidgetPrivate
 	/**
 	 * Creates the layout for top area with tabs and close button
 	 */
-	void createTabBar();
+	void createTitleBar();
 
 	/**
 	 * Returns the dock widget with the given index
@@ -244,13 +240,6 @@ struct DockAreaWidgetPrivate
 		return dockWidgetAt(index)->tabWidget();
 	}
 
-	/**
-	 * Adds a tabs menu entry for the given dock widget
-	 * If menu is 0, a menu entry is added to the menu of the TabsMenuButton
-	 * member. If menu is a valid menu pointer, the entry will be added to
-	 * the given menu
-	 */
-	void addTabsMenuEntry(CDockWidget* DockWidget, int Index = -1, QMenu* menu = 0);
 
 	/**
 	 * Returns the tab action of the given dock widget
@@ -269,21 +258,18 @@ struct DockAreaWidgetPrivate
 	}
 
 	/**
-	 * Update the tabs menu if dock widget order changed or if dock widget has
-	 * been removed
-	 */
-	void markTabsMenuOutdated();
-
-	/**
-	 * Updates the tabs menu if it is outdated
-	 */
-	void updateTabsMenu();
-
-	/**
 	 * Updates the tab bar visibility depending on the number of dock widgets
 	 * in this area
 	 */
 	void updateTabBar();
+
+	/**
+	 * Convenience function for tabbar access
+	 */
+	CDockAreaTabBar* tabBar() const
+	{
+		return TitleBar->tabBar();
+	}
 };
 // struct DockAreaWidgetPrivate
 
@@ -297,43 +283,14 @@ DockAreaWidgetPrivate::DockAreaWidgetPrivate(CDockAreaWidget* _public) :
 
 
 //============================================================================
-void DockAreaWidgetPrivate::createTabBar()
+void DockAreaWidgetPrivate::createTitleBar()
 {
-	TitleBar = new QFrame(_this);
-	TitleBar->setObjectName("dockAreaTitleBar");
-	TopLayout = new QBoxLayout(QBoxLayout::LeftToRight);
-	TopLayout->setContentsMargins(0, 0, 0, 0);
-	TopLayout->setSpacing(0);
-	TitleBar->setLayout(TopLayout);
+	TitleBar = new CDockAreaTitleBar(_this);
 	Layout->addWidget(TitleBar);
-	TitleBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
-	TabBar = new CDockAreaTabBar(_this);
-	TopLayout->addWidget(TabBar, 1);
-	_this->connect(TabBar, SIGNAL(currentChanged(int)), SLOT(setCurrentIndex(int)));
-	_this->connect(TabBar, SIGNAL(tabMoved(int, int)), SLOT(reorderDockWidget(int, int)));
-
-	TabsMenuButton = new QPushButton();
-	TabsMenuButton->setObjectName("tabsMenuButton");
-	TabsMenuButton->setFlat(true);
-	TabsMenuButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarUnshadeButton));
-	TabsMenuButton->setMaximumWidth(TabsMenuButton->iconSize().width());
-	QMenu* TabsMenu = new QMenu(TabsMenuButton);
-	_this->connect(TabsMenu, SIGNAL(aboutToShow()), SLOT(onTabsMenuAboutToShow()));
-	TabsMenuButton->setMenu(TabsMenu);
-	TopLayout->addWidget(TabsMenuButton, 0);
-	TabsMenuButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
-		SLOT(onTabsMenuActionTriggered(QAction*)));
-
-	CloseButton = new QPushButton();
-	CloseButton->setObjectName("closeButton");
-	CloseButton->setFlat(true);
-	CloseButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarCloseButton));
-	CloseButton->setToolTip(_this->tr("Close"));
-	CloseButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	TopLayout->addWidget(CloseButton, 0);
-	_this->connect(CloseButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
+	_this->connect(tabBar(), SIGNAL(tabCloseRequested(int)),
+		SLOT(onTabCloseRequested(int)));
+	_this->connect(tabBar(), SIGNAL(tabBarClicked(int)),
+		SLOT(setCurrentIndex(int)));
 }
 
 
@@ -351,57 +308,6 @@ void DockAreaWidgetPrivate::updateTabBar()
 
 
 //============================================================================
-void DockAreaWidgetPrivate::addTabsMenuEntry(CDockWidget* DockWidget,
-	int Index, QMenu* menu)
-{
-	menu = menu ? menu : TabsMenuButton->menu();
-	QAction* Action;
-	if (Index >= 0 && Index < menu->actions().count())
-	{
-		Action = new QAction(DockWidget->icon(), DockWidget->windowTitle());
-		menu->insertAction(menu->actions().at(Index), Action);
-	}
-	else
-	{
-		Action = menu->addAction(DockWidget->icon(), DockWidget->windowTitle());
-	}
-	Action->setProperty(DOCKWIDGET_PROPERTY, QVariant::fromValue(DockWidget));
-	QVariant vAction = QVariant::fromValue(Action);
-	DockWidget->setProperty(ACTION_PROPERTY, vAction);
-}
-
-
-//============================================================================
-void DockAreaWidgetPrivate::markTabsMenuOutdated()
-{
-	MenuOutdated = true;
-}
-
-
-//============================================================================
-void DockAreaWidgetPrivate::updateTabsMenu()
-{
-	if (!MenuOutdated)
-	{
-		return;
-	}
-
-	QMenu* menu = TabsMenuButton->menu();
-	menu->clear();
-	for (int i = 0; i < ContentsLayout->count(); ++i)
-	{
-		if (dockWidgetAt(i)->isClosed())
-		{
-			continue;
-		}
-		addTabsMenuEntry(dockWidgetAt(i), APPEND, menu);
-	}
-
-	MenuOutdated = false;
-}
-
-
-//============================================================================
 CDockAreaWidget::CDockAreaWidget(CDockManager* DockManager, CDockContainerWidget* parent) :
 	QFrame(parent),
 	d(new DockAreaWidgetPrivate(this))
@@ -412,7 +318,7 @@ CDockAreaWidget::CDockAreaWidget(CDockManager* DockManager, CDockContainerWidget
 	d->Layout->setSpacing(0);
 	setLayout(d->Layout);
 
-	d->createTabBar();
+	d->createTitleBar();
 	d->ContentsLayout = new DockAreaLayout(d->Layout);
 }
 
@@ -453,10 +359,9 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 	d->ContentsLayout->insertWidget(index, DockWidget);
 	DockWidget->tabWidget()->setDockAreaWidget(this);
 	auto TabWidget = DockWidget->tabWidget();
-	d->TabBar->insertTab(index, TabWidget);
+	d->tabBar()->insertTab(index, TabWidget);
 	TabWidget->setVisible(!DockWidget->isClosed());
 	DockWidget->setProperty(INDEX_PROPERTY, index);
-	d->markTabsMenuOutdated();
 	if (Activate)
 	{
 		setCurrentIndex(index);
@@ -474,11 +379,10 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	d->ContentsLayout->removeWidget(DockWidget);
 	auto TabWidget = DockWidget->tabWidget();
 	TabWidget->hide();
-	d->TabBar->removeTab(TabWidget);
+	d->tabBar()->removeTab(TabWidget);
 	if (NextOpenDockWidget)
 	{
 		setCurrentDockWidget(NextOpenDockWidget);
-		d->markTabsMenuOutdated();
 	}
 	else if (d->ContentsLayout->isEmpty())
 	{
@@ -541,9 +445,10 @@ void CDockAreaWidget::hideAreaIfNoVisibleContent()
 
 
 //============================================================================
-void CDockAreaWidget::onCloseButtonClicked()
+void CDockAreaWidget::onTabCloseRequested(int Index)
 {
-	currentDockWidget()->toggleView(false);
+	qDebug() << "CDockAreaWidget::onTabCloseRequested " << Index;
+	dockWidget(Index)->toggleView(false);
 }
 
 
@@ -576,18 +481,15 @@ void CDockAreaWidget::setCurrentDockWidget(CDockWidget* DockWidget)
 void CDockAreaWidget::setCurrentIndex(int index)
 {
 	std::cout << "CDockAreaWidget::setCurrentIndex " << index << std::endl;
-	if (index < 0 || index > (d->TabBar->count() - 1))
+	auto TabBar = d->tabBar();
+	if (index < 0 || index > (TabBar->count() - 1))
 	{
 		qWarning() << Q_FUNC_INFO << "Invalid index" << index;
 		return;
     }
 
     emit currentChanging(index);
-    d->TabBar->setCurrentIndex(index);
-    CDockWidgetTab* CurrentTab = d->TabBar->currentTab();
-	auto Features = CurrentTab->dockWidget()->features();
-	d->CloseButton->setVisible(Features.testFlag(CDockWidget::DockWidgetClosable));
-
+    TabBar->setCurrentIndex(index);
 	d->ContentsLayout->setCurrentIndex(index);
 	d->ContentsLayout->currentWidget()->show();
 	emit currentChanged(index);
@@ -602,9 +504,9 @@ int CDockAreaWidget::currentIndex() const
 
 
 //============================================================================
-QRect CDockAreaWidget::titleAreaGeometry() const
+QRect CDockAreaWidget::titleBarGeometry() const
 {
-	return d->TopLayout->geometry();
+	return d->TitleBar->geometry();
 }
 
 //============================================================================
@@ -665,21 +567,6 @@ QList<CDockWidget*> CDockAreaWidget::openedDockWidgets() const
 
 
 //============================================================================
-int CDockAreaWidget::indexOfContentByTitlePos(const QPoint& p, QWidget* exclude) const
-{
-	for (int i = 0; i < d->ContentsLayout->count(); ++i)
-	{
-		auto TabWidget = d->tabWidgetAt(i);
-		if (TabWidget->isVisible() && TabWidget->geometry().contains(p) && (!exclude || TabWidget != exclude))
-		{
-			return i;
-		}
-	}
-	return -1;
-}
-
-
-//============================================================================
 int CDockAreaWidget::dockWidgetsCount() const
 {
 	return d->ContentsLayout->count();
@@ -716,16 +603,6 @@ void CDockAreaWidget::toggleDockWidgetView(CDockWidget* DockWidget, bool Open)
 	Q_UNUSED(DockWidget);
 	Q_UNUSED(Open);
 	updateTabBarVisibility();
-	d->markTabsMenuOutdated();
-}
-
-
-//============================================================================
-void CDockAreaWidget::onTabsMenuActionTriggered(QAction* Action)
-{
-	QVariant vDockWidget = Action->property(DOCKWIDGET_PROPERTY);
-	CDockWidget* DockWidget = vDockWidget.value<CDockWidget*>();
-	setCurrentDockWidget(DockWidget);
 }
 
 
@@ -775,13 +652,6 @@ CDockWidget* CDockAreaWidget::nextOpenDockWidget(CDockWidget* DockWidget) const
 	{
 		return nullptr;
 	}
-}
-
-
-//============================================================================
-void CDockAreaWidget::onTabsMenuAboutToShow()
-{
-	d->updateTabsMenu();
 }
 
 } // namespace ads

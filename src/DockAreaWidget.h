@@ -63,9 +63,7 @@ private:
 	friend class CDockWidget;
 
 private slots:
-	void onTabsMenuActionTriggered(QAction* Action);
-	void onCloseButtonClicked();
-	void onTabsMenuAboutToShow();
+	void onTabCloseRequested(int Index);
 
 	/**
 	 * Reorder the index position of DockWidget at fromIndx to toIndex
@@ -93,12 +91,6 @@ protected:
 	 * Removes the given dock widget from the dock area
 	 */
 	void removeDockWidget(CDockWidget* DockWidget);
-
-	/**
-	 * Returns the index of contents of the title widget that is located at
-	 * mouse position pos
-	 */
-	int indexOfContentByTitlePos(const QPoint& pos, QWidget* exclude = nullptr) const;
 
 	/**
 	 * Called from dock widget if it is opened or closed
@@ -161,7 +153,7 @@ public:
 	/**
 	 * Returns the rectangle of the title area
 	 */
-	QRect titleAreaGeometry() const;
+	QRect titleBarGeometry() const;
 
 	/**
 	 * Returns the rectangle of the content
