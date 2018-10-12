@@ -33,6 +33,7 @@
 #include <QFrame>
 
 #include "ads_globals.h"
+#include "DockWidget.h"
 
 class QXmlStreamWriter;
 
@@ -42,7 +43,6 @@ struct DockAreaWidgetPrivate;
 class CDockManager;
 class CDockContainerWidget;
 struct DockContainerWidgetPrivate;
-class CDockWidget;
 
 
 /**
@@ -205,6 +205,15 @@ public:
 	 * Saves the state into the given stream
 	 */
 	void saveState(QXmlStreamWriter& Stream) const;
+
+	/**
+	 * This functions returns the dock widget features of all dock widget in
+	 * this area.
+	 * A bitwise and is used to combine the flags of all dock widgets. That
+	 * means, if only dock widget does not support a certain flag, the whole
+	 * dock are does not support the flag.
+	 */
+	CDockWidget::DockWidgetFeatures features() const;
 
 public slots:
 	/**

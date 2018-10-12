@@ -1153,6 +1153,19 @@ QList<CDockWidget*> CDockContainerWidget::dockWidgets() const
 }
 
 
+//============================================================================
+CDockWidget::DockWidgetFeatures CDockContainerWidget::features() const
+{
+	CDockWidget::DockWidgetFeatures Features;
+	for (const auto DockArea : d->DockAreas)
+	{
+		Features &= DockArea->features();
+	}
+
+	return Features;
+}
+
+
 
 } // namespace ads
 

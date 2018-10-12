@@ -654,6 +654,19 @@ CDockWidget* CDockAreaWidget::nextOpenDockWidget(CDockWidget* DockWidget) const
 	}
 }
 
+
+//============================================================================
+CDockWidget::DockWidgetFeatures CDockAreaWidget::features() const
+{
+	CDockWidget::DockWidgetFeatures Features;
+	for (const auto DockWidget : dockWidgets())
+	{
+		Features &= DockWidget->features();
+	}
+
+	return Features;
+}
+
 } // namespace ads
 
 //---------------------------------------------------------------------------

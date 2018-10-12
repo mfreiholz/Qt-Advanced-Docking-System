@@ -33,7 +33,7 @@
 #include <QFrame>
 
 #include "ads_globals.h"
-
+#include "DockWidget.h"
 
 class QXmlStreamWriter;
 class QXmlStreamReader;
@@ -205,6 +205,15 @@ public:
 	 * Dumps the layout for debugging purposes
 	 */
 	void dumpLayout();
+
+	/**
+	 * This functions returns the dock widget features of all dock widget in
+	 * this container.
+	 * A bitwise and is used to combine the flags of all dock widgets. That
+	 * means, if only dock widget does not support a certain flag, the whole
+	 * dock are does not support the flag.
+	 */
+	CDockWidget::DockWidgetFeatures features() const;
 
 signals:
 	/**
