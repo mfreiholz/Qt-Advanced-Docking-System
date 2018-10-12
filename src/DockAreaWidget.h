@@ -67,6 +67,12 @@ private slots:
 	void onCloseButtonClicked();
 	void onTabsMenuAboutToShow();
 
+	/**
+	 * Reorder the index position of DockWidget at fromIndx to toIndex
+	 * if a tab in the tabbar is dragged from one index to another one
+	 */
+	void reorderDockWidget(int fromIndex, int toIndex);
+
 protected:
 	/**
 	 * Inserts a dock widget into dock area.
@@ -93,11 +99,6 @@ protected:
 	 * mouse position pos
 	 */
 	int indexOfContentByTitlePos(const QPoint& pos, QWidget* exclude = nullptr) const;
-
-	/**
-	 * Reorder the index position of DockWidget at fromIndx to toIndex.
-	 */
-	void reorderDockWidget(int fromIndex, int toIndex);
 
 	/**
 	 * Called from dock widget if it is opened or closed

@@ -380,6 +380,7 @@ void DockAreaWidgetPrivate::createTabBar()
 	TabBar = new CDockAreaTabBar(_this);
 	TopLayout->addWidget(TabBar, 1);
 	_this->connect(TabBar, SIGNAL(tabBarClicked(int)), SLOT(setCurrentIndex(int)));
+	_this->connect(TabBar, SIGNAL(tabMoved(int, int)), SLOT(reorderDockWidget(int, int)));
 
 	TabsMenuButton = new QPushButton();
 	TabsMenuButton->setObjectName("tabsMenuButton");
@@ -768,35 +769,13 @@ void CDockAreaWidget::reorderDockWidget(int fromIndex, int toIndex)
      || toIndex >= d->ContentsLayout->count() || toIndex < 0 || fromIndex == toIndex)
 	{
 		qDebug() << "Invalid index for tab movement" << fromIndex << toIndex;
-		//d->TabsLayout->update();
 		return;
 	}
 
-	CDockWidget* DockWidget = dockWidget(fromIndex);
-
-	// reorder tabs menu action to match new order of contents
-	auto Menu = d->TabsMenuButton->menu();
-	auto TabsAction = d->dockWidgetTabAction(DockWidget);
-	Menu->removeAction(TabsAction);
-	if (toIndex >= Menu->actions().count())
-	{
-		Menu->addAction(TabsAction);
-	}
-	else
-	{
-		Menu->insertAction(Menu->actions().at(toIndex), TabsAction);
-	}
-
-	// now reorder contents and title bars
-	QLayoutItem* liFrom = nullptr;
-	/*liFrom = d->TabsLayout->takeAt(fromIndex);
-	d->TabsLayout->insertItem(toIndex, liFrom);*/
-	//liFrom = d->ContentsLayout->takeAt(fromIndex);
-	//d->ContentsLayout->insertWidget(toIndex, liFrom->widget());
 	auto Widget = d->ContentsLayout->widget(fromIndex);
 	d->ContentsLayout->removeWidget(Widget);
 	d->ContentsLayout->insertWidget(toIndex, Widget);
-	//delete liFrom;
+	setCurrentIndex(d->TabBar->currentIndex());
 }
 
 

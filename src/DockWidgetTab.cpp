@@ -45,6 +45,8 @@
 #include "DockOverlay.h"
 #include "DockManager.h"
 
+#include <iostream>
+
 namespace ads
 {
 /**
@@ -229,6 +231,7 @@ void CDockWidgetTab::mousePressEvent(QMouseEvent* ev)
 		ev->accept();
         d->DragStartMousePosition = ev->pos();
         d->DragState = DraggingMousePressed;
+        emit clicked();
 		return;
 	}
 	QFrame::mousePressEvent(ev);
@@ -240,26 +243,11 @@ void CDockWidgetTab::mousePressEvent(QMouseEvent* ev)
 void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 {
 	qDebug() << "CDockWidgetTab::mouseReleaseEvent";
-	// End of tab moving, change order now
+	// End of tab moving, emit signal
 	if (d->isDraggingState(DraggingTab) && d->DockArea)
 	{
-		// Find tab under mouse
-		/*QPoint pos = d->DockArea->mapFromGlobal(ev->globalPos());
-		int fromIndex = d->DockArea->index(d->DockWidget);
-		int toIndex = d->DockArea->indexOfContentByTitlePos(pos, this);
-		if (-1 == toIndex)
-		{
-			toIndex = d->DockArea->dockWidgetsCount() - 1;
-		}
-		qDebug() << "Move tab from " << fromIndex << " to " << toIndex;
-		d->DockArea->reorderDockWidget(fromIndex, toIndex);*/
-		emit moved();
+		emit moved(ev->globalPos());
 	}
-
-    if (!d->DragStartMousePosition.isNull())
-    {
-		emit clicked();
-    }
 
     d->DragStartMousePosition = QPoint();
     d->DragState = DraggingInactive;
@@ -277,7 +265,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
         return;
     }
 
-    // move floating winwdow
+    // move floating window
     if (d->isDraggingState(DraggingFloatingWidget))
     {
         d->FloatingWidget->moveFloating();
@@ -384,6 +372,13 @@ void CDockWidgetTab::setIcon(const QIcon& Icon)
 const QIcon& CDockWidgetTab::icon() const
 {
 	return d->Icon;
+}
+
+
+//============================================================================
+QString CDockWidgetTab::text() const
+{
+	return d->TitleLabel->text();
 }
 
 

@@ -32,7 +32,7 @@ private:
 
 private slots:
 	void onTabClicked();
-	void onTabMoved();
+	void onTabWidgetMoved(const QPoint& GlobalPos);
 
 protected:
 	virtual void wheelEvent(QWheelEvent* Event) override;
@@ -100,6 +100,11 @@ public:
 	 */
 	CDockWidgetTab* currentTab() const;
 
+	/**
+	 * Returns the tab with the given index
+	 */
+	CDockWidgetTab* tab(int Index) const;
+
 public slots:
 	/**
 	 * This property sets the index of the tab bar's visible tab
@@ -135,6 +140,12 @@ signals:
 	 * The index is the index that should be closed.
 	 */
 	void tabCloseRequested(int index);
+
+	/**
+	 * This signal is emitted when the tab has moved the tab at index position
+	 * from to index position to.
+	 */
+	void tabMoved(int from, int to);
 }; // class CDockAreaTabBar
 } // namespace ads
 //-----------------------------------------------------------------------------

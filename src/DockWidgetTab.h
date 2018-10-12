@@ -116,13 +116,18 @@ public:
 	 */
 	const QIcon& icon() const;
 
+	/**
+	 * Returns the tab text
+	 */
+	QString text() const;
+
 public slots:
 	virtual void setVisible(bool visible);
 
 signals:
 	void activeTabChanged();
 	void clicked();
-	void moved();
+	void moved(const QPoint& GlobalPos);
 }; // class DockWidgetTab
 }
  // namespace ads
