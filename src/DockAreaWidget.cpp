@@ -775,7 +775,7 @@ void CDockAreaWidget::reorderDockWidget(int fromIndex, int toIndex)
 	auto Widget = d->ContentsLayout->widget(fromIndex);
 	d->ContentsLayout->removeWidget(Widget);
 	d->ContentsLayout->insertWidget(toIndex, Widget);
-	setCurrentIndex(d->TabBar->currentIndex());
+	setCurrentIndex(toIndex);
 }
 
 

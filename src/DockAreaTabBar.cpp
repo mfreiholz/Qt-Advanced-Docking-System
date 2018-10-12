@@ -46,6 +46,12 @@ struct DockAreaTabBarPrivate
 	 * Private data constructor
 	 */
 	DockAreaTabBarPrivate(CDockAreaTabBar* _public);
+
+	/**
+	 * Update tabs after current index changed or when tabs are removed.
+	 * The function reassigns the stylesheet to update the tabs
+	 */
+	void updateTabs();
 };
 // struct DockAreaTabBarPrivate
 
@@ -55,6 +61,33 @@ DockAreaTabBarPrivate::DockAreaTabBarPrivate(CDockAreaTabBar* _public) :
 {
 
 }
+
+
+//============================================================================
+void DockAreaTabBarPrivate::updateTabs()
+{
+	// Set active TAB and update all other tabs to be inactive
+	for (int i = 0; i < _this->count(); ++i)
+	{
+		auto TabWidget = _this->tab(i);
+		if (!TabWidget)
+		{
+			continue;
+		}
+
+		if (i == CurrentIndex)
+		{
+			TabWidget->show();
+			TabWidget->setActiveTab(true);
+			_this->ensureWidgetVisible(TabWidget);
+		}
+		else
+		{
+			TabWidget->setActiveTab(false);
+		}
+	}
+}
+
 
 //============================================================================
 CDockAreaTabBar::CDockAreaTabBar(CDockAreaWidget* parent) :
@@ -212,35 +245,8 @@ void CDockAreaTabBar::setCurrentIndex(int index)
     }
 
     emit currentChanging(index);
-
-	// Set active TAB and update all other tabs to be inactive
-	for (int i = 0; i < count(); ++i)
-	{
-		QLayoutItem* item = d->TabsLayout->itemAt(i);
-		if (!item->widget())
-		{
-			continue;
-		}
-
-		auto TabWidget = dynamic_cast<CDockWidgetTab*>(item->widget());
-		if (!TabWidget)
-		{
-			continue;
-		}
-
-		if (i == index)
-		{
-			TabWidget->show();
-			TabWidget->setActiveTab(true);
-			ensureWidgetVisible(TabWidget);
-		}
-		else
-		{
-			TabWidget->setActiveTab(false);
-		}
-	}
-
 	d->CurrentIndex = index;
+	d->updateTabs();
 	emit currentChanged(index);
 }
 
@@ -262,7 +268,7 @@ void CDockAreaTabBar::insertTab(int Index, CDockWidgetTab* Tab)
 	d->MenuOutdated = true;
 	if (Index <= d->CurrentIndex)
 	{
-		d->CurrentIndex++;
+		setCurrentIndex(d->CurrentIndex++);
 	}
 }
 
@@ -270,10 +276,61 @@ void CDockAreaTabBar::insertTab(int Index, CDockWidgetTab* Tab)
 //===========================================================================
 void CDockAreaTabBar::removeTab(CDockWidgetTab* Tab)
 {
-	std::cout << "CDockAreaTabBar::removeTab " << std::endl;
+	if (!count())
+	{
+		return;
+	}
+	qDebug() << "CDockAreaTabBar::removeTab ";
+	int NewCurrentIndex = currentIndex();
+	int RemoveIndex = d->TabsLayout->indexOf(Tab);
+	if (count() == 1)
+	{
+		NewCurrentIndex = -1;
+	}
+	if (NewCurrentIndex > RemoveIndex)
+	{
+		NewCurrentIndex--;
+	}
+	else if (NewCurrentIndex == RemoveIndex)
+	{
+		NewCurrentIndex = -1;
+		// First we walk to the right to search for the next visible tab
+		for (int i = (RemoveIndex + 1); i < count(); ++i)
+		{
+			if (tab(i)->isVisibleTo(this))
+			{
+				NewCurrentIndex = i - 1;
+				break;
+			}
+		}
+
+		// If there is no visible tab right to this tab then we walk to
+		// the left to find a visible tab
+		if (NewCurrentIndex < 0)
+		{
+			for (int i = (RemoveIndex - 1); i >= 0; --i)
+			{
+				if (tab(i)->isVisibleTo(this))
+				{
+					NewCurrentIndex = i;
+					break;
+				}
+			}
+		}
+	}
+
 	d->TabsLayout->removeWidget(Tab);
 	Tab->disconnect(this);
 	d->MenuOutdated = true;
+	qDebug() << "NewCurrentIndex " << NewCurrentIndex;
+	if (NewCurrentIndex != d->CurrentIndex)
+	{
+		setCurrentIndex(NewCurrentIndex);
+	}
+	else
+	{
+		d->updateTabs();
+	}
 }
 
 
@@ -306,7 +363,6 @@ void CDockAreaTabBar::onTabClicked()
 		return;
 	}
 	setCurrentIndex(index);
-	std::cout << "emit tabBarClicked " << index << std::endl;
  	emit tabBarClicked(index);
 }
 
@@ -377,9 +433,8 @@ void CDockAreaTabBar::onTabWidgetMoved(const QPoint& GlobalPos)
 	if (toIndex >= 0)
 	{
 		qDebug() << "tabMoved from " << fromIndex << " to " << toIndex;
-		d->CurrentIndex = toIndex;
 		emit tabMoved(fromIndex, toIndex);
-		emit currentChanged(toIndex);
+		setCurrentIndex(toIndex);
 	}
 }
 
