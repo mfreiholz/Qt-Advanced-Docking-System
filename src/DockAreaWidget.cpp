@@ -291,6 +291,8 @@ void DockAreaWidgetPrivate::createTitleBar()
 		SLOT(onTabCloseRequested(int)));
 	_this->connect(tabBar(), SIGNAL(tabBarClicked(int)),
 		SLOT(setCurrentIndex(int)));
+	_this->connect(tabBar(), SIGNAL(tabMoved(int, int)),
+		SLOT(reorderDockWidget(int, int)));
 }
 
 
@@ -480,7 +482,6 @@ void CDockAreaWidget::setCurrentDockWidget(CDockWidget* DockWidget)
 //============================================================================
 void CDockAreaWidget::setCurrentIndex(int index)
 {
-	std::cout << "CDockAreaWidget::setCurrentIndex " << index << std::endl;
 	auto TabBar = d->tabBar();
 	if (index < 0 || index > (TabBar->count() - 1))
 	{
@@ -583,6 +584,7 @@ CDockWidget* CDockAreaWidget::dockWidget(int Index) const
 //============================================================================
 void CDockAreaWidget::reorderDockWidget(int fromIndex, int toIndex)
 {
+	qDebug() << "CDockAreaWidget::reorderDockWidget";
 	if (fromIndex >= d->ContentsLayout->count() || fromIndex < 0
      || toIndex >= d->ContentsLayout->count() || toIndex < 0 || fromIndex == toIndex)
 	{
@@ -658,13 +660,27 @@ CDockWidget* CDockAreaWidget::nextOpenDockWidget(CDockWidget* DockWidget) const
 //============================================================================
 CDockWidget::DockWidgetFeatures CDockAreaWidget::features() const
 {
-	CDockWidget::DockWidgetFeatures Features;
+	CDockWidget::DockWidgetFeatures Features(CDockWidget::AllDockWidgetFeatures);
 	for (const auto DockWidget : dockWidgets())
 	{
 		Features &= DockWidget->features();
 	}
 
 	return Features;
+}
+
+
+//============================================================================
+void CDockAreaWidget::setVisible(bool visible)
+{
+	Super::setVisible(visible);
+	QString FirstDockWidgetLabel;
+	if (dockWidgetsCount())
+	{
+		FirstDockWidgetLabel = dockWidget(0)->windowTitle();
+	}
+	qDebug() << "CDockAreaWidget::setVisible " << visible << " " << FirstDockWidgetLabel
+		<< " count: " << dockWidgetsCount() << " open count: " << openDockWidgetsCount();
 }
 
 } // namespace ads

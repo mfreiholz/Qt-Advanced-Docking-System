@@ -252,6 +252,7 @@ bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
     	}
     }
 
+
     // Now all dock areas are properly restored and we setup the index of
     // The dock areas because the previous toggleView() action has changed
     // the dock area index
@@ -277,6 +278,7 @@ bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
     		}
     	}
     }
+
 
     // Finally we need to send the topLevelChanged() signals for all dock
     // widgets if top level changed

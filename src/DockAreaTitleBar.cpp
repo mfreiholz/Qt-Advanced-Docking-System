@@ -17,6 +17,7 @@
 #include <QScrollArea>
 #include <QMouseEvent>
 #include <QDebug>
+#include <QStyleOptionButton>
 
 #include "FloatingDockContainer.h"
 #include "DockAreaWidget.h"
@@ -149,7 +150,6 @@ CDockAreaTabBar* CDockAreaTitleBar::tabBar() const
 //============================================================================
 void CDockAreaTitleBar::markTabsMenuOutdated()
 {
-	qDebug() << "CDockAreaTitleBar::markTabsMenuOutdated()";
 	d->MenuOutdated = true;
 }
 

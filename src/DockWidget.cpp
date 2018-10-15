@@ -133,7 +133,7 @@ void DockWidgetPrivate::showDockWidget()
 		DockArea->show();
 		DockArea->setCurrentDockWidget(_this);
 		TabWidget->show();
-		QSplitter* Splitter = internal::findParent<QSplitter*>(_this);
+		QSplitter* Splitter = internal::findParent<QSplitter*>(DockArea);
 		while (Splitter && !Splitter->isVisible())
 		{
 			Splitter->show();
@@ -664,6 +664,13 @@ void CDockWidget::emitTopLevelChanged(bool Floating)
 void CDockWidget::setClosedState(bool Closed)
 {
 	d->Closed = Closed;
+}
+
+
+//============================================================================
+QSize CDockWidget::minimumSizeHint() const
+{
+	return QSize(60, 40);
 }
 
 } // namespace ads

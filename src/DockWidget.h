@@ -210,6 +210,11 @@ public:
 	virtual ~CDockWidget();
 
 	/**
+	 * We return a fixed minimum size hint for all dock widgets
+	 */
+	virtual QSize minimumSizeHint() const override;
+
+	/**
 	 * Sets the widget for the dock widget to widget.
 	 */
 	void setWidget(QWidget* widget);

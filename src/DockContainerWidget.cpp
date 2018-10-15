@@ -1156,7 +1156,7 @@ QList<CDockWidget*> CDockContainerWidget::dockWidgets() const
 //============================================================================
 CDockWidget::DockWidgetFeatures CDockContainerWidget::features() const
 {
-	CDockWidget::DockWidgetFeatures Features;
+	CDockWidget::DockWidgetFeatures Features(CDockWidget::AllDockWidgetFeatures);
 	for (const auto DockArea : d->DockAreas)
 	{
 		Features &= DockArea->features();

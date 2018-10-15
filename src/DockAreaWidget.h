@@ -129,6 +129,8 @@ protected:
 	void updateTabBarVisibility();
 
 public:
+	using Super = QFrame;
+
 	/**
 	 * Default Constructor
 	 */
@@ -222,6 +224,11 @@ public slots:
 	 * call will make it visible.
 	 */
 	void setCurrentIndex(int index);
+
+	/**
+	 * This function is required for debugging purposes
+	 */
+	virtual void setVisible(bool visible) override;
 
 signals:
 	/**

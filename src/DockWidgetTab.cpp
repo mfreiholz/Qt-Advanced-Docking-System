@@ -398,10 +398,10 @@ void CDockWidgetTab::mouseDoubleClickEvent(QMouseEvent *event)
 //============================================================================
 void CDockWidgetTab::setVisible(bool visible)
 {
-	if (!visible)
+	/*if (!visible)
 	{
 		qDebug() << "CDockWidgetTab::setVisible " << visible;
-	}
+	}*/
 	Super::setVisible(visible);
 }
 
