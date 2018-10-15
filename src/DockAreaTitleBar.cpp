@@ -84,7 +84,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	_this->connect(TabsMenu, SIGNAL(aboutToShow()), SLOT(onTabsMenuAboutToShow()));
 	TabsMenuButton->setMenu(TabsMenu);
 	TopLayout->addWidget(TabsMenuButton, 0);
-	TabsMenuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	TabsMenuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
 		SLOT(onTabsMenuActionTriggered(QAction*)));
 
@@ -93,7 +93,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	CloseButton->setFlat(true);
 	CloseButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarCloseButton));
 	CloseButton->setToolTip(QObject::tr("Close"));
-	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	TopLayout->addWidget(CloseButton, 0);
 	_this->connect(CloseButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
 }
@@ -110,6 +110,7 @@ void DockAreaTitleBarPrivate::createTabBar()
 	_this->connect(TabBar, SIGNAL(removingTab(int)), SLOT(markTabsMenuOutdated()));
 	_this->connect(TabBar, SIGNAL(tabMoved(int, int)), SLOT(markTabsMenuOutdated()));
 	_this->connect(TabBar, SIGNAL(currentChanged(int)), SLOT(onCurrentTabChanged(int)));
+	_this->connect(TabBar, SIGNAL(tabBarClicked(int)), SIGNAL(tabBarClicked(int)));
 }
 
 
@@ -192,6 +193,7 @@ void CDockAreaTitleBar::onTabsMenuActionTriggered(QAction* Action)
 {
 	int Index = Action->data().toInt();
 	d->TabBar->setCurrentIndex(Index);
+	emit tabBarClicked(Index);
 }
 
 

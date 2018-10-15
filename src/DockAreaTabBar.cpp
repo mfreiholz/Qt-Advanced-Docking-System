@@ -186,7 +186,9 @@ void CDockAreaTabBar::mouseMoveEvent(QMouseEvent* ev)
 		return;
 	}
 
-	if (!this->geometry().contains(ev->pos()))
+    int DragDistanceY = qAbs(d->DragStartMousePos.y() - ev->pos().y());
+    int MinDragDistanceY = this->height() / 2;
+	if (DragDistanceY >= MinDragDistanceY)
 	{
 		qDebug() << "CTabsScrollArea::startFloating";
 		startFloating(d->DragStartMousePos);

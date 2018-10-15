@@ -289,7 +289,7 @@ void DockAreaWidgetPrivate::createTitleBar()
 	Layout->addWidget(TitleBar);
 	_this->connect(tabBar(), SIGNAL(tabCloseRequested(int)),
 		SLOT(onTabCloseRequested(int)));
-	_this->connect(tabBar(), SIGNAL(tabBarClicked(int)),
+	_this->connect(TitleBar, SIGNAL(tabBarClicked(int)),
 		SLOT(setCurrentIndex(int)));
 	_this->connect(tabBar(), SIGNAL(tabMoved(int, int)),
 		SLOT(reorderDockWidget(int, int)));

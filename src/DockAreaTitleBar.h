@@ -71,6 +71,13 @@ public:
 	 * Returns the pointer to the tabBar()
 	 */
 	CDockAreaTabBar* tabBar() const;
+
+signals:
+	/**
+	 * This signal is emitted if a tab in the tab bar is clicked by the user
+	 * or if the user clicks on a tab item in the title bar tab menu.
+	 */
+	void tabBarClicked(int index);
 }; // class name
 }
  // namespace ads

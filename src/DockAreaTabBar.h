@@ -163,7 +163,7 @@ signals:
 	void currentChanged(int Index);
 
 	/**
-	 * This signal is emitted when user clicks on a tab at an index.
+	 * This signal is emitted when user clicks on a tab
 	 */
 	void tabBarClicked(int index);
 

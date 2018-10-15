@@ -225,6 +225,12 @@ bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
     	return false;
     }
 
+    // Hide updates of floatingf widgets from use
+    for (auto FloatingWidget : FloatingWidgets)
+    {
+    	FloatingWidget->hide();
+    }
+
     for (auto DockWidget : DockWidgetsMap)
     {
     	DockWidget->setProperty("dirty", true);

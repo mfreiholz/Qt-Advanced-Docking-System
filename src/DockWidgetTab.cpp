@@ -279,8 +279,10 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     	d->moveTab(ev);
     }
 
-    bool MouseInsideTitleArea = d->titleAreaGeometryContains(ev->globalPos());
-    if (!MouseInsideTitleArea)
+    // Maybe a fixed drag distance is better here ?
+    int DragDistanceY = qAbs(d->DragStartMousePosition.y() - ev->pos().y());
+    int MinDragDistanceY = d->DockArea->titleBarGeometry().height() / 2;
+    if (DragDistanceY >= MinDragDistanceY)
 	{
 		// If this is the last dock area in a dock container with only
     	// one single dock widget it does not make  sense to move it to a new
