@@ -9,14 +9,18 @@ CONFIG *= c++14
 
 SOURCES += \
 	main.cpp \
-	MainWindow.cpp
+	MainWindow.cpp \
+	AnimatedLabel.cpp
 
 
 HEADERS += \
-	MainWindow.h
+	MainWindow.h \
+	AnimatedLabel.h
 
 FORMS += \
 	mainwindow.ui
+	
+RESOURCES += main.qrc
 
 LIBS += -L$${ADS_OUT_ROOT}/lib
 

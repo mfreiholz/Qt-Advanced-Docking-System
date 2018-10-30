@@ -91,17 +91,6 @@ struct FloatingDockContainerPrivate
 	{
 		DraggingState = StateId;
 	}
-
-	/**
-	 * Disables the window close button if the content is not closable
-	 */
-	void disableCloseButton()
-	{
-		auto Flags = _this->windowFlags();
-		Flags |= Qt::CustomizeWindowHint;
-		Flags &= ~Qt::WindowCloseButtonHint;
-		_this->setWindowFlags(Flags);
-	}
 };
 // struct FloatingDockContainerPrivate
 
@@ -261,10 +250,6 @@ CFloatingDockContainer::CFloatingDockContainer(CDockAreaWidget* DockArea) :
 	CFloatingDockContainer(DockArea->dockManager())
 {
 	d->DockContainer->addDockArea(DockArea);
-	if (!DockArea->features().testFlag(CDockWidget::DockWidgetClosable))
-	{
-		d->disableCloseButton();
-	}
 }
 
 
@@ -273,10 +258,6 @@ CFloatingDockContainer::CFloatingDockContainer(CDockWidget* DockWidget) :
 	CFloatingDockContainer(DockWidget->dockManager())
 {
 	d->DockContainer->addDockWidget(CenterDockWidgetArea, DockWidget);
-	if (!DockWidget->features().testFlag(CDockWidget::DockWidgetClosable))
-	{
-		d->disableCloseButton();
-	}
 }
 
 //============================================================================
@@ -499,9 +480,9 @@ bool CFloatingDockContainer::isClosable() const
 void CFloatingDockContainer::onDockAreasAddedOrRemoved()
 {
 	qDebug() << "CFloatingDockContainer::onDockAreasAddedOrRemoved()";
-	if (d->DockContainer->dockAreaCount() == 1)
+	if (d->DockContainer->visibleDockAreaCount() == 1)
 	{
-		d->SingleDockArea = d->DockContainer->dockArea(0);
+		d->SingleDockArea = topLevelDockWidget()->dockAreaWidget();
 		this->setWindowTitle(d->SingleDockArea->currentDockWidget()->windowTitle());
 		connect(d->SingleDockArea, SIGNAL(currentChanged(int)), this,
 			SLOT(onDockAreaCurrentChanged(int)));
@@ -533,10 +514,6 @@ bool CFloatingDockContainer::restoreState(QXmlStreamReader& Stream, bool Testing
 	if (!d->DockContainer->restoreState(Stream, Testing))
 	{
 		return false;
-	}
-	if (!d->DockContainer->features().testFlag(CDockWidget::DockWidgetClosable))
-	{
-		d->disableCloseButton();
 	}
 	onDockAreasAddedOrRemoved();
 	return true;

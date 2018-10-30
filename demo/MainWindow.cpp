@@ -57,6 +57,7 @@
 #include "DockManager.h"
 #include "DockWidget.h"
 #include "DockAreaWidget.h"
+#include "AnimatedLabel.h"
 
 
 //============================================================================
@@ -281,6 +282,8 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	d->restoreState();
 	d->restorePerspectives();
+	/*CAnimatedLabel* AnimatedLabel = new CAnimatedLabel();
+	AnimatedLabel->show();*/
 }
 
 
