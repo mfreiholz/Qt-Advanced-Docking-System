@@ -93,15 +93,9 @@ void DockAreaTitleBarPrivate::createButtons()
 	CloseButton = new tTileBarButton();
 	CloseButton->setObjectName("closeButton");
 	CloseButton->setFlat(true);
-	QPixmap ClosePixmap = _this->style()->standardPixmap(QStyle::SP_TitleBarCloseButton);
-	QIcon CloseIcon;
-	QStyleOptionButton option;
-	option.initFrom(CloseButton);
-	QPixmap ClosePixmapDisabled = _this->style()->generatedIconPixmap(QIcon::Disabled, ClosePixmap, &option);
-	CloseIcon.addPixmap(ClosePixmap, QIcon::Active);
-	CloseIcon.addPixmap(ClosePixmapDisabled, QIcon::Disabled);
+	QIcon CloseIcon(":/ads/close-button.svg");
+	CloseIcon.addFile(":/ads/close-button-disabled.svg", QSize(), QIcon::Disabled);
 	CloseButton->setIcon(CloseIcon);
-	//CloseButton->setIcon(QIcon(":/ads/close.svg"));
 	CloseButton->setToolTip(QObject::tr("Close"));
 	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	TopLayout->addWidget(CloseButton, 0);

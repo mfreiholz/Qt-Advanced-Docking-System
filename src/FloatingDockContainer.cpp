@@ -460,19 +460,7 @@ void CFloatingDockContainer::moveFloating()
 //============================================================================
 bool CFloatingDockContainer::isClosable() const
 {
-    auto OpenDockAreas = d->DockContainer->openedDockAreas();
-    for (auto DockArea : OpenDockAreas)
-    {
-        auto OpenDockWidgets = DockArea->openedDockWidgets();
-        for (auto DockWidget : OpenDockWidgets)
-        {
-            if (!DockWidget->features().testFlag(CDockWidget::DockWidgetClosable))
-            {
-                return false;
-            }
-        }
-    }
-    return true;
+    return d->DockContainer->features().testFlag(CDockWidget::DockWidgetClosable);
 }
 
 
@@ -482,7 +470,7 @@ void CFloatingDockContainer::onDockAreasAddedOrRemoved()
 	qDebug() << "CFloatingDockContainer::onDockAreasAddedOrRemoved()";
 	if (d->DockContainer->visibleDockAreaCount() == 1)
 	{
-		d->SingleDockArea = topLevelDockWidget()->dockAreaWidget();
+		d->SingleDockArea = d->DockContainer->openedDockAreas()[0];
 		this->setWindowTitle(d->SingleDockArea->currentDockWidget()->windowTitle());
 		connect(d->SingleDockArea, SIGNAL(currentChanged(int)), this,
 			SLOT(onDockAreaCurrentChanged(int)));
