@@ -177,13 +177,13 @@ void MainWindowPrivate::createContent()
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
 	DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
 	DockManager->addDockWidget(ads::LeftDockWidgetArea, createLongTextLabelDockWidget(ViewMenu));
-	auto FileSystemWidget = createFileSystemTreeDockWidget(ViewMenu);
+	/*auto FileSystemWidget = createFileSystemTreeDockWidget(ViewMenu);
 	auto ToolBar = FileSystemWidget->toolBar();
 	ToolBar->addAction(ui.actionSaveState);
 	ToolBar->addAction(ui.actionRestoreState);
-	DockManager->addDockWidget(ads::BottomDockWidgetArea, FileSystemWidget);
+	DockManager->addDockWidget(ads::BottomDockWidgetArea, FileSystemWidget);*/
 
-	FileSystemWidget = createFileSystemTreeDockWidget(ViewMenu);
+	/*FileSystemWidget = createFileSystemTreeDockWidget(ViewMenu);
 	ToolBar = FileSystemWidget->toolBar();
 	ToolBar->addAction(ui.actionSaveState);
 	ToolBar->addAction(ui.actionRestoreState);
@@ -198,7 +198,7 @@ void MainWindowPrivate::createContent()
 	DockManager->addDockWidget(ads::TopDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	auto BottomDockArea = DockManager->addDockWidget(ads::BottomDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
-	DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
+	DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);*/
 }
 
 
@@ -321,7 +321,6 @@ void CMainWindow::on_actionRestoreState_triggered(bool)
 //============================================================================
 void CMainWindow::savePerspective()
 {
-	std::cout << "savePerspective" << std::endl;
 	QString PerspectiveName = QInputDialog::getText(this, "Save Perspective", "Enter unique name:");
 	if (PerspectiveName.isEmpty())
 	{

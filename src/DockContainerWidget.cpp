@@ -927,7 +927,7 @@ int CDockContainerWidget::visibleDockAreaCount() const
 	int Result = 0;
 	for (auto DockArea : d->DockAreas)
 	{
-		Result += DockArea->isVisibleTo(this) ? 1 : 0;
+		Result += DockArea->isHidden() ? 0 : 1;
 	}
 
 	return Result;
@@ -982,9 +982,6 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	{
 		TopLevelDockWidget->emitTopLevelChanged(false);
 	}
-
-	std::cout << "CDockContainerWidget::dropFloatingWidget " <<
-		Timer.restart() << std::endl;
 }
 
 
@@ -994,7 +991,7 @@ QList<CDockAreaWidget*> CDockContainerWidget::openedDockAreas() const
 	QList<CDockAreaWidget*> Result;
 	for (auto DockArea : d->DockAreas)
 	{
-		if (DockArea->isVisibleTo(this))
+		if (!DockArea->isHidden())
 		{
 			Result.append(DockArea);
 		}

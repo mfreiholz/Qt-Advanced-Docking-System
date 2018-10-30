@@ -501,6 +501,20 @@ void CFloatingDockContainer::onDockAreasAddedOrRemoved()
 
 
 //============================================================================
+void CFloatingDockContainer::updateWindowTitle(const QString& Title)
+{
+	if (Title.isEmpty())
+	{
+		this->setWindowTitle(qApp->applicationDisplayName());
+	}
+	else
+	{
+		this->setWindowTitle(Title);
+	}
+}
+
+
+//============================================================================
 void CFloatingDockContainer::onDockAreaCurrentChanged(int Index)
 {
 	Q_UNUSED(Index);

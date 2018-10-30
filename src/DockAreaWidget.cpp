@@ -132,12 +132,10 @@ public:
 
 	void setCurrentIndex(int index)
 	{
-		std::cout << "CDockAreaLayout::setCurrentIndex " << index << std::endl;
 		QWidget *prev = currentWidget();
 		QWidget *next = widget(index);
 		if (!next || (next == prev && !m_CurrentWidget))
 		{
-			std::cout << "return" << std::endl;
 			return;
 		}
 
@@ -150,7 +148,6 @@ public:
 			parent->setUpdatesEnabled(false);
 		}
 
-		std::cout << "m_ParentLayout->addWidget(next)" << std::endl;
 		auto LayoutItem = m_ParentLayout->takeAt(1);
 		if (LayoutItem)
 		{

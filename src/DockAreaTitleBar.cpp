@@ -11,6 +11,7 @@
 #include "DockAreaTitleBar.h"
 
 #include <QPushButton>
+#include <QToolButton>
 #include <QBoxLayout>
 #include <QStyle>
 #include <QMenu>
@@ -31,14 +32,15 @@
 
 namespace ads
 {
+using tTileBarButton = QPushButton;
 /**
  * Private data class of CDockAreaTitleBar class (pimpl)
  */
 struct DockAreaTitleBarPrivate
 {
 	CDockAreaTitleBar* _this;
-	QPushButton* TabsMenuButton;
-	QPushButton* CloseButton;
+	tTileBarButton* TabsMenuButton;
+	tTileBarButton* CloseButton;
 	QBoxLayout* TopLayout;
 	CDockAreaWidget* DockArea;
 	CDockAreaTabBar* TabBar;
@@ -74,7 +76,7 @@ DockAreaTitleBarPrivate::DockAreaTitleBarPrivate(CDockAreaTitleBar* _public) :
 //============================================================================
 void DockAreaTitleBarPrivate::createButtons()
 {
-	TabsMenuButton = new QPushButton();
+	TabsMenuButton = new tTileBarButton();
 	TabsMenuButton->setObjectName("tabsMenuButton");
 	TabsMenuButton->setFlat(true);
 	TabsMenuButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarUnshadeButton));
@@ -88,10 +90,18 @@ void DockAreaTitleBarPrivate::createButtons()
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
 		SLOT(onTabsMenuActionTriggered(QAction*)));
 
-	CloseButton = new QPushButton();
+	CloseButton = new tTileBarButton();
 	CloseButton->setObjectName("closeButton");
 	CloseButton->setFlat(true);
-	CloseButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarCloseButton));
+	QPixmap ClosePixmap = _this->style()->standardPixmap(QStyle::SP_TitleBarCloseButton);
+	QIcon CloseIcon;
+	QStyleOptionButton option;
+	option.initFrom(CloseButton);
+	QPixmap ClosePixmapDisabled = _this->style()->generatedIconPixmap(QIcon::Disabled, ClosePixmap, &option);
+	CloseIcon.addPixmap(ClosePixmap, QIcon::Active);
+	CloseIcon.addPixmap(ClosePixmapDisabled, QIcon::Disabled);
+	CloseButton->setIcon(CloseIcon);
+	//CloseButton->setIcon(QIcon(":/ads/close.svg"));
 	CloseButton->setToolTip(QObject::tr("Close"));
 	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	TopLayout->addWidget(CloseButton, 0);
@@ -201,7 +211,7 @@ void CDockAreaTitleBar::onTabsMenuActionTriggered(QAction* Action)
 void CDockAreaTitleBar::onCurrentTabChanged(int Index)
 {
 	CDockWidget* DockWidget = d->TabBar->tab(Index)->dockWidget();
-	d->CloseButton->setVisible(DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));
+	d->CloseButton->setEnabled(DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));
 }
 
 

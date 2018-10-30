@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/ads">
         <file>stylesheets/default.css</file>
+        <file>close.svg</file>
     </qresource>
 </RCC>

@@ -68,6 +68,7 @@ private:
 	friend class CDockWidgetTab;
 	friend class CDockAreaTitleBar;
 	friend struct DockAreaTitleBarPrivate;
+	friend class CDockWidget;
 
 private slots:
 	void onDockAreasAddedOrRemoved();
@@ -94,6 +95,11 @@ protected:
 	 * faulty files before you start restoring the state
 	 */
 	bool restoreState(QXmlStreamReader& Stream, bool Testing);
+
+	/**
+	 * Call this function to update the window title
+	 */
+	void updateWindowTitle(const QString& Title ="");
 
 
 protected: // reimplements QWidget

@@ -262,13 +262,10 @@ bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
     // Now all dock areas are properly restored and we setup the index of
     // The dock areas because the previous toggleView() action has changed
     // the dock area index
-    std::cout << "Restoring dock container indexes" << std::endl;
     int Count = 0;
     for (auto DockContainer : Containers)
     {
     	Count++;
-    	std::cout << "Restoring container " << Count << " floating: "
-    		<< DockContainer->isFloating() << " DockAreaCount " <<  DockContainer->dockAreaCount() << std::endl;
     	for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
     	{
     		CDockAreaWidget* DockArea = DockContainer->dockArea(i);
@@ -481,8 +478,8 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
 	// dock manager. Because there will be no processing of application
 	// events until this function is finished, the user will not see this
 	// hiding
-	bool IsVisible = this->isVisibleTo(parentWidget());
-	if (IsVisible)
+	bool IsHidden = this->isHidden();
+	if (!IsHidden)
 	{
 		hide();
 	}
@@ -491,12 +488,11 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
 	bool Result = d->restoreState(state, version);
 	d->RestoringState = false;
 	emit stateRestored();
-	if (IsVisible)
+	if (!IsHidden)
 	{
 		show();
 	}
 
-	std::cout << "CDockManager::restoreState " << Timer.restart() << std::endl;
 	return Result;
 }
 

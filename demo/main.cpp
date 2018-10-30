@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	std::shared_ptr<int> b;
 	QApplication a(argc, argv);
 	a.setQuitOnLastWindowClosed(true);
-	qInstallMessageHandler(myMessageOutput);
+	//qInstallMessageHandler(myMessageOutput);
 	qDebug() << "Message handler test";
 
 	CMainWindow mw;

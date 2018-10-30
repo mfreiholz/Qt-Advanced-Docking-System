@@ -136,7 +136,6 @@ void CDockAreaTabBar::wheelEvent(QWheelEvent* Event)
 //============================================================================
 void CDockAreaTabBar::mousePressEvent(QMouseEvent* ev)
 {
-	std::cout << "CDockAreaTabBar::mousePressEvent" << std::endl;
 	if (ev->button() == Qt::LeftButton)
 	{
 		ev->accept();
@@ -232,7 +231,6 @@ void CDockAreaTabBar::startFloating(const QPoint& Pos)
 //============================================================================
 void CDockAreaTabBar::setCurrentIndex(int index)
 {
-	std::cout << "CDockAreaTabBar::setCurrentIndex " << index << std::endl;
 	if (index == d->CurrentIndex)
 	{
 		return;
