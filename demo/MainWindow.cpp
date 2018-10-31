@@ -177,13 +177,13 @@ void MainWindowPrivate::createContent()
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
 	DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
 	DockManager->addDockWidget(ads::LeftDockWidgetArea, createLongTextLabelDockWidget(ViewMenu));
-	/*auto FileSystemWidget = createFileSystemTreeDockWidget(ViewMenu);
+	auto FileSystemWidget = createFileSystemTreeDockWidget(ViewMenu);
 	auto ToolBar = FileSystemWidget->toolBar();
 	ToolBar->addAction(ui.actionSaveState);
 	ToolBar->addAction(ui.actionRestoreState);
-	DockManager->addDockWidget(ads::BottomDockWidgetArea, FileSystemWidget);*/
+	DockManager->addDockWidget(ads::BottomDockWidgetArea, FileSystemWidget);
 
-	/*FileSystemWidget = createFileSystemTreeDockWidget(ViewMenu);
+	FileSystemWidget = createFileSystemTreeDockWidget(ViewMenu);
 	ToolBar = FileSystemWidget->toolBar();
 	ToolBar->addAction(ui.actionSaveState);
 	ToolBar->addAction(ui.actionRestoreState);
@@ -198,7 +198,7 @@ void MainWindowPrivate::createContent()
 	DockManager->addDockWidget(ads::TopDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	auto BottomDockArea = DockManager->addDockWidget(ads::BottomDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
-	DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);*/
+	DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
 }
 
 

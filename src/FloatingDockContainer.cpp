@@ -43,6 +43,7 @@
 #include "DockWidget.h"
 #include "DockOverlay.h"
 
+#include <iostream>
 
 namespace ads
 {
@@ -332,13 +333,11 @@ void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 //============================================================================
 void CFloatingDockContainer::hideEvent(QHideEvent *event)
 {
-    qDebug() << "CFloatingDockContainer hideEvent";
+    std::cout << "CFloatingDockContainer hideEvent" << std::endl;
 	QWidget::hideEvent(event);
-	auto OpenDockAreas = d->DockContainer->openedDockAreas();
-	for (auto DockArea : OpenDockAreas)
+	for (auto DockArea : d->DockContainer->openedDockAreas())
 	{
-		auto OpenDockWidgets = DockArea->openedDockWidgets();
-		for (auto DockWidget : OpenDockWidgets)
+		for (auto DockWidget : DockArea->openedDockWidgets())
 		{
 			DockWidget->toggleView(false);
 		}
@@ -349,11 +348,18 @@ void CFloatingDockContainer::hideEvent(QHideEvent *event)
 //============================================================================
 void CFloatingDockContainer::showEvent(QShowEvent *event)
 {
+	std::cout << "CFloatingDockContainer showEvent" << std::endl;
 	QWidget::showEvent(event);
-	CDockContainerWidget* DockContainer = dockContainer();
-	for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
+	/*for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
 	{
 		auto DockArea = DockContainer->dockArea(i);
+		for (auto DockWidget : DockArea->openedDockWidgets())
+		{
+			DockWidget->setToggleViewActionChecked(true);
+		}
+	}*/
+	for (auto DockArea : d->DockContainer->openedDockAreas())
+	{
 		for (auto DockWidget : DockArea->openedDockWidgets())
 		{
 			DockWidget->setToggleViewActionChecked(true);
