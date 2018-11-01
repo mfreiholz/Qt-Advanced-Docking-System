@@ -32,7 +32,7 @@
 
 namespace ads
 {
-using tTileBarButton = QPushButton;
+using tTileBarButton = QToolButton;
 /**
  * Private data class of CDockAreaTitleBar class (pimpl)
  */
@@ -78,7 +78,8 @@ void DockAreaTitleBarPrivate::createButtons()
 {
 	TabsMenuButton = new tTileBarButton();
 	TabsMenuButton->setObjectName("tabsMenuButton");
-	TabsMenuButton->setFlat(true);
+	TabsMenuButton->setAutoRaise(true);
+	TabsMenuButton->setPopupMode(QToolButton::InstantPopup);
 	TabsMenuButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarUnshadeButton));
 	TabsMenuButton->setMaximumWidth(TabsMenuButton->iconSize().width());
 
@@ -92,7 +93,7 @@ void DockAreaTitleBarPrivate::createButtons()
 
 	CloseButton = new tTileBarButton();
 	CloseButton->setObjectName("closeButton");
-	CloseButton->setFlat(true);
+	CloseButton->setAutoRaise(true);
 	QIcon CloseIcon(":/ads/close-button.svg");
 	CloseIcon.addFile(":/ads/close-button-disabled.svg", QSize(), QIcon::Disabled);
 	CloseButton->setIcon(CloseIcon);

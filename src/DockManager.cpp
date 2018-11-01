@@ -271,7 +271,6 @@ bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
     		CDockAreaWidget* DockArea = DockContainer->dockArea(i);
     		QString DockWidgetName = DockArea->property("currentDockWidget").toString();
     		CDockWidget* DockWidget = _this->findDockWidget(DockWidgetName);
-    		std::cout << "restore DockWIdgetName " << DockWidget->objectName().toStdString() << std::endl;
     		if (!DockWidget->isClosed())
     		{
     			DockArea->internalSetCurrentDockWidget(DockWidget);

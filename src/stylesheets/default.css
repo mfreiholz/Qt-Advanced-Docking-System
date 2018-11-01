@@ -58,11 +58,13 @@ ads--CDockWidget
     border-width: 1px 0 0 0;
 }
 
-QPushButton#closeButton,
-QPushButton#tabsMenuButton
+#closeButton,
+#tabsMenuButton
 {
-	padding: 2px;
+	padding: 0px;
 }
+
+
 
 QScrollArea#dockWidgetScrollArea
 {
