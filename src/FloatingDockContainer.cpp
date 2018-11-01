@@ -350,14 +350,6 @@ void CFloatingDockContainer::showEvent(QShowEvent *event)
 {
 	std::cout << "CFloatingDockContainer showEvent" << std::endl;
 	QWidget::showEvent(event);
-	/*for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
-	{
-		auto DockArea = DockContainer->dockArea(i);
-		for (auto DockWidget : DockArea->openedDockWidgets())
-		{
-			DockWidget->setToggleViewActionChecked(true);
-		}
-	}*/
 	for (auto DockArea : d->DockContainer->openedDockAreas())
 	{
 		for (auto DockWidget : DockArea->openedDockWidgets())

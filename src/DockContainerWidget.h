@@ -40,7 +40,7 @@ class QXmlStreamReader;
 
 namespace ads
 {
-struct DockContainerWidgetPrivate;
+class DockContainerWidgetPrivate;
 class CDockAreaWidget;
 class CDockWidget;
 class CDockManager;
@@ -65,6 +65,7 @@ private:
 	friend class CFloatingDockContainer;
 	friend struct FloatingDockContainerPrivate;
 	friend class CDockWidget;
+	Q_PRIVATE_SLOT(d, void onDockAreaViewToggled(bool Visible))
 
 protected:
 	/**

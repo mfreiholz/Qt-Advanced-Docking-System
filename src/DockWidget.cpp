@@ -130,7 +130,7 @@ void DockWidgetPrivate::showDockWidget()
 	}
 	else
 	{
-		DockArea->show();
+		DockArea->toggleView(true);
 		DockArea->setCurrentDockWidget(_this);
 		TabWidget->show();
 		QSplitter* Splitter = internal::findParent<QSplitter*>(DockArea);

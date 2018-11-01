@@ -93,8 +93,9 @@ static void insertWidgetIntoSplitter(QSplitter* Splitter, QWidget* widget, bool 
 /**
  * Private data class of CDockContainerWidget class (pimpl)
  */
-struct DockContainerWidgetPrivate
+class DockContainerWidgetPrivate
 {
+public:
 	CDockContainerWidget* _this;
 	QPointer<CDockManager> DockManager;
 	unsigned int zOrderIndex = 0;
@@ -103,6 +104,7 @@ struct DockContainerWidgetPrivate
 	QSplitter* RootSplitter;
 	bool isFloating = false;
 	CDockAreaWidget* LastAddedAreaCache[5]{0, 0, 0, 0, 0};
+	int VisibleDockAreaCount = -1;
 
 	/**
 	 * Private data constructor
@@ -176,6 +178,42 @@ struct DockContainerWidgetPrivate
 	 * Helper function for recursive dumping of layout
 	 */
 	void dumpRecursive(int level, QWidget* widget);
+
+	/**
+	 * Initializes the visible dock area count variable if it is not initialized
+	 * yet
+	 */
+	void initVisibleDockAreaCount()
+	{
+		if (VisibleDockAreaCount > -1)
+		{
+			return;
+		}
+
+		VisibleDockAreaCount = 0;
+		for (auto DockArea : DockAreas)
+		{
+			VisibleDockAreaCount += DockArea->isHidden() ? 0 : 1;
+		}
+	}
+
+	/**
+	 * Access function for the visible dock area counter
+	 */
+	int& visibleDockAreaCount()
+	{
+		// Lazy initialisation - we initialize the VisibleDockAreaCount variable
+		// on first use
+		initVisibleDockAreaCount();
+		return VisibleDockAreaCount;
+	}
+
+// private slots: ------------------------------------------------------------
+	void onDockAreaViewToggled(bool Visible)
+	{
+		std::cout << "onDockAreaViewToggled " << Visible << std::endl;
+		VisibleDockAreaCount += Visible ? 1 : -1;
+	}
 }; // struct DockContainerWidgetPrivate
 
 
@@ -922,8 +960,6 @@ int CDockContainerWidget::dockAreaCount() const
 //============================================================================
 int CDockContainerWidget::visibleDockAreaCount() const
 {
-	// TODO Cache or precalculate this to speed it up because it is used during
-	// movement of floating widget
 	int Result = 0;
 	for (auto DockArea : d->DockAreas)
 	{
@@ -931,6 +967,10 @@ int CDockContainerWidget::visibleDockAreaCount() const
 	}
 
 	return Result;
+
+	// TODO Cache or precalculate this to speed it up because it is used during
+	// movement of floating widget
+	//return d->visibleDockAreaCount();
 }
 
 
@@ -1029,6 +1069,7 @@ bool CDockContainerWidget::restoreState(QXmlStreamReader& s, bool Testing)
 	QWidget*NewRootSplitter {};
 	if (!Testing)
 	{
+		d->VisibleDockAreaCount = -1;// invalidate the dock area count
 		d->DockAreas.clear();
 	}
 
@@ -1162,9 +1203,8 @@ CDockWidget::DockWidgetFeatures CDockContainerWidget::features() const
 	return Features;
 }
 
-
-
 } // namespace ads
 
+#include "moc_DockContainerWidget.cpp"
 //---------------------------------------------------------------------------
 // EOF DockContainerWidget.cpp

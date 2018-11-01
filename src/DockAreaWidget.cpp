@@ -410,7 +410,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 //============================================================================
 void CDockAreaWidget::hideAreaWithNoVisibleContent()
 {
-	this->hide();
+	this->toggleView(false);
 
 	// Hide empty parent splitter
 	auto Splitter = internal::findParent<CDockSplitter*>(this);
@@ -429,16 +429,6 @@ void CDockAreaWidget::hideAreaWithNoVisibleContent()
 	{
 		CFloatingDockContainer* FloatingWidget = internal::findParent<CFloatingDockContainer*>(Container);
 		FloatingWidget->hide();
-	}
-}
-
-
-//============================================================================
-void CDockAreaWidget::hideAreaIfNoVisibleContent()
-{
-	if (openedDockWidgets().isEmpty())
-	{
-		hideAreaIfNoVisibleContent();
 	}
 }
 
@@ -668,18 +658,11 @@ CDockWidget::DockWidgetFeatures CDockAreaWidget::features() const
 
 
 //============================================================================
-void CDockAreaWidget::setVisible(bool visible)
+void CDockAreaWidget::toggleView(bool Open)
 {
-	Super::setVisible(visible);
-	QString FirstDockWidgetLabel;
-	if (dockWidgetsCount())
-	{
-		FirstDockWidgetLabel = dockWidget(0)->windowTitle();
-	}
-	qDebug() << "CDockAreaWidget::setVisible " << visible << " " << FirstDockWidgetLabel
-		<< " count: " << dockWidgetsCount() << " open count: " << openDockWidgetsCount();
+	setVisible(Open);
+	emit viewToggled(Open);
 }
-
 } // namespace ads
 
 //---------------------------------------------------------------------------

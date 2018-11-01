@@ -117,13 +117,6 @@ protected:
 	void hideAreaWithNoVisibleContent();
 
 	/**
-	 * This function checks, if the dock area has visible content, that means
-	 * if any dock widget is open, and then calls hideAreaWithNoVisibleContent()
-	 * if it does not find any visible content
-	 */
-	void hideAreaIfNoVisibleContent();
-
-	/**
 	 * Updates the dock area layout and components visibility
 	 */
 	void updateTabBarVisibility();
@@ -226,9 +219,10 @@ public slots:
 	void setCurrentIndex(int index);
 
 	/**
-	 * This function is required for debugging purposes
+	 * This property controls whether the dock area is open or closed.
+	 * The toogleViewAction triggers this slot.
 	 */
-	virtual void setVisible(bool visible) override;
+	void toggleView(bool Open);
 
 signals:
 	/**
@@ -249,6 +243,12 @@ signals:
 	 * @param index
 	 */
 	void currentChanged(int index);
+
+	/**
+	 * This signal is emitted if the visibility of this dock area is toggled
+	 * via toggle view function
+	 */
+	void viewToggled(bool Open);
 }; // class DockAreaWidget
 }
  // namespace ads
