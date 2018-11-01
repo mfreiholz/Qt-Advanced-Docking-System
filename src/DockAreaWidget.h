@@ -61,6 +61,7 @@ private:
 	friend class CDockWidgetTab;
 	friend struct DockWidgetPrivate;
 	friend class CDockWidget;
+	friend struct DockManagerPrivate;
 
 private slots:
 	void onTabCloseRequested(int Index);
@@ -120,6 +121,13 @@ protected:
 	 * Updates the dock area layout and components visibility
 	 */
 	void updateTabBarVisibility();
+
+	/**
+	 * This is the internal private function for setting the current widget.
+	 * This function is called by the public setCurrentDockWidget() function
+	 * and by the dock manager when restoring the state
+	 */
+	void internalSetCurrentDockWidget(CDockWidget* DockWidget);
 
 public:
 	using Super = QFrame;

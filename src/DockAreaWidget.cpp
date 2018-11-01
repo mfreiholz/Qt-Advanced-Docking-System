@@ -451,13 +451,20 @@ CDockWidget* CDockAreaWidget::currentDockWidget() const
 //============================================================================
 void CDockAreaWidget::setCurrentDockWidget(CDockWidget* DockWidget)
 {
-	int Index = index(DockWidget);
-	if (Index < 0)
+	if (dockManager()->isRestoringState())
 	{
 		return;
 	}
 
-	if (dockManager()->isRestoringState())
+	internalSetCurrentDockWidget(DockWidget);
+}
+
+
+//============================================================================
+void CDockAreaWidget::internalSetCurrentDockWidget(CDockWidget* DockWidget)
+{
+	int Index = index(DockWidget);
+	if (Index < 0)
 	{
 		return;
 	}
@@ -607,9 +614,9 @@ void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 {
 	s.writeStartElement("DockAreaWidget");
 	s.writeAttribute("Tabs", QString::number(d->ContentsLayout->count()));
-	s.writeAttribute("CurrentIndex", QString::number(d->ContentsLayout->currentIndex()));
+	s.writeAttribute("CurrentDockWidget", currentDockWidget()->objectName());
 	qDebug() << "CDockAreaWidget::saveState TabCount: " << d->ContentsLayout->count()
-			<< " CurrentIndex: " << d->ContentsLayout->currentIndex();
+			<< " CurrentDockWidge: " << currentDockWidget()->objectName();
 	for (int i = 0; i < d->ContentsLayout->count(); ++i)
 	{
 		dockWidget(i)->saveState(s);

@@ -526,13 +526,14 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 		return false;
 	}
 
-	int CurrentIndex = s.attributes().value("CurrentIndex").toInt(&Ok);
-	if (!Ok)
+
+	QString CurrentDockWidget = s.attributes().value("CurrentDockWidget").toString();
+	if (CurrentDockWidget.isEmpty())
 	{
 		return false;
 	}
-	qDebug() << "Restore NodeDockArea Tabs: " << Tabs << " CurrentIndex: "
-			<< CurrentIndex;
+	qDebug() << "Restore NodeDockArea Tabs: " << Tabs << " CurrentDockWidget: "
+			<< CurrentDockWidget;
 
 	CDockAreaWidget* DockArea = nullptr;
 	if (!Testing)
@@ -590,7 +591,7 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 	}
 	else
 	{
-		DockArea->setProperty("currentIndex", CurrentIndex);
+		DockArea->setProperty("currentDockWidget", CurrentDockWidget);
 		DockAreas.append(DockArea);
 	}
 
