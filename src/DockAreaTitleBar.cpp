@@ -19,6 +19,7 @@
 #include <QMouseEvent>
 #include <QDebug>
 #include <QStyleOptionButton>
+#include <QPainter>
 
 #include "FloatingDockContainer.h"
 #include "DockAreaWidget.h"
@@ -61,6 +62,8 @@ struct DockAreaTitleBarPrivate
 	 * Creates the internal TabBar
 	 */
 	void createTabBar();
+
+	QPixmap createTransparentPixmap(const QPixmap& Source);
 };// struct DockAreaTitleBarPrivate
 
 
@@ -70,6 +73,18 @@ DockAreaTitleBarPrivate::DockAreaTitleBarPrivate(CDockAreaTitleBar* _public) :
 	_this(_public)
 {
 
+}
+
+
+//============================================================================
+QPixmap DockAreaTitleBarPrivate::createTransparentPixmap(const QPixmap& Source)
+{
+	QPixmap disabledPixmap(Source.size());
+	disabledPixmap.fill(Qt::transparent);
+	QPainter p(&disabledPixmap);
+	p.setOpacity(0.25);
+	p.drawPixmap(0, 0, Source);
+	return disabledPixmap;
 }
 
 
@@ -94,8 +109,13 @@ void DockAreaTitleBarPrivate::createButtons()
 	CloseButton = new tTileBarButton();
 	CloseButton->setObjectName("closeButton");
 	CloseButton->setAutoRaise(true);
-	QIcon CloseIcon(":/ads/close-button.svg");
-	CloseIcon.addFile(":/ads/close-button-disabled.svg", QSize(), QIcon::Disabled);
+
+	// The standard icons do does not look good on high DPI screens
+	QIcon CloseIcon =  _this->style()->standardIcon(QStyle::SP_TitleBarCloseButton);
+	QPixmap normalPixmap = _this->style()->standardPixmap(QStyle::SP_TitleBarCloseButton, 0, CloseButton);
+	QPixmap disabledPixmap = createTransparentPixmap(normalPixmap);
+	CloseIcon.addPixmap(disabledPixmap, QIcon::Disabled);
+
 	CloseButton->setIcon(CloseIcon);
 	CloseButton->setToolTip(QObject::tr("Close"));
 	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);

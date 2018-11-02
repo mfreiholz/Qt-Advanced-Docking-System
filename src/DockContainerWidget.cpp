@@ -759,8 +759,7 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 	QFrame(parent),
 	d(new DockContainerWidgetPrivate(this))
 {
-	d->isFloating = dynamic_cast<CFloatingDockContainer*>(parent) != 0;
-
+	d->isFloating = floatingWidget() != nullptr;
 	d->DockManager = DockManager;
 	if (DockManager != this)
 	{
@@ -986,8 +985,9 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	CDockAreaWidget* DockArea = dockAreaAt(TargetPos);
 	auto dropArea = InvalidDockWidgetArea;
 	auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
-	CDockWidget* TopLevelDockWidget = FloatingWidget->hasTopLevelDockWidget() ?
-		FloatingWidget->topLevelDockWidget() : nullptr;
+	CDockWidget* FloatingTopLevelDockWidget = FloatingWidget->topLevelDockWidget();
+	CDockWidget* TopLevelDockWidget = topLevelDockWidget();
+
 	if (DockArea)
 	{
 		auto dropOverlay = d->DockManager->dockAreaOverlay();
@@ -1017,11 +1017,18 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 		}
 	}
 
-	// If we drop a floating widget with only one single dock widget, then we
-	// drop a top level widget that changes from floating to docked now
+	// If there was a top level widget before the drop, then it is not top
+	// level widget anymore
 	if (TopLevelDockWidget)
 	{
 		TopLevelDockWidget->emitTopLevelChanged(false);
+	}
+
+	// If we drop a floating widget with only one single dock widget, then we
+	// drop a top level widget that changes from floating to docked now
+	if (FloatingTopLevelDockWidget)
+	{
+		FloatingTopLevelDockWidget->emitTopLevelChanged(false);
 	}
 }
 
@@ -1052,7 +1059,7 @@ void CDockContainerWidget::saveState(QXmlStreamWriter& s) const
 	s.writeAttribute("Floating", QString::number(isFloating() ? 1 : 0));
 	if (isFloating())
 	{
-		CFloatingDockContainer* FloatingWidget = internal::findParent<CFloatingDockContainer*>(this);
+		CFloatingDockContainer* FloatingWidget = floatingWidget();
 		QByteArray Geometry = FloatingWidget->saveGeometry();
 		s.writeTextElement("Geometry", Geometry.toHex(' '));
 	}
@@ -1091,7 +1098,7 @@ bool CDockContainerWidget::restoreState(QXmlStreamReader& s, bool Testing)
 
 		if (!Testing)
 		{
-			CFloatingDockContainer* FloatingWidget = internal::findParent<CFloatingDockContainer*>(this);
+			CFloatingDockContainer* FloatingWidget = floatingWidget();
 			FloatingWidget->restoreGeometry(Geometry);
 		}
 	}
@@ -1117,6 +1124,40 @@ bool CDockContainerWidget::restoreState(QXmlStreamReader& s, bool Testing)
 	QSplitter* OldRoot = d->RootSplitter;
 	d->RootSplitter = dynamic_cast<QSplitter*>(NewRootSplitter);
 	OldRoot->deleteLater();
+
+    // All dock widgets, that have not been processed in the restore state
+    // function are invisible to the user now and have no assigned dock area
+    // They do not belong to any dock container, until the user toggles the
+    // toggle view action the next time
+	for (auto DockWidget : dockWidgets())
+    {
+    	if (DockWidget->property("dirty").toBool())
+    	{
+    		DockWidget->flagAsUnassigned();
+    	}
+    	else
+    	{
+    		DockWidget->toggleViewInternal(!DockWidget->property("closed").toBool());
+    	}
+    }
+
+    // Finally we need to send the topLevelChanged() signals for all dock
+    // widgets if top level changed
+	CDockWidget* TopLevelDockWidget = topLevelDockWidget();
+	if (TopLevelDockWidget)
+	{
+		TopLevelDockWidget->emitTopLevelChanged(true);
+	}
+	else
+	{
+		for (auto DockArea : d->DockAreas)
+		{
+			for (auto DockWidget : DockArea->dockWidgets())
+			{
+				DockWidget->emitTopLevelChanged(false);
+			}
+		}
+	}
 
 	return true;
 }
@@ -1150,6 +1191,11 @@ CDockAreaWidget* CDockContainerWidget::lastAddedDockAreaWidget(DockWidgetArea ar
 //============================================================================
 bool CDockContainerWidget::hasTopLevelDockWidget() const
 {
+	if (!isFloating())
+	{
+		return false;
+	}
+
 	auto DockAreas = openedDockAreas();
 	if (DockAreas.count() != 1)
 	{
@@ -1163,19 +1209,38 @@ bool CDockContainerWidget::hasTopLevelDockWidget() const
 //============================================================================
 CDockWidget* CDockContainerWidget::topLevelDockWidget() const
 {
-	auto DockAreas = openedDockAreas();
-	if (DockAreas.count() != 1)
+	auto TopLevelDockArea = topLevelDockArea();
+	if (!TopLevelDockArea)
 	{
 		return nullptr;
 	}
 
-	auto DockWidgets = DockAreas[0]->openedDockWidgets();
+	auto DockWidgets = TopLevelDockArea->openedDockWidgets();
 	if (DockWidgets.count() != 1)
 	{
 		return nullptr;
 	}
 
 	return DockWidgets[0];
+
+}
+
+
+//============================================================================
+CDockAreaWidget* CDockContainerWidget::topLevelDockArea() const
+{
+	if (!isFloating())
+	{
+		return nullptr;
+	}
+
+	auto DockAreas = openedDockAreas();
+	if (DockAreas.count() != 1)
+	{
+		return nullptr;
+	}
+
+	return DockAreas[0];
 }
 
 
@@ -1203,6 +1268,14 @@ CDockWidget::DockWidgetFeatures CDockContainerWidget::features() const
 
 	return Features;
 }
+
+
+//============================================================================
+CFloatingDockContainer* CDockContainerWidget::floatingWidget() const
+{
+	return internal::findParent<CFloatingDockContainer*>(this);
+}
+
 
 } // namespace ads
 

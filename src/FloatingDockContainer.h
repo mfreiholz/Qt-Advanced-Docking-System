@@ -99,7 +99,7 @@ protected:
 	/**
 	 * Call this function to update the window title
 	 */
-	void updateWindowTitle(const QString& Title ="");
+	void updateWindowTitle();
 
 
 protected: // reimplements QWidget

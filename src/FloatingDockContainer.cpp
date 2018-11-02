@@ -466,9 +466,11 @@ bool CFloatingDockContainer::isClosable() const
 void CFloatingDockContainer::onDockAreasAddedOrRemoved()
 {
 	qDebug() << "CFloatingDockContainer::onDockAreasAddedOrRemoved()";
-	if (d->DockContainer->visibleDockAreaCount() == 1)
+	std::cout << "CFloatingDockContainer::onDockAreasAddedOrRemoved()" << std::endl;
+	auto TopLevelDockArea = d->DockContainer->topLevelDockArea();
+	if (TopLevelDockArea)
 	{
-		d->SingleDockArea = d->DockContainer->openedDockAreas()[0];
+		d->SingleDockArea = TopLevelDockArea;
 		this->setWindowTitle(d->SingleDockArea->currentDockWidget()->windowTitle());
 		connect(d->SingleDockArea, SIGNAL(currentChanged(int)), this,
 			SLOT(onDockAreaCurrentChanged(int)));
@@ -487,15 +489,16 @@ void CFloatingDockContainer::onDockAreasAddedOrRemoved()
 
 
 //============================================================================
-void CFloatingDockContainer::updateWindowTitle(const QString& Title)
+void CFloatingDockContainer::updateWindowTitle()
 {
-	if (Title.isEmpty())
+	auto TopLevelDockArea = d->DockContainer->topLevelDockArea();
+	if (TopLevelDockArea)
 	{
-		this->setWindowTitle(qApp->applicationDisplayName());
+		this->setWindowTitle(TopLevelDockArea->currentDockWidget()->windowTitle());
 	}
 	else
 	{
-		this->setWindowTitle(Title);
+		this->setWindowTitle(qApp->applicationDisplayName());
 	}
 }
 
@@ -504,6 +507,8 @@ void CFloatingDockContainer::updateWindowTitle(const QString& Title)
 void CFloatingDockContainer::onDockAreaCurrentChanged(int Index)
 {
 	Q_UNUSED(Index);
+	std::cout << "CFloatingDockContainer::onDockAreaCurrentChanged "
+		<< Index << std::endl;
 	this->setWindowTitle(d->SingleDockArea->currentDockWidget()->windowTitle());
 }
 
@@ -515,6 +520,8 @@ bool CFloatingDockContainer::restoreState(QXmlStreamReader& Stream, bool Testing
 	{
 		return false;
 	}
+
+	std::cout << "Dockarea count " << d->DockContainer->dockAreaCount() << std::endl;
 	onDockAreasAddedOrRemoved();
 	return true;
 }
@@ -532,6 +539,7 @@ CDockWidget* CFloatingDockContainer::topLevelDockWidget() const
 {
 	return d->DockContainer->topLevelDockWidget();
 }
+
 
 //============================================================================
 QList<CDockWidget*> CFloatingDockContainer::dockWidgets() const

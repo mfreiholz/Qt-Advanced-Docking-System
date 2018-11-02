@@ -127,6 +127,11 @@ protected:
 	 */
 	CDockWidget* topLevelDockWidget() const;
 
+	/**
+	 * Returns the top level dock area.
+	 */
+	CDockAreaWidget* topLevelDockArea() const;
+
     /**
      * This function returns a list of all dock widgets in this floating widget.
      * It may be possible, depending on the implementation, that dock widgets,
@@ -215,6 +220,13 @@ public:
 	 * dock are does not support the flag.
 	 */
 	CDockWidget::DockWidgetFeatures features() const;
+
+	/**
+	 * If this dock container is in a floating widget, this function returns
+	 * the floating widget.
+	 * Else, it returns a nullptr.
+	 */
+	CFloatingDockContainer* floatingWidget() const;
 
 signals:
 	/**

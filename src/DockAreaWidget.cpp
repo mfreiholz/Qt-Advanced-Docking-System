@@ -373,6 +373,7 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 {
 	qDebug() << "CDockAreaWidget::removeDockWidget";
+	std::cout << "CDockAreaWidget::removeDockWidget" << std::endl;
 	auto NextOpenDockWidget = nextOpenDockWidget(DockWidget);
 
 	d->ContentsLayout->removeWidget(DockWidget);
@@ -398,7 +399,11 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	}
 
 	d->updateTabBar();
-	DockWidget->setDockArea(nullptr);
+	auto TopLevelDockWidget = dockContainer()->topLevelDockWidget();
+	if (TopLevelDockWidget)
+	{
+		TopLevelDockWidget->emitTopLevelChanged(true);
+	}
 
 #if (ADS_DEBUG_LEVEL > 0)
 	CDockContainerWidget* DockContainer = dockContainer();

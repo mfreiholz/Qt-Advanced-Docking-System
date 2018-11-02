@@ -434,17 +434,11 @@ void CDockWidget::toggleView(bool Open)
 void CDockWidget::toggleViewInternal(bool Open)
 {
 	CDockContainerWidget* DockContainer = dockContainer();
-	CDockWidget* TopLevelDockWidget = nullptr;
-	CDockWidget* TopLevelDockWidgetBefore = nullptr;
-
-	if (DockContainer)
-	{
-		TopLevelDockWidgetBefore = DockContainer->topLevelDockWidget();
-	}
+	CDockWidget* TopLevelDockWidgetBefore = DockContainer
+		? DockContainer->topLevelDockWidget() : nullptr;
 
 	if (Open)
 	{
-		TopLevelDockWidget = TopLevelDockWidgetBefore;
 		d->showDockWidget();
 	}
 	else
@@ -460,31 +454,19 @@ void CDockWidget::toggleViewInternal(bool Open)
 		d->DockArea->toggleDockWidgetView(this, Open);
 	}
 
-	if (!Open && DockContainer)
+	if (Open && TopLevelDockWidgetBefore)
 	{
-		TopLevelDockWidget = DockContainer->topLevelDockWidget();
+		CDockWidget::emitTopLevelEventForWidget(TopLevelDockWidgetBefore, false);
 	}
 
-	if (TopLevelDockWidget)
+	CDockWidget* TopLevelDockWidgetAfter = DockContainer
+		? DockContainer->topLevelDockWidget() : nullptr;
+	CDockWidget::emitTopLevelEventForWidget(TopLevelDockWidgetAfter, true);
+	CFloatingDockContainer* FloatingContainer = DockContainer->floatingWidget();
+	if (FloatingContainer)
 	{
-		CDockWidget::emitTopLevelEventForWidget(TopLevelDockWidget, !Open);
+		FloatingContainer->updateWindowTitle();
 	}
-
-	CDockWidget* TopLevelDockWidgetAfter = nullptr;
-	if (DockContainer)
-	{
-		TopLevelDockWidgetAfter = DockContainer->topLevelDockWidget();
-	}
-
-	if (TopLevelDockWidgetAfter != TopLevelDockWidgetBefore)
-	{
-		CFloatingDockContainer* FloatingContainer = qobject_cast<CFloatingDockContainer*>(DockContainer->parentWidget());
-		if (FloatingContainer)
-		{
-			FloatingContainer->updateWindowTitle(TopLevelDockWidgetAfter ? TopLevelDockWidgetAfter->windowTitle() : "");
-		}
-	}
-
 
 	if (!Open)
 	{

@@ -141,16 +141,27 @@ bool DockManagerPrivate::restoreContainer(int Index, QXmlStreamReader& stream, b
 		Index = 0;
 	}
 
+	bool Result = false;
 	if (Index >= Containers.count())
 	{
 		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(_this);
-		return FloatingWidget->restoreState(stream, Testing);
+		Result = FloatingWidget->restoreState(stream, Testing);
 	}
 	else
 	{
 		qDebug() << "d->Containers[i]->restoreState ";
-		return Containers[Index]->restoreState(stream, Testing);
+		auto Container = Containers[Index];
+		if (Container->isFloating())
+		{
+			Result = Container->floatingWidget()->restoreState(stream, Testing);
+		}
+		else
+		{
+			Result = Container->restoreState(stream, Testing);
+		}
 	}
+
+	return Result;
 }
 
 
@@ -242,23 +253,6 @@ bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
     	return false;
     }
 
-    // All dock widgets, that have not been processed in the restore state
-    // function are invisible to the user now and have no assigned dock area
-    // They do not belong to any dock container, until the user toggles the
-    // toggle view action the next time
-    for (auto DockWidget : DockWidgetsMap)
-    {
-    	if (DockWidget->property("dirty").toBool())
-    	{
-    		DockWidget->flagAsUnassigned();
-    	}
-    	else
-    	{
-    		DockWidget->toggleViewInternal(!DockWidget->property("closed").toBool());
-    	}
-    }
-
-
     // Now all dock areas are properly restored and we setup the index of
     // The dock areas because the previous toggleView() action has changed
     // the dock area index
@@ -281,7 +275,7 @@ bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
 
     // Finally we need to send the topLevelChanged() signals for all dock
     // widgets if top level changed
-    for (auto DockContainer : Containers)
+    /*for (auto DockContainer : Containers)
     {
     	CDockWidget* TopLevelDockWidget = DockContainer->topLevelDockWidget();
     	if (TopLevelDockWidget)
@@ -299,7 +293,7 @@ bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
 				}
 			}
     	}
-    }
+    }*/
 
     return true;
 }
