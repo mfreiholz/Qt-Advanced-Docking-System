@@ -9,13 +9,11 @@ CONFIG *= c++14
 
 SOURCES += \
 	main.cpp \
-	MainWindow.cpp \
-	AnimatedLabel.cpp
+	MainWindow.cpp
 
 
 HEADERS += \
-	MainWindow.h \
-	AnimatedLabel.h
+	MainWindow.h
 
 FORMS += \
 	mainwindow.ui
