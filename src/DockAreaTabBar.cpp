@@ -244,7 +244,7 @@ void CDockAreaTabBar::setCurrentIndex(int index)
 		return;
 	}
 
-	if (index < 0 || index > (count() - 1))
+	if (index < -1 || index > (count() - 1))
 	{
 		qWarning() << Q_FUNC_INFO << "Invalid index" << index;
 		return;
@@ -275,7 +275,7 @@ void CDockAreaTabBar::insertTab(int Index, CDockWidgetTab* Tab)
 	emit tabInserted(Index);
 	if (Index <= d->CurrentIndex)
 	{
-		setCurrentIndex(d->CurrentIndex++);
+		setCurrentIndex(d->CurrentIndex + 1);
 	}
 }
 
@@ -352,7 +352,14 @@ int CDockAreaTabBar::currentIndex() const
 //===========================================================================
 CDockWidgetTab* CDockAreaTabBar::currentTab() const
 {
-	return qobject_cast<CDockWidgetTab*>(d->TabsLayout->itemAt(d->CurrentIndex)->widget());
+	if (d->CurrentIndex < 0)
+	{
+		return nullptr;
+	}
+	else
+	{
+		return qobject_cast<CDockWidgetTab*>(d->TabsLayout->itemAt(d->CurrentIndex)->widget());
+	}
 }
 
 
@@ -378,9 +385,9 @@ void CDockAreaTabBar::onTabClicked()
 //===========================================================================
 CDockWidgetTab* CDockAreaTabBar::tab(int Index) const
 {
-	if (Index >= count())
+	if (Index >= count() || Index < 0)
 	{
-		return 0;
+		return nullptr;
 	}
 	return qobject_cast<CDockWidgetTab*>(d->TabsLayout->itemAt(Index)->widget());
 }
@@ -456,7 +463,7 @@ void CDockAreaTabBar::closeTab(int Index)
 	}
 
 	auto Tab = tab(Index);
-	if (!Tab->isVisibleTo(this))
+	if (Tab->isHidden())
 	{
 		return;
 	}
@@ -497,7 +504,7 @@ bool CDockAreaTabBar::isTabOpen(int Index) const
 		return false;
 	}
 
-	return tab(Index)->isVisibleTo(this);
+	return !tab(Index)->isHidden();
 }
 } // namespace ads
 

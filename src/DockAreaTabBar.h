@@ -120,12 +120,12 @@ public:
 	int count() const;
 
 	/**
-	 * Returns the current index
+	 * Returns the current index or -1 if no tab is selected
 	 */
 	int currentIndex() const;
 
 	/**
-	 * Returns the current tab
+	 * Returns the current tab or a nullptr if no tab is selected.
 	 */
 	CDockWidgetTab* currentTab() const;
 

@@ -243,6 +243,10 @@ void CDockAreaTitleBar::onTabsMenuActionTriggered(QAction* Action)
 //============================================================================
 void CDockAreaTitleBar::onCurrentTabChanged(int Index)
 {
+	if (Index < 0)
+	{
+		return;
+	}
 	CDockWidget* DockWidget = d->TabBar->tab(Index)->dockWidget();
 	d->CloseButton->setEnabled(DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));
 }
