@@ -69,6 +69,7 @@ private:
 	friend class CDockAreaTitleBar;
 	friend struct DockAreaTitleBarPrivate;
 	friend class CDockWidget;
+	friend class CDockAreaWidget;
 
 private slots:
 	void onDockAreasAddedOrRemoved();

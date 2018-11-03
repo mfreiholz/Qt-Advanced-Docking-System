@@ -61,6 +61,13 @@ enum DockWidgetArea
 Q_DECLARE_FLAGS(DockWidgetAreas, DockWidgetArea)
 
 
+enum TitleBarButton
+{
+	TitleBarButtonTabsMenu,
+	TitleBarButtonUndock,
+	TitleBarButtonClose
+};
+
 namespace internal
 {
 

@@ -36,6 +36,8 @@ namespace ads
 class CDockAreaWidget;
 class CDockWidgetTab;
 struct DockAreaTabBarPrivate;
+class CDockAreaTitleBar;
+class CFloatingDockContainer;
 
 /**
  * Custom tabbar implementation for tab area that is shown on top of a
@@ -48,6 +50,7 @@ class CDockAreaTabBar : public QScrollArea
 private:
 	DockAreaTabBarPrivate* d; ///< private data (pimpl)
 	friend class DockAreaTabBarPrivate;
+	friend class CDockAreaTitleBar;
 
 private slots:
 	void onTabClicked();
@@ -80,6 +83,12 @@ protected:
 	 * Starts floating
 	 */
 	void startFloating(const QPoint& Pos);
+
+	/**
+	 * Makes the dock area loating
+	 */
+	CFloatingDockContainer* makeAreaFloating(const QPoint& Pos);
+
 
 public:
 	using Super = QScrollArea;

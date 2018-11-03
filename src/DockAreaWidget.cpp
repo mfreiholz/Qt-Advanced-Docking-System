@@ -258,7 +258,7 @@ struct DockAreaWidgetPrivate
 	 * Updates the tab bar visibility depending on the number of dock widgets
 	 * in this area
 	 */
-	void updateTabBar();
+	void updateTitleBarVisibility();
 
 	/**
 	 * Convenience function for tabbar access
@@ -294,7 +294,7 @@ void DockAreaWidgetPrivate::createTitleBar()
 
 
 //============================================================================
-void DockAreaWidgetPrivate::updateTabBar()
+void DockAreaWidgetPrivate::updateTitleBarVisibility()
 {
 	CDockContainerWidget* Container = _this->dockContainer();
 	if (!Container)
@@ -358,7 +358,11 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 	d->ContentsLayout->insertWidget(index, DockWidget);
 	DockWidget->tabWidget()->setDockAreaWidget(this);
 	auto TabWidget = DockWidget->tabWidget();
+	// Inserting the tab will change the current index which in turn will
+	// make the tab widget visible in the slot
+	d->tabBar()->blockSignals(true);
 	d->tabBar()->insertTab(index, TabWidget);
+	d->tabBar()->blockSignals(false);
 	TabWidget->setVisible(!DockWidget->isClosed());
 	DockWidget->setProperty(INDEX_PROPERTY, index);
 	if (Activate)
@@ -398,7 +402,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 		hideAreaWithNoVisibleContent();
 	}
 
-	d->updateTabBar();
+	d->updateTitleBarVisibility();
 	auto TopLevelDockWidget = dockContainer()->topLevelDockWidget();
 	if (TopLevelDockWidget)
 	{
@@ -415,6 +419,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 //============================================================================
 void CDockAreaWidget::hideAreaWithNoVisibleContent()
 {
+	std::cout << "CDockAreaWidget::hideAreaWithNoVisibleContent()" << std::endl;
 	this->toggleView(false);
 
 	// Hide empty parent splitter
@@ -430,9 +435,21 @@ void CDockAreaWidget::hideAreaWithNoVisibleContent()
 
 	//Hide empty floating widget
 	CDockContainerWidget* Container = this->dockContainer();
-	if (Container->isFloating() && Container->openedDockAreas().isEmpty())
+	if (!Container->isFloating())
 	{
-		CFloatingDockContainer* FloatingWidget = internal::findParent<CFloatingDockContainer*>(Container);
+		return;
+	}
+
+	d->updateTitleBarVisibility();
+	auto TopLevelWidget = Container->topLevelDockWidget();
+	auto FloatingWidget = Container->floatingWidget();
+	if (TopLevelWidget)
+	{
+		FloatingWidget->updateWindowTitle();
+		CDockWidget::emitTopLevelEventForWidget(TopLevelWidget, true);
+	}
+	else if (Container->openedDockAreas().isEmpty())
+	{
 		FloatingWidget->hide();
 	}
 }
@@ -449,7 +466,13 @@ void CDockAreaWidget::onTabCloseRequested(int Index)
 //============================================================================
 CDockWidget* CDockAreaWidget::currentDockWidget() const
 {
-	return dockWidget(currentIndex());
+	int CurrentIndex = currentIndex();
+	if (CurrentIndex < 0)
+	{
+		return nullptr;
+	}
+
+	return dockWidget(CurrentIndex);
 }
 
 
@@ -576,7 +599,7 @@ int CDockAreaWidget::dockWidgetsCount() const
 //============================================================================
 CDockWidget* CDockAreaWidget::dockWidget(int Index) const
 {
-	return dynamic_cast<CDockWidget*>(d->ContentsLayout->widget(Index));
+	return qobject_cast<CDockWidget*>(d->ContentsLayout->widget(Index));
 }
 
 
@@ -610,7 +633,7 @@ void CDockAreaWidget::toggleDockWidgetView(CDockWidget* DockWidget, bool Open)
 //============================================================================
 void CDockAreaWidget::updateTabBarVisibility()
 {
-	d->updateTabBar();
+	d->updateTitleBarVisibility();
 }
 
 
@@ -619,9 +642,11 @@ void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 {
 	s.writeStartElement("DockAreaWidget");
 	s.writeAttribute("Tabs", QString::number(d->ContentsLayout->count()));
-	s.writeAttribute("CurrentDockWidget", currentDockWidget()->objectName());
+	auto CurrentDockWidget = currentDockWidget();
+	QString Name = CurrentDockWidget ? CurrentDockWidget->objectName() : "";
+	s.writeAttribute("CurrentDockWidget", Name);
 	qDebug() << "CDockAreaWidget::saveState TabCount: " << d->ContentsLayout->count()
-			<< " CurrentDockWidge: " << currentDockWidget()->objectName();
+			<< " CurrentDockWidge: " << Name;
 	for (int i = 0; i < d->ContentsLayout->count(); ++i)
 	{
 		dockWidget(i)->saveState(s);
@@ -674,6 +699,13 @@ void CDockAreaWidget::toggleView(bool Open)
 {
 	setVisible(Open);
 	emit viewToggled(Open);
+}
+
+
+//============================================================================
+QAbstractButton* CDockAreaWidget::titleBarButton(TitleBarButton which) const
+{
+	return d->TitleBar->button(which);
 }
 } // namespace ads
 

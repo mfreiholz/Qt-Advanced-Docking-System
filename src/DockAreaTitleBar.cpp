@@ -41,6 +41,7 @@ struct DockAreaTitleBarPrivate
 {
 	CDockAreaTitleBar* _this;
 	tTileBarButton* TabsMenuButton;
+	tTileBarButton* UndockButton;
 	tTileBarButton* CloseButton;
 	QBoxLayout* TopLayout;
 	CDockAreaWidget* DockArea;
@@ -105,6 +106,15 @@ void DockAreaTitleBarPrivate::createButtons()
 	TabsMenuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
 		SLOT(onTabsMenuActionTriggered(QAction*)));
+
+	// Undock button
+	UndockButton = new tTileBarButton();
+	UndockButton->setObjectName("undockButton");
+	UndockButton->setAutoRaise(true);
+	UndockButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarNormalButton));
+	UndockButton->setMaximumWidth(UndockButton->iconSize().width());
+	TopLayout->addWidget(UndockButton, 0);
+	_this->connect(UndockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
 
 	CloseButton = new tTileBarButton();
 	CloseButton->setObjectName("closeButton");
@@ -214,6 +224,14 @@ void CDockAreaTitleBar::onCloseButtonClicked()
 
 
 //============================================================================
+void CDockAreaTitleBar::onUndockButtonClicked()
+{
+	std::cout << "CDockAreaTitleBar::onUndockButtonClicked" << std::endl;
+	d->TabBar->makeAreaFloating(mapFromGlobal(QCursor::pos()));
+}
+
+
+//============================================================================
 void CDockAreaTitleBar::onTabsMenuActionTriggered(QAction* Action)
 {
 	int Index = Action->data().toInt();
@@ -227,6 +245,27 @@ void CDockAreaTitleBar::onCurrentTabChanged(int Index)
 {
 	CDockWidget* DockWidget = d->TabBar->tab(Index)->dockWidget();
 	d->CloseButton->setEnabled(DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));
+}
+
+
+//============================================================================
+QAbstractButton* CDockAreaTitleBar::button(TitleBarButton which) const
+{
+	switch (which)
+	{
+	case TitleBarButtonTabsMenu: return d->TabsMenuButton;
+	case TitleBarButtonUndock: return d->UndockButton;
+	case TitleBarButtonClose: return d->CloseButton;
+	default:
+		return nullptr;
+	}
+}
+
+
+//============================================================================
+void CDockAreaTitleBar::setVisible(bool Visible)
+{
+	Super::setVisible(Visible);
 }
 
 

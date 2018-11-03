@@ -214,17 +214,25 @@ void CDockAreaTabBar::mouseDoubleClickEvent(QMouseEvent *event)
 
 
 //============================================================================
-void CDockAreaTabBar::startFloating(const QPoint& Pos)
+CFloatingDockContainer* CDockAreaTabBar::makeAreaFloating(const QPoint& Pos)
 {
 	QSize Size = d->DockArea->size();
 	CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(d->DockArea);
 	FloatingWidget->startFloating(Pos, Size);
-	d->FloatingWidget = FloatingWidget;
-	auto TopLevelDockWidget = d->FloatingWidget->topLevelDockWidget();
+	auto TopLevelDockWidget = FloatingWidget->topLevelDockWidget();
 	if (TopLevelDockWidget)
 	{
 		TopLevelDockWidget->emitTopLevelChanged(true);
 	}
+
+	return FloatingWidget;
+}
+
+
+//============================================================================
+void CDockAreaTabBar::startFloating(const QPoint& Pos)
+{
+	d->FloatingWidget = makeAreaFloating(Pos);
 }
 
 

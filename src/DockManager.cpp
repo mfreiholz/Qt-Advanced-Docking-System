@@ -264,6 +264,11 @@ bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
     	{
     		CDockAreaWidget* DockArea = DockContainer->dockArea(i);
     		QString DockWidgetName = DockArea->property("currentDockWidget").toString();
+    		if (DockWidgetName.isEmpty())
+    		{
+    			continue;
+    		}
+
     		CDockWidget* DockWidget = _this->findDockWidget(DockWidgetName);
     		if (!DockWidget->isClosed())
     		{
@@ -271,29 +276,6 @@ bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
     		}
     	}
     }
-
-
-    // Finally we need to send the topLevelChanged() signals for all dock
-    // widgets if top level changed
-    /*for (auto DockContainer : Containers)
-    {
-    	CDockWidget* TopLevelDockWidget = DockContainer->topLevelDockWidget();
-    	if (TopLevelDockWidget)
-    	{
-    		TopLevelDockWidget->emitTopLevelChanged(true);
-    	}
-    	else
-    	{
-			for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
-			{
-				auto DockArea = DockContainer->dockArea(i);
-				for (auto DockWidget : DockArea->dockWidgets())
-				{
-					DockWidget->emitTopLevelChanged(false);
-				}
-			}
-    	}
-    }*/
 
     return true;
 }

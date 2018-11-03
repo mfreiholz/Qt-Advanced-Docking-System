@@ -528,10 +528,6 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 
 
 	QString CurrentDockWidget = s.attributes().value("CurrentDockWidget").toString();
-	if (CurrentDockWidget.isEmpty())
-	{
-		return false;
-	}
 	qDebug() << "Restore NodeDockArea Tabs: " << Tabs << " CurrentDockWidget: "
 			<< CurrentDockWidget;
 

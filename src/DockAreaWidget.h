@@ -36,6 +36,7 @@
 #include "DockWidget.h"
 
 class QXmlStreamWriter;
+class QAbstractButton;
 
 namespace ads
 {
@@ -190,12 +191,14 @@ public:
 	CDockWidget* dockWidget(int Index) const;
 
 	/**
-	 * Returns the index of the current active dock widget
+	 * Returns the index of the current active dock widget or -1 if there
+	 * are is no active dock widget (ie.e if all dock widgets are closed)
 	 */
 	int currentIndex() const;
 
 	/**
-	 * Returns the current active dock widget
+	 * Returns the current active dock widget or a nullptr if there is no
+	 * active dock widget (i.e. if all dock widgets are closed)
 	 */
 	CDockWidget* currentDockWidget() const;
 
@@ -217,6 +220,12 @@ public:
 	 * dock are does not support the flag.
 	 */
 	CDockWidget::DockWidgetFeatures features() const;
+
+	/**
+	 * Returns the title bar button corresponding to the given title bar
+	 * button identifier
+	 */
+	QAbstractButton* titleBarButton(TitleBarButton which) const;
 
 public slots:
 	/**

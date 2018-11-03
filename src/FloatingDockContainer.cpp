@@ -36,6 +36,7 @@
 #include <QPointer>
 #include <QAction>
 #include <QDebug>
+#include <QAbstractButton>
 
 #include "DockContainerWidget.h"
 #include "DockAreaWidget.h"
@@ -471,6 +472,7 @@ void CFloatingDockContainer::onDockAreasAddedOrRemoved()
 	if (TopLevelDockArea)
 	{
 		d->SingleDockArea = TopLevelDockArea;
+		d->SingleDockArea->titleBarButton(TitleBarButtonUndock)->setVisible(false);
 		this->setWindowTitle(d->SingleDockArea->currentDockWidget()->windowTitle());
 		connect(d->SingleDockArea, SIGNAL(currentChanged(int)), this,
 			SLOT(onDockAreaCurrentChanged(int)));
@@ -479,6 +481,7 @@ void CFloatingDockContainer::onDockAreasAddedOrRemoved()
 	{
 		if (d->SingleDockArea)
 		{
+			d->SingleDockArea->titleBarButton(TitleBarButtonUndock)->setVisible(true);
 			disconnect(d->SingleDockArea, SIGNAL(currentChanged(int)), this,
 				SLOT(onDockAreaCurrentChanged(int)));
 			d->SingleDockArea = nullptr;

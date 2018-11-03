@@ -32,6 +32,10 @@
 //============================================================================
 #include <QFrame>
 
+#include "ads_globals.h"
+
+class QAbstractButton;
+
 namespace ads
 {
 class CDockAreaTabBar;
@@ -52,6 +56,7 @@ private slots:
 	void markTabsMenuOutdated();
 	void onTabsMenuAboutToShow();
 	void onCloseButtonClicked();
+	void onUndockButtonClicked();
 	void onTabsMenuActionTriggered(QAction* Action);
 	void onCurrentTabChanged(int Index);
 
@@ -71,6 +76,13 @@ public:
 	 * Returns the pointer to the tabBar()
 	 */
 	CDockAreaTabBar* tabBar() const;
+
+	/**
+	 * Returns the button corresponding to the given title bar button identifier
+	 */
+	QAbstractButton* button(TitleBarButton which) const;
+
+	virtual void setVisible(bool Visible) override;
 
 signals:
 	/**
