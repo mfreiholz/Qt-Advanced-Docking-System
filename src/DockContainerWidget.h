@@ -240,6 +240,12 @@ signals:
 	 * This signal is emitted if one or multiple dock areas has been removed
 	 */
 	void dockAreasRemoved();
+
+	/**
+	 * This signal is emitted if a dock area is opened or closed via
+	 * toggleView() function
+	 */
+	void dockAreaViewToggled(CDockAreaWidget* DockArea, bool Open);
 }; // class DockContainerWidget
 } // namespace ads
 //-----------------------------------------------------------------------------

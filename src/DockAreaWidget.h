@@ -121,7 +121,7 @@ protected:
 	/**
 	 * Updates the dock area layout and components visibility
 	 */
-	void updateTabBarVisibility();
+	void updateTitleBarVisibility();
 
 	/**
 	 * This is the internal private function for setting the current widget.

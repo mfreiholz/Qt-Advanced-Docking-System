@@ -66,8 +66,8 @@ static const int APPEND = -1;
 
 
 /**
- * New dock area layout mimics stack layout but ony inserts the current
- * widget
+ * New dock area layout mimics stack layout but only inserts the current
+ * widget into the internal QLayout object
  */
 class CDockAreaLayout
 {
@@ -78,17 +78,27 @@ private:
 	QWidget* m_CurrentWidget = nullptr;
 
 public:
+	/**
+	 * Creates an instance with the given parent layout
+	 */
 	CDockAreaLayout(QBoxLayout* ParentLayout)
 		: m_ParentLayout(ParentLayout)
 	{
 
 	}
 
+	/**
+	 * Returns the number of widgets in this layout
+	 */
 	int count() const
 	{
 		return m_Widgets.count();
 	}
 
+	/**
+	 * Inserts the widget at the given index position into the internal widget
+	 * list
+	 */
 	void insertWidget(int index, QWidget* Widget)
 	{
 		Widget->setParent(0);
@@ -110,6 +120,9 @@ public:
 		}
 	}
 
+	/**
+	 * Removes the given widget from the lyout
+	 */
 	void removeWidget(QWidget* Widget)
 	{
 		if (currentWidget() == Widget)
@@ -125,11 +138,17 @@ public:
 		m_Widgets.removeOne(Widget);
 	}
 
+	/**
+	 * Returns the current selected widget
+	 */
 	QWidget* currentWidget() const
 	{
 		return m_CurrentWidget;
 	}
 
+	/**
+	 * Activates the widget with the give index.
+	 */
 	void setCurrentIndex(int index)
 	{
 		QWidget *prev = currentWidget();
@@ -169,26 +188,41 @@ public:
 		}
 	}
 
+	/**
+	 * Returns the index of the current active widget
+	 */
 	int currentIndex() const
 	{
 		return m_CurrentIndex;
 	}
 
+	/**
+	 * Returns true if there are no widgets in the layout
+	 */
 	bool isEmpty() const
 	{
 		return m_Widgets.empty();
 	}
 
+	/**
+	 * Returns the index of the given widget
+	 */
 	int indexOf(QWidget* w) const
 	{
 		return m_Widgets.indexOf(w);
 	}
 
+	/**
+	 * Returns the widget for the given index
+	 */
 	QWidget* widget(int index) const
 	{
 		return (index < m_Widgets.size()) ? m_Widgets.at(index) : nullptr;
 	}
 
+	/**
+	 * Returns the geometry of the current active widget
+	 */
 	QRect geometry() const
 	{
 		return m_Widgets.empty() ? QRect() : currentWidget()->geometry();
@@ -255,12 +289,6 @@ struct DockAreaWidgetPrivate
 	}
 
 	/**
-	 * Updates the tab bar visibility depending on the number of dock widgets
-	 * in this area
-	 */
-	void updateTitleBarVisibility();
-
-	/**
 	 * Convenience function for tabbar access
 	 */
 	CDockAreaTabBar* tabBar() const
@@ -290,19 +318,6 @@ void DockAreaWidgetPrivate::createTitleBar()
 		SLOT(setCurrentIndex(int)));
 	_this->connect(tabBar(), SIGNAL(tabMoved(int, int)),
 		SLOT(reorderDockWidget(int, int)));
-}
-
-
-//============================================================================
-void DockAreaWidgetPrivate::updateTitleBarVisibility()
-{
-	CDockContainerWidget* Container = _this->dockContainer();
-	if (!Container)
-	{
-		return;
-	}
-
-	TitleBar->setVisible(!Container->isFloating() || !Container->hasTopLevelDockWidget());
 }
 
 
@@ -402,7 +417,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 		hideAreaWithNoVisibleContent();
 	}
 
-	d->updateTitleBarVisibility();
+	updateTitleBarVisibility();
 	auto TopLevelDockWidget = dockContainer()->topLevelDockWidget();
 	if (TopLevelDockWidget)
 	{
@@ -440,7 +455,7 @@ void CDockAreaWidget::hideAreaWithNoVisibleContent()
 		return;
 	}
 
-	d->updateTitleBarVisibility();
+	updateTitleBarVisibility();
 	auto TopLevelWidget = Container->topLevelDockWidget();
 	auto FloatingWidget = Container->floatingWidget();
 	if (TopLevelWidget)
@@ -626,14 +641,20 @@ void CDockAreaWidget::toggleDockWidgetView(CDockWidget* DockWidget, bool Open)
 {
 	Q_UNUSED(DockWidget);
 	Q_UNUSED(Open);
-	updateTabBarVisibility();
+	updateTitleBarVisibility();
 }
 
 
 //============================================================================
-void CDockAreaWidget::updateTabBarVisibility()
+void CDockAreaWidget::updateTitleBarVisibility()
 {
-	d->updateTitleBarVisibility();
+	CDockContainerWidget* Container = dockContainer();
+	if (!Container)
+	{
+		return;
+	}
+
+	d->TitleBar->setVisible(!Container->isFloating() || !Container->hasTopLevelDockWidget());
 }
 
 

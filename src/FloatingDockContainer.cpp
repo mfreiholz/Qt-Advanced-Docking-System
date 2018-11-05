@@ -351,13 +351,13 @@ void CFloatingDockContainer::showEvent(QShowEvent *event)
 {
 	std::cout << "CFloatingDockContainer showEvent" << std::endl;
 	QWidget::showEvent(event);
-	for (auto DockArea : d->DockContainer->openedDockAreas())
+	/*for (auto DockArea : d->DockContainer->openedDockAreas())
 	{
 		for (auto DockWidget : DockArea->openedDockWidgets())
 		{
 			DockWidget->setToggleViewActionChecked(true);
 		}
-	}
+	}*/
 }
 
 
@@ -467,12 +467,10 @@ bool CFloatingDockContainer::isClosable() const
 void CFloatingDockContainer::onDockAreasAddedOrRemoved()
 {
 	qDebug() << "CFloatingDockContainer::onDockAreasAddedOrRemoved()";
-	std::cout << "CFloatingDockContainer::onDockAreasAddedOrRemoved()" << std::endl;
 	auto TopLevelDockArea = d->DockContainer->topLevelDockArea();
 	if (TopLevelDockArea)
 	{
 		d->SingleDockArea = TopLevelDockArea;
-		d->SingleDockArea->titleBarButton(TitleBarButtonUndock)->setVisible(false);
 		this->setWindowTitle(d->SingleDockArea->currentDockWidget()->windowTitle());
 		connect(d->SingleDockArea, SIGNAL(currentChanged(int)), this,
 			SLOT(onDockAreaCurrentChanged(int)));
@@ -481,7 +479,6 @@ void CFloatingDockContainer::onDockAreasAddedOrRemoved()
 	{
 		if (d->SingleDockArea)
 		{
-			d->SingleDockArea->titleBarButton(TitleBarButtonUndock)->setVisible(true);
 			disconnect(d->SingleDockArea, SIGNAL(currentChanged(int)), this,
 				SLOT(onDockAreaCurrentChanged(int)));
 			d->SingleDockArea = nullptr;

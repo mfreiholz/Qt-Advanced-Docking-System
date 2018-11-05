@@ -643,7 +643,7 @@ void CDockWidget::emitTopLevelEventForWidget(CDockWidget* TopLevelDockWidget, bo
 {
 	if (TopLevelDockWidget)
 	{
-		TopLevelDockWidget->dockAreaWidget()->updateTabBarVisibility();
+		TopLevelDockWidget->dockAreaWidget()->updateTitleBarVisibility();
 		TopLevelDockWidget->emitTopLevelChanged(Floating);
 	}
 }

@@ -37,6 +37,7 @@
 #include <QVariant>
 #include <QDebug>
 #include <QXmlStreamWriter>
+#include <QAbstractButton>
 
 #include "DockManager.h"
 #include "DockAreaWidget.h"
@@ -105,6 +106,7 @@ public:
 	bool isFloating = false;
 	CDockAreaWidget* LastAddedAreaCache[5]{0, 0, 0, 0, 0};
 	int VisibleDockAreaCount = -1;
+	CDockAreaWidget* TopLevelDockArea = nullptr;
 
 	/**
 	 * Private data constructor
@@ -143,6 +145,12 @@ public:
 	 * Adds new dock areas to the internal dock area list
 	 */
 	void addDockAreasToList(const QList<CDockAreaWidget*> NewDockAreas);
+
+	/**
+	 * Wrapper function for DockAreas append, that ensures that dock area signals
+	 * are properly connected to dock container slots
+	 */
+	void appendDockAreas(const QList<CDockAreaWidget*> NewDockAreas);
 
 	/**
 	 * Save state of child nodes
@@ -208,11 +216,31 @@ public:
 		return VisibleDockAreaCount;
 	}
 
+	/**
+	 * The visible dock area count changes, if dock areas are remove, added or
+	 * when its view is toggled
+	 */
+	void onVisibleDockAreaCountChanged();
+
+	void emitDockAreasRemoved()
+	{
+		onVisibleDockAreaCountChanged();
+		emit _this->dockAreasRemoved();
+	}
+
+	void emitDockAreasAdded()
+	{
+		onVisibleDockAreaCountChanged();
+		emit _this->dockAreasAdded();
+	}
+
 // private slots: ------------------------------------------------------------
 	void onDockAreaViewToggled(bool Visible)
 	{
-		std::cout << "onDockAreaViewToggled " << Visible << std::endl;
+		CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(_this->sender());
 		VisibleDockAreaCount += Visible ? 1 : -1;
+		onVisibleDockAreaCountChanged();
+		emit _this->dockAreaViewToggled(DockArea, Visible);
 	}
 }; // struct DockContainerWidgetPrivate
 
@@ -222,6 +250,24 @@ DockContainerWidgetPrivate::DockContainerWidgetPrivate(CDockContainerWidget* _pu
 	_this(_public)
 {
 
+}
+
+
+//============================================================================
+void DockContainerWidgetPrivate::onVisibleDockAreaCountChanged()
+{
+	auto TopLevelDockArea = _this->topLevelDockArea();
+
+	if (TopLevelDockArea)
+	{
+		this->TopLevelDockArea = TopLevelDockArea;
+		TopLevelDockArea->titleBarButton(TitleBarButtonUndock)->setVisible(false || !_this->isFloating());
+	}
+	else if (this->TopLevelDockArea)
+	{
+		this->TopLevelDockArea->titleBarButton(TitleBarButtonUndock)->setVisible(true);
+		this->TopLevelDockArea = nullptr;
+	}
 }
 
 
@@ -299,7 +345,7 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 		}
 		TargetArea->setCurrentIndex(0); // make the topmost widget active
 		FloatingWidget->deleteLater();
-		TargetArea->updateTabBarVisibility();
+		TargetArea->updateTitleBarVisibility();
 		return;
 	}
 
@@ -364,21 +410,39 @@ void DockContainerWidgetPrivate::addDockAreasToList(const QList<CDockAreaWidget*
 {
 	int CountBefore = DockAreas.count();
 	int NewAreaCount = NewDockAreas.count();
-	DockAreas.append(NewDockAreas);
+	appendDockAreas(NewDockAreas);
+	// If the user dropped a floating widget that contains only one single
+	// visible dock area, then its title bar button TitleBarButtonUndock is
+	// likely hidden. We need to ensure, that it is visible
+	for (auto DockArea : NewDockAreas)
+	{
+		DockArea->titleBarButton(TitleBarButtonUndock)->setVisible(true);
+	}
 
 	// We need to ensure, that the dock area title bar is visible. The title bar
 	// is invisible, if the dock are is a single dock area in a floating widget.
 	if (1 == CountBefore)
 	{
-		DockAreas.at(0)->updateTabBarVisibility();
+		DockAreas.at(0)->updateTitleBarVisibility();
 	}
 
 	if (1 == NewAreaCount)
 	{
-		DockAreas.last()->updateTabBarVisibility();
+		DockAreas.last()->updateTitleBarVisibility();
 	}
 
-	emit _this->dockAreasAdded();
+	emitDockAreasAdded();
+}
+
+
+//============================================================================
+void DockContainerWidgetPrivate::appendDockAreas(const QList<CDockAreaWidget*> NewDockAreas)
+{
+	DockAreas.append(NewDockAreas);
+	for (auto DockArea : NewDockAreas)
+	{
+		_this->connect(DockArea, SIGNAL(viewToggled(bool)), SLOT(onDockAreaViewToggled(bool)));
+	}
 }
 
 
@@ -588,7 +652,7 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 	else
 	{
 		DockArea->setProperty("currentDockWidget", CurrentDockWidget);
-		DockAreas.append(DockArea);
+		appendDockAreas({DockArea});
 	}
 
 	CreatedWidget = DockArea;
@@ -631,7 +695,7 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoContainer(DockWidgetA
 	CDockAreaWidget* NewDockArea = new CDockAreaWidget(DockManager, _this);
 	NewDockArea->addDockWidget(Dockwidget);
 	addDockArea(NewDockArea, area);
-	NewDockArea->updateTabBarVisibility();
+	NewDockArea->updateTitleBarVisibility();
 	LastAddedAreaCache[areaIdToIndex(area)] = NewDockArea;
 	return NewDockArea;
 }
@@ -673,9 +737,9 @@ void DockContainerWidgetPrivate::addDockArea(CDockAreaWidget* NewDockArea, DockW
 		RootSplitter = NewSplitter;
 	}
 
-	DockAreas.append(NewDockArea);
-	NewDockArea->updateTabBarVisibility();
-	emit _this->dockAreasAdded();
+	appendDockAreas({NewDockArea});
+	NewDockArea->updateTitleBarVisibility();
+	emitDockAreasAdded();
 }
 
 
@@ -744,8 +808,8 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetAr
 		TargetAreaSplitter->insertWidget(index, NewSplitter);
 	}
 
-	DockAreas.append(NewDockArea);
-	emit _this->dockAreasAdded();
+	appendDockAreas({NewDockArea});
+	emitDockAreasAdded();
 	return NewDockArea;
 }
 
@@ -853,6 +917,7 @@ void CDockContainerWidget::addDockArea(CDockAreaWidget* DockAreaWidget,
 void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 {
 	qDebug() << "CDockContainerWidget::removeDockArea";
+	area->disconnect(this);
 	d->DockAreas.removeAll(area);
 	CDockSplitter* Splitter = internal::findParent<CDockSplitter*>(area);
 
@@ -913,7 +978,7 @@ emitAndExit:
     // one single visible dock widget
 	CDockWidget::emitTopLevelEventForWidget(TopLevelWidget, true);
 	dumpLayout();
-	emit dockAreasRemoved();
+	d->emitDockAreasRemoved();
 }
 
 
