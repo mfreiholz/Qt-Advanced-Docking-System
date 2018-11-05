@@ -215,6 +215,11 @@ public:
 	void setupOverlayCross(CDockOverlay::eMode Mode);
 
 	/**
+	 * Recreates the overlay icons.
+	 */
+	void updateOverlayIcons();
+
+	/**
 	 * Resets and updates the
 	 */
 	void reset();

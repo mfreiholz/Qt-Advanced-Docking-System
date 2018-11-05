@@ -34,9 +34,11 @@
 #include <QtGlobal>
 #include <QDebug>
 #include <QMap>
+#include <QWindow>
 
 #include "DockAreaWidget.h"
 
+#include <iostream>
 
 namespace ads
 {
@@ -74,6 +76,7 @@ struct DockOverlayCrossPrivate
 	QGridLayout* GridLayout;
 	QColor IconColors[5];
 	bool UpdateRequired = false;
+	double LastDevicePixelRatio = 0.1;
 
 	/**
 	 * Private data constructor
@@ -140,21 +143,34 @@ struct DockOverlayCrossPrivate
 		const qreal metric = static_cast<qreal>(l->fontMetrics().height()) * 3.f;
 		const QSizeF size(metric, metric);
 
-		l->setPixmap(createDropIndicatorPixmap(size, DockWidgetArea, Mode));
+		l->setPixmap(createHighDpiDropIndicatorPixmap(size, DockWidgetArea, Mode));
 		l->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 		l->setAttribute(Qt::WA_TranslucentBackground);
+		l->setProperty("dockWidgetArea", DockWidgetArea);
 		return l;
 	}
 
+	//============================================================================
+	void updateDropIndicatorIcon(QWidget* DropIndicatorWidget)
+	{
+		QLabel* l = qobject_cast<QLabel*>(DropIndicatorWidget);
+		const qreal metric = static_cast<qreal>(l->fontMetrics().height()) * 3.f;
+		const QSizeF size(metric, metric);
+
+		int Area = l->property("dockWidgetArea").toInt();
+		l->setPixmap(createHighDpiDropIndicatorPixmap(size, (DockWidgetArea)Area, Mode));
+	}
 
 	//============================================================================
-	QPixmap createDropIndicatorPixmap(const QSizeF& size, DockWidgetArea DockWidgetArea,
+	QPixmap createHighDpiDropIndicatorPixmap(const QSizeF& size, DockWidgetArea DockWidgetArea,
 		CDockOverlay::eMode Mode)
 	{
 		QColor borderColor = iconColor(CDockOverlayCross::FrameColor);
 		QColor backgroundColor = iconColor(CDockOverlayCross::WindowBackgroundColor);
 
-		QPixmap pm(size.width(), size.height());
+		double DevicePixelRatio = _this->window()->devicePixelRatioF();
+		QSizeF PixmapSize = size * DevicePixelRatio;
+		QPixmap pm(PixmapSize.toSize());
 		pm.fill(QColor(0, 0, 0, 0));
 
 		QPainter p(&pm);
@@ -224,6 +240,7 @@ struct DockOverlayCrossPrivate
 			p.drawRect(areaRect);
 
 			pen = p.pen();
+			pen.setWidth(1);
 			pen.setColor(borderColor);
 			pen.setStyle(Qt::DashLine);
 			p.setPen(pen);
@@ -283,6 +300,7 @@ struct DockOverlayCrossPrivate
 			p.drawPolygon(Arrow);
 		}
 
+		pm.setDevicePixelRatio(DevicePixelRatio);
 		return pm;
 	}
 
@@ -380,6 +398,7 @@ DockWidgetArea CDockOverlay::showOverlay(QWidget* target)
 	move(TopLeft);
 	show();
 	d->Cross->updatePosition();
+	d->Cross->updateOverlayIcons();
 	return dropAreaUnderCursor();
 }
 
@@ -558,9 +577,26 @@ void CDockOverlayCross::setupOverlayCross(CDockOverlay::eMode Mode)
 	areaWidgets.insert(BottomDockWidgetArea, d->createDropIndicatorWidget(BottomDockWidgetArea, Mode));
 	areaWidgets.insert(LeftDockWidgetArea, d->createDropIndicatorWidget(LeftDockWidgetArea, Mode));
 	areaWidgets.insert(CenterDockWidgetArea, d->createDropIndicatorWidget(CenterDockWidgetArea, Mode));
+	d->LastDevicePixelRatio = devicePixelRatioF();
 
 	setAreaWidgets(areaWidgets);
 	d->UpdateRequired = false;
+}
+
+
+//============================================================================
+void CDockOverlayCross::updateOverlayIcons()
+{
+	if (windowHandle()->devicePixelRatio() == d->LastDevicePixelRatio)
+	{
+		return;
+	}
+
+	for (auto Widget : d->DropIndicatorWidgets)
+	{
+		d->updateDropIndicatorIcon(Widget);
+	}
+	d->LastDevicePixelRatio = devicePixelRatioF();
 }
 
 
