@@ -28,6 +28,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <ElidingLabel.h>
 #include "DockWidgetTab.h"
 
 #include <QBoxLayout>
@@ -45,8 +46,6 @@
 #include "DockOverlay.h"
 #include "DockManager.h"
 
-#include <iostream>
-
 namespace ads
 {
 /**
@@ -60,6 +59,7 @@ enum eDragState
 	DraggingFloatingWidget//!< DraggingFloatingWidget
 };
 
+using tTabLabel = CElidingLabel;
 
 /**
  * Private data class of CDockWidgetTab class (pimpl)
@@ -69,7 +69,7 @@ struct DockWidgetTabPrivate
 	CDockWidgetTab* _this;
 	CDockWidget* DockWidget;
 	QLabel* IconLabel;
-	QLabel* TitleLabel;
+	tTabLabel* TitleLabel;
 	QPoint DragStartMousePosition;
 	bool IsActiveTab = false;
 	CDockAreaWidget* DockArea = nullptr;
@@ -137,15 +137,17 @@ void DockWidgetTabPrivate::createLayout()
 
 	IconLabel = new QLabel();
 	IconLabel->setAlignment(Qt::AlignVCenter);
+	IconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 	l->addWidget(IconLabel, Qt::AlignVCenter);
 
-	TitleLabel = new QLabel();
+	TitleLabel = new tTabLabel();
+	TitleLabel->setElideMode(Qt::ElideRight);
+	TitleLabel->setText(DockWidget->windowTitle());
 	TitleLabel->setObjectName("dockWidgetTabLabel");
 	l->addWidget(TitleLabel, 1);
 
 	IconLabel->setVisible(false);
 	TitleLabel->setVisible(true);
-	TitleLabel->setText(DockWidget->windowTitle());
 }
 
 //============================================================================

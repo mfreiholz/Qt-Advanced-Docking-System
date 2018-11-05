@@ -41,7 +41,8 @@ HEADERS += \
     FloatingDockContainer.h \
     DockOverlay.h \
     DockSplitter.h \
-    DockAreaTitleBar.h
+    DockAreaTitleBar.h \
+    ElidingLabel.h
     
     
     
@@ -56,4 +57,5 @@ SOURCES += \
     FloatingDockContainer.cpp \
     DockOverlay.cpp \
     DockSplitter.cpp \
-    DockAreaTitleBar.cpp
+    DockAreaTitleBar.cpp \
+    ElidingLabel.cpp

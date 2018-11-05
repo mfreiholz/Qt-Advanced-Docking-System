@@ -44,7 +44,6 @@
 #include "DockWidget.h"
 #include "DockOverlay.h"
 
-#include <iostream>
 
 namespace ads
 {
@@ -334,8 +333,7 @@ void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 //============================================================================
 void CFloatingDockContainer::hideEvent(QHideEvent *event)
 {
-    std::cout << "CFloatingDockContainer hideEvent" << std::endl;
-	QWidget::hideEvent(event);
+	Super::hideEvent(event);
 	for (auto DockArea : d->DockContainer->openedDockAreas())
 	{
 		for (auto DockWidget : DockArea->openedDockWidgets())
@@ -349,8 +347,7 @@ void CFloatingDockContainer::hideEvent(QHideEvent *event)
 //============================================================================
 void CFloatingDockContainer::showEvent(QShowEvent *event)
 {
-	std::cout << "CFloatingDockContainer showEvent" << std::endl;
-	QWidget::showEvent(event);
+	Super::showEvent(event);
 	/*for (auto DockArea : d->DockContainer->openedDockAreas())
 	{
 		for (auto DockWidget : DockArea->openedDockWidgets())
@@ -507,8 +504,6 @@ void CFloatingDockContainer::updateWindowTitle()
 void CFloatingDockContainer::onDockAreaCurrentChanged(int Index)
 {
 	Q_UNUSED(Index);
-	std::cout << "CFloatingDockContainer::onDockAreaCurrentChanged "
-		<< Index << std::endl;
 	this->setWindowTitle(d->SingleDockArea->currentDockWidget()->windowTitle());
 }
 
@@ -521,7 +516,6 @@ bool CFloatingDockContainer::restoreState(QXmlStreamReader& Stream, bool Testing
 		return false;
 	}
 
-	std::cout << "Dockarea count " << d->DockContainer->dockAreaCount() << std::endl;
 	onDockAreasAddedOrRemoved();
 	return true;
 }

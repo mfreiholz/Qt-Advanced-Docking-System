@@ -49,7 +49,6 @@
 #include "DockSplitter.h"
 
 #include <QElapsedTimer>
-#include <iostream>
 
 
 namespace ads

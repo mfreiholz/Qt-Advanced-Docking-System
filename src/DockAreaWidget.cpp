@@ -54,8 +54,6 @@
 #include "DockSplitter.h"
 #include "DockAreaTitleBar.h"
 
-#include <iostream>
-
 
 namespace ads
 {
@@ -392,7 +390,6 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 {
 	qDebug() << "CDockAreaWidget::removeDockWidget";
-	std::cout << "CDockAreaWidget::removeDockWidget" << std::endl;
 	auto NextOpenDockWidget = nextOpenDockWidget(DockWidget);
 
 	d->ContentsLayout->removeWidget(DockWidget);
@@ -434,7 +431,6 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 //============================================================================
 void CDockAreaWidget::hideAreaWithNoVisibleContent()
 {
-	std::cout << "CDockAreaWidget::hideAreaWithNoVisibleContent()" << std::endl;
 	this->toggleView(false);
 
 	// Hide empty parent splitter

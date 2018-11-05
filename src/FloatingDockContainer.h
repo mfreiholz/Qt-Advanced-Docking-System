@@ -113,6 +113,8 @@ protected: // reimplements QWidget
 	virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
 public:
+	using Super = QWidget;
+
 	/**
 	 * Create empty flatingb widget - required for restore state
 	 */
