@@ -15,6 +15,7 @@
 #include <QDebug>
 #include <QBoxLayout>
 #include <QMenu>
+#include <QApplication>
 
 #include "FloatingDockContainer.h"
 #include "DockAreaWidget.h"
@@ -185,9 +186,10 @@ void CDockAreaTabBar::mouseMoveEvent(QMouseEvent* ev)
 		return;
 	}
 
-    int DragDistanceY = qAbs(d->DragStartMousePos.y() - ev->pos().y());
-    int MinDragDistanceY = this->height() / 2;
-	if (DragDistanceY >= MinDragDistanceY)
+    /*int DragDistanceY = qAbs(d->DragStartMousePos.y() - ev->pos().y());
+    int MinDragDistanceY = this->height() / 2;*/
+	int DragDistance = (d->DragStartMousePos - ev->pos()).manhattanLength();
+	if (DragDistance >= CDockManager::startDragDistance())
 	{
 		qDebug() << "CTabsScrollArea::startFloating";
 		startFloating(d->DragStartMousePos);

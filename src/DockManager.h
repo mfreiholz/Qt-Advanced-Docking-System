@@ -270,6 +270,12 @@ public:
 	 */
 	bool isRestoringState() const;
 
+	/**
+	 * The distance the user needs to move the mouse with the left button
+	 * hold down before a dock widget start floating
+	 */
+	static int startDragDistance();
+
 public slots:
 	/**
 	 * Opens the perspective with the given name.

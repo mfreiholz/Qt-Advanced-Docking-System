@@ -281,8 +281,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
 
     // Maybe a fixed drag distance is better here ?
     int DragDistanceY = qAbs(d->DragStartMousePosition.y() - ev->pos().y());
-    int MinDragDistanceY = d->DockArea->titleBarGeometry().height() / 2;
-    if (DragDistanceY >= MinDragDistanceY)
+    if (DragDistanceY >= CDockManager::startDragDistance())
 	{
 		// If this is the last dock area in a dock container with only
     	// one single dock widget it does not make  sense to move it to a new

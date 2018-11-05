@@ -44,6 +44,7 @@
 #include <QXmlStreamReader>
 #include <QSettings>
 #include <QMenu>
+#include <QApplication>
 
 #include "FloatingDockContainer.h"
 #include "DockOverlay.h"
@@ -627,6 +628,13 @@ void CDockManager::setViewMenuInsertionOrder(eViewMenuInsertionOrder Order)
 bool CDockManager::isRestoringState() const
 {
 	return d->RestoringState;
+}
+
+
+//===========================================================================
+int CDockManager::startDragDistance()
+{
+	return QApplication::startDragDistance() * 1.5;
 }
 
 } // namespace ads
