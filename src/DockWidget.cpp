@@ -459,6 +459,10 @@ void CDockWidget::toggleViewInternal(bool Open)
 		CDockWidget::emitTopLevelEventForWidget(TopLevelDockWidgetBefore, false);
 	}
 
+	// Here we need to call the dockContainer() function again, because if
+	// this dock widget was unassigned before the call to showDockWidget() then
+	// it has a dock container now
+	DockContainer = dockContainer();
 	CDockWidget* TopLevelDockWidgetAfter = DockContainer
 		? DockContainer->topLevelDockWidget() : nullptr;
 	CDockWidget::emitTopLevelEventForWidget(TopLevelDockWidgetAfter, true);

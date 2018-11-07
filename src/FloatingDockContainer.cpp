@@ -37,6 +37,7 @@
 #include <QAction>
 #include <QDebug>
 #include <QAbstractButton>
+#include <QElapsedTimer>
 
 #include "DockContainerWidget.h"
 #include "DockAreaWidget.h"
@@ -44,6 +45,7 @@
 #include "DockWidget.h"
 #include "DockOverlay.h"
 
+#include <iostream>
 
 namespace ads
 {
@@ -148,6 +150,10 @@ void FloatingDockContainerPrivate::titleMouseReleaseEvent()
 //============================================================================
 void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
 {
+	static QElapsedTimer MsSinceLastCallTimer;
+	QElapsedTimer PerformanceTimer;
+	PerformanceTimer.start();
+
 	if (!_this->isVisible() || !DockManager)
 	{
 		return;
@@ -219,6 +225,8 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint& GlobalPos)
     {
     	DockAreaOverlay->hideOverlay();
     }
+
+    std::cout << "updateDropOverlays us: " << PerformanceTimer.nsecsElapsed() / 1000 << std::endl;
 }
 
 
