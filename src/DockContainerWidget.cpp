@@ -1185,40 +1185,6 @@ bool CDockContainerWidget::restoreState(QXmlStreamReader& s, bool Testing)
 	d->RootSplitter = dynamic_cast<QSplitter*>(NewRootSplitter);
 	OldRoot->deleteLater();
 
-    // All dock widgets, that have not been processed in the restore state
-    // function are invisible to the user now and have no assigned dock area
-    // They do not belong to any dock container, until the user toggles the
-    // toggle view action the next time
-	for (auto DockWidget : dockWidgets())
-    {
-    	if (DockWidget->property("dirty").toBool())
-    	{
-    		DockWidget->flagAsUnassigned();
-    	}
-    	else
-    	{
-    		DockWidget->toggleViewInternal(!DockWidget->property("closed").toBool());
-    	}
-    }
-
-    // Finally we need to send the topLevelChanged() signals for all dock
-    // widgets if top level changed
-	CDockWidget* TopLevelDockWidget = topLevelDockWidget();
-	if (TopLevelDockWidget)
-	{
-		TopLevelDockWidget->emitTopLevelChanged(true);
-	}
-	else
-	{
-		for (auto DockArea : d->DockAreas)
-		{
-			for (auto DockWidget : DockArea->dockWidgets())
-			{
-				DockWidget->emitTopLevelChanged(false);
-			}
-		}
-	}
-
 	return true;
 }
 

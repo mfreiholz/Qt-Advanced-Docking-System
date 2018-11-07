@@ -197,6 +197,17 @@ public:
 	int currentIndex() const;
 
 	/**
+	 * Returns the index of the first open dock widgets in the list of
+	 * dock widgets.
+	 * This function is here for performance reasons. Normally it would
+	 * be possible to take the first dock widget from the list returned by
+	 * openedDockWidgets() function. But that function enumerates all
+	 * dock widgets while this functions stops after the first open dock widget.
+	 * If there are no open dock widgets, the function returns -1.
+	 */
+	int indexOfFirstOpenDockWidget() const;
+
+	/**
 	 * Returns the current active dock widget or a nullptr if there is no
 	 * active dock widget (i.e. if all dock widgets are closed)
 	 */

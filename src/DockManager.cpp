@@ -96,6 +96,27 @@ struct DockManagerPrivate
 	 */
 	bool restoreState(const QByteArray &state, int version);
 
+	void restoreDockWidgetsOpenState();
+	void restoreDockAreasIndices();
+	void emitTopLevelEvents();
+
+	void hideFloatingWidgets()
+	{
+		// Hide updates of floating widgets from use
+		for (auto FloatingWidget : FloatingWidgets)
+		{
+			FloatingWidget->hide();
+		}
+	}
+
+	void markDockWidgetsDirty()
+	{
+		for (auto DockWidget : DockWidgetsMap)
+		{
+			DockWidget->setProperty("dirty", true);
+		}
+	}
+
 	/**
 	 * Restores the container with the given index
 	 */
@@ -229,31 +250,29 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
 
 
 //============================================================================
-bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
+void DockManagerPrivate::restoreDockWidgetsOpenState()
 {
-    if (!checkFormat(state, version))
-    {
-    	qDebug() << "checkFormat: Error checking format!!!!!!!";
-    	return false;
-    }
-
-    // Hide updates of floatingf widgets from use
-    for (auto FloatingWidget : FloatingWidgets)
-    {
-    	FloatingWidget->hide();
-    }
-
+    // All dock widgets, that have not been processed in the restore state
+    // function are invisible to the user now and have no assigned dock area
+    // They do not belong to any dock container, until the user toggles the
+    // toggle view action the next time
     for (auto DockWidget : DockWidgetsMap)
     {
-    	DockWidget->setProperty("dirty", true);
+    	if (DockWidget->property("dirty").toBool())
+    	{
+    		DockWidget->flagAsUnassigned();
+    	}
+    	else
+    	{
+    		DockWidget->toggleViewInternal(!DockWidget->property("closed").toBool());
+    	}
     }
+}
 
-    if (!restoreStateFromXml(state, version))
-    {
-    	qDebug() << "restoreState: Error restoring state!!!!!!!";
-    	return false;
-    }
 
+//============================================================================
+void DockManagerPrivate::restoreDockAreasIndices()
+{
     // Now all dock areas are properly restored and we setup the index of
     // The dock areas because the previous toggleView() action has changed
     // the dock area index
@@ -265,18 +284,80 @@ bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
     	{
     		CDockAreaWidget* DockArea = DockContainer->dockArea(i);
     		QString DockWidgetName = DockArea->property("currentDockWidget").toString();
-    		if (DockWidgetName.isEmpty())
+    		CDockWidget* DockWidget = nullptr;
+    		if (!DockWidgetName.isEmpty())
     		{
-    			continue;
+    			DockWidget = _this->findDockWidget(DockWidgetName);
     		}
 
-    		CDockWidget* DockWidget = _this->findDockWidget(DockWidgetName);
-    		if (!DockWidget->isClosed())
+    		if (!DockWidget || DockWidget->isClosed())
+    		{
+    			int Index = DockArea->indexOfFirstOpenDockWidget();
+    			if (Index < 0)
+    			{
+    				continue;
+    			}
+    			DockArea->setCurrentIndex(Index);
+    		}
+    		else
     		{
     			DockArea->internalSetCurrentDockWidget(DockWidget);
     		}
     	}
     }
+}
+
+
+
+//============================================================================
+void DockManagerPrivate::emitTopLevelEvents()
+{
+    // Finally we need to send the topLevelChanged() signals for all dock
+    // widgets if top level changed
+    for (auto DockContainer : Containers)
+    {
+    	CDockWidget* TopLevelDockWidget = DockContainer->topLevelDockWidget();
+    	if (TopLevelDockWidget)
+    	{
+    		TopLevelDockWidget->emitTopLevelChanged(true);
+    	}
+    	else
+    	{
+			for (int i = 0; i < DockContainer->dockAreaCount(); ++i)
+			{
+				auto DockArea = DockContainer->dockArea(i);
+				for (auto DockWidget : DockArea->dockWidgets())
+				{
+					DockWidget->emitTopLevelChanged(false);
+				}
+			}
+    	}
+    }
+}
+
+
+//============================================================================
+bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
+{
+    if (!checkFormat(state, version))
+    {
+    	qDebug() << "checkFormat: Error checking format!!!!!!!";
+    	return false;
+    }
+
+    // Hide updates of floating widgets from use
+    hideFloatingWidgets();
+    markDockWidgetsDirty();
+
+    if (!restoreStateFromXml(state, version))
+    {
+    	qDebug() << "restoreState: Error restoring state!!!!!!!";
+    	return false;
+    }
+
+    restoreDockWidgetsOpenState();
+    restoreDockAreasIndices();
+    emitTopLevelEvents();
 
     return true;
 }

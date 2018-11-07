@@ -601,6 +601,21 @@ QList<CDockWidget*> CDockAreaWidget::openedDockWidgets() const
 
 
 //============================================================================
+int CDockAreaWidget::indexOfFirstOpenDockWidget() const
+{
+	for (int i = 0; i < d->ContentsLayout->count(); ++i)
+	{
+		if (!dockWidget(i)->isClosed())
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+
+//============================================================================
 int CDockAreaWidget::dockWidgetsCount() const
 {
 	return d->ContentsLayout->count();

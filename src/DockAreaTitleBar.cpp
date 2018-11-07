@@ -115,13 +115,12 @@ void DockAreaTitleBarPrivate::createButtons()
 	TabsMenuButton->setAutoRaise(true);
 	TabsMenuButton->setPopupMode(QToolButton::InstantPopup);
 	TabsMenuButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarUnshadeButton));
-	TabsMenuButton->setMaximumWidth(TabsMenuButton->iconSize().width());
 
 	QMenu* TabsMenu = new QMenu(TabsMenuButton);
 	_this->connect(TabsMenu, SIGNAL(aboutToShow()), SLOT(onTabsMenuAboutToShow()));
 	TabsMenuButton->setMenu(TabsMenu);
-	TopLayout->addWidget(TabsMenuButton, 0);
 	TabsMenuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+	TopLayout->addWidget(TabsMenuButton, 0);
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
 		SLOT(onTabsMenuActionTriggered(QAction*)));
 
@@ -130,7 +129,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	UndockButton->setObjectName("undockButton");
 	UndockButton->setAutoRaise(true);
 	UndockButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarNormalButton));
-	UndockButton->setMaximumWidth(UndockButton->iconSize().width());
+	UndockButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	TopLayout->addWidget(UndockButton, 0);
 	_this->connect(UndockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
 
