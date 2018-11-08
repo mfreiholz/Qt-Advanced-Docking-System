@@ -29,6 +29,7 @@
 //                                   INCLUDES
 //============================================================================
 #include <QVariant>
+#include <QPainter>
 
 #include "DockSplitter.h"
 #include "ads_globals.h"
@@ -72,6 +73,19 @@ CDockInsertParam dockAreaInsertParameters(DockWidgetArea Area)
 
 	return CDockInsertParam(Qt::Vertical, false);
 }
+
+
+//============================================================================
+QPixmap createTransparentPixmap(const QPixmap& Source, qreal Opacity)
+{
+	QPixmap TransparentPixmap(Source.size());
+	TransparentPixmap.fill(Qt::transparent);
+	QPainter p(&TransparentPixmap);
+	p.setOpacity(Opacity);
+	p.drawPixmap(0, 0, Source);
+	return TransparentPixmap;
+}
+
 
 } // namespace internal
 } // namespace ads

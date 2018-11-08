@@ -68,7 +68,6 @@ struct DockWidgetPrivate
 	CDockAreaWidget* DockArea = nullptr;
 	QAction* ToggleViewAction;
 	bool Closed = false;
-	CDockWidget::LayoutFlags LayoutFlags;
 	QScrollArea* ScrollArea = nullptr;
 	QToolBar* ToolBar = nullptr;
 	Qt::ToolButtonStyle ToolBarStyleDocked = Qt::ToolButtonIconOnly;
@@ -182,11 +181,6 @@ void DockWidgetPrivate::updateParentDockArea()
 //============================================================================
 void DockWidgetPrivate::setupToolBar()
 {
-	if (!LayoutFlags.testFlag(CDockWidget::WithTopToolBar))
-	{
-		return;
-	}
-
 	ToolBar = new QToolBar(_this);
 	ToolBar->setObjectName("dockWidgetToolBar");
 	Layout->addWidget(ToolBar);
@@ -201,11 +195,6 @@ void DockWidgetPrivate::setupToolBar()
 //============================================================================
 void DockWidgetPrivate::setupScrollArea()
 {
-	if (!LayoutFlags.testFlag(CDockWidget::WithScrollArea))
-	{
-		return;
-	}
-
 	ScrollArea = new QScrollArea(_this);
 	ScrollArea->setObjectName("dockWidgetScrollArea");
 	ScrollArea->setWidgetResizable(true);
@@ -214,20 +203,16 @@ void DockWidgetPrivate::setupScrollArea()
 
 
 //============================================================================
-CDockWidget::CDockWidget(const QString &title, QWidget *parent,
-	LayoutFlags layoutFlags) :
+CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 	QFrame(parent),
 	d(new DockWidgetPrivate(this))
 {
-	d->LayoutFlags = layoutFlags;
 	d->Layout = new QBoxLayout(QBoxLayout::TopToBottom);
 	d->Layout->setContentsMargins(0, 0, 0, 0);
 	d->Layout->setSpacing(0);
 	setLayout(d->Layout);
 	setWindowTitle(title);
 	setObjectName(title);
-	d->setupToolBar();
-	d->setupScrollArea();
 
 	d->TabWidget = new CDockWidgetTab(this);
 	d->ToggleViewAction = new QAction(title);
@@ -256,15 +241,13 @@ void CDockWidget::setToggleViewActionChecked(bool Checked)
 
 
 //============================================================================
-void CDockWidget::setWidget(QWidget* widget)
+void CDockWidget::setWidget(QWidget* widget, eInsertMode InsertMode)
 {
-	if (d->LayoutFlags.testFlag(WithScrollArea))
+	QScrollArea* ScrollAreaWidget = qobject_cast<QScrollArea*>(widget);
+	if (ScrollAreaWidget || ForceNoScrollArea != InsertMode)
 	{
+		d->setupScrollArea();
 		d->ScrollArea->setWidget(widget);
-	}
-	else if (d->Widget)
-	{
-		d->Layout->replaceWidget(d->Widget, widget);
 	}
 	else
 	{
@@ -541,6 +524,18 @@ QIcon CDockWidget::icon() const
 //============================================================================
 QToolBar* CDockWidget::toolBar() const
 {
+	return d->ToolBar;
+}
+
+
+//============================================================================
+QToolBar* CDockWidget::createDefaultToolBar()
+{
+	if (!d->ToolBar)
+	{
+		d->setupToolBar();
+	}
+
 	return d->ToolBar;
 }
 

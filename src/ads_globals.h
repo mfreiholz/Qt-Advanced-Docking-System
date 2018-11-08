@@ -32,6 +32,7 @@
 //============================================================================
 #include <QPair>
 #include <QtCore/QtGlobal>
+#include <QPixmap>
 
 #ifdef ADS_SHARED_EXPORT
 #define ADS_EXPORT Q_DECL_EXPORT
@@ -124,6 +125,13 @@ T findParent(const QWidget* w)
 	}
 	return 0;
 }
+
+/**
+ * Creates a semi transparent pixmap from the given pixmap Source.
+ * The Opacity parameter defines the opacity from completely transparent (0.0)
+ * to completely opaque (1.0)
+ */
+QPixmap createTransparentPixmap(const QPixmap& Source, qreal Opacity);
 
 } // namespace internal
 } // namespace ads

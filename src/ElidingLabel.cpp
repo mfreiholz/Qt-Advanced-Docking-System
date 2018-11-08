@@ -117,6 +117,7 @@ void CElidingLabel::setElideMode(Qt::TextElideMode mode)
 //============================================================================
 void CElidingLabel::mouseReleaseEvent(QMouseEvent* event)
 {
+	Super::mouseReleaseEvent(event);
 	if (event->button() != Qt::LeftButton)
 	{
 		return;
@@ -131,6 +132,7 @@ void CElidingLabel::mouseDoubleClickEvent( QMouseEvent *ev )
 {
 	Q_UNUSED(ev)
 	emit doubleClicked();
+	Super::mouseDoubleClickEvent(ev);
 }
 
 
@@ -141,7 +143,7 @@ void CElidingLabel::resizeEvent(QResizeEvent *event)
 	{
 		d->elideText(event->size().width());
 	}
-    QLabel::resizeEvent(event);
+    Super::resizeEvent(event);
 }
 
 

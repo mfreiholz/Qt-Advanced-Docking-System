@@ -288,6 +288,7 @@ void CDockAreaTabBar::insertTab(int Index, CDockWidgetTab* Tab)
 {
 	d->TabsLayout->insertWidget(Index, Tab);
 	connect(Tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
+	connect(Tab, SIGNAL(closeButtonClicked()), this, SLOT(onTabCloseButtonClicked()));
 	connect(Tab, SIGNAL(moved(const QPoint&)), this, SLOT(onTabWidgetMoved(const QPoint&)));
 	Tab->installEventFilter(this);
 	emit tabInserted(Index);
@@ -397,6 +398,13 @@ void CDockAreaTabBar::onTabClicked()
 	}
 	setCurrentIndex(index);
  	emit tabBarClicked(index);
+}
+
+
+//===========================================================================
+void CDockAreaTabBar::onTabCloseButtonClicked()
+{
+	closeTab(currentIndex());
 }
 
 

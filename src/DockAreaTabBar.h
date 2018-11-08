@@ -54,6 +54,7 @@ private:
 
 private slots:
 	void onTabClicked();
+	void onTabCloseButtonClicked();
 	void onTabWidgetMoved(const QPoint& GlobalPos);
 
 protected:

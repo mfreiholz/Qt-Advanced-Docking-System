@@ -130,6 +130,9 @@ protected:
 	 */
 	void internalSetCurrentDockWidget(CDockWidget* DockWidget);
 
+protected slots:
+	void toggleView(bool Open);
+
 public:
 	using Super = QFrame;
 
@@ -247,10 +250,9 @@ public slots:
 	void setCurrentIndex(int index);
 
 	/**
-	 * This property controls whether the dock area is open or closed.
-	 * The toogleViewAction triggers this slot.
+	 * Closes the dock area and all dock widgets in this area
 	 */
-	void toggleView(bool Open);
+	void closeArea();
 
 signals:
 	/**

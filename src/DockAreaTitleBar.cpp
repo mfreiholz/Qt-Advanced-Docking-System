@@ -37,9 +37,8 @@
 #include <QScrollArea>
 #include <QMouseEvent>
 #include <QDebug>
-#include <QStyleOptionButton>
-#include <QPainter>
 
+#include "ads_globals.h"
 #include "FloatingDockContainer.h"
 #include "DockAreaWidget.h"
 #include "DockOverlay.h"
@@ -81,8 +80,6 @@ struct DockAreaTitleBarPrivate
 	 * Creates the internal TabBar
 	 */
 	void createTabBar();
-
-	QPixmap createTransparentPixmap(const QPixmap& Source);
 };// struct DockAreaTitleBarPrivate
 
 
@@ -92,18 +89,6 @@ DockAreaTitleBarPrivate::DockAreaTitleBarPrivate(CDockAreaTitleBar* _public) :
 	_this(_public)
 {
 
-}
-
-
-//============================================================================
-QPixmap DockAreaTitleBarPrivate::createTransparentPixmap(const QPixmap& Source)
-{
-	QPixmap disabledPixmap(Source.size());
-	disabledPixmap.fill(Qt::transparent);
-	QPainter p(&disabledPixmap);
-	p.setOpacity(0.25);
-	p.drawPixmap(0, 0, Source);
-	return disabledPixmap;
 }
 
 
@@ -137,14 +122,14 @@ void DockAreaTitleBarPrivate::createButtons()
 	CloseButton->setObjectName("closeButton");
 	CloseButton->setAutoRaise(true);
 
-	// The standard icons do does not look good on high DPI screens
+	// The standard icons do not look good on high DPI screens
 	QIcon CloseIcon =  _this->style()->standardIcon(QStyle::SP_TitleBarCloseButton);
 	QPixmap normalPixmap = _this->style()->standardPixmap(QStyle::SP_TitleBarCloseButton, 0, CloseButton);
-	QPixmap disabledPixmap = createTransparentPixmap(normalPixmap);
+	QPixmap disabledPixmap = internal::createTransparentPixmap(normalPixmap, 0.25);
 	CloseIcon.addPixmap(disabledPixmap, QIcon::Disabled);
 
 	CloseButton->setIcon(CloseIcon);
-	CloseButton->setToolTip(QObject::tr("Close"));
+	CloseButton->setToolTip(QObject::tr("Close all tabs"));
 	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	TopLayout->addWidget(CloseButton, 0);
 	_this->connect(CloseButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
@@ -236,7 +221,8 @@ void CDockAreaTitleBar::onTabsMenuAboutToShow()
 void CDockAreaTitleBar::onCloseButtonClicked()
 {
 	qDebug() << "CDockAreaTitleBar::onCloseButtonClicked";
-	d->TabBar->closeTab(d->TabBar->currentIndex());
+	//d->TabBar->closeTab(d->TabBar->currentIndex());
+	d->DockArea->closeArea();
 }
 
 
@@ -263,8 +249,8 @@ void CDockAreaTitleBar::onCurrentTabChanged(int Index)
 	{
 		return;
 	}
-	CDockWidget* DockWidget = d->TabBar->tab(Index)->dockWidget();
-	d->CloseButton->setEnabled(DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));
+	/*CDockWidget* DockWidget = d->TabBar->tab(Index)->dockWidget();
+	d->CloseButton->setEnabled(DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));*/
 }
 
 

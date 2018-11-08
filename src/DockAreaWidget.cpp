@@ -739,6 +739,16 @@ QAbstractButton* CDockAreaWidget::titleBarButton(TitleBarButton which) const
 {
 	return d->TitleBar->button(which);
 }
+
+
+//============================================================================
+void CDockAreaWidget::closeArea()
+{
+	for (auto DockWidget : openedDockWidgets())
+	{
+		DockWidget->toggleView(false);
+	}
+}
 } // namespace ads
 
 //---------------------------------------------------------------------------

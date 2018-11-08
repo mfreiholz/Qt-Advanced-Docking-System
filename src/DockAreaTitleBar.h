@@ -82,6 +82,9 @@ public:
 	 */
 	QAbstractButton* button(TitleBarButton which) const;
 
+	/**
+	 * This function is here for debug reasons
+	 */
 	virtual void setVisible(bool Visible) override;
 
 signals:

@@ -38,6 +38,8 @@
 #include <QApplication>
 #include <QSplitter>
 #include <QDebug>
+#include <QToolButton>
+#include <QPushButton>
 
 #include "ads_globals.h"
 #include "DockWidget.h"
@@ -45,6 +47,8 @@
 #include "FloatingDockContainer.h"
 #include "DockOverlay.h"
 #include "DockManager.h"
+
+#include <iostream>
 
 namespace ads
 {
@@ -60,6 +64,7 @@ enum eDragState
 };
 
 using tTabLabel = CElidingLabel;
+using tCloseButton = QPushButton;
 
 /**
  * Private data class of CDockWidgetTab class (pimpl)
@@ -76,6 +81,8 @@ struct DockWidgetTabPrivate
 	eDragState DragState = DraggingInactive;
 	CFloatingDockContainer* FloatingWidget = nullptr;
 	QIcon Icon;
+	tCloseButton* CloseButton = nullptr;
+	QSpacerItem* IconTextSpacer;
 
 	/**
 	 * Private data constructor
@@ -131,22 +138,39 @@ DockWidgetTabPrivate::DockWidgetTabPrivate(CDockWidgetTab* _public) :
 //============================================================================
 void DockWidgetTabPrivate::createLayout()
 {
-	QBoxLayout* l = new QBoxLayout(QBoxLayout::LeftToRight);
-	l->setContentsMargins(0, 0, 0, 0);
-	_this->setLayout(l);
-
-	IconLabel = new QLabel();
-	IconLabel->setAlignment(Qt::AlignVCenter);
-	IconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
-	l->addWidget(IconLabel, Qt::AlignVCenter);
-
 	TitleLabel = new tTabLabel();
 	TitleLabel->setElideMode(Qt::ElideRight);
 	TitleLabel->setText(DockWidget->windowTitle());
 	TitleLabel->setObjectName("dockWidgetTabLabel");
-	l->addWidget(TitleLabel, 1);
+	TitleLabel->setAlignment(Qt::AlignCenter);
 
-	IconLabel->setVisible(false);
+	CloseButton = new tCloseButton();
+	CloseButton->setObjectName("tabCloseButton");
+	// The standard icons do does not look good on high DPI screens
+	QIcon CloseIcon =  _this->style()->standardIcon(QStyle::SP_TitleBarCloseButton);
+	QPixmap normalPixmap = _this->style()->standardPixmap(QStyle::SP_TitleBarCloseButton, 0, CloseButton);
+	QPixmap disabledPixmap = internal::createTransparentPixmap(normalPixmap, 0.25);
+	CloseIcon.addPixmap(disabledPixmap, QIcon::Disabled);
+	CloseButton->setIcon(CloseIcon);
+	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	CloseButton->setVisible(false);
+	CloseButton->setToolTip(QObject::tr("Close Tab"));
+	_this->connect(CloseButton, SIGNAL(clicked()), SIGNAL(closeButtonClicked()));
+
+	QFontMetrics fm(TitleLabel->font());
+	int Spacing = qRound(fm.height() / 4.0);
+
+	// Fill the layout
+	QBoxLayout* Layout = new QBoxLayout(QBoxLayout::LeftToRight);
+	Layout->setContentsMargins(2 * Spacing,0,0,0);
+	Layout->setSpacing(0);
+	_this->setLayout(Layout);
+	Layout->addWidget(TitleLabel, 1);
+	Layout->addSpacing(Spacing);
+	Layout->addWidget(CloseButton);
+	Layout->addSpacing(qRound(Spacing * 4.0 / 3.0));
+	Layout->setAlignment(Qt::AlignCenter);
+
 	TitleLabel->setVisible(true);
 }
 
@@ -323,6 +347,7 @@ bool CDockWidgetTab::isActiveTab() const
 //============================================================================
 void CDockWidgetTab::setActiveTab(bool active)
 {
+	d->CloseButton->setVisible(active && d->DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));
 	if (d->IsActiveTab == active)
 	{
 		return;
@@ -363,8 +388,15 @@ CDockAreaWidget* CDockWidgetTab::dockAreaWidget() const
 //============================================================================
 void CDockWidgetTab::setIcon(const QIcon& Icon)
 {
+	QBoxLayout* Layout = qobject_cast<QBoxLayout*>(layout());
 	d->Icon = Icon;
+	d->IconLabel = new QLabel();
+	d->IconLabel->setAlignment(Qt::AlignVCenter);
+	d->IconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+	d->IconLabel->setToolTip(d->TitleLabel->toolTip());
 	d->IconLabel->setPixmap(Icon.pixmap(this->windowHandle(), QSize(16, 16)));
+	Layout->insertWidget(0, d->IconLabel, Qt::AlignVCenter);
+	Layout->insertSpacing(1, qRound(1.5 * Layout->contentsMargins().left() / 2.0));
 	d->IconLabel->setVisible(true);
 }
 
@@ -404,6 +436,7 @@ void CDockWidgetTab::setVisible(bool visible)
 	// Just here for debugging to insert debug output
 	Super::setVisible(visible);
 }
+
 
 } // namespace ads
 

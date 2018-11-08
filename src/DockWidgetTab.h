@@ -127,6 +127,7 @@ public slots:
 signals:
 	void activeTabChanged();
 	void clicked();
+	void closeButtonClicked();
 	void moved(const QPoint& GlobalPos);
 }; // class DockWidgetTab
 }

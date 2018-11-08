@@ -152,26 +152,12 @@ public:
 		StateFloating
 	};
 
-	/**
-	 * Use the layout flags to configure the layout of the dock widget.
-	 * The content of a dock widget should be resizable do a very small size to
-	 * prevent the dock widget from blocking the resizing. To ensure, that a
-	 * dock widget can be resized very well, it is better to insert the content+
-	 * widget into a scroll area. Enable the WithScrollArea
-	 * feature to use this feature. If your content widget is already in a
-	 * scroll area or if it is a derived class like QTableView, the you should
-	 * disable the WithScrollArea flag.
-	 * Often dock widgets need a ToolBar for control of operations in the dock
-	 * widget. Use the WithToolBar feature to enable a tool bar that is placed
-	 * on top of the dock widget content. If this flag is disabled, the toolBar()
-	 * function returns a nullptr.
-	 */
-	enum LayoutFlag
+	enum eInsertMode
 	{
-		WithScrollArea = 0x01,
-		WithTopToolBar = 0x02
+		AutoScrollArea,
+		ForceScrollArea,
+		ForceNoScrollArea
 	};
-	Q_DECLARE_FLAGS(LayoutFlags, LayoutFlag)
 
 	/**
 	 * This mode configures the behavior of the toggle view action.
@@ -201,8 +187,7 @@ public:
 	 * by calling setObjectName() after construction.
 	 * Use the layoutFlags to configure the layout of the dock widget.
 	 */
-	CDockWidget(const QString &title, QWidget* parent = 0,
-		LayoutFlags layoutFlags = 0);
+	CDockWidget(const QString &title, QWidget* parent = 0);
 
 	/**
 	 * Virtual Destructor
@@ -216,8 +201,22 @@ public:
 
 	/**
 	 * Sets the widget for the dock widget to widget.
+	 * The InsertMode defines how the widget is inserted into the dock widget.
+	 * The content of a dock widget should be resizable do a very small size to
+	 * prevent the dock widget from blocking the resizing. To ensure, that a
+	 * dock widget can be resized very well, it is better to insert the content+
+	 * widget into a scroll area or to provide a widget that is already a scroll
+	 * area or that contains a scroll area.
+	 * If the InsertMode is AutoScrollArea, the DockWidget tries to automatically
+	 * detect how to insert the given widget. If the widget is derived from
+	 * QScrollArea (i.e. an QAbstractItemView), then the widget is inserted
+	 * directly. If the given widget is not a scroll area, the widget will be
+	 * inserted into a scroll area.
+	 * To force insertion into a scroll area, you can also provide the InsertMode
+	 * ForceScrollArea. To prevent insertion into a scroll area, you can
+	 * provide the InsertMode ForceNoScrollArea
 	 */
-	void setWidget(QWidget* widget);
+	void setWidget(QWidget* widget, eInsertMode InsertMode = AutoScrollArea);
 
 	/**
 	 * Returns the widget for the dock widget. This function returns zero if
@@ -306,7 +305,7 @@ public:
 	void setIcon(const QIcon& Icon);
 
 	/**
-	 * Returns tzhe icon that has been assigned to the dock widget
+	 * Returns the icon that has been assigned to the dock widget
 	 */
 	QIcon icon() const;
 
@@ -314,8 +313,21 @@ public:
 	 * If the WithToolBar layout flag is enabled, then this function returns
 	 * the dock widget toolbar. If the flag is disabled, the function returns
 	 * a nullptr.
+	 * This function returns the dock widget top tool bar.
+	 * If no toolbar is assigned, this function returns nullptr. To get a vaild
+	 * toolbar you either need to create a default empty toolbar via
+	 * createDefaultToolBar() function or you need to assign you custom
+	 * toolbar via setToolBar().
 	 */
 	QToolBar* toolBar() const;
+
+	/**
+	 * If you would like to use the default top tool bar, then call this
+	 * function to create the default tool bar.
+	 * After this function the toolBar() function will return a valid toolBar()
+	 * object.
+	 */
+	QToolBar* createDefaultToolBar();
 
 	/**
 	 * Assign a new tool bar that is shown above the content widget.
