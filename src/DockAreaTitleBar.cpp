@@ -80,6 +80,22 @@ struct DockAreaTitleBarPrivate
 	 * Creates the internal TabBar
 	 */
 	void createTabBar();
+
+	/**
+	 * Convenience function for DockManager access
+	 */
+	CDockManager* dockManager() const
+	{
+		return DockArea->dockManager();
+	}
+
+	/**
+	 * Returns true if the given config flag is set
+	 */
+	bool testConfigFlag(CDockManager::eConfigFlag Flag) const
+	{
+		return DockArea->dockManager()->configFlags().testFlag(Flag);
+	}
 };// struct DockAreaTitleBarPrivate
 
 
@@ -133,6 +149,9 @@ void DockAreaTitleBarPrivate::createButtons()
 	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	TopLayout->addWidget(CloseButton, 0);
 	_this->connect(CloseButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
+
+	CloseButton->setEnabled(testConfigFlag(CDockManager::DockAreaHasCloseButton));
+	CloseButton->setVisible(CloseButton->isEnabled());
 }
 
 
@@ -221,8 +240,14 @@ void CDockAreaTitleBar::onTabsMenuAboutToShow()
 void CDockAreaTitleBar::onCloseButtonClicked()
 {
 	qDebug() << "CDockAreaTitleBar::onCloseButtonClicked";
-	//d->TabBar->closeTab(d->TabBar->currentIndex());
-	d->DockArea->closeArea();
+	if (d->testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
+	{
+		d->TabBar->closeTab(d->TabBar->currentIndex());
+	}
+	else
+	{
+		d->DockArea->closeArea();
+	}
 }
 
 
@@ -249,8 +274,12 @@ void CDockAreaTitleBar::onCurrentTabChanged(int Index)
 	{
 		return;
 	}
-	/*CDockWidget* DockWidget = d->TabBar->tab(Index)->dockWidget();
-	d->CloseButton->setEnabled(DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));*/
+
+	if (d->testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
+	{
+		CDockWidget* DockWidget = d->TabBar->tab(Index)->dockWidget();
+		d->CloseButton->setEnabled(DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));
+	}
 }
 
 

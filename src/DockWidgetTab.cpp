@@ -123,6 +123,14 @@ struct DockWidgetTabPrivate
 	 * is not possible for any reason
 	 */
 	bool startFloating();
+
+	/**
+	 * Returns true if the given config flag is set
+	 */
+	bool testConfigFlag(CDockManager::eConfigFlag Flag) const
+	{
+		return DockArea->dockManager()->configFlags().testFlag(Flag);
+	}
 };
 // struct DockWidgetTabPrivate
 
@@ -347,7 +355,9 @@ bool CDockWidgetTab::isActiveTab() const
 //============================================================================
 void CDockWidgetTab::setActiveTab(bool active)
 {
-	d->CloseButton->setVisible(active && d->DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));
+	bool DockWidgetClosable = d->DockWidget->features().testFlag(CDockWidget::DockWidgetClosable);
+	bool TabHasCloseButton = d->testConfigFlag(CDockManager::ActiveTabHasCloseButton);
+	d->CloseButton->setVisible(active && DockWidgetClosable && TabHasCloseButton);
 	if (d->IsActiveTab == active)
 	{
 		return;

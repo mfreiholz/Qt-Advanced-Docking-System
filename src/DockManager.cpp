@@ -74,6 +74,7 @@ struct DockManagerPrivate
 	QMenu* ViewMenu;
 	CDockManager::eViewMenuInsertionOrder MenuInsertionOrder = CDockManager::MenuAlphabeticallySorted;
 	bool RestoringState = false;
+	CDockManager::ConfigFlags ConfigFlags{CDockManager::DefaultConfig};
 
 	/**
 	 * Private data constructor
@@ -716,6 +717,20 @@ bool CDockManager::isRestoringState() const
 int CDockManager::startDragDistance()
 {
 	return QApplication::startDragDistance() * 1.5;
+}
+
+
+//===========================================================================
+CDockManager::ConfigFlags CDockManager::configFlags() const
+{
+	return d->ConfigFlags;
+}
+
+
+//===========================================================================
+void CDockManager::setConfigFlags(const ConfigFlags Flags)
+{
+	d->ConfigFlags = Flags;
 }
 
 } // namespace ads

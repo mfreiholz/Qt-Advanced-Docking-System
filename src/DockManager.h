@@ -115,9 +115,24 @@ public:
 	};
 
 	/**
+	 * These global configuration flags configure some global dock manager
+	 * settings.
+	 */
+	enum eConfigFlag
+	{
+		ActiveTabHasCloseButton = 0x01,    //!< If this flag is set, the active tab in a tab area has a close button
+		DockAreaHasCloseButton = 0x02,     //!< If the flag is set each dock area has a close button
+		DockAreaCloseButtonClosesTab = 0x04,//!< If the flag is set, the dock area close button closes the active tab, if not set, it closes the complete cock area
+		DefaultConfig = ActiveTabHasCloseButton | DockAreaHasCloseButton, ///< the default configuration
+	};
+	Q_DECLARE_FLAGS(ConfigFlags, eConfigFlag)
+
+	/**
 	 * Default Constructor.
 	 * If the given parent is a QMainWindow, the dock manager sets itself as the
-	 * central widget
+	 * central widget.
+	 * Before you create any dock widgets, you should properly setup the
+	 * configuration flags via setConfigFlags()
 	 */
 	CDockManager(QWidget* parent = 0);
 
@@ -125,6 +140,17 @@ public:
 	 * Virtual Destructor
 	 */
 	virtual ~CDockManager();
+
+	/**
+	 * This function returns the global configuration flags
+	 */
+	ConfigFlags configFlags() const;
+
+	/**
+	 * Sets the global configuration flags for the whole docking system.
+	 * Call this function before you create your first dock widget.
+	 */
+	void setConfigFlags(const ConfigFlags Flags);
 
 	/**
 	 * Adds dockwidget into the given area.

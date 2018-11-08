@@ -266,11 +266,17 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	d(new MainWindowPrivate(this))
 {
+	using namespace ads;
 	d->ui.setupUi(this);
 	d->createActions();
 
 	// Now create the dock manager and its content
-	d->DockManager = new ads::CDockManager(this);
+	d->DockManager = new CDockManager(this);
+
+	// Uncomment the following line to have the old style where the dock
+	// area close button closes the active tab
+	//d->DockManager->setConfigFlags({
+	//	CDockManager::DockAreaHasCloseButton | CDockManager::DockAreaCloseButtonClosesTab});
 	connect(d->PerspectiveComboBox, SIGNAL(activated(const QString&)),
 		d->DockManager, SLOT(openPerspective(const QString&)));
 
@@ -280,8 +286,6 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	d->restoreState();
 	d->restorePerspectives();
-	/*CAnimatedLabel* AnimatedLabel = new CAnimatedLabel();
-	AnimatedLabel->show();*/
 }
 
 
