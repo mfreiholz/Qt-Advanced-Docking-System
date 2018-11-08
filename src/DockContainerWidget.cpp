@@ -627,11 +627,10 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 		}
 
 		qDebug() << "Dock Widget found - parent " << DockWidget->parent();
-		DockArea->addDockWidget(DockWidget);
-
 		// We hide the DockArea here to prevent the short display (the flashing)
 		// of the dock areas during application startup
 		DockArea->hide();
+		DockArea->addDockWidget(DockWidget);
 		DockWidget->setToggleViewActionChecked(!Closed);
 		DockWidget->setClosedState(Closed);
 		DockWidget->setProperty("closed", Closed);

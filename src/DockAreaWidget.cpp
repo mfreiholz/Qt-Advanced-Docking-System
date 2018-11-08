@@ -54,6 +54,8 @@
 #include "DockSplitter.h"
 #include "DockAreaTitleBar.h"
 
+#include <iostream>
+
 
 namespace ads
 {
@@ -242,6 +244,7 @@ struct DockAreaWidgetPrivate
 	DockAreaLayout* ContentsLayout;
 	CDockAreaTitleBar* TitleBar;
 	CDockManager* DockManager = nullptr;
+	bool UpdateCloseButton = false;
 
 	/**
 	 * Private data constructor
@@ -293,6 +296,11 @@ struct DockAreaWidgetPrivate
 	{
 		return TitleBar->tabBar();
 	}
+
+	/**
+	 * Udpates the enable state of the close button
+	 */
+	void updateCloseButtonState();
 };
 // struct DockAreaWidgetPrivate
 
@@ -316,6 +324,25 @@ void DockAreaWidgetPrivate::createTitleBar()
 		SLOT(setCurrentIndex(int)));
 	_this->connect(tabBar(), SIGNAL(tabMoved(int, int)),
 		SLOT(reorderDockWidget(int, int)));
+}
+
+
+//============================================================================
+void DockAreaWidgetPrivate::updateCloseButtonState()
+{
+	if (_this->isHidden())
+	{
+		UpdateCloseButton = true;
+		return;
+	}
+
+	if (!UpdateCloseButton)
+	{
+		return;
+	}
+	TitleBar->button(TitleBarButtonClose)->setEnabled(
+		_this->features().testFlag(CDockWidget::DockWidgetClosable));
+	UpdateCloseButton = false;
 }
 
 
@@ -383,6 +410,7 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 		setCurrentIndex(index);
 	}
 	DockWidget->setDockArea(this);
+	d->updateCloseButtonState();
 }
 
 
@@ -414,6 +442,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 		hideAreaWithNoVisibleContent();
 	}
 
+	d->updateCloseButtonState();
 	updateTitleBarVisibility();
 	auto TopLevelDockWidget = dockContainer()->topLevelDockWidget();
 	if (TopLevelDockWidget)
@@ -730,7 +759,16 @@ CDockWidget::DockWidgetFeatures CDockAreaWidget::features() const
 void CDockAreaWidget::toggleView(bool Open)
 {
 	setVisible(Open);
+
 	emit viewToggled(Open);
+}
+
+
+//============================================================================
+void CDockAreaWidget::setVisible(bool Visible)
+{
+	Super::setVisible(Visible);
+	d->updateCloseButtonState();
 }
 
 

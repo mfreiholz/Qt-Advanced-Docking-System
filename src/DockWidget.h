@@ -152,6 +152,23 @@ public:
 		StateFloating
 	};
 
+	/**
+	 * Sets the widget for the dock widget to widget.
+	 * The InsertMode defines how the widget is inserted into the dock widget.
+	 * The content of a dock widget should be resizable do a very small size to
+	 * prevent the dock widget from blocking the resizing. To ensure, that a
+	 * dock widget can be resized very well, it is better to insert the content+
+	 * widget into a scroll area or to provide a widget that is already a scroll
+	 * area or that contains a scroll area.
+	 * If the InsertMode is AutoScrollArea, the DockWidget tries to automatically
+	 * detect how to insert the given widget. If the widget is derived from
+	 * QScrollArea (i.e. an QAbstractItemView), then the widget is inserted
+	 * directly. If the given widget is not a scroll area, the widget will be
+	 * inserted into a scroll area.
+	 * To force insertion into a scroll area, you can also provide the InsertMode
+	 * ForceScrollArea. To prevent insertion into a scroll area, you can
+	 * provide the InsertMode ForceNoScrollArea
+	 */
 	enum eInsertMode
 	{
 		AutoScrollArea,

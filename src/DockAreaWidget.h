@@ -241,6 +241,11 @@ public:
 	 */
 	QAbstractButton* titleBarButton(TitleBarButton which) const;
 
+	/**
+	 * Update the close button if visibility changed
+	 */
+	virtual void setVisible(bool Visible) override;
+
 public slots:
 	/**
 	 * This activates the tab for the given tab index.
