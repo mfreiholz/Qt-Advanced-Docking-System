@@ -33,7 +33,6 @@
 #include <QScrollBar>
 #include <QDebug>
 #include <QBoxLayout>
-#include <QMenu>
 #include <QApplication>
 
 #include "FloatingDockContainer.h"
@@ -42,6 +41,8 @@
 #include "DockManager.h"
 #include "DockWidget.h"
 #include "DockWidgetTab.h"
+
+#include <iostream>
 
 
 namespace ads
@@ -288,7 +289,8 @@ void CDockAreaTabBar::insertTab(int Index, CDockWidgetTab* Tab)
 {
 	d->TabsLayout->insertWidget(Index, Tab);
 	connect(Tab, SIGNAL(clicked()), this, SLOT(onTabClicked()));
-	connect(Tab, SIGNAL(closeButtonClicked()), this, SLOT(onTabCloseButtonClicked()));
+	connect(Tab, SIGNAL(closeRequested()), this, SLOT(onTabCloseRequested()));
+	connect(Tab, SIGNAL(closeOtherTabsRequested()), this, SLOT(onCloseOtherTabsRequested()));
 	connect(Tab, SIGNAL(moved(const QPoint&)), this, SLOT(onTabWidgetMoved(const QPoint&)));
 	Tab->installEventFilter(this);
 	emit tabInserted(Index);
@@ -402,9 +404,26 @@ void CDockAreaTabBar::onTabClicked()
 
 
 //===========================================================================
-void CDockAreaTabBar::onTabCloseButtonClicked()
+void CDockAreaTabBar::onTabCloseRequested()
 {
-	closeTab(currentIndex());
+	CDockWidgetTab* Tab = qobject_cast<CDockWidgetTab*>(sender());
+	int Index = d->TabsLayout->indexOf(Tab);
+	closeTab(Index);
+}
+
+
+//===========================================================================
+void CDockAreaTabBar::onCloseOtherTabsRequested()
+{
+	auto Sender = qobject_cast<CDockWidgetTab*>(sender());
+	for (int i = 0; i < count(); ++i)
+	{
+		auto Tab = tab(i);
+		if (Tab->isClosable() && !Tab->isHidden() && Tab != Sender)
+		{
+			closeTab(i);
+		}
+	}
 }
 
 
@@ -532,6 +551,7 @@ bool CDockAreaTabBar::isTabOpen(int Index) const
 
 	return !tab(Index)->isHidden();
 }
+
 } // namespace ads
 
 //---------------------------------------------------------------------------

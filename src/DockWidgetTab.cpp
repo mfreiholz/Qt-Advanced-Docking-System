@@ -40,6 +40,7 @@
 #include <QDebug>
 #include <QToolButton>
 #include <QPushButton>
+#include <QMenu>
 
 #include "ads_globals.h"
 #include "DockWidget.h"
@@ -163,7 +164,7 @@ void DockWidgetTabPrivate::createLayout()
 	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	CloseButton->setVisible(false);
 	CloseButton->setToolTip(QObject::tr("Close Tab"));
-	_this->connect(CloseButton, SIGNAL(clicked()), SIGNAL(closeButtonClicked()));
+	_this->connect(CloseButton, SIGNAL(clicked()), SIGNAL(closeRequested()));
 
 	QFontMetrics fm(TitleLabel->font());
 	int Spacing = qRound(fm.height() / 4.0);
@@ -346,6 +347,23 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
 
 
 //============================================================================
+void CDockWidgetTab::contextMenuEvent(QContextMenuEvent* ev)
+{
+	ev->accept();
+	std::cout << "CDockAreaTabBar::onTabContextMenuRequested" << std::endl;
+
+	d->DragStartMousePosition = ev->pos();
+	QMenu Menu(this);
+	Menu.addAction(tr("Detach"), this, SLOT(onDetachActionTriggered()));
+	Menu.addSeparator();
+	auto Action = Menu.addAction(tr("Close"), this, SIGNAL(closeRequested()));
+	Action->setEnabled(isClosable());
+	Menu.addAction(tr("Close Others"), this, SIGNAL(closeOtherTabsRequested()));
+	Menu.exec(mapToGlobal(ev->pos()));
+}
+
+
+//============================================================================
 bool CDockWidgetTab::isActiveTab() const
 {
 	return d->IsActiveTab;
@@ -433,6 +451,7 @@ void CDockWidgetTab::mouseDoubleClickEvent(QMouseEvent *event)
 	// empty
 	if (!d->DockArea->dockContainer()->isFloating() || d->DockArea->dockWidgetsCount() > 1)
 	{
+		d->DragStartMousePosition = event->pos();
 		d->startFloating();
 	}
 
@@ -447,6 +466,20 @@ void CDockWidgetTab::setVisible(bool visible)
 	Super::setVisible(visible);
 }
 
+
+//============================================================================
+bool CDockWidgetTab::isClosable() const
+{
+	return d->DockWidget && d->DockWidget->features().testFlag(CDockWidget::DockWidgetClosable);
+}
+
+
+//===========================================================================
+void CDockWidgetTab::onDetachActionTriggered()
+{
+	d->DragStartMousePosition = mapFromGlobal(QCursor::pos());
+	d->startFloating();
+}
 
 } // namespace ads
 

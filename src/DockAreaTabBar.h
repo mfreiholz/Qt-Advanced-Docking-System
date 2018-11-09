@@ -54,7 +54,8 @@ private:
 
 private slots:
 	void onTabClicked();
-	void onTabCloseButtonClicked();
+	void onTabCloseRequested();
+	void onCloseOtherTabsRequested();
 	void onTabWidgetMoved(const QPoint& GlobalPos);
 
 protected:

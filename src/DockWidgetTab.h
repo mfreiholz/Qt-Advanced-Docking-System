@@ -54,10 +54,14 @@ private:
 	DockWidgetTabPrivate* d; ///< private data (pimpl)
 	friend struct DockWidgetTabPrivate;
 
+private slots:
+	void onDetachActionTriggered();
+
 protected:
 	virtual void mousePressEvent(QMouseEvent* ev) override;
 	virtual void mouseReleaseEvent(QMouseEvent* ev) override;
 	virtual void mouseMoveEvent(QMouseEvent* ev) override;
+	virtual void contextMenuEvent(QContextMenuEvent* ev) override;
 
 	/**
 	 * Double clicking the tab widget makes the assigned dock widget floating
@@ -121,13 +125,19 @@ public:
 	 */
 	QString text() const;
 
+	/**
+	 * This function returns true if the assigned dock widget is closeable
+	 */
+	bool isClosable() const;
+
 public slots:
 	virtual void setVisible(bool visible);
 
 signals:
 	void activeTabChanged();
 	void clicked();
-	void closeButtonClicked();
+	void closeRequested();
+	void closeOtherTabsRequested();
 	void moved(const QPoint& GlobalPos);
 }; // class DockWidgetTab
 }

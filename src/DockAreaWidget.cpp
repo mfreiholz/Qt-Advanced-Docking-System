@@ -336,10 +336,6 @@ void DockAreaWidgetPrivate::updateCloseButtonState()
 		return;
 	}
 
-	if (!UpdateCloseButton)
-	{
-		return;
-	}
 	TitleBar->button(TitleBarButtonClose)->setEnabled(
 		_this->features().testFlag(CDockWidget::DockWidgetClosable));
 	UpdateCloseButton = false;
@@ -768,7 +764,10 @@ void CDockAreaWidget::toggleView(bool Open)
 void CDockAreaWidget::setVisible(bool Visible)
 {
 	Super::setVisible(Visible);
-	d->updateCloseButtonState();
+	if (d->UpdateCloseButton)
+	{
+		d->updateCloseButtonState();
+	}
 }
 
 
