@@ -155,7 +155,7 @@ QSize CElidingLabel::minimumSizeHint() const
         return QLabel::minimumSizeHint();
     }
     const QFontMetrics  &fm = fontMetrics();
-    QSize size(fm.width("…"), fm.height());
+    QSize size(fm.width(d->Text.left(2) + "…"), fm.height());
     return size;
 }
 
