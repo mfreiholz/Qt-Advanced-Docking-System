@@ -261,10 +261,12 @@ void DockContainerWidgetPrivate::onVisibleDockAreaCountChanged()
 	{
 		this->TopLevelDockArea = TopLevelDockArea;
 		TopLevelDockArea->titleBarButton(TitleBarButtonUndock)->setVisible(false || !_this->isFloating());
+		TopLevelDockArea->titleBarButton(TitleBarButtonClose)->setVisible(false || !_this->isFloating());
 	}
 	else if (this->TopLevelDockArea)
 	{
 		this->TopLevelDockArea->titleBarButton(TitleBarButtonUndock)->setVisible(true);
+		this->TopLevelDockArea->titleBarButton(TitleBarButtonClose)->setVisible(true);
 		this->TopLevelDockArea = nullptr;
 	}
 }
@@ -416,6 +418,7 @@ void DockContainerWidgetPrivate::addDockAreasToList(const QList<CDockAreaWidget*
 	for (auto DockArea : NewDockAreas)
 	{
 		DockArea->titleBarButton(TitleBarButtonUndock)->setVisible(true);
+		DockArea->titleBarButton(TitleBarButtonClose)->setVisible(true);
 	}
 
 	// We need to ensure, that the dock area title bar is visible. The title bar

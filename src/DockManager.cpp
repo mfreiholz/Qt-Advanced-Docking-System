@@ -515,6 +515,7 @@ QByteArray CDockManager::saveState(eXmlMode XmlMode, int version) const
 //============================================================================
 bool CDockManager::restoreState(const QByteArray &state, int version)
 {
+	std::cout << "CDockManager::restoreState-----------------------" << std::endl;
 	QElapsedTimer Timer;
 	Timer.start();
 
@@ -586,9 +587,16 @@ CDockAreaWidget* CDockManager::addDockWidgetTabToArea(CDockWidget* Dockwidget,
 
 
 //============================================================================
-CDockWidget* CDockManager::findDockWidget(const QString& ObjectName)
+CDockWidget* CDockManager::findDockWidget(const QString& ObjectName) const
 {
 	return d->DockWidgetsMap.value(ObjectName, nullptr);
+}
+
+
+//============================================================================
+QMap<QString, CDockWidget*> CDockManager::dockWidgetsMap() const
+{
+	return d->DockWidgetsMap;
 }
 
 
@@ -597,6 +605,32 @@ void CDockManager::addPerspective(const QString& UniquePrespectiveName)
 {
 	d->Perspectives.insert(UniquePrespectiveName, saveState());
 	emit perspectiveListChanged();
+}
+
+
+//============================================================================
+void CDockManager::removePerspective(const QString& Name)
+{
+	if (d->Perspectives.remove(Name))
+	{
+		emit perspectiveListChanged();
+	}
+}
+
+
+//============================================================================
+void CDockManager::removePerspectives(const QStringList& Names)
+{
+	int Count = 0;
+	for (auto Name : Names)
+	{
+		Count += d->Perspectives.remove(Name);
+	}
+
+	if (Count)
+	{
+		emit perspectiveListChanged();
+	}
 }
 
 

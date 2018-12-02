@@ -189,7 +189,13 @@ public:
 	 * \return Return the found dock widget or nullptr if a dock widget with the
 	 * given name is not registered
 	 */
-	CDockWidget* findDockWidget(const QString& ObjectName);
+	CDockWidget* findDockWidget(const QString& ObjectName) const;
+
+	/**
+	 * This function returns a readable reference to the internal dock
+	 * widgets map so that it is possible to iterate over all dock widgets
+	 */
+	QMap<QString, CDockWidget*> dockWidgetsMap() const;
 
 	/**
 	 * Returns the list of all active and visible dock containers
@@ -236,6 +242,16 @@ public:
 	 * it will be overwritten with the new state.
 	 */
 	void addPerspective(const QString& UniquePrespectiveName);
+
+	/**
+	 * Removes the perspective with the given name from the list of perspectives
+	 */
+	void removePerspective(const QString& Name);
+
+	/**
+	 * Removes the given perspectives from the dock manager
+	 */
+	void removePerspectives(const QStringList& Names);
 
 	/**
 	 * Returns the names of all available perspectives

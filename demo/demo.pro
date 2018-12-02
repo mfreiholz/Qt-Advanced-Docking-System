@@ -9,11 +9,15 @@ CONFIG *= c++14
 
 SOURCES += \
 	main.cpp \
-	MainWindow.cpp
+	MainWindow.cpp \
+	mhtabbar.cpp \
+	mhtabwidget.cpp
 
 
 HEADERS += \
-	MainWindow.h
+	MainWindow.h \
+	mhtabbar.h \
+	mhtabwidget.h
 
 FORMS += \
 	mainwindow.ui
