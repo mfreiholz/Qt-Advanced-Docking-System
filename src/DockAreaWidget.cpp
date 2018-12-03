@@ -458,16 +458,9 @@ void CDockAreaWidget::hideAreaWithNoVisibleContent()
 {
 	this->toggleView(false);
 
-	// Hide empty parent splitter
+	// Hide empty parent splitters
 	auto Splitter = internal::findParent<CDockSplitter*>(this);
-	while (Splitter && Splitter->isVisible())
-	{
-		if (!Splitter->hasVisibleContent())
-		{
-			Splitter->hide();
-		}
-		Splitter = internal::findParent<CDockSplitter*>(Splitter);
-	}
+	internal::hideEmptyParentSplitters(Splitter);
 
 	//Hide empty floating widget
 	CDockContainerWidget* Container = this->dockContainer();

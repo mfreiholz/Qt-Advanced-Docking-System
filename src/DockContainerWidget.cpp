@@ -48,7 +48,7 @@
 #include "ads_globals.h"
 #include "DockSplitter.h"
 
-#include <QElapsedTimer>
+#include <iostream>
 
 
 namespace ads
@@ -755,9 +755,13 @@ void DockContainerWidgetPrivate::dumpRecursive(int level, QWidget* widget)
 	{
 		qDebug("%sSplitter %s v: %s c: %s",
 			(const char*)buf,
-			(Splitter->orientation() == Qt::Vertical) ? "-" : "|",
-			 Splitter->isVisibleTo(Splitter->parentWidget()) ? "1" : "0",
+			(Splitter->orientation() == Qt::Vertical) ? "--" : "|",
+			 Splitter->isHidden() ? " " : "v",
 			 QString::number(Splitter->count()).toStdString().c_str());
+		std::cout << (const char*)buf << "Splitter "
+			<< ((Splitter->orientation() == Qt::Vertical) ? "--" : "|") << " "
+			<< (Splitter->isHidden() ? " " : "v") << " "
+		    << QString::number(Splitter->count()).toStdString() << std::endl;
 		for (int i = 0; i < Splitter->count(); ++i)
 		{
 			dumpRecursive(level + 1, Splitter->widget(i));
@@ -771,6 +775,19 @@ void DockContainerWidgetPrivate::dumpRecursive(int level, QWidget* widget)
 			return;
 		}
 		qDebug("%sDockArea", (const char*)buf);
+		std::cout << (const char*)buf
+			<< (DockArea->isHidden() ? " " : "v")
+			<< (DockArea->openDockWidgetsCount() > 0 ? " " : "c")
+			<< " DockArea" << std::endl;
+		buf.fill(' ', (level + 1) * 4);
+		for (int i = 0; i < DockArea->dockWidgetsCount(); ++i)
+		{
+			std::cout << (const char*)buf << (i == DockArea->currentIndex() ? "*" : " ");
+			CDockWidget* DockWidget = DockArea->dockWidget(i);
+			std::cout << (DockWidget->isHidden() ? " " : "v");
+			std::cout << (DockWidget->isClosed() ? "c" : " ") << " ";
+			std::cout << DockWidget->windowTitle().toStdString() << std::endl;
+		}
 	}
 #else
 	Q_UNUSED(level);
@@ -922,10 +939,10 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 	d->DockAreas.removeAll(area);
 	CDockSplitter* Splitter = internal::findParent<CDockSplitter*>(area);
 
-	// Remove are from parent splitter and hide splitter if it has no visible
-	// content
+	// Remove are from parent splitter and recursively hide tree of parent
+	// splitters if it has no visible content
 	area->setParent(0);
-	Splitter->setVisible(Splitter->hasVisibleContent());
+	internal::hideEmptyParentSplitters(Splitter);
 
 	// If splitter has more than 1 widgets, we are finished and can leave
 	if (Splitter->count() >  1)
@@ -1040,9 +1057,6 @@ int CDockContainerWidget::visibleDockAreaCount() const
 void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWidget,
 	const QPoint& TargetPos)
 {
-	QElapsedTimer Timer;
-	Timer.start();
-
 	qDebug() << "CDockContainerWidget::dropFloatingWidget";
 	CDockAreaWidget* DockArea = dockAreaAt(TargetPos);
 	auto dropArea = InvalidDockWidgetArea;
@@ -1203,8 +1217,10 @@ void CDockContainerWidget::dumpLayout()
 {
 #if (ADS_DEBUG_LEVEL > 0)
 	qDebug("\n\nDumping layout --------------------------");
+	std::cout << "\n\nDumping layout --------------------------" << std::endl;
 	d->dumpRecursive(0, d->RootSplitter);
 	qDebug("--------------------------\n\n");
+	std::cout << "--------------------------\n\n" << std::endl;
 #endif
 }
 

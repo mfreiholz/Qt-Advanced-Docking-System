@@ -32,6 +32,7 @@
 #include "DockManager.h"
 
 #include <algorithm>
+#include <iostream>
 
 #include <QMainWindow>
 #include <QList>
@@ -53,8 +54,6 @@
 #include "DockStateSerialization.h"
 #include "DockAreaWidget.h"
 
-#include <QElapsedTimer>
-#include <iostream>
 
 namespace ads
 {
@@ -515,10 +514,6 @@ QByteArray CDockManager::saveState(eXmlMode XmlMode, int version) const
 //============================================================================
 bool CDockManager::restoreState(const QByteArray &state, int version)
 {
-	std::cout << "CDockManager::restoreState-----------------------" << std::endl;
-	QElapsedTimer Timer;
-	Timer.start();
-
 	// Prevent multiple calls as long as state is not restore. This may
 	// happen, if QApplication::processEvents() is called somewhere
 	if (d->RestoringState)

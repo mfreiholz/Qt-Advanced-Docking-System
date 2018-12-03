@@ -224,7 +224,6 @@ bool DockWidgetTabPrivate::startFloating()
 	}
 	else
 	{
-		qDebug() << "DockWidgetTabPrivate::startFloating DockArea";
 		// If section widget has only one content widget, we can move the complete
 		// dock area into floating widget
 		FloatingWidget = new CFloatingDockContainer(DockArea);

@@ -87,6 +87,20 @@ QPixmap createTransparentPixmap(const QPixmap& Source, qreal Opacity)
 }
 
 
+//============================================================================
+void hideEmptyParentSplitters(CDockSplitter* Splitter)
+{
+	while (Splitter && Splitter->isVisible())
+	{
+		if (!Splitter->hasVisibleContent())
+		{
+			Splitter->hide();
+		}
+		Splitter = internal::findParent<CDockSplitter*>(Splitter);
+	}
+}
+
+
 } // namespace internal
 } // namespace ads
 

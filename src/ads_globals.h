@@ -46,6 +46,8 @@ class QSplitter;
 
 namespace ads
 {
+class CDockSplitter;
+
 enum DockWidgetArea
 {
 	NoDockWidgetArea = 0x00,
@@ -82,6 +84,12 @@ QSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent = 0);
  * Replace the from widget in the given splitter with the To widget
  */
 void replaceSplitterWidget(QSplitter* Splitter, QWidget* From, QWidget* To);
+
+/**
+ * This function walks the splitter tree upwards to hides all splitters
+ * that do not have visible content
+ */
+void hideEmptyParentSplitters(CDockSplitter* FirstParentSplitter);
 
 /**
  * Convenience class for QPair to provide better naming than first and
