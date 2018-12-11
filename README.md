@@ -19,22 +19,22 @@ There is no central widget like in the Qt docking system. You can dock on every
 border of the main window or you can dock into each dock area - so you are
 free to dock almost everywhere.
 
-![Layout of widgets](preview.png) 
+![Layout of widgets](doc/preview.png) 
 
-![Dropping widgets](preview-dragndrop.png)
+![Dropping widgets](doc/preview-dragndrop.png)
 
 ### Docking inside floating windows
 There is no difference between the main window and a floating window. Docking
 into floating windows is supported.
 
-![Docking inside floating windows](floating-widget-dragndrop.png)
+![Docking inside floating windows](doc/floating-widget-dragndrop.png)
 
 ### Grouped dragging
 When dragging the titlebar of a dock, all the tabs that are tabbed with it are 
 going to be dragged. So you can move complete groups of tabbed widgets into
 a floating widget or from one dock area to another one.
 
-![Grouped dragging](grouped-dragging.png)
+![Grouped dragging](doc/grouped-dragging.png)
 
 ### Perspectives for fast switching of the complete main window layout
 A perspective defines the set and layout of dock windows in the main
@@ -43,7 +43,7 @@ perspective to make your own custom perspective. Later you can simply
 select a perspective from the perspective list to quickly switch the complete 
 main window layout.
 
-![Perspective](perspectives.png)
+![Perspective](doc/perspectives.png)
 
 ## Tested Compatible Environments
 - Windows 10
