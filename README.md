@@ -19,7 +19,7 @@ There is no central widget like in the Qt docking system. You can dock on every
 border of the main window or you can dock into each dock area - so you are
 free to dock almost everywhere.
 
-![Layout of widgets](preview.png) 
+![Layout of widgets](doc/preview.png) 
 
 ![Dropping widgets](preview-dragndrop.png)
 
