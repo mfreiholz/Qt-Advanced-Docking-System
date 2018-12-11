@@ -58,7 +58,7 @@ private:
 	DockAreaWidgetPrivate* d; ///< private data (pimpl)
 	friend struct DockAreaWidgetPrivate;
 	friend class CDockContainerWidget;
-	friend class DockContainerWidgetPrivate;
+	friend struct DockContainerWidgetPrivate;
 	friend class CDockWidgetTab;
 	friend struct DockWidgetPrivate;
 	friend class CDockWidget;

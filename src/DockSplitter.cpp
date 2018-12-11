@@ -52,7 +52,8 @@ CDockSplitter::CDockSplitter(QWidget *parent)
 	: QSplitter(parent),
 	  d(new DockSplitterPrivate(this))
 {
-
+	setProperty("ads-splitter", true);
+	setChildrenCollapsible(false);
 }
 
 

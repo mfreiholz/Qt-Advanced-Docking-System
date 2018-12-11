@@ -123,7 +123,8 @@ public:
 		ActiveTabHasCloseButton = 0x01,    //!< If this flag is set, the active tab in a tab area has a close button
 		DockAreaHasCloseButton = 0x02,     //!< If the flag is set each dock area has a close button
 		DockAreaCloseButtonClosesTab = 0x04,//!< If the flag is set, the dock area close button closes the active tab, if not set, it closes the complete cock area
-		DefaultConfig = ActiveTabHasCloseButton | DockAreaHasCloseButton, ///< the default configuration
+		OpaqueSplitterResize = 0x08, //!< See QSplitter::setOpaqueResize() documentation
+		DefaultConfig = ActiveTabHasCloseButton | DockAreaHasCloseButton | OpaqueSplitterResize, ///< the default configuration
 	};
 	Q_DECLARE_FLAGS(ConfigFlags, eConfigFlag)
 
@@ -329,6 +330,11 @@ signals:
 	 * This signal is emitted if the list of perspectives changed
 	 */
 	void perspectiveListChanged();
+
+	/**
+	 * This signal is emitted if perspectives have been removed
+	 */
+	void perspectivesRemoved();
 
 	/**
 	 * This signal is emitted, if the restore function is called, just before

@@ -51,7 +51,6 @@
 #include "DockOverlay.h"
 #include "DockWidget.h"
 #include "ads_globals.h"
-#include "DockStateSerialization.h"
 #include "DockAreaWidget.h"
 
 
@@ -217,12 +216,12 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     }
 
     bool Result = true;
-    int  DockContainers = s.attributes().value("DockContainers").toInt();
+    int  DockContainers = s.attributes().value("Containers").toInt();
     qDebug() << DockContainers;
     int DockContainerCount = 0;
     while (s.readNextStartElement())
     {
-    	if (s.name() == "DockContainerWidget")
+    	if (s.name() == "Container")
     	{
     		Result = restoreContainer(DockContainerCount, s, Testing);
 			if (!Result)
@@ -391,12 +390,12 @@ void DockManagerPrivate::addActionToMenu(QAction* Action, QMenu* Menu, bool Inse
 }
 
 
-
 //============================================================================
 CDockManager::CDockManager(QWidget *parent) :
 	CDockContainerWidget(this, parent),
 	d(new DockManagerPrivate(this))
 {
+	createRootSplitter();
 	QMainWindow* MainWindow = dynamic_cast<QMainWindow*>(parent);
 	if (MainWindow)
 	{
@@ -498,7 +497,7 @@ QByteArray CDockManager::saveState(eXmlMode XmlMode, int version) const
     s.writeStartDocument();
 		s.writeStartElement("QtAdvancedDockingSystem");
 		s.writeAttribute("Version", QString::number(version));
-		s.writeAttribute("DockContainers", QString::number(d->Containers.count()));
+		s.writeAttribute("Containers", QString::number(d->Containers.count()));
 		for (auto Container : d->Containers)
 		{
 			Container->saveState(s);
@@ -606,10 +605,7 @@ void CDockManager::addPerspective(const QString& UniquePrespectiveName)
 //============================================================================
 void CDockManager::removePerspective(const QString& Name)
 {
-	if (d->Perspectives.remove(Name))
-	{
-		emit perspectiveListChanged();
-	}
+	removePerspectives({Name});
 }
 
 
@@ -624,6 +620,7 @@ void CDockManager::removePerspectives(const QStringList& Names)
 
 	if (Count)
 	{
+		emit perspectivesRemoved();
 		emit perspectiveListChanged();
 	}
 }

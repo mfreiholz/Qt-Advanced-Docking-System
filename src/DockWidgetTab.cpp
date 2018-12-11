@@ -74,7 +74,7 @@ struct DockWidgetTabPrivate
 {
 	CDockWidgetTab* _this;
 	CDockWidget* DockWidget;
-	QLabel* IconLabel;
+	QLabel* IconLabel = nullptr;
 	tTabLabel* TitleLabel;
 	QPoint DragStartMousePosition;
 	bool IsActiveTab = false;
@@ -416,15 +416,35 @@ CDockAreaWidget* CDockWidgetTab::dockAreaWidget() const
 void CDockWidgetTab::setIcon(const QIcon& Icon)
 {
 	QBoxLayout* Layout = qobject_cast<QBoxLayout*>(layout());
+	if (!d->IconLabel && Icon.isNull())
+	{
+		return;
+	}
+
+	if (!d->IconLabel)
+	{
+		d->IconLabel = new QLabel();
+		d->IconLabel->setAlignment(Qt::AlignVCenter);
+		d->IconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+		d->IconLabel->setToolTip(d->TitleLabel->toolTip());
+		Layout->insertWidget(0, d->IconLabel, Qt::AlignVCenter);
+		Layout->insertSpacing(1, qRound(1.5 * Layout->contentsMargins().left() / 2.0));
+	}
+	else if (Icon.isNull())
+	{
+		// Remove icon label and spacer item
+		Layout->removeWidget(d->IconLabel);
+		Layout->removeItem(Layout->itemAt(0));
+		delete d->IconLabel;
+		d->IconLabel = nullptr;
+	}
+
 	d->Icon = Icon;
-	d->IconLabel = new QLabel();
-	d->IconLabel->setAlignment(Qt::AlignVCenter);
-	d->IconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
-	d->IconLabel->setToolTip(d->TitleLabel->toolTip());
-	d->IconLabel->setPixmap(Icon.pixmap(this->windowHandle(), QSize(16, 16)));
-	Layout->insertWidget(0, d->IconLabel, Qt::AlignVCenter);
-	Layout->insertSpacing(1, qRound(1.5 * Layout->contentsMargins().left() / 2.0));
-	d->IconLabel->setVisible(true);
+	if (d->IconLabel)
+	{
+		d->IconLabel->setPixmap(Icon.pixmap(this->windowHandle(), QSize(16, 16)));
+		d->IconLabel->setVisible(true);
+	}
 }
 
 

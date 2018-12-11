@@ -41,16 +41,6 @@ namespace ads
 namespace internal
 {
 //============================================================================
-QSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent)
-{
-	QSplitter* s = new CDockSplitter(orientation, parent);
-	s->setProperty("ads-splitter", QVariant(true));
-	s->setChildrenCollapsible(false);
-	s->setOpaqueResize(false);
-	return s;
-}
-
-//============================================================================
 void replaceSplitterWidget(QSplitter* Splitter, QWidget* From, QWidget* To)
 {
 	int index = Splitter->indexOf(From);

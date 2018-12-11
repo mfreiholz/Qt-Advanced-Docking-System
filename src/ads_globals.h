@@ -33,6 +33,7 @@
 #include <QPair>
 #include <QtCore/QtGlobal>
 #include <QPixmap>
+#include <QWidget>
 
 #ifdef ADS_SHARED_EXPORT
 #define ADS_EXPORT Q_DECL_EXPORT
@@ -73,12 +74,8 @@ enum TitleBarButton
 
 namespace internal
 {
-
-
-/**
- * Helper function to create new splitter widgets
- */
-QSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent = 0);
+static const bool RestoreTesting = true;
+static const bool Restore = false;
 
 /**
  * Replace the from widget in the given splitter with the To widget

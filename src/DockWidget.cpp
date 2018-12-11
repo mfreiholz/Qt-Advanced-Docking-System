@@ -47,7 +47,6 @@
 #include "DockAreaWidget.h"
 #include "DockManager.h"
 #include "FloatingDockContainer.h"
-#include "DockStateSerialization.h"
 #include "DockSplitter.h"
 #include "ads_globals.h"
 
@@ -183,7 +182,7 @@ void DockWidgetPrivate::setupToolBar()
 {
 	ToolBar = new QToolBar(_this);
 	ToolBar->setObjectName("dockWidgetToolBar");
-	Layout->addWidget(ToolBar);
+	Layout->insertWidget(0, ToolBar);
 	ToolBar->setIconSize(QSize(16, 16));
 	ToolBar->toggleViewAction()->setEnabled(false);
 	ToolBar->toggleViewAction()->setVisible(false);
@@ -474,8 +473,8 @@ void CDockWidget::setDockArea(CDockAreaWidget* DockArea)
 //============================================================================
 void CDockWidget::saveState(QXmlStreamWriter& s) const
 {
-	s.writeStartElement("DockWidget");
-	s.writeAttribute("ObjectName", objectName());
+	s.writeStartElement("Widget");
+	s.writeAttribute("Name", objectName());
 	s.writeAttribute("Closed", QString::number(d->Closed ? 1 : 0));
 	s.writeEndElement();
 }

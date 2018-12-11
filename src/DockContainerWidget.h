@@ -79,6 +79,11 @@ protected:
 	QSplitter* rootSplitter() const;
 
 	/**
+	 * Helper function for creation of the root splitter
+	 */
+	void createRootSplitter();
+
+	/**
 	 * Drop floating widget into the container
 	 */
 	void dropFloatingWidget(CFloatingDockContainer* FloatingWidget, const QPoint& TargetPos);

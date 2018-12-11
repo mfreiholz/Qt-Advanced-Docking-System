@@ -690,13 +690,13 @@ void CDockAreaWidget::updateTitleBarVisibility()
 //============================================================================
 void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 {
-	s.writeStartElement("DockAreaWidget");
+	s.writeStartElement("Area");
 	s.writeAttribute("Tabs", QString::number(d->ContentsLayout->count()));
 	auto CurrentDockWidget = currentDockWidget();
 	QString Name = CurrentDockWidget ? CurrentDockWidget->objectName() : "";
-	s.writeAttribute("CurrentDockWidget", Name);
+	s.writeAttribute("Current", Name);
 	qDebug() << "CDockAreaWidget::saveState TabCount: " << d->ContentsLayout->count()
-			<< " CurrentDockWidge: " << Name;
+			<< " Current: " << Name;
 	for (int i = 0; i < d->ContentsLayout->count(); ++i)
 	{
 		dockWidget(i)->saveState(s);
