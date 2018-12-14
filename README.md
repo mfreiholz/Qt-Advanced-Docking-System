@@ -58,6 +58,68 @@ main window layout.
 Open the `ads.pro` with QtCreator and start the build, that's it.
 You can run the demo project and test it yourself.
 
+## Getting started / Example
+The following example shows the minimum code required to use the advanced Qt docking system.
+
+*MainWindow.h*
+
+```cpp
+#include <QMainWindow>
+#include "DockManager.h"
+
+namespace Ui {
+class MainWindow;
+}
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
+
+private:
+    Ui::MainWindow *ui;
+    
+    // The main container for docking
+    ads::CDockManager* m_DockManager;
+};
+```
+*MainWindow.cpp*
+```cpp
+#include "MainWindow.h"
+#include "ui_MainWindow.h"
+
+#include <QLabel>
+
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+
+    // Create the dock manager
+	m_DockManager = new ads::CDockManager(this);
+
+	QLabel* l = new QLabel();
+	l->setWordWrap(true);
+	l->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	l->setText("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. ");
+
+	// Create a dock widget with the title Label 1
+	ads::CDockWidget* DockWidget = new ads::CDockWidget("Label 1");
+	DockWidget->setWidget(l);
+	ui->menuView->addAction(DockWidget->toggleViewAction());
+	m_DockManager->addDockWidget(ads::TopDockWidgetArea, DockWidget);
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+```
+
 ## Developers
 - Uwe Kindler, Project Maintainer
 - Manuel Freiholz 
