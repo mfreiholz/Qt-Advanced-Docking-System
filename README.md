@@ -100,18 +100,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     // Create the dock manager
-	m_DockManager = new ads::CDockManager(this);
+    m_DockManager = new ads::CDockManager(this);
 
-	QLabel* l = new QLabel();
-	l->setWordWrap(true);
-	l->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	l->setText("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. ");
+    QLabel* l = new QLabel();
+    l->setWordWrap(true);
+    l->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+    l->setText("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. ");
 
-	// Create a dock widget with the title Label 1
-	ads::CDockWidget* DockWidget = new ads::CDockWidget("Label 1");
-	DockWidget->setWidget(l);
-	ui->menuView->addAction(DockWidget->toggleViewAction());
-	m_DockManager->addDockWidget(ads::TopDockWidgetArea, DockWidget);
+    // Create a dock widget with the title Label 1
+    ads::CDockWidget* DockWidget = new ads::CDockWidget("Label 1");
+    DockWidget->setWidget(l);
+    ui->menuView->addAction(DockWidget->toggleViewAction());
+    m_DockManager->addDockWidget(ads::TopDockWidgetArea, DockWidget);
 }
 
 MainWindow::~MainWindow()
