@@ -43,7 +43,7 @@ namespace ads
 struct DockAreaWidgetPrivate;
 class CDockManager;
 class CDockContainerWidget;
-struct DockContainerWidgetPrivate;
+class DockContainerWidgetPrivate;
 
 
 /**
@@ -58,7 +58,7 @@ private:
 	DockAreaWidgetPrivate* d; ///< private data (pimpl)
 	friend struct DockAreaWidgetPrivate;
 	friend class CDockContainerWidget;
-	friend struct DockContainerWidgetPrivate;
+	friend class DockContainerWidgetPrivate;
 	friend class CDockWidgetTab;
 	friend struct DockWidgetPrivate;
 	friend class CDockWidget;
