@@ -50,7 +50,7 @@ class CDockAreaTitleBar : public QFrame
 	Q_OBJECT
 private:
 	DockAreaTitleBarPrivate* d; ///< private data (pimpl)
-	friend class DockAreaTitleBarPrivate;
+	friend struct DockAreaTitleBarPrivate;
 
 private slots:
 	void markTabsMenuOutdated();

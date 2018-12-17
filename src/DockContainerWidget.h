@@ -57,7 +57,7 @@ class ADS_EXPORT CDockContainerWidget : public QFrame
 	Q_OBJECT
 private:
 	DockContainerWidgetPrivate* d; ///< private data (pimpl)
-	friend struct DockContainerWidgetPrivate;
+    friend class DockContainerWidgetPrivate;
 	friend class CDockManager;
 	friend struct DockManagerPrivate;
 	friend class CDockAreaWidget;

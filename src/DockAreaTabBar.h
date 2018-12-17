@@ -49,7 +49,7 @@ class CDockAreaTabBar : public QScrollArea
 	Q_OBJECT
 private:
 	DockAreaTabBarPrivate* d; ///< private data (pimpl)
-	friend class DockAreaTabBarPrivate;
+	friend struct DockAreaTabBarPrivate;
 	friend class CDockAreaTitleBar;
 
 private slots:
