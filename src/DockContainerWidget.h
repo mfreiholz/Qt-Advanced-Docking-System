@@ -233,6 +233,11 @@ public:
 	 */
 	CFloatingDockContainer* floatingWidget() const;
 
+	/**
+	 * Call this function to close all dock areas except the KeepOpenArea
+	 */
+	void closeOtherAreas(CDockAreaWidget* KeepOpenArea);
+
 signals:
 	/**
 	 * This signal is emitted if one or multiple dock areas has been added to

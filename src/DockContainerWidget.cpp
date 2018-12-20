@@ -1378,6 +1378,19 @@ CFloatingDockContainer* CDockContainerWidget::floatingWidget() const
 }
 
 
+//============================================================================
+void CDockContainerWidget::closeOtherAreas(CDockAreaWidget* KeepOpenArea)
+{
+	for (const auto DockArea : d->DockAreas)
+	{
+		if (DockArea != KeepOpenArea && DockArea->features().testFlag(CDockWidget::DockWidgetClosable))
+		{
+			DockArea->closeArea();
+		}
+	}
+}
+
+
 } // namespace ads
 
 #include "moc_DockContainerWidget.cpp"

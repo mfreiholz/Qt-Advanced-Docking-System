@@ -259,6 +259,11 @@ public slots:
 	 */
 	void closeArea();
 
+	/**
+	 * This function closes all other areas except of this area
+	 */
+	void closeOtherAreas();
+
 signals:
 	/**
 	 * This signal is emitted when user clicks on a tab at an index.

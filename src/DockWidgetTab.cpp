@@ -123,7 +123,7 @@ struct DockWidgetTabPrivate
 	 * Returns true, if floating has been started and false if floating
 	 * is not possible for any reason
 	 */
-	bool startFloating();
+	bool startFloating(eDragState DraggingState = DraggingFloatingWidget);
 
 	/**
 	 * Returns true if the given config flag is set
@@ -197,7 +197,7 @@ void DockWidgetTabPrivate::moveTab(QMouseEvent* ev)
 
 
 //============================================================================
-bool DockWidgetTabPrivate::startFloating()
+bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
 {
 	auto dockContainer = DockWidget->dockContainer();
 	qDebug() << "isFloating " << dockContainer->isFloating();
@@ -214,7 +214,7 @@ bool DockWidgetTabPrivate::startFloating()
 	}
 
 	qDebug() << "startFloating";
-	DragState = DraggingFloatingWidget;
+	DragState = DraggingState;
 	QSize Size = DockArea->size();
 	CFloatingDockContainer* FloatingWidget = nullptr;
 	if (DockArea->dockWidgetsCount() > 1)
@@ -230,10 +230,13 @@ bool DockWidgetTabPrivate::startFloating()
 	}
 
     FloatingWidget->startFloating(DragStartMousePosition, Size);
-    auto Overlay = DockWidget->dockManager()->containerOverlay();
-	Overlay->setAllowedAreas(OuterDockAreas);
-	this->FloatingWidget = FloatingWidget;
-	DockWidget->emitTopLevelChanged(true);
+    if (DraggingFloatingWidget == DraggingState)
+    {
+    	auto Overlay = DockWidget->dockManager()->containerOverlay();
+    	Overlay->setAllowedAreas(OuterDockAreas);
+    	this->FloatingWidget = FloatingWidget;
+    }
+    DockWidget->emitTopLevelChanged(true);
 	return true;
 }
 
@@ -471,7 +474,7 @@ void CDockWidgetTab::mouseDoubleClickEvent(QMouseEvent *event)
 	if (!d->DockArea->dockContainer()->isFloating() || d->DockArea->dockWidgetsCount() > 1)
 	{
 		d->DragStartMousePosition = event->pos();
-		d->startFloating();
+		d->startFloating(DraggingInactive);
 	}
 
 	Super::mouseDoubleClickEvent(event);
@@ -497,7 +500,7 @@ bool CDockWidgetTab::isClosable() const
 void CDockWidgetTab::onDetachActionTriggered()
 {
 	d->DragStartMousePosition = mapFromGlobal(QCursor::pos());
-	d->startFloating();
+	d->startFloating(DraggingInactive);
 }
 
 } // namespace ads

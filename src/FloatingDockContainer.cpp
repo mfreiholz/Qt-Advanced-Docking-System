@@ -435,14 +435,14 @@ bool CFloatingDockContainer::eventFilter(QObject *watched, QEvent *event)
 
 
 //============================================================================
-void CFloatingDockContainer::startFloating(const QPoint& Pos, const QSize& Size)
+void CFloatingDockContainer::startFloating(const QPoint& DragStartMousePos, const QSize& Size)
 {
 	resize(Size);
 	d->setState(StateDraggingActive);
-	QPoint TargetPos = QCursor::pos() - Pos;
-	move(TargetPos);
+	d->DragStartMousePosition = DragStartMousePos;
+	moveFloating();
     show();
-	d->DragStartMousePosition = Pos;
+
 }
 
 

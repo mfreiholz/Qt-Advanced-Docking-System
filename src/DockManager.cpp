@@ -759,6 +759,7 @@ void CDockManager::setConfigFlags(const ConfigFlags Flags)
 	d->ConfigFlags = Flags;
 }
 
+
 } // namespace ads
 
 //---------------------------------------------------------------------------

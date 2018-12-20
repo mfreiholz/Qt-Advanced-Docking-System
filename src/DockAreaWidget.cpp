@@ -779,6 +779,13 @@ void CDockAreaWidget::closeArea()
 		DockWidget->toggleView(false);
 	}
 }
+
+
+//============================================================================
+void CDockAreaWidget::closeOtherAreas()
+{
+	dockContainer()->closeOtherAreas(this);
+}
 } // namespace ads
 
 //---------------------------------------------------------------------------

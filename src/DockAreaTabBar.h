@@ -84,12 +84,12 @@ protected:
 	/**
 	 * Starts floating
 	 */
-	void startFloating(const QPoint& Pos);
+	void startFloating(const QPoint& Offset);
 
 	/**
-	 * Makes the dock area loating
+	 * Makes the dock area floating
 	 */
-	CFloatingDockContainer* makeAreaFloating(const QPoint& Pos);
+	CFloatingDockContainer* makeAreaFloating(const QPoint& Offset);
 
 
 public:
