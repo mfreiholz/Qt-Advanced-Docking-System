@@ -3,4 +3,5 @@ CONFIG   += ordered
 
 SUBDIRS = \
 	src \
-	demo
+	demo \
+	example

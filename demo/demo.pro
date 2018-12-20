@@ -25,7 +25,7 @@ LIBS += -L$${ADS_OUT_ROOT}/lib
 # Dependency: AdvancedDockingSystem (shared)
 win32:CONFIG(release, debug|release): LIBS += -lqtadvanceddocking
 else:win32:CONFIG(debug, debug|release): LIBS += -lqtadvanceddockingd
-else:unix: LIBS += -lAdvancedDockingSystem
+else:unix: LIBS += -lqtadvanceddocking
 
 INCLUDEPATH += ../src
 DEPENDPATH += ../src
