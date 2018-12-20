@@ -265,7 +265,7 @@ void CDockAreaTitleBar::onCloseButtonClicked()
 //============================================================================
 void CDockAreaTitleBar::onUndockButtonClicked()
 {
-	d->TabBar->makeAreaFloating(mapFromGlobal(QCursor::pos()));
+	d->TabBar->makeAreaFloating(mapFromGlobal(QCursor::pos()), DraggingInactive);
 }
 
 

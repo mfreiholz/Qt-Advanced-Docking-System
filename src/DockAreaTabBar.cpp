@@ -228,16 +228,17 @@ void CDockAreaTabBar::mouseDoubleClickEvent(QMouseEvent *event)
 	{
 		return;
 	}
-	startFloating(event->pos());
+	makeAreaFloating(event->pos(), DraggingInactive);
 }
 
 
 //============================================================================
-CFloatingDockContainer* CDockAreaTabBar::makeAreaFloating(const QPoint& Offset)
+CFloatingDockContainer* CDockAreaTabBar::makeAreaFloating(const QPoint& Offset,
+	eDragState DragState)
 {
 	QSize Size = d->DockArea->size();
 	CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(d->DockArea);
-	FloatingWidget->startFloating(Offset, Size);
+	FloatingWidget->startFloating(Offset, Size, DragState);
 	auto TopLevelDockWidget = FloatingWidget->topLevelDockWidget();
 	if (TopLevelDockWidget)
 	{
@@ -251,7 +252,7 @@ CFloatingDockContainer* CDockAreaTabBar::makeAreaFloating(const QPoint& Offset)
 //============================================================================
 void CDockAreaTabBar::startFloating(const QPoint& Offset)
 {
-	d->FloatingWidget = makeAreaFloating(Offset);
+	d->FloatingWidget = makeAreaFloating(Offset, DraggingFloatingWidget);
 }
 
 

@@ -72,6 +72,17 @@ enum TitleBarButton
 	TitleBarButtonClose
 };
 
+/**
+ * The different dragging states
+ */
+enum eDragState
+{
+	DraggingInactive,     //!< DraggingInactive
+	DraggingMousePressed, //!< DraggingMousePressed
+	DraggingTab,          //!< DraggingTab
+	DraggingFloatingWidget//!< DraggingFloatingWidget
+};
+
 namespace internal
 {
 static const bool RestoreTesting = true;

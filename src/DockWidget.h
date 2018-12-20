@@ -45,6 +45,7 @@ class CDockManager;
 class CDockContainerWidget;
 class CDockAreaWidget;
 class DockContainerWidgetPrivate;
+class CFloatingDockContainer;
 
 /**
  * The QDockWidget class provides a widget that can be docked inside a

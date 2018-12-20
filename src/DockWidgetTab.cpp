@@ -53,16 +53,6 @@
 
 namespace ads
 {
-/**
- * The different dragging states
- */
-enum eDragState
-{
-	DraggingInactive,     //!< DraggingInactive
-	DraggingMousePressed, //!< DraggingMousePressed
-	DraggingTab,          //!< DraggingTab
-	DraggingFloatingWidget//!< DraggingFloatingWidget
-};
 
 using tTabLabel = CElidingLabel;
 using tCloseButton = QPushButton;
@@ -229,12 +219,16 @@ bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
 		FloatingWidget = new CFloatingDockContainer(DockArea);
 	}
 
-    FloatingWidget->startFloating(DragStartMousePosition, Size);
     if (DraggingFloatingWidget == DraggingState)
     {
+    	FloatingWidget->startDragging(DragStartMousePosition, Size);
     	auto Overlay = DockWidget->dockManager()->containerOverlay();
     	Overlay->setAllowedAreas(OuterDockAreas);
     	this->FloatingWidget = FloatingWidget;
+    }
+    else
+    {
+     	FloatingWidget->initFloatingGeometry(DragStartMousePosition, Size);
     }
     DockWidget->emitTopLevelChanged(true);
 	return true;

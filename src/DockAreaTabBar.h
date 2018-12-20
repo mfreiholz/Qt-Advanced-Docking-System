@@ -30,6 +30,7 @@
 //                                   INCLUDES
 //============================================================================
 #include <QScrollArea>
+#include "ads_globals.h"
 
 namespace ads
 {
@@ -89,7 +90,8 @@ protected:
 	/**
 	 * Makes the dock area floating
 	 */
-	CFloatingDockContainer* makeAreaFloating(const QPoint& Offset);
+	CFloatingDockContainer* makeAreaFloating(const QPoint& Offset,
+		eDragState DragState);
 
 
 public:

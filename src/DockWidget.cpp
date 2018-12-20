@@ -671,6 +671,7 @@ QSize CDockWidget::minimumSizeHint() const
 	return QSize(60, 40);
 }
 
+
 } // namespace ads
 
 //---------------------------------------------------------------------------
