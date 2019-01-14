@@ -346,7 +346,6 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
 void CDockWidgetTab::contextMenuEvent(QContextMenuEvent* ev)
 {
 	ev->accept();
-	std::cout << "CDockAreaTabBar::onTabContextMenuRequested" << std::endl;
 
 	d->DragStartMousePosition = ev->pos();
 	QMenu Menu(this);
