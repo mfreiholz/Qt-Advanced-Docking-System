@@ -1,5 +1,3 @@
-#include <windows.h>
-
 #include <MainWindow.h>
 #include <QString>
 #include <QFile>

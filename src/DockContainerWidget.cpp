@@ -399,7 +399,6 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 		return;
 	}
 
-	CDockContainerWidget* FloatingContainer = FloatingWidget->dockContainer();
 	auto InsertParam = internal::dockAreaInsertParameters(area);
 	auto NewDockAreas = FloatingWidget->dockContainer()->findChildren<CDockAreaWidget*>(
 		QString(), Qt::FindChildrenRecursively);
