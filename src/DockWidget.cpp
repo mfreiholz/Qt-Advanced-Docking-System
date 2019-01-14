@@ -214,7 +214,7 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 	setObjectName(title);
 
 	d->TabWidget = new CDockWidgetTab(this);
-	d->ToggleViewAction = new QAction(title);
+    d->ToggleViewAction = new QAction(title, nullptr);
 	d->ToggleViewAction->setCheckable(true);
 	connect(d->ToggleViewAction, SIGNAL(triggered(bool)), this,
 		SLOT(toggleView(bool)));
@@ -282,7 +282,18 @@ void CDockWidget::setFeatures(DockWidgetFeatures features)
 //============================================================================
 void CDockWidget::setFeature(DockWidgetFeature flag, bool on)
 {
+#if QT_VERSION >= 0x050700
 	d->Features.setFlag(flag, on);
+#else
+    if(on)
+    {
+        d->Features |= flag;
+    }
+    else
+    {
+        d->Features &= ~flag;
+    }
+#endif
 }
 
 

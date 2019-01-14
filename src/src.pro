@@ -28,6 +28,10 @@ windows {
 	}
 }
 
+unix {
+    CONFIG += c++11
+}
+
 RESOURCES += ads.qrc
 
 HEADERS += \
