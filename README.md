@@ -13,6 +13,10 @@ from Manuel Freiholz. I did an almost complete rewrite of his code to improve
 code quality, readibility and to fix all issues from the issue tracker 
 of his docking system project.
 
+The following video gives a first impression what is possible with the Advanced Docking System for Qt.
+
+[![Video Advanced Docking](doc/advanced-docking_video.png)](https://www.youtube.com/watch?v=7pdNfafg3Qc)
+
 ## Features
 ### Docking everywhere - no central widget
 There is no central widget like in the Qt docking system. You can dock on every
