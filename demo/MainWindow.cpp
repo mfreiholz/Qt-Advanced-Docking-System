@@ -57,7 +57,6 @@
 #include "DockManager.h"
 #include "DockWidget.h"
 #include "DockAreaWidget.h"
-#include "AnimatedLabel.h"
 
 
 //============================================================================
