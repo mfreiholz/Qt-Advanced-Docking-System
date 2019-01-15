@@ -168,7 +168,11 @@ struct DockOverlayCrossPrivate
 		QColor borderColor = iconColor(CDockOverlayCross::FrameColor);
 		QColor backgroundColor = iconColor(CDockOverlayCross::WindowBackgroundColor);
 
+#if QT_VERSION >= 0x050600
 		double DevicePixelRatio = _this->window()->devicePixelRatioF();
+#else
+        double DevicePixelRatio = _this->window()->devicePixelRatio();
+#endif
 		QSizeF PixmapSize = size * DevicePixelRatio;
 		QPixmap pm(PixmapSize.toSize());
 		pm.fill(QColor(0, 0, 0, 0));
@@ -577,8 +581,11 @@ void CDockOverlayCross::setupOverlayCross(CDockOverlay::eMode Mode)
 	areaWidgets.insert(BottomDockWidgetArea, d->createDropIndicatorWidget(BottomDockWidgetArea, Mode));
 	areaWidgets.insert(LeftDockWidgetArea, d->createDropIndicatorWidget(LeftDockWidgetArea, Mode));
 	areaWidgets.insert(CenterDockWidgetArea, d->createDropIndicatorWidget(CenterDockWidgetArea, Mode));
+#if QT_VERSION >= 0x050600
 	d->LastDevicePixelRatio = devicePixelRatioF();
-
+#else
+    d->LastDevicePixelRatio = devicePixelRatio();
+#endif
 	setAreaWidgets(areaWidgets);
 	d->UpdateRequired = false;
 }
@@ -596,7 +603,11 @@ void CDockOverlayCross::updateOverlayIcons()
 	{
 		d->updateDropIndicatorIcon(Widget);
 	}
+#if QT_VESION >= 0x050600
 	d->LastDevicePixelRatio = devicePixelRatioF();
+#else
+    d->LastDevicePixelRatio = devicePixelRatio();
+#endif
 }
 
 
