@@ -1,2 +1,10 @@
 *.pro.user
 / build
+*.o
+*.dylib
+*.app
+qrc_*
+moc_*
+ui_*
+Makefile
+
