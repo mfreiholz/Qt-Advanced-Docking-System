@@ -131,7 +131,7 @@ public:
 	bool isClosable() const;
 
 public slots:
-	virtual void setVisible(bool visible);
+	virtual void setVisible(bool visible) override;
 
 signals:
 	void activeTabChanged();
