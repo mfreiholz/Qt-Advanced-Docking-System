@@ -171,8 +171,6 @@ public:
 	void dropIntoCenterOfSection(CFloatingDockContainer* FloatingWidget,
 		CDockAreaWidget* TargetArea);
 
-	void dropIntoSectionWithSameOrientation();
-
 	/**
 	 * Adds new dock areas to the internal dock area list
 	 */
