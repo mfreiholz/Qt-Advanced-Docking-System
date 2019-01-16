@@ -125,13 +125,21 @@ public:
 	 */
 	QString text() const;
 
+
+	/**
+	 * Sets the tab text
+	 */
+	void setText(const QString& title);
+
 	/**
 	 * This function returns true if the assigned dock widget is closeable
 	 */
 	bool isClosable() const;
 
 public slots:
-	virtual void setVisible(bool visible) override;
+
+	  virtual void setVisible(bool visible) override;
+
 
 signals:
 	void activeTabChanged();

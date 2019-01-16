@@ -61,11 +61,11 @@ struct DockWidgetPrivate
 	CDockWidget* _this;
 	QBoxLayout* Layout;
 	QWidget* Widget = nullptr;
-	CDockWidgetTab* TabWidget;
+	CDockWidgetTab* TabWidget = nullptr;
 	CDockWidget::DockWidgetFeatures Features = CDockWidget::AllDockWidgetFeatures;
 	CDockManager* DockManager = nullptr;
 	CDockAreaWidget* DockArea = nullptr;
-	QAction* ToggleViewAction;
+	QAction* ToggleViewAction = nullptr;
 	bool Closed = false;
 	QScrollArea* ScrollArea = nullptr;
 	QToolBar* ToolBar = nullptr;
@@ -507,7 +507,16 @@ bool CDockWidget::event(QEvent *e)
 {
 	if (e->type() == QEvent::WindowTitleChange)
 	{
-		emit titleChanged(windowTitle());
+		const auto title = windowTitle();
+		if (d->TabWidget)
+		{
+			d->TabWidget->setText(title);
+		}
+		if (d->ToggleViewAction)
+		{
+			d->ToggleViewAction->setText(title);
+		}
+		emit titleChanged(title);
 	}
 	return QFrame::event(e);
 }
