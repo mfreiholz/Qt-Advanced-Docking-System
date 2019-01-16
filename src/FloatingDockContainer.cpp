@@ -51,16 +51,6 @@ namespace ads
 {
 static unsigned int zOrderCounter = 0;
 /**
- * The different dragging states
- */
-enum eDragState
-{
-	StateInactive,     //!< DraggingInactive
-	StateMousePressed, //!< DraggingMousePressed
-	StateDraggingActive//!< DraggingFloatingWidget
-};
-
-/**
  * Private data class of CFloatingDockContainer class (pimpl)
  */
 struct FloatingDockContainerPrivate
@@ -69,7 +59,7 @@ struct FloatingDockContainerPrivate
 	CDockContainerWidget* DockContainer;
 	unsigned int zOrderIndex = ++zOrderCounter;
 	QPointer<CDockManager> DockManager;
-	eDragState DraggingState = StateInactive;
+	eDragState DraggingState = DraggingInactive;
 	QPoint DragStartMousePosition;
 	CDockContainerWidget* DropContainer = nullptr;
 	CDockAreaWidget* SingleDockArea = nullptr;
@@ -111,7 +101,7 @@ FloatingDockContainerPrivate::FloatingDockContainerPrivate(CFloatingDockContaine
 //============================================================================
 void FloatingDockContainerPrivate::titleMouseReleaseEvent()
 {
-	setState(StateInactive);
+	setState(DraggingInactive);
 	if (!DropContainer)
 	{
 		return;
@@ -301,12 +291,12 @@ void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 	QWidget::moveEvent(event);
 	switch (d->DraggingState)
 	{
-	case StateMousePressed:
-		 d->setState(StateDraggingActive);
+	case DraggingMousePressed:
+		 d->setState(DraggingFloatingWidget);
 		 d->updateDropOverlays(QCursor::pos());
 		 break;
 
-	case StateDraggingActive:
+	case DraggingFloatingWidget:
 		 d->updateDropOverlays(QCursor::pos());
 		 break;
 	default:
@@ -319,7 +309,7 @@ void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 {
     qDebug() << "CFloatingDockContainer closeEvent";
-	d->setState(StateInactive);
+	d->setState(DraggingInactive);
 
     if (isClosable())
     {
@@ -365,20 +355,20 @@ bool CFloatingDockContainer::event(QEvent *e)
 {
 	switch (d->DraggingState)
 	{
-	case StateInactive:
+	case DraggingInactive:
 		if (e->type() == QEvent::NonClientAreaMouseButtonPress && QGuiApplication::mouseButtons() == Qt::LeftButton)
 		{
 			qDebug() << "FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type();
-			d->setState(StateMousePressed);
+			d->setState(DraggingMousePressed);
 		}
 	break;
 
-	case StateMousePressed:
+	case DraggingMousePressed:
 		switch (e->type())
 		{
 		case QEvent::NonClientAreaMouseButtonDblClick:
 			 qDebug() << "FloatingWidget::event QEvent::NonClientAreaMouseButtonDblClick";
-			 d->setState(StateInactive);
+			 d->setState(DraggingInactive);
 			 break;
 
 		case QEvent::Resize:
@@ -392,7 +382,7 @@ bool CFloatingDockContainer::event(QEvent *e)
 		     // change, we check, if we are not in maximized state.
 			 if (!isMaximized())
 			 {
-				 d->setState(StateInactive);
+				 d->setState(DraggingInactive);
 			 }
 			 break;
 
@@ -401,7 +391,7 @@ bool CFloatingDockContainer::event(QEvent *e)
 		}
 	break;
 
-	case StateDraggingActive:
+	case DraggingFloatingWidget:
 		if (e->type() == QEvent::NonClientAreaMouseButtonRelease)
 		{
 			qDebug() << "FloatingWidget::event QEvent::NonClientAreaMouseButtonRelease";
@@ -424,7 +414,7 @@ bool CFloatingDockContainer::event(QEvent *e)
 bool CFloatingDockContainer::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched);
-	if (event->type() == QEvent::MouseButtonRelease && d->isState(StateDraggingActive))
+	if (event->type() == QEvent::MouseButtonRelease && d->isState(DraggingFloatingWidget))
 	{
 		qDebug() << "FloatingWidget::eventFilter QEvent::MouseButtonRelease";
 		d->titleMouseReleaseEvent();
@@ -435,14 +425,15 @@ bool CFloatingDockContainer::eventFilter(QObject *watched, QEvent *event)
 
 
 //============================================================================
-void CFloatingDockContainer::startFloating(const QPoint& Pos, const QSize& Size)
+void CFloatingDockContainer::startFloating(const QPoint& DragStartMousePos, const QSize& Size,
+	eDragState DragState)
 {
 	resize(Size);
-	d->setState(StateDraggingActive);
-	QPoint TargetPos = QCursor::pos() - Pos;
-	move(TargetPos);
+	d->setState(DragState);
+	d->DragStartMousePosition = DragStartMousePos;
+	moveFloating();
     show();
-	d->DragStartMousePosition = Pos;
+
 }
 
 

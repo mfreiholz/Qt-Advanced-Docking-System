@@ -30,6 +30,7 @@
 //                                   INCLUDES
 //============================================================================
 #include <QScrollArea>
+#include "ads_globals.h"
 
 namespace ads
 {
@@ -49,7 +50,7 @@ class CDockAreaTabBar : public QScrollArea
 	Q_OBJECT
 private:
 	DockAreaTabBarPrivate* d; ///< private data (pimpl)
-	friend class DockAreaTabBarPrivate;
+	friend struct DockAreaTabBarPrivate;
 	friend class CDockAreaTitleBar;
 
 private slots:
@@ -84,12 +85,13 @@ protected:
 	/**
 	 * Starts floating
 	 */
-	void startFloating(const QPoint& Pos);
+	void startFloating(const QPoint& Offset);
 
 	/**
-	 * Makes the dock area loating
+	 * Makes the dock area floating
 	 */
-	CFloatingDockContainer* makeAreaFloating(const QPoint& Pos);
+	CFloatingDockContainer* makeAreaFloating(const QPoint& Offset,
+		eDragState DragState);
 
 
 public:

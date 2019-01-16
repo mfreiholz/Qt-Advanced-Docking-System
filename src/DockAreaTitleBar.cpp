@@ -47,6 +47,7 @@
 #include "DockWidgetTab.h"
 #include "DockAreaTabBar.h"
 
+#include <iostream>
 
 namespace ads
 {
@@ -173,6 +174,10 @@ void DockAreaTitleBarPrivate::createTabBar()
 	_this->connect(TabBar, SIGNAL(tabMoved(int, int)), SLOT(markTabsMenuOutdated()));
 	_this->connect(TabBar, SIGNAL(currentChanged(int)), SLOT(onCurrentTabChanged(int)));
 	_this->connect(TabBar, SIGNAL(tabBarClicked(int)), SIGNAL(tabBarClicked(int)));
+
+	TabBar->setContextMenuPolicy(Qt::CustomContextMenu);
+	_this->connect(TabBar, SIGNAL(customContextMenuRequested(const QPoint&)),
+		SLOT(showContextMenu(const QPoint&)));
 }
 
 
@@ -260,7 +265,7 @@ void CDockAreaTitleBar::onCloseButtonClicked()
 //============================================================================
 void CDockAreaTitleBar::onUndockButtonClicked()
 {
-	d->TabBar->makeAreaFloating(mapFromGlobal(QCursor::pos()));
+	d->TabBar->makeAreaFloating(mapFromGlobal(QCursor::pos()), DraggingInactive);
 }
 
 
@@ -307,6 +312,19 @@ QAbstractButton* CDockAreaTitleBar::button(TitleBarButton which) const
 void CDockAreaTitleBar::setVisible(bool Visible)
 {
 	Super::setVisible(Visible);
+}
+
+
+//============================================================================
+void CDockAreaTitleBar::showContextMenu(const QPoint& pos)
+{
+	QMenu Menu(this);
+	Menu.addAction(tr("Detach Area"), this, SLOT(onUndockButtonClicked()));
+	Menu.addSeparator();
+	auto Action = Menu.addAction(tr("Close Area"), this, SLOT(onCloseButtonClicked()));
+	Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetClosable));
+	Menu.addAction(tr("Close Other Areas"), d->DockArea, SLOT(closeOtherAreas()));
+	Menu.exec(mapToGlobal(pos));
 }
 
 

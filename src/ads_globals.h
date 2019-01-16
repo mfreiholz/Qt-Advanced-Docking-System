@@ -33,11 +33,16 @@
 #include <QPair>
 #include <QtCore/QtGlobal>
 #include <QPixmap>
+#include <QWidget>
 
+#ifndef ADS_STATIC
 #ifdef ADS_SHARED_EXPORT
 #define ADS_EXPORT Q_DECL_EXPORT
 #else
 #define ADS_EXPORT Q_DECL_IMPORT
+#endif
+#else
+#define ADS_EXPORT
 #endif
 
 #define ADS_DEBUG_LEVEL 0
@@ -71,14 +76,21 @@ enum TitleBarButton
 	TitleBarButtonClose
 };
 
+/**
+ * The different dragging states
+ */
+enum eDragState
+{
+	DraggingInactive,     //!< DraggingInactive
+	DraggingMousePressed, //!< DraggingMousePressed
+	DraggingTab,          //!< DraggingTab
+	DraggingFloatingWidget//!< DraggingFloatingWidget
+};
+
 namespace internal
 {
-
-
-/**
- * Helper function to create new splitter widgets
- */
-QSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent = 0);
+static const bool RestoreTesting = true;
+static const bool Restore = false;
 
 /**
  * Replace the from widget in the given splitter with the To widget

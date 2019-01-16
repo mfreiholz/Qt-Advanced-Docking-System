@@ -47,7 +47,6 @@
 #include "DockAreaWidget.h"
 #include "DockManager.h"
 #include "FloatingDockContainer.h"
-#include "DockStateSerialization.h"
 #include "DockSplitter.h"
 #include "ads_globals.h"
 
@@ -183,7 +182,7 @@ void DockWidgetPrivate::setupToolBar()
 {
 	ToolBar = new QToolBar(_this);
 	ToolBar->setObjectName("dockWidgetToolBar");
-	Layout->addWidget(ToolBar);
+	Layout->insertWidget(0, ToolBar);
 	ToolBar->setIconSize(QSize(16, 16));
 	ToolBar->toggleViewAction()->setEnabled(false);
 	ToolBar->toggleViewAction()->setVisible(false);
@@ -215,7 +214,7 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 	setObjectName(title);
 
 	d->TabWidget = new CDockWidgetTab(this);
-	d->ToggleViewAction = new QAction(title);
+    d->ToggleViewAction = new QAction(title, nullptr);
 	d->ToggleViewAction->setCheckable(true);
 	connect(d->ToggleViewAction, SIGNAL(triggered(bool)), this,
 		SLOT(toggleView(bool)));
@@ -283,7 +282,18 @@ void CDockWidget::setFeatures(DockWidgetFeatures features)
 //============================================================================
 void CDockWidget::setFeature(DockWidgetFeature flag, bool on)
 {
+#if QT_VERSION >= 0x050700
 	d->Features.setFlag(flag, on);
+#else
+    if(on)
+    {
+        d->Features |= flag;
+    }
+    else
+    {
+        d->Features &= ~flag;
+    }
+#endif
 }
 
 
@@ -474,8 +484,8 @@ void CDockWidget::setDockArea(CDockAreaWidget* DockArea)
 //============================================================================
 void CDockWidget::saveState(QXmlStreamWriter& s) const
 {
-	s.writeStartElement("DockWidget");
-	s.writeAttribute("ObjectName", objectName());
+	s.writeStartElement("Widget");
+	s.writeAttribute("Name", objectName());
 	s.writeAttribute("Closed", QString::number(d->Closed ? 1 : 0));
 	s.writeEndElement();
 }
@@ -680,6 +690,7 @@ QSize CDockWidget::minimumSizeHint() const
 {
 	return QSize(60, 40);
 }
+
 
 } // namespace ads
 

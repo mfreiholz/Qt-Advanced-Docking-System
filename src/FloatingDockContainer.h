@@ -81,7 +81,25 @@ protected:
 	 * Use moveToGlobalPos() to move the widget to a new position
 	 * depending on the start position given in Pos parameter
 	 */
-	void startFloating(const QPoint& Pos, const QSize& Size = QSize());
+	void startFloating(const QPoint& DragStartMousePos, const QSize& Size,
+		eDragState DragState);
+
+	/**
+	 * Call this function to start dragging the floating widget
+	 */
+	void startDragging(const QPoint& DragStartMousePos, const QSize& Size)
+	{
+		startFloating(DragStartMousePos, Size, DraggingFloatingWidget);
+	}
+
+	/**
+	 * Call this function if you just want to initialize the position
+	 * and size of the floating widget
+	 */
+	void initFloatingGeometry(const QPoint& DragStartMousePos, const QSize& Size)
+	{
+		startFloating(DragStartMousePos, Size, DraggingInactive);
+	}
 
 	/**
 	 * Moves the widget to a new position relative to the position given when

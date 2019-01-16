@@ -9,15 +9,11 @@ CONFIG *= c++14
 
 SOURCES += \
 	main.cpp \
-	MainWindow.cpp \
-	mhtabbar.cpp \
-	mhtabwidget.cpp
+	MainWindow.cpp
 
 
 HEADERS += \
-	MainWindow.h \
-	mhtabbar.h \
-	mhtabwidget.h
+	MainWindow.h
 
 FORMS += \
 	mainwindow.ui
@@ -27,9 +23,9 @@ RESOURCES += main.qrc
 LIBS += -L$${ADS_OUT_ROOT}/lib
 
 # Dependency: AdvancedDockingSystem (shared)
-win32:CONFIG(release, debug|release): LIBS += -lAdvancedDockingSystem
-else:win32:CONFIG(debug, debug|release): LIBS += -lAdvancedDockingSystemd
-else:unix: LIBS += -lAdvancedDockingSystem
+win32:CONFIG(release, debug|release): LIBS += -lqtadvanceddocking
+else:win32:CONFIG(debug, debug|release): LIBS += -lqtadvanceddockingd
+else:unix: LIBS += -lqtadvanceddocking
 
 INCLUDEPATH += ../src
 DEPENDPATH += ../src

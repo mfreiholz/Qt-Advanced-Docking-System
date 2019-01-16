@@ -43,7 +43,7 @@ namespace ads
 struct DockAreaWidgetPrivate;
 class CDockManager;
 class CDockContainerWidget;
-struct DockContainerWidgetPrivate;
+class DockContainerWidgetPrivate;
 
 
 /**
@@ -258,6 +258,11 @@ public slots:
 	 * Closes the dock area and all dock widgets in this area
 	 */
 	void closeArea();
+
+	/**
+	 * This function closes all other areas except of this area
+	 */
+	void closeOtherAreas();
 
 signals:
 	/**

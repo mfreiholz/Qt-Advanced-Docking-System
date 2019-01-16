@@ -46,7 +46,7 @@ class CElidingLabel : public QLabel
 	Q_OBJECT
 private:
 	ElidingLabelPrivate* d;
-	friend class ElidingLabelPrivate;
+	friend struct ElidingLabelPrivate;
 
 protected:
 	virtual void mouseReleaseEvent(QMouseEvent* event) override;

@@ -53,16 +53,6 @@
 
 namespace ads
 {
-/**
- * The different dragging states
- */
-enum eDragState
-{
-	DraggingInactive,     //!< DraggingInactive
-	DraggingMousePressed, //!< DraggingMousePressed
-	DraggingTab,          //!< DraggingTab
-	DraggingFloatingWidget//!< DraggingFloatingWidget
-};
 
 using tTabLabel = CElidingLabel;
 using tCloseButton = QPushButton;
@@ -74,7 +64,7 @@ struct DockWidgetTabPrivate
 {
 	CDockWidgetTab* _this;
 	CDockWidget* DockWidget;
-	QLabel* IconLabel;
+	QLabel* IconLabel = nullptr;
 	tTabLabel* TitleLabel;
 	QPoint DragStartMousePosition;
 	bool IsActiveTab = false;
@@ -123,7 +113,7 @@ struct DockWidgetTabPrivate
 	 * Returns true, if floating has been started and false if floating
 	 * is not possible for any reason
 	 */
-	bool startFloating();
+	bool startFloating(eDragState DraggingState = DraggingFloatingWidget);
 
 	/**
 	 * Returns true if the given config flag is set
@@ -197,7 +187,7 @@ void DockWidgetTabPrivate::moveTab(QMouseEvent* ev)
 
 
 //============================================================================
-bool DockWidgetTabPrivate::startFloating()
+bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
 {
 	auto dockContainer = DockWidget->dockContainer();
 	qDebug() << "isFloating " << dockContainer->isFloating();
@@ -214,7 +204,7 @@ bool DockWidgetTabPrivate::startFloating()
 	}
 
 	qDebug() << "startFloating";
-	DragState = DraggingFloatingWidget;
+	DragState = DraggingState;
 	QSize Size = DockArea->size();
 	CFloatingDockContainer* FloatingWidget = nullptr;
 	if (DockArea->dockWidgetsCount() > 1)
@@ -229,11 +219,18 @@ bool DockWidgetTabPrivate::startFloating()
 		FloatingWidget = new CFloatingDockContainer(DockArea);
 	}
 
-    FloatingWidget->startFloating(DragStartMousePosition, Size);
-    auto Overlay = DockWidget->dockManager()->containerOverlay();
-	Overlay->setAllowedAreas(OuterDockAreas);
-	this->FloatingWidget = FloatingWidget;
-	DockWidget->emitTopLevelChanged(true);
+    if (DraggingFloatingWidget == DraggingState)
+    {
+    	FloatingWidget->startDragging(DragStartMousePosition, Size);
+    	auto Overlay = DockWidget->dockManager()->containerOverlay();
+    	Overlay->setAllowedAreas(OuterDockAreas);
+    	this->FloatingWidget = FloatingWidget;
+    }
+    else
+    {
+     	FloatingWidget->initFloatingGeometry(DragStartMousePosition, Size);
+    }
+    DockWidget->emitTopLevelChanged(true);
 	return true;
 }
 
@@ -349,7 +346,6 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
 void CDockWidgetTab::contextMenuEvent(QContextMenuEvent* ev)
 {
 	ev->accept();
-	std::cout << "CDockAreaTabBar::onTabContextMenuRequested" << std::endl;
 
 	d->DragStartMousePosition = ev->pos();
 	QMenu Menu(this);
@@ -416,15 +412,35 @@ CDockAreaWidget* CDockWidgetTab::dockAreaWidget() const
 void CDockWidgetTab::setIcon(const QIcon& Icon)
 {
 	QBoxLayout* Layout = qobject_cast<QBoxLayout*>(layout());
+	if (!d->IconLabel && Icon.isNull())
+	{
+		return;
+	}
+
+	if (!d->IconLabel)
+	{
+		d->IconLabel = new QLabel();
+		d->IconLabel->setAlignment(Qt::AlignVCenter);
+		d->IconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+		d->IconLabel->setToolTip(d->TitleLabel->toolTip());
+		Layout->insertWidget(0, d->IconLabel, Qt::AlignVCenter);
+		Layout->insertSpacing(1, qRound(1.5 * Layout->contentsMargins().left() / 2.0));
+	}
+	else if (Icon.isNull())
+	{
+		// Remove icon label and spacer item
+		Layout->removeWidget(d->IconLabel);
+		Layout->removeItem(Layout->itemAt(0));
+		delete d->IconLabel;
+		d->IconLabel = nullptr;
+	}
+
 	d->Icon = Icon;
-	d->IconLabel = new QLabel();
-	d->IconLabel->setAlignment(Qt::AlignVCenter);
-	d->IconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
-	d->IconLabel->setToolTip(d->TitleLabel->toolTip());
-	d->IconLabel->setPixmap(Icon.pixmap(this->windowHandle(), QSize(16, 16)));
-	Layout->insertWidget(0, d->IconLabel, Qt::AlignVCenter);
-	Layout->insertSpacing(1, qRound(1.5 * Layout->contentsMargins().left() / 2.0));
-	d->IconLabel->setVisible(true);
+	if (d->IconLabel)
+	{
+		d->IconLabel->setPixmap(Icon.pixmap(this->windowHandle(), QSize(16, 16)));
+		d->IconLabel->setVisible(true);
+	}
 }
 
 
@@ -451,7 +467,7 @@ void CDockWidgetTab::mouseDoubleClickEvent(QMouseEvent *event)
 	if (!d->DockArea->dockContainer()->isFloating() || d->DockArea->dockWidgetsCount() > 1)
 	{
 		d->DragStartMousePosition = event->pos();
-		d->startFloating();
+		d->startFloating(DraggingInactive);
 	}
 
 	Super::mouseDoubleClickEvent(event);
@@ -485,7 +501,7 @@ bool CDockWidgetTab::isClosable() const
 void CDockWidgetTab::onDetachActionTriggered()
 {
 	d->DragStartMousePosition = mapFromGlobal(QCursor::pos());
-	d->startFloating();
+	d->startFloating(DraggingInactive);
 }
 
 } // namespace ads

@@ -1,7 +1,7 @@
 ADS_ROOT = $${PWD}/..
 ADS_OUT_ROOT = $${OUT_PWD}/..
 
-TARGET = $$qtLibraryTarget(AdvancedDockingSystem)
+TARGET = $$qtLibraryTarget(qtadvanceddocking)
 TEMPLATE = lib
 DESTDIR = $${ADS_OUT_ROOT}/lib
 QT += core gui widgets
@@ -26,6 +26,10 @@ windows {
 	# MSVC
 	*-msvc* {
 	}
+}
+
+unix {
+    CONFIG += c++11
 }
 
 RESOURCES += ads.qrc

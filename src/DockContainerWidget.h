@@ -57,7 +57,7 @@ class ADS_EXPORT CDockContainerWidget : public QFrame
 	Q_OBJECT
 private:
 	DockContainerWidgetPrivate* d; ///< private data (pimpl)
-	friend struct DockContainerWidgetPrivate;
+    friend class DockContainerWidgetPrivate;
 	friend class CDockManager;
 	friend struct DockManagerPrivate;
 	friend class CDockAreaWidget;
@@ -77,6 +77,11 @@ protected:
 	 * Access function for the internal root splitter
 	 */
 	QSplitter* rootSplitter() const;
+
+	/**
+	 * Helper function for creation of the root splitter
+	 */
+	void createRootSplitter();
 
 	/**
 	 * Drop floating widget into the container
@@ -227,6 +232,11 @@ public:
 	 * Else, it returns a nullptr.
 	 */
 	CFloatingDockContainer* floatingWidget() const;
+
+	/**
+	 * Call this function to close all dock areas except the KeepOpenArea
+	 */
+	void closeOtherAreas(CDockAreaWidget* KeepOpenArea);
 
 signals:
 	/**
