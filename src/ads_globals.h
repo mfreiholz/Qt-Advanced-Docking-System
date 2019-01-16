@@ -35,10 +35,14 @@
 #include <QPixmap>
 #include <QWidget>
 
+#ifndef ADS_STATIC
 #ifdef ADS_SHARED_EXPORT
 #define ADS_EXPORT Q_DECL_EXPORT
 #else
 #define ADS_EXPORT Q_DECL_IMPORT
+#endif
+#else
+#define ADS_EXPORT
 #endif
 
 #define ADS_DEBUG_LEVEL 0
