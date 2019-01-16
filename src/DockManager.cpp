@@ -72,7 +72,7 @@ struct DockManagerPrivate
 	QMenu* ViewMenu;
 	CDockManager::eViewMenuInsertionOrder MenuInsertionOrder = CDockManager::MenuAlphabeticallySorted;
 	bool RestoringState = false;
-	CDockManager::ConfigFlags ConfigFlags{CDockManager::DefaultConfig};
+    CDockManager::ConfigFlags ConfigFlags = CDockManager::DefaultConfig;
 
 	/**
 	 * Private data constructor

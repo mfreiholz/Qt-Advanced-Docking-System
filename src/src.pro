@@ -2,10 +2,6 @@ ADS_OUT_ROOT = $${OUT_PWD}/..
 CONFIG += c++11
 TARGET = $$qtLibraryTarget(qtadvanceddocking)
 DEFINES += QT_DEPRECATED_WARNINGS
-CONFIG(debug, debug|release) {
-    mac: TARGET = $$join(TARGET,,,_debug)
-    win32: TARGET = $$join(TARGET,,,d)
-}
 TEMPLATE = lib
 DESTDIR = $${ADS_OUT_ROOT}/lib
 QT += core gui widgets

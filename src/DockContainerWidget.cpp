@@ -47,6 +47,7 @@
 #include "ads_globals.h"
 #include "DockSplitter.h"
 
+#include <functional>
 #include <iostream>
 
 #if QT_VERSION < 0x050900
@@ -64,7 +65,7 @@ QByteArray qByteArrayToHex(const QByteArray& src, char separator)
     const int length = separator ? (src.size() * 3 - 1) : (src.size() * 2);
     QByteArray hex(length, Qt::Uninitialized);
     char *hexData = hex.data();
-    const uchar *data = (const uchar *)src.data();
+    const uchar *data = reinterpret_cast<const uchar *>(src.data());
     for (int i = 0, o = 0; i < src.size(); ++i) {
         hexData[o++] = toHexLower(data[i] >> 4);
         hexData[o++] = toHexLower(data[i] & 0xf);
@@ -96,8 +97,6 @@ static int areaIdToIndex(DockWidgetArea area)
 	default:
 		return 4;
 	}
-
-	return 4;
 }
 
 /**
@@ -128,7 +127,7 @@ public:
 	QGridLayout* Layout = nullptr;
 	QSplitter* RootSplitter = nullptr;
 	bool isFloating = false;
-	CDockAreaWidget* LastAddedAreaCache[5]{0, 0, 0, 0, 0};
+    CDockAreaWidget* LastAddedAreaCache[5];
 	int VisibleDockAreaCount = -1;
 	CDockAreaWidget* TopLevelDockArea = nullptr;
 
@@ -267,7 +266,7 @@ public:
 	/**
 	 * Helper function for creation of new splitter
 	 */
-	CDockSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent = 0)
+    CDockSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent = nullptr)
 	{
 		CDockSplitter* s = new CDockSplitter(orientation, parent);
 		s->setOpaqueResize(DockManager->configFlags().testFlag(CDockManager::OpaqueSplitterResize));
@@ -291,7 +290,7 @@ public:
 DockContainerWidgetPrivate::DockContainerWidgetPrivate(CDockContainerWidget* _public) :
 	_this(_public)
 {
-
+    std::fill(std::begin(LastAddedAreaCache),std::end(LastAddedAreaCache), nullptr);
 }
 
 
@@ -541,7 +540,10 @@ void DockContainerWidgetPrivate::appendDockAreas(const QList<CDockAreaWidget*> N
 	DockAreas.append(NewDockAreas);
 	for (auto DockArea : NewDockAreas)
 	{
-		_this->connect(DockArea, SIGNAL(viewToggled(bool)), SLOT(onDockAreaViewToggled(bool)));
+        QObject::connect(DockArea,
+            &CDockAreaWidget::viewToggled,
+            _this,
+            std::bind(&DockContainerWidgetPrivate::onDockAreaViewToggled, this, std::placeholders::_1));
 	}
 }
 
@@ -611,7 +613,7 @@ bool DockContainerWidgetPrivate::restoreSplitter(QXmlStreamReader& s,
 	QSplitter* Splitter = nullptr;
 	if (!Testing)
 	{
-		Splitter = newSplitter((Qt::Orientation)Orientation);
+        Splitter = newSplitter(static_cast<Qt::Orientation>(Orientation));
 	}
 	bool Visible = false;
 	QList<int> Sizes;
@@ -1052,7 +1054,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 
 	// Remove are from parent splitter and recursively hide tree of parent
 	// splitters if it has no visible content
-	area->setParent(0);
+    area->setParent(nullptr);
 	internal::hideEmptyParentSplitters(Splitter);
 
 	// If splitter has more than 1 widgets, we are finished and can leave
@@ -1083,7 +1085,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 		}
 
 		// We replace the superfluous RootSplitter with the ChildSplitter
-		ChildSplitter->setParent(0);
+        ChildSplitter->setParent(nullptr);
 		QLayoutItem* li = d->Layout->replaceWidget(Splitter, ChildSplitter);
 		d->RootSplitter = ChildSplitter;
 		delete li;
@@ -1124,14 +1126,14 @@ CDockAreaWidget* CDockContainerWidget::dockAreaAt(const QPoint& GlobalPos) const
 		}
 	}
 
-	return 0;
+    return nullptr;
 }
 
 
 //============================================================================
 CDockAreaWidget* CDockContainerWidget::dockArea(int Index) const
 {
-	return (Index < dockAreaCount()) ? d->DockAreas[Index] : 0;
+    return (Index < dockAreaCount()) ? d->DockAreas[Index] : nullptr;
 }
 
 
@@ -1465,6 +1467,5 @@ void CDockContainerWidget::closeOtherAreas(CDockAreaWidget* KeepOpenArea)
 
 } // namespace ads
 
-#include "moc_DockContainerWidget.cpp"
 //---------------------------------------------------------------------------
 // EOF DockContainerWidget.cpp

@@ -44,7 +44,7 @@ namespace internal
 void replaceSplitterWidget(QSplitter* Splitter, QWidget* From, QWidget* To)
 {
 	int index = Splitter->indexOf(From);
-	From->setParent(0);
+    From->setParent(nullptr);
 	Splitter->insertWidget(index, To);
 }
 
@@ -90,6 +90,17 @@ void hideEmptyParentSplitters(CDockSplitter* Splitter)
 	}
 }
 
+CDockInsertParam::CDockInsertParam(Qt::Orientation orient, bool bottomRight)
+    : QPair<Qt::Orientation, bool>(orient,bottomRight)
+{}
+
+CDockInsertParam::CDockInsertParam(const CDockInsertParam &p)
+    : QPair<Qt::Orientation, bool>(p)
+{}
+
+CDockInsertParam::CDockInsertParam(CDockInsertParam &&p)
+    : QPair<Qt::Orientation, bool>(std::move(p))
+{}
 
 } // namespace internal
 } // namespace ads
