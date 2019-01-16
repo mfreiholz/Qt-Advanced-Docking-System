@@ -6,7 +6,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 project(ads_demo VERSION "1.0") 
-set(REQUIRED_QT_VERSION 5.0.0)
+set(REQUIRED_QT_VERSION 5.7.0)
 find_package(Qt5Core ${REQUIRED_QT_VERSION} REQUIRED)
 find_package(Qt5Gui ${REQUIRED_QT_VERSION} REQUIRED)
 find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED)
@@ -26,23 +26,23 @@ set(ads_demo_SRCS
     MainWindow.ui
     main.qrc
 )
-add_executable(ads_demo WIN32 ${ads_demo_SRCS})
+add_executable(AdvancedDockingSystemDemo WIN32 ${ads_demo_SRCS})
 if(BUILD_STATIC)
     set(ads_demo_DEFINE ${ads_demo_DEFINE} ADS_STATIC)
 endif()
-add_dependencies(ads_demo ads)
-target_include_directories(ads_demo PUBLIC 
+add_dependencies(AdvancedDockingSystemDemo qtadvanceddocking)
+target_include_directories(AdvancedDockingSystemDemo PUBLIC 
     $<BUILD_INTERFACE:${ads_demo_INCLUDE}>
     $<INSTALL_INTERFACE:include>
     )
-target_include_directories(ads_demo PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../src"  ${ads_demo_INCLUDE})
-target_link_libraries(ads_demo PRIVATE ads ${ads_demo_LIBS})
-target_compile_definitions(ads_demo PRIVATE ${ads_demo_DEFINE})
-set_target_properties(ads_demo PROPERTIES 
+target_include_directories(AdvancedDockingSystemDemo PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../src"  ${ads_demo_INCLUDE})
+target_link_libraries(AdvancedDockingSystemDemo PRIVATE qtadvanceddocking ${ads_demo_LIBS})
+target_compile_definitions(AdvancedDockingSystemDemo PRIVATE ${ads_demo_DEFINE})
+set_target_properties(AdvancedDockingSystemDemo PROPERTIES 
     VERSION "1.0"
     SOVERSION 1
     EXPORT_NAME "Qt Advanced Docking System Demo"
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib/demo"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib/demo"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/bin/demo"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/bin"
 )
