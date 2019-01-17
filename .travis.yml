@@ -1,0 +1,95 @@
+language: cpp
+# gcc is clang on mac
+compiler: gcc
+
+git:
+  depth: 1
+
+matrix:
+  fast_finish: true
+  include:
+  - name: Ubuntu CMake dll
+    os: linux
+    dist: xenial
+    group: stable
+    cache: ccache
+    addons:
+      apt:
+        packages:
+        - qt5-default
+        - qttools5-dev
+        - qttools5-dev-tools
+    script:
+        - mkdir .\build
+        - cd build
+        - cmake --version
+        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_EXAMPLES=ON -DBUILD_STATIC=OFF -DCMAKE_INSTALL_PREFIX="./installed" ../
+        - cmake --build .
+        - cmake --build . --target install
+        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_EXAMPLES=ON -DBUILD_STATIC=OFF -DCMAKE_INSTALL_PREFIX="./installed" ../
+        - cmake --build .
+        - cmake --build . --target install
+  - name: Ubuntu CMake static
+    os: linux
+    dist: xenial
+    group: stable
+    cache: ccache
+    addons:
+      apt:
+        packages:
+        - qt5-default
+        - qttools5-dev
+        - qttools5-dev-tools
+    script:
+        - mkdir .\build
+        - cd build
+        - cmake --version
+        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_EXAMPLES=ON -DBUILD_STATIC=ON -DCMAKE_INSTALL_PREFIX="./installed" ../
+        - cmake --build .
+        - cmake --build . --target install
+        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_EXAMPLES=ON -DBUILD_STATIC=ON -DCMAKE_INSTALL_PREFIX="./installed" ../
+        - cmake --build .
+        - cmake --build . --target install
+
+  - name: macOS CMake dll
+    os: osx
+    osx_image: xcode10.1
+    cache: ccache
+    addons:
+      homebrew:
+        packages:
+        - ccache
+        - qt
+    script:
+        - mkdir .\build
+        - cd build
+        - cmake --version
+        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_EXAMPLES=ON -DBUILD_STATIC=OFF -DCMAKE_INSTALL_PREFIX="./installed" ../
+        - cmake --build .
+        - cmake --build . --target install
+        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_EXAMPLES=ON -DBUILD_STATIC=OFF -DCMAKE_INSTALL_PREFIX="./installed" ../
+        - cmake --build .
+        - cmake --build . --target install
+  - name: macOS CMake static
+    os: osx
+    osx_image: xcode10.1
+    cache: ccache
+    addons:
+      homebrew:
+        packages:
+        - ccache
+        - qt
+    script:
+        - mkdir .\build
+        - cd build
+        - cmake --version
+        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_EXAMPLES=ON -DBUILD_STATIC=ON -DCMAKE_INSTALL_PREFIX="./installed" ../
+        - cmake --build .
+        - cmake --build . --target install
+        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_EXAMPLES=ON -DBUILD_STATIC=ON -DCMAKE_INSTALL_PREFIX="./installed" ../
+        - cmake --build .
+        - cmake --build . --target install
+
+notifications:
+  email: false
+

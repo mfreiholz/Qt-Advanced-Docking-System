@@ -152,6 +152,7 @@ build_script:
 - if %use_cmake%==false if %use_static%==true qmake "CONFIG+=adsBuildStatic"
 - if %use_cmake%==false if %use_static%==false qmake
 - if %use_cmake%==false %MAKEENGINE% debug
+- if %use_cmake%==false %MAKEENGINE% install
 - if %use_cmake%==false %MAKEENGINE% release
 - if %use_cmake%==false %MAKEENGINE% install
 
