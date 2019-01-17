@@ -483,6 +483,14 @@ void CDockWidgetTab::setVisible(bool visible)
 
 
 //============================================================================
+void CDockWidgetTab::setText(const QString& title)
+{
+	d->TitleLabel->setText(title);
+}
+
+
+
+//============================================================================
 bool CDockWidgetTab::isClosable() const
 {
 	return d->DockWidget && d->DockWidget->features().testFlag(CDockWidget::DockWidgetClosable);
