@@ -4,6 +4,7 @@ TARGET = AdvancedDockingSystemDemo
 DESTDIR = $${ADS_OUT_ROOT}/lib
 QT += core gui widgets
 CONFIG += c++11
+CONFIG += debug_and_release
 DEFINES += QT_DEPRECATED_WARNINGS
 
 adsBuildStatic {

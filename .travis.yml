@@ -8,63 +8,74 @@ git:
 matrix:
   fast_finish: true
   include:
-  - name: Ubuntu CMake dll
+  - name: Ubuntu qmake dll
     os: linux
     dist: xenial
     group: stable
-    cache: ccache
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        - sourceline: 'ppa:beineri/opt-qt-5.12.0-xenial'
+        update: true
         packages:
-        - qt5-default
-        - qttools5-dev
-        - qttools5-dev-tools
+        - qt512base
+        - qt512tools
+        - gcc-6
+        - g++-6
+        - libc6-i386
+        - libgl-dev
+        - libgl1-mesa-dev
+        - mesa-common-dev
     script:
-        - mkdir .\build
-        - cd build
-        - cmake --version
-        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_EXAMPLES=ON -DBUILD_STATIC=OFF -DCMAKE_INSTALL_PREFIX="./installed" ../
-        - cmake --build .
-        - cmake --build . --target install
-        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_EXAMPLES=ON -DBUILD_STATIC=OFF -DCMAKE_INSTALL_PREFIX="./installed" ../
-        - cmake --build .
-        - cmake --build . --target install
-  - name: Ubuntu CMake static
+        - PATH="/opt/qt512/bin:$PATH"
+        - CXX="g++-6"
+        - CC="gcc-6"
+        - qt512-env.sh
+        - qmake
+        - make
+        - make install
+  - name: Ubuntu qmake static
     os: linux
     dist: xenial
     group: stable
-    cache: ccache
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        - sourceline: 'ppa:beineri/opt-qt-5.12.0-xenial'
+        update: true
         packages:
-        - qt5-default
-        - qttools5-dev
-        - qttools5-dev-tools
+        - qt512base
+        - qt512tools
+        - gcc-6
+        - g++-6
+        - libc6-i386
+        - libgl-dev
+        - libgl1-mesa-dev
+        - mesa-common-dev
     script:
-        - mkdir .\build
-        - cd build
-        - cmake --version
-        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_EXAMPLES=ON -DBUILD_STATIC=ON -DCMAKE_INSTALL_PREFIX="./installed" ../
-        - cmake --build .
-        - cmake --build . --target install
-        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_EXAMPLES=ON -DBUILD_STATIC=ON -DCMAKE_INSTALL_PREFIX="./installed" ../
-        - cmake --build .
-        - cmake --build . --target install
-
+        - PATH="/opt/qt512/bin:$PATH"
+        - CXX="g++-6"
+        - CC="gcc-6"
+        - qt512-env.sh
+        - qmake "CONFIG+=adsBuildStatic"
+        - make
+        - make install
   - name: macOS CMake dll
     os: osx
     osx_image: xcode10.1
-    cache: ccache
     addons:
       homebrew:
         packages:
-        - ccache
         - qt
+        update: true
     script:
-        - mkdir .\build
+        - PATH="/usr/local/opt/qt5/bin:$PATH"
+        - mkdir -p build
         - cd build
         - cmake --version
-        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_EXAMPLES=ON -DBUILD_STATIC=OFF -DCMAKE_INSTALL_PREFIX="./installed" ../
+        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=DEBUG -DCMAKE_DEBUG_POSTFIX=_debug -DBUILD_EXAMPLES=ON -DBUILD_STATIC=OFF -DCMAKE_INSTALL_PREFIX="./installed" ../
         - cmake --build .
         - cmake --build . --target install
         - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_EXAMPLES=ON -DBUILD_STATIC=OFF -DCMAKE_INSTALL_PREFIX="./installed" ../
@@ -73,23 +84,48 @@ matrix:
   - name: macOS CMake static
     os: osx
     osx_image: xcode10.1
-    cache: ccache
     addons:
       homebrew:
         packages:
-        - ccache
         - qt
+        update: true
     script:
-        - mkdir .\build
+        - PATH="/usr/local/opt/qt5/bin:$PATH"
+        - mkdir -p build
         - cd build
         - cmake --version
-        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_EXAMPLES=ON -DBUILD_STATIC=ON -DCMAKE_INSTALL_PREFIX="./installed" ../
+        - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=DEBUG -DCMAKE_DEBUG_POSTFIX=_debug -DBUILD_EXAMPLES=ON -DBUILD_STATIC=ON -DCMAKE_INSTALL_PREFIX="./installed" ../
         - cmake --build .
         - cmake --build . --target install
         - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_EXAMPLES=ON -DBUILD_STATIC=ON -DCMAKE_INSTALL_PREFIX="./installed" ../
         - cmake --build .
         - cmake --build . --target install
-
+  - name: macOS qmake dll
+    os: osx
+    osx_image: xcode10.1
+    addons:
+      homebrew:
+        packages:
+        - qt
+        update: true
+    script:
+        - PATH="/usr/local/opt/qt5/bin:$PATH"
+        - qmake
+        - make
+        - make install
+  - name: macOS qmake static
+    os: osx
+    osx_image: xcode10.1
+    addons:
+      homebrew:
+        packages:
+        - qt
+        update: true
+    script:
+        - PATH="/usr/local/opt/qt5/bin:$PATH"
+        - qmake "CONFIG+=adsBuildStatic"
+        - make
+        - make install
 notifications:
   email: false
 
