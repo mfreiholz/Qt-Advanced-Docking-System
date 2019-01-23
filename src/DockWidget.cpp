@@ -58,8 +58,8 @@ namespace ads
  */
 struct DockWidgetPrivate
 {
-	CDockWidget* _this;
-	QBoxLayout* Layout;
+	CDockWidget* _this = nullptr;
+	QBoxLayout* Layout = nullptr;
 	QWidget* Widget = nullptr;
 	CDockWidgetTab* TabWidget = nullptr;
 	CDockWidget::DockWidgetFeatures Features = CDockWidget::AllDockWidgetFeatures;
@@ -516,10 +516,34 @@ bool CDockWidget::event(QEvent *e)
 		{
 			d->ToggleViewAction->setText(title);
 		}
+		if (d->DockArea)
+		{
+			d->DockArea->updateTitleBarVisibility();//update tabs menu
+		}
 		emit titleChanged(title);
 	}
 	return QFrame::event(e);
 }
+
+
+#ifndef QT_NO_TOOLTIP
+//============================================================================
+void CDockWidget::setTabToolTip(const QString &text)
+{
+	if (d->TabWidget)
+	{
+		d->TabWidget->setToolTip(text);
+	}
+	if (d->ToggleViewAction)
+	{
+		d->ToggleViewAction->setToolTip(text);
+	}
+	if (d->DockArea)
+	{
+		d->DockArea->updateTitleBarVisibility();//update tabs menu
+	}
+}
+#endif
 
 
 //============================================================================

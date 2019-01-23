@@ -119,9 +119,14 @@ void DockAreaTitleBarPrivate::createButtons()
 	TabsMenuButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarUnshadeButton));
 
 	QMenu* TabsMenu = new QMenu(TabsMenuButton);
+	#ifndef QT_NO_TOOLTIP
+	TabsMenu->setToolTipsVisible(true);
+	#endif
 	_this->connect(TabsMenu, SIGNAL(aboutToShow()), SLOT(onTabsMenuAboutToShow()));
 	TabsMenuButton->setMenu(TabsMenu);
+	#ifndef QT_NO_TOOLTIP
 	TabsMenuButton->setToolTip(QObject::tr("List all tabs"));
+	#endif
 	TabsMenuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	TopLayout->addWidget(TabsMenuButton, 0);
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
@@ -131,7 +136,9 @@ void DockAreaTitleBarPrivate::createButtons()
 	UndockButton = new tTileBarButton();
 	UndockButton->setObjectName("undockButton");
 	UndockButton->setAutoRaise(true);
+	#ifndef QT_NO_TOOLTIP
 	UndockButton->setToolTip(QObject::tr("Detach Group"));
+	#endif
 	UndockButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarNormalButton));
 	UndockButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	TopLayout->addWidget(UndockButton, 0);
@@ -148,6 +155,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	CloseIcon.addPixmap(disabledPixmap, QIcon::Disabled);
 
 	CloseButton->setIcon(CloseIcon);
+	#ifndef QT_NO_TOOLTIP
 	if (testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
 	{
 		CloseButton->setToolTip(QObject::tr("Close Active Tab"));
@@ -156,6 +164,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	{
 		CloseButton->setToolTip(QObject::tr("Close Group"));
 	}
+	#endif
 	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	TopLayout->addWidget(CloseButton, 0);
 	_this->connect(CloseButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
@@ -240,6 +249,9 @@ void CDockAreaTitleBar::onTabsMenuAboutToShow()
 		}
 		auto Tab = d->TabBar->tab(i);
 		QAction* Action = menu->addAction(Tab->icon(), Tab->text());
+		#ifndef QT_NO_TOOLTIP
+		Action->setToolTip(Tab->toolTip());
+		#endif
 		Action->setData(i);
 	}
 
@@ -312,6 +324,7 @@ QAbstractButton* CDockAreaTitleBar::button(TitleBarButton which) const
 void CDockAreaTitleBar::setVisible(bool Visible)
 {
 	Super::setVisible(Visible);
+	markTabsMenuOutdated();
 }
 
 

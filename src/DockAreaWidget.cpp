@@ -236,11 +236,11 @@ using DockAreaLayout = CDockAreaLayout;
  */
 struct DockAreaWidgetPrivate
 {
-	CDockAreaWidget* _this;
-	QBoxLayout* Layout;
-	DockAreaLayout* ContentsLayout;
-	CDockAreaTitleBar* TitleBar;
-	CDockManager* DockManager = nullptr;
+	CDockAreaWidget*	_this			= nullptr;
+	QBoxLayout*			Layout			= nullptr;
+	DockAreaLayout*		ContentsLayout	= nullptr;
+	CDockAreaTitleBar*	TitleBar		= nullptr;
+	CDockManager*		DockManager		= nullptr;
 	bool UpdateCloseButton = false;
 
 	/**
@@ -680,7 +680,10 @@ void CDockAreaWidget::updateTitleBarVisibility()
 		return;
 	}
 
-	d->TitleBar->setVisible(!Container->isFloating() || !Container->hasTopLevelDockWidget());
+	if (d->TitleBar)
+	{
+		d->TitleBar->setVisible(!Container->isFloating() || !Container->hasTopLevelDockWidget());
+	}
 }
 
 
