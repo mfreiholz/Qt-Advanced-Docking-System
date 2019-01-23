@@ -53,13 +53,16 @@ private:
 	friend struct DockAreaTitleBarPrivate;
 
 private slots:
-	void markTabsMenuOutdated();
 	void onTabsMenuAboutToShow();
 	void onCloseButtonClicked();
 	void onUndockButtonClicked();
 	void onTabsMenuActionTriggered(QAction* Action);
 	void onCurrentTabChanged(int Index);
 	void showContextMenu(const QPoint& pos);
+
+public slots:
+	void markTabsMenuOutdated();
+
 
 public:
 	using Super = QFrame;
@@ -87,6 +90,7 @@ public:
 	 * This function is here for debug reasons
 	 */
 	virtual void setVisible(bool Visible) override;
+
 
 signals:
 	/**
