@@ -8,6 +8,30 @@ git:
 matrix:
   fast_finish: true
   include:
+  - name: Ubuntu qmake Qt5.5.1
+    os: linux
+    dist: trusty
+    group: stable
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        - sourceline: 'ppa:beineri/opt-qt551-trusty'
+        update: true
+        packages:
+        - qt55base
+        - qt55tools
+        - gcc-6
+        - g++-6
+        - libc6-i386
+    script:
+        - PATH="/opt/qt55/bin:$PATH"
+        - CXX="g++-6"
+        - CC="gcc-6"
+        - qt55-env.sh
+        - qmake
+        - make
+        - make install
   - name: Ubuntu qmake dll
     os: linux
     dist: xenial

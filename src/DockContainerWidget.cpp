@@ -127,7 +127,7 @@ public:
 	QGridLayout* Layout = nullptr;
 	QSplitter* RootSplitter = nullptr;
 	bool isFloating = false;
-    CDockAreaWidget* LastAddedAreaCache[5];
+	CDockAreaWidget* LastAddedAreaCache[5];
 	int VisibleDockAreaCount = -1;
 	CDockAreaWidget* TopLevelDockArea = nullptr;
 
@@ -266,7 +266,7 @@ public:
 	/**
 	 * Helper function for creation of new splitter
 	 */
-    CDockSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent = nullptr)
+	CDockSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent = nullptr)
 	{
 		CDockSplitter* s = new CDockSplitter(orientation, parent);
 		s->setOpaqueResize(DockManager->configFlags().testFlag(CDockManager::OpaqueSplitterResize));
@@ -290,7 +290,7 @@ public:
 DockContainerWidgetPrivate::DockContainerWidgetPrivate(CDockContainerWidget* _public) :
 	_this(_public)
 {
-    std::fill(std::begin(LastAddedAreaCache),std::end(LastAddedAreaCache), nullptr);
+	std::fill(std::begin(LastAddedAreaCache),std::end(LastAddedAreaCache), nullptr);
 }
 
 
@@ -540,10 +540,10 @@ void DockContainerWidgetPrivate::appendDockAreas(const QList<CDockAreaWidget*> N
 	DockAreas.append(NewDockAreas);
 	for (auto DockArea : NewDockAreas)
 	{
-        QObject::connect(DockArea,
-            &CDockAreaWidget::viewToggled,
-            _this,
-            std::bind(&DockContainerWidgetPrivate::onDockAreaViewToggled, this, std::placeholders::_1));
+		QObject::connect(DockArea,
+			&CDockAreaWidget::viewToggled,
+			_this,
+			std::bind(&DockContainerWidgetPrivate::onDockAreaViewToggled, this, std::placeholders::_1));
 	}
 }
 
@@ -613,7 +613,7 @@ bool DockContainerWidgetPrivate::restoreSplitter(QXmlStreamReader& s,
 	QSplitter* Splitter = nullptr;
 	if (!Testing)
 	{
-        Splitter = newSplitter(static_cast<Qt::Orientation>(Orientation));
+		Splitter = newSplitter(static_cast<Qt::Orientation>(Orientation));
 	}
 	bool Visible = false;
 	QList<int> Sizes;
@@ -1054,7 +1054,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 
 	// Remove are from parent splitter and recursively hide tree of parent
 	// splitters if it has no visible content
-    area->setParent(nullptr);
+	area->setParent(nullptr);
 	internal::hideEmptyParentSplitters(Splitter);
 
 	// If splitter has more than 1 widgets, we are finished and can leave
@@ -1085,7 +1085,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 		}
 
 		// We replace the superfluous RootSplitter with the ChildSplitter
-        ChildSplitter->setParent(nullptr);
+		ChildSplitter->setParent(nullptr);
 		QLayoutItem* li = d->Layout->replaceWidget(Splitter, ChildSplitter);
 		d->RootSplitter = ChildSplitter;
 		delete li;
@@ -1126,14 +1126,14 @@ CDockAreaWidget* CDockContainerWidget::dockAreaAt(const QPoint& GlobalPos) const
 		}
 	}
 
-    return nullptr;
+	return nullptr;
 }
 
 
 //============================================================================
 CDockAreaWidget* CDockContainerWidget::dockArea(int Index) const
 {
-    return (Index < dockAreaCount()) ? d->DockAreas[Index] : nullptr;
+	return (Index < dockAreaCount()) ? d->DockAreas[Index] : nullptr;
 }
 
 

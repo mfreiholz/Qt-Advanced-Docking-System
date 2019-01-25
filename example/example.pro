@@ -5,7 +5,7 @@ QT += core gui widgets
 TARGET = Example1
 DESTDIR = $${ADS_OUT_ROOT}/lib
 TEMPLATE = app
-CONFIG += c++11
+CONFIG += c++14
 CONFIG += debug_and_release
 adsBuildStatic {
     DEFINES += ADS_STATIC

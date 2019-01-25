@@ -98,7 +98,7 @@ public:
 	 */
 	void insertWidget(int index, QWidget* Widget)
 	{
-        Widget->setParent(nullptr);
+		Widget->setParent(nullptr);
 		if (index < 0)
 		{
 			index = m_Widgets.count();
@@ -127,7 +127,7 @@ public:
 			auto LayoutItem = m_ParentLayout->takeAt(1);
 			if (LayoutItem)
 			{
-                LayoutItem->widget()->setParent(nullptr);
+				LayoutItem->widget()->setParent(nullptr);
 			}
 			m_CurrentWidget = nullptr;
 			m_CurrentIndex = -1;
@@ -167,7 +167,7 @@ public:
 		auto LayoutItem = m_ParentLayout->takeAt(1);
 		if (LayoutItem)
 		{
-            LayoutItem->widget()->setParent(nullptr);
+			LayoutItem->widget()->setParent(nullptr);
 		}
 
 		m_ParentLayout->addWidget(next);
@@ -315,9 +315,9 @@ void DockAreaWidgetPrivate::createTitleBar()
 {
 	TitleBar = new CDockAreaTitleBar(_this);
 	Layout->addWidget(TitleBar);
-    QObject::connect(tabBar(), &CDockAreaTabBar::tabCloseRequested, _this, &CDockAreaWidget::onTabCloseRequested);
-    QObject::connect(TitleBar, &CDockAreaTitleBar::tabBarClicked, _this, &CDockAreaWidget::setCurrentIndex);
-    QObject::connect(tabBar(), &CDockAreaTabBar::tabMoved, _this, &CDockAreaWidget::reorderDockWidget);
+	QObject::connect(tabBar(), &CDockAreaTabBar::tabCloseRequested, _this, &CDockAreaWidget::onTabCloseRequested);
+	QObject::connect(TitleBar, &CDockAreaTitleBar::tabBarClicked, _this, &CDockAreaWidget::setCurrentIndex);
+	QObject::connect(tabBar(), &CDockAreaTabBar::tabMoved, _this, &CDockAreaWidget::reorderDockWidget);
 }
 
 

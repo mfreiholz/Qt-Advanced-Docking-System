@@ -1,5 +1,5 @@
 ADS_OUT_ROOT = $${OUT_PWD}/..
-CONFIG += c++11
+CONFIG += c++14
 CONFIG += debug_and_release
 TARGET = $$qtLibraryTarget(qtadvanceddocking)
 DEFINES += QT_DEPRECATED_WARNINGS
