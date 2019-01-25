@@ -136,6 +136,8 @@ protected:
 	void toggleViewInternal(bool Open);
 
 public:
+	using Super = QFrame;
+
 	enum DockWidgetFeature
 	{
 		DockWidgetClosable = 0x01,
@@ -384,6 +386,14 @@ public:
 	 */
 	QSize toolBarIconSize(eState State) const;
 
+
+	#ifndef QT_NO_TOOLTIP
+	/**
+	 * This is function sets text tooltip for title bar widget 
+	 * and tooltip for toggle view action
+	 */
+	void setTabToolTip(const QString &text);
+	#endif
 
 public: // reimplements QFrame -----------------------------------------------
 	/**

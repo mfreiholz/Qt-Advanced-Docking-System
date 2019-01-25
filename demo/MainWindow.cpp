@@ -127,7 +127,7 @@ struct MainWindowPrivate
 	Ui::MainWindow ui;
 	QAction* SavePerspectiveAction = nullptr;
 	QWidgetAction* PerspectiveListAction = nullptr;
-	QComboBox* PerspectiveComboBox = nullptr;;
+	QComboBox* PerspectiveComboBox = nullptr;
 	ads::CDockManager* DockManager = nullptr;
 
 	MainWindowPrivate(CMainWindow* _public) : _this(_public) {}
@@ -188,6 +188,7 @@ void MainWindowPrivate::createContent()
 	auto TopDockArea = DockManager->addDockWidget(ads::TopDockWidgetArea, FileSystemWidget);
 	DockWidget = createCalendarDockWidget(ViewMenu);
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
+	DockWidget->setTabToolTip(QString("Tab ToolTip\nHodie est dies magna"));
 	DockManager->addDockWidget(ads::CenterDockWidgetArea, DockWidget, TopDockArea);
 
 	// Test dock area docking

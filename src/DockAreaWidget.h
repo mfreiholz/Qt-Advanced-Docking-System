@@ -130,6 +130,12 @@ protected:
 	 */
 	void internalSetCurrentDockWidget(CDockWidget* DockWidget);
 
+
+	/**
+	 * Marks tabs menu to update
+	 */
+	void markTitleBarMenuOutdated();
+
 protected slots:
 	void toggleView(bool Open);
 
