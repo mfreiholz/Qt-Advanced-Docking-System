@@ -153,7 +153,9 @@ void DockWidgetTabPrivate::createLayout()
 	CloseButton->setIcon(CloseIcon);
 	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	CloseButton->setVisible(false);
+	#ifndef QT_NO_TOOLTIP
 	CloseButton->setToolTip(QObject::tr("Close Tab"));
+	#endif
 	_this->connect(CloseButton, SIGNAL(clicked()), SIGNAL(closeRequested()));
 
 	QFontMetrics fm(TitleLabel->font());
@@ -264,7 +266,7 @@ void CDockWidgetTab::mousePressEvent(QMouseEvent* ev)
         emit clicked();
 		return;
 	}
-	QFrame::mousePressEvent(ev);
+	Super::mousePressEvent(ev);
 }
 
 
@@ -280,7 +282,7 @@ void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 
     d->DragStartMousePosition = QPoint();
     d->DragState = DraggingInactive;
-	QFrame::mouseReleaseEvent(ev);
+	Super::mouseReleaseEvent(ev);
 }
 
 
@@ -290,7 +292,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     if (!(ev->buttons() & Qt::LeftButton) || d->isDraggingState(DraggingInactive))
     {
     	d->DragState = DraggingInactive;
-        QFrame::mouseMoveEvent(ev);
+        Super::mouseMoveEvent(ev);
         return;
     }
 
@@ -298,7 +300,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     if (d->isDraggingState(DraggingFloatingWidget))
     {
         d->FloatingWidget->moveFloating();
-        QFrame::mouseMoveEvent(ev);
+        Super::mouseMoveEvent(ev);
         return;
     }
 
@@ -338,7 +340,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
 		return;
 	}
 
-   QFrame::mouseMoveEvent(ev);
+   Super::mouseMoveEvent(ev);
 }
 
 
@@ -422,7 +424,9 @@ void CDockWidgetTab::setIcon(const QIcon& Icon)
 		d->IconLabel = new QLabel();
 		d->IconLabel->setAlignment(Qt::AlignVCenter);
 		d->IconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+		#ifndef QT_NO_TOOLTIP
 		d->IconLabel->setToolTip(d->TitleLabel->toolTip());
+		#endif
 		Layout->insertWidget(0, d->IconLabel, Qt::AlignVCenter);
 		Layout->insertSpacing(1, qRound(1.5 * Layout->contentsMargins().left() / 2.0));
 	}
@@ -504,7 +508,25 @@ void CDockWidgetTab::onDetachActionTriggered()
 	d->startFloating(DraggingInactive);
 }
 
-} // namespace ads
 
+
+
+//============================================================================
+bool CDockWidgetTab::event(QEvent *e)
+{
+	#ifndef QT_NO_TOOLTIP
+	if (e->type() == QEvent::ToolTipChange)
+	{
+		const auto text = toolTip();
+		d->TitleLabel->setToolTip(text);
+	}
+	#endif
+	return Super::event(e);
+}
+
+
+
+
+} // namespace ads
 //---------------------------------------------------------------------------
 // EOF DockWidgetTab.cpp
