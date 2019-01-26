@@ -1,4 +1,5 @@
-# Advanced Docking System for Qt
+# Advanced Docking System for Qt 
+[![Build Status](https://travis-ci.org/VSRonin/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/VSRonin/Qt-Advanced-Docking-System)
 
 Qt Advanced Docking System lets you create customizable layouts using a full 
 featured window docking system similar to what is found in many popular 
