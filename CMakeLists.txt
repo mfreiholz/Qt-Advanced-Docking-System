@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 set(ads_VERSION "2.3.2")
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
@@ -8,7 +8,7 @@ set(CMAKE_AUTORCC ON)
 project(QtAdvancedDockingSystem VERSION ${ads_VERSION})
 option(BUILD_STATIC "Build the static library" OFF)
 option(BUILD_EXAMPLES "Build the examples" ON)
-set(REQUIRED_QT_VERSION 5.0.0)
+set(REQUIRED_QT_VERSION 5.5.0)
 find_package(Qt5Core ${REQUIRED_QT_VERSION} REQUIRED)
 find_package(Qt5Gui ${REQUIRED_QT_VERSION} REQUIRED)
 find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED)
@@ -56,15 +56,15 @@ set(ads_INSTALL_INCLUDE
     src/FloatingDockContainer.h
 )
 if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
-    set(ads_PlatformDir "x64")
-else()
     set(ads_PlatformDir "x86")
+else()
+    set(ads_PlatformDir "x64")
 endif()
 if(BUILD_STATIC)
-    add_library(ads STATIC ${ads_SRCS})
+    add_library(qtadvanceddocking STATIC ${ads_SRCS})
     set(ads_COMPILE_DEFINE ${ads_COMPILE_DEFINE} ADS_STATIC)
 else()
-    add_library(ads SHARED ${ads_SRCS})
+    add_library(qtadvanceddocking SHARED ${ads_SRCS})
     set(ads_COMPILE_DEFINE ${ads_COMPILE_DEFINE} ADS_SHARED_EXPORT)
 endif()
 install(FILES ${ads_INSTALL_INCLUDE}
@@ -77,19 +77,19 @@ install(FILES
     DESTINATION license 
     COMPONENT license
 )
-install(TARGETS ads
+install(TARGETS qtadvanceddocking
     EXPORT adsBinary
     RUNTIME DESTINATION bin COMPONENT library
     LIBRARY DESTINATION lib COMPONENT library
     ARCHIVE DESTINATION lib COMPONENT library
 )
-target_include_directories(ads PUBLIC 
+target_include_directories(qtadvanceddocking PUBLIC 
     $<BUILD_INTERFACE:${ads_INCLUDE}>
     $<INSTALL_INTERFACE:include>
     )
-target_link_libraries(ads PUBLIC ${ads_LIBS})
-target_compile_definitions(ads PRIVATE ${ads_COMPILE_DEFINE})
-set_target_properties(ads PROPERTIES 
+target_link_libraries(qtadvanceddocking PUBLIC ${ads_LIBS})
+target_compile_definitions(qtadvanceddocking PRIVATE ${ads_COMPILE_DEFINE})
+set_target_properties(qtadvanceddocking PROPERTIES 
     VERSION ${ads_VERSION}
     EXPORT_NAME "Qt Advanced Docking System"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib"
