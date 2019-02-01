@@ -65,8 +65,6 @@ private:
 	friend class CFloatingDockContainer;
 	friend struct FloatingDockContainerPrivate;
 	friend class CDockWidget;
-	Q_PRIVATE_SLOT(d, void onDockAreaViewToggled(bool Visible))
-
 protected:
 	/**
 	 * Handles activation events to update zOrderIndex

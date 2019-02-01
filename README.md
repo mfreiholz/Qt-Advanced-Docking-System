@@ -1,4 +1,8 @@
-# Advanced Docking System for Qt
+# Advanced Docking System for Qt 
+[![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
+[![Build status](https://ci.appveyor.com/api/projects/status/qcfb3cy932jw9mpy/branch/master?svg=true)](https://ci.appveyor.com/project/githubuser0xFFFF/qt-advanced-docking-system/branch/master)
+
+
 
 Qt Advanced Docking System lets you create customizable layouts using a full 
 featured window docking system similar to what is found in many popular 
@@ -56,7 +60,9 @@ main window layout.
 ![Perspective](doc/perspectives_dark.png)
 
 ## Tested Compatible Environments
-- Windows 10
+- Windows 10 [![Build status](https://ci.appveyor.com/api/projects/status/qcfb3cy932jw9mpy/branch/master?svg=true)](https://ci.appveyor.com/project/githubuser0xFFFF/qt-advanced-docking-system/branch/master)
+- Ubuntu [![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
+- macOS [![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
 
 ## Build
 Open the `ads.pro` with QtCreator and start the build, that's it.

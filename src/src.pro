@@ -1,35 +1,29 @@
-ADS_ROOT = $${PWD}/..
 ADS_OUT_ROOT = $${OUT_PWD}/..
-
+CONFIG += c++14
+CONFIG += debug_and_release
 TARGET = $$qtLibraryTarget(qtadvanceddocking)
+DEFINES += QT_DEPRECATED_WARNINGS
 TEMPLATE = lib
 DESTDIR = $${ADS_OUT_ROOT}/lib
 QT += core gui widgets
 
-CONFIG += adsBuildShared
-
-
-adsBuildShared {
+!adsBuildStatic {
 	CONFIG += shared
     DEFINES += ADS_SHARED_EXPORT
 }
-!adsBuildShared {
+adsBuildStatic {
 	CONFIG += staticlib
+    DEFINES += ADS_STATIC
 }
 
 windows {
 	# MinGW
 	*-g++* {
-		QMAKE_CXXFLAGS += -std=c++11
 		QMAKE_CXXFLAGS += -Wall -Wextra -pedantic
 	}
 	# MSVC
 	*-msvc* {
 	}
-}
-
-unix {
-    CONFIG += c++11
 }
 
 RESOURCES += ads.qrc
@@ -63,3 +57,12 @@ SOURCES += \
     DockSplitter.cpp \
     DockAreaTitleBar.cpp \
     ElidingLabel.cpp
+
+isEmpty(PREFIX){
+	PREFIX=..\installed
+	warning("Install Prefix not set")
+}
+headers.path=$$PREFIX/include
+headers.files=$$HEADERS
+target.path=$$PREFIX/lib
+INSTALLS += headers target

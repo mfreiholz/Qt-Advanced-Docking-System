@@ -313,7 +313,18 @@ void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 
     if (isClosable())
     {
-    	QWidget::closeEvent(event);
+        // In Qt version after 5.9.2 there seems to be a bug that causes the
+        // QWidget::event() function to not receive any NonClientArea mouse
+        // events anymore after a close/show cycle. The bug is reported here:
+        // https://bugreports.qt.io/browse/QTBUG-73295
+        // The following code is a workaround for Qt versions > 5.9.2 that seems
+        // to work
+#if (QT_VERSION > 0x050902)
+        event->ignore();
+        this->hide();
+#else
+        Super::closeEvent(event);
+#endif
     }
     else
     {

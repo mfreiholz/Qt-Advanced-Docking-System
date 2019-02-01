@@ -44,7 +44,7 @@ namespace internal
 void replaceSplitterWidget(QSplitter* Splitter, QWidget* From, QWidget* To)
 {
 	int index = Splitter->indexOf(From);
-	From->setParent(0);
+	From->setParent(nullptr);
 	Splitter->insertWidget(index, To);
 }
 
@@ -89,7 +89,6 @@ void hideEmptyParentSplitters(CDockSplitter* Splitter)
 		Splitter = internal::findParent<CDockSplitter*>(Splitter);
 	}
 }
-
 
 } // namespace internal
 } // namespace ads

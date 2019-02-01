@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.3)
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 project(ads_example VERSION "1.0") 
-set(REQUIRED_QT_VERSION 5.0.0)
+set(REQUIRED_QT_VERSION 5.5.0)
 find_package(Qt5Core ${REQUIRED_QT_VERSION} REQUIRED)
 find_package(Qt5Gui ${REQUIRED_QT_VERSION} REQUIRED)
 find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED)
@@ -24,23 +24,23 @@ set(ads_example_SRCS
     MainWindow.cpp
     MainWindow.ui
 )
-add_executable(ads_example WIN32 ${ads_example_SRCS})
+add_executable(Example1 WIN32 ${ads_example_SRCS})
 if(BUILD_STATIC)
     set(ads_example_DEFINE ${ads_example_DEFINE} ADS_STATIC)
 endif()
-add_dependencies(ads_example ads)
-target_include_directories(ads_example PUBLIC 
+add_dependencies(Example1 qtadvanceddocking)
+target_include_directories(Example1 PUBLIC 
     $<BUILD_INTERFACE:${ads_example_INCLUDE}>
     $<INSTALL_INTERFACE:include>
     )
-target_include_directories(ads_example PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../src"  ${ads_example_INCLUDE})
-target_link_libraries(ads_example PRIVATE ads ${ads_example_LIBS})
-target_compile_definitions(ads_example PRIVATE ${ads_example_DEFINE})
-set_target_properties(ads_example PROPERTIES 
+target_include_directories(Example1 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../src"  ${ads_example_INCLUDE})
+target_link_libraries(Example1 PRIVATE qtadvanceddocking ${ads_example_LIBS})
+target_compile_definitions(Example1 PRIVATE ${ads_example_DEFINE})
+set_target_properties(Example1 PROPERTIES 
     VERSION "1.0"
     SOVERSION 1
     EXPORT_NAME "Qt Advanced Docking System Example"
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib/example"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib/example"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/bin/example"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/bin"
 )
