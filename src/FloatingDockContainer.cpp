@@ -219,6 +219,7 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager* DockManager) :
 	QWidget(DockManager, Qt::Window),
 	d(new FloatingDockContainerPrivate(this))
 {
+	setWindowFlags(Qt::Window | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
 	d->DockManager = DockManager;
     QBoxLayout* l = new QBoxLayout(QBoxLayout::TopToBottom);
     l->setContentsMargins(0, 0, 0, 0);
