@@ -320,7 +320,10 @@ void CFloatingDockContainer::closeEvent(QCloseEvent *event)
         // https://bugreports.qt.io/browse/QTBUG-73295
         // The following code is a workaround for Qt versions > 5.9.2 that seems
         // to work
-#if (QT_VERSION > 0x050902)
+    	// Starting from Qt version 5.12.2 this seems to work again. But
+    	// now the QEvent::NonClientAreaMouseButtonPress function returns always
+    	// Qt::RightButton even if the left button was pressed
+#if (QT_VERSION > QT_VERSION_CHECK(5, 9, 2) && QT_VERSION < QT_VERSION_CHECK(5, 12, 2))
         event->ignore();
         this->hide();
 #else
@@ -352,13 +355,6 @@ void CFloatingDockContainer::hideEvent(QHideEvent *event)
 void CFloatingDockContainer::showEvent(QShowEvent *event)
 {
 	Super::showEvent(event);
-	/*for (auto DockArea : d->DockContainer->openedDockAreas())
-	{
-		for (auto DockWidget : DockArea->openedDockWidgets())
-		{
-			DockWidget->setToggleViewActionChecked(true);
-		}
-	}*/
 }
 
 
@@ -368,11 +364,28 @@ bool CFloatingDockContainer::event(QEvent *e)
 	switch (d->DraggingState)
 	{
 	case DraggingInactive:
-		if (e->type() == QEvent::NonClientAreaMouseButtonPress && QGuiApplication::mouseButtons() == Qt::LeftButton)
+	{
+		// Normally we would check here, if the left mouse button is pressed.
+		// But from QT version 5.12.2 on the mouse events from
+		// QEvent::NonClientAreaMouseButtonPress return the wrong mouse button
+		// The event always returns Qt::RightButton even if the left button
+		// is clicked.
+		// It is really great to work around the whole NonClientMouseArea
+		// bugs
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 2))
+		if (e->type() == QEvent::NonClientAreaMouseButtonPress /*&& QGuiApplication::mouseButtons().testFlag(Qt::LeftButton)*/)
 		{
 			qDebug() << "FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type();
 			d->setState(DraggingMousePressed);
 		}
+#else
+		if (e->type() == QEvent::NonClientAreaMouseButtonPress && QGuiApplication::mouseButtons().testFlag(Qt::LeftButton))
+		{
+			qDebug() << "FloatingWidget::event Event::NonClientAreaMouseButtonPress" << e->type();
+			d->setState(DraggingMousePressed);
+		}
+#endif
+	}
 	break;
 
 	case DraggingMousePressed:
