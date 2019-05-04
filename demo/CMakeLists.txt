@@ -23,7 +23,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(ads_demo_SRCS
     main.cpp
     MainWindow.cpp
-    MainWindow.ui
+    mainwindow.ui
     main.qrc
 )
 add_executable(AdvancedDockingSystemDemo WIN32 ${ads_demo_SRCS})
