@@ -146,10 +146,10 @@ void DockWidgetTabPrivate::createLayout()
 	CloseButton = new tCloseButton();
 	CloseButton->setObjectName("tabCloseButton");
 	// The standard icons do does not look good on high DPI screens
-	QIcon CloseIcon =  _this->style()->standardIcon(QStyle::SP_TitleBarCloseButton);
+	QIcon CloseIcon;
 	QPixmap normalPixmap = _this->style()->standardPixmap(QStyle::SP_TitleBarCloseButton, 0, CloseButton);
-	QPixmap disabledPixmap = internal::createTransparentPixmap(normalPixmap, 0.25);
-	CloseIcon.addPixmap(disabledPixmap, QIcon::Disabled);
+	CloseIcon.addPixmap(normalPixmap, QIcon::Normal);
+	CloseIcon.addPixmap(internal::createTransparentPixmap(normalPixmap, 0.25), QIcon::Disabled);
 	CloseButton->setIcon(CloseIcon);
 	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	CloseButton->setVisible(false);
