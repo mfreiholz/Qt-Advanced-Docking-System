@@ -243,14 +243,18 @@ void CDockWidget::setToggleViewActionChecked(bool Checked)
 void CDockWidget::setWidget(QWidget* widget, eInsertMode InsertMode)
 {
 	QScrollArea* ScrollAreaWidget = qobject_cast<QScrollArea*>(widget);
-	if (ScrollAreaWidget || ForceNoScrollArea != InsertMode)
+	if (ScrollAreaWidget || ForceNoScrollArea == InsertMode)
 	{
-		d->setupScrollArea();
-		d->ScrollArea->setWidget(widget);
+		d->Layout->addWidget(widget);
+		if (ScrollAreaWidget && ScrollAreaWidget->viewport())
+		{
+			ScrollAreaWidget->viewport()->setProperty("dockWidgetContent", true);
+		}
 	}
 	else
 	{
-		d->Layout->addWidget(widget);
+		d->setupScrollArea();
+		d->ScrollArea->setWidget(widget);
 	}
 
 	d->Widget = widget;
