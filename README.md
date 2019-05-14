@@ -60,9 +60,22 @@ main window layout.
 ![Perspective](doc/perspectives_dark.png)
 
 ## Tested Compatible Environments
-- Windows 10 [![Build status](https://ci.appveyor.com/api/projects/status/qcfb3cy932jw9mpy/branch/master?svg=true)](https://ci.appveyor.com/project/githubuser0xFFFF/qt-advanced-docking-system/branch/master)
-- Ubuntu [![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
-- macOS [![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
+### Windows
+Windows 10 [![Build status](https://ci.appveyor.com/api/projects/status/qcfb3cy932jw9mpy/branch/master?svg=true)](https://ci.appveyor.com/project/githubuser0xFFFF/qt-advanced-docking-system/branch/master)
+
+The library was developed on and for Windows. It is used in a commercial Windows application and is therefore constantly tested.
+
+### macOS
+macOS [![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
+
+The application can be compiled for macOS. A user reported, that the library works on macOS. If have not tested it.
+
+### Linux
+Ubuntu [![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
+
+The application can be compiled for Linux but the master branch doesn't work under Linux because some required features are not supported by Linux. But there is the branch **linux_experimental** which was developed and tested with **Kubuntu 18.04**. and which should also work on other Linux distributions. The branch needs more testing and maybe some imrpovements before it can be merged into master.
+
+![Advanced Docking on Linux](doc/linux_kubuntu_1804.png)
 
 ## Build
 Open the `ads.pro` with QtCreator and start the build, that's it.
