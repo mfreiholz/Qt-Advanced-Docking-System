@@ -282,7 +282,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	d->createContent();
 	// Default window geometry
-	resize(800, 600);
+    resize(1280, 720);
 
 	d->restoreState();
 	d->restorePerspectives();

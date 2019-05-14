@@ -40,7 +40,8 @@ HEADERS += \
     DockOverlay.h \
     DockSplitter.h \
     DockAreaTitleBar.h \
-    ElidingLabel.h
+    ElidingLabel.h \
+    FloatingWidgetTitleBar.h
     
     
     
@@ -56,7 +57,8 @@ SOURCES += \
     DockOverlay.cpp \
     DockSplitter.cpp \
     DockAreaTitleBar.cpp \
-    ElidingLabel.cpp
+    ElidingLabel.cpp \
+    FloatingWidgetTitleBar.cpp
 
 isEmpty(PREFIX){
 	PREFIX=..\installed
@@ -66,3 +68,5 @@ headers.path=$$PREFIX/include
 headers.files=$$HEADERS
 target.path=$$PREFIX/lib
 INSTALLS += headers target
+
+DISTFILES +=

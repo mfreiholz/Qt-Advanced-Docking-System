@@ -238,7 +238,7 @@ CFloatingDockContainer* CDockAreaTabBar::makeAreaFloating(const QPoint& Offset,
 {
 	QSize Size = d->DockArea->size();
 	CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(d->DockArea);
-	FloatingWidget->startFloating(Offset, Size, DragState);
+    FloatingWidget->startFloating(Offset, Size, DragState, nullptr);
 	auto TopLevelDockWidget = FloatingWidget->topLevelDockWidget();
 	if (TopLevelDockWidget)
 	{

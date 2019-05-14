@@ -151,7 +151,8 @@ void DockWidgetTabPrivate::createLayout()
 	CloseIcon.addPixmap(normalPixmap, QIcon::Normal);
 	CloseIcon.addPixmap(internal::createTransparentPixmap(normalPixmap, 0.25), QIcon::Disabled);
 	CloseButton->setIcon(CloseIcon);
-	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+    CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	CloseButton->setVisible(false);
 	#ifndef QT_NO_TOOLTIP
 	CloseButton->setToolTip(QObject::tr("Close Tab"));
@@ -223,7 +224,7 @@ bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
 
     if (DraggingFloatingWidget == DraggingState)
     {
-    	FloatingWidget->startDragging(DragStartMousePosition, Size);
+        FloatingWidget->startDragging(DragStartMousePosition, Size, _this);
     	auto Overlay = DockWidget->dockManager()->containerOverlay();
     	Overlay->setAllowedAreas(OuterDockAreas);
     	this->FloatingWidget = FloatingWidget;

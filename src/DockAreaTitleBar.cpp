@@ -97,6 +97,23 @@ struct DockAreaTitleBarPrivate
 	{
 		return DockArea->dockManager()->configFlags().testFlag(Flag);
 	}
+
+    /**
+     * Helper class to set title bar burron icons depending on operating system
+     * and to avoid duplicated code
+     */
+    void setTitleBarButtonIcon(tTileBarButton* Button, QStyle::StandardPixmap StandarPixmap)
+    {
+    #ifdef Q_OS_LINUX
+        Button->setIcon(_this->style()->standardIcon(StandarPixmap));
+    #else
+        QIcon Icon;
+        QPixmap normalPixmap = _this->style()->standardPixmap(StandarPixmap, 0, Button);
+        Icon.addPixmap(internal::createTransparentPixmap(normalPixmap, 0.25), QIcon::Disabled);
+        Icon.addPixmap(normalPixmap, QIcon::Normal);
+        Button->setIcon(Icon);
+    #endif
+    }
 };// struct DockAreaTitleBarPrivate
 
 
@@ -112,18 +129,12 @@ DockAreaTitleBarPrivate::DockAreaTitleBarPrivate(CDockAreaTitleBar* _public) :
 //============================================================================
 void DockAreaTitleBarPrivate::createButtons()
 {
+    // Tabs menu button
 	TabsMenuButton = new tTileBarButton();
 	TabsMenuButton->setObjectName("tabsMenuButton");
 	TabsMenuButton->setAutoRaise(true);
 	TabsMenuButton->setPopupMode(QToolButton::InstantPopup);
-
-	QIcon MenuIcon;
-	QPixmap normalPixmap = _this->style()->standardPixmap(
-		QStyle::SP_TitleBarUnshadeButton, 0, TabsMenuButton);
-	MenuIcon.addPixmap(internal::createTransparentPixmap(normalPixmap, 0.25), QIcon::Disabled);
-	MenuIcon.addPixmap(normalPixmap, QIcon::Normal);
-	TabsMenuButton->setIcon(MenuIcon);
-
+    setTitleBarButtonIcon(TabsMenuButton, QStyle::SP_TitleBarUnshadeButton);
 	QMenu* TabsMenu = new QMenu(TabsMenuButton);
 	#ifndef QT_NO_TOOLTIP
 	TabsMenu->setToolTipsVisible(true);
@@ -138,6 +149,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
 		SLOT(onTabsMenuActionTriggered(QAction*)));
 
+
 	// Undock button
 	UndockButton = new tTileBarButton();
 	UndockButton->setObjectName("undockButton");
@@ -145,26 +157,17 @@ void DockAreaTitleBarPrivate::createButtons()
 	#ifndef QT_NO_TOOLTIP
 	UndockButton->setToolTip(QObject::tr("Detach Group"));
 	#endif
-	QIcon UndockIcon;
-	normalPixmap = _this->style()->standardPixmap(QStyle::SP_TitleBarNormalButton, 0, UndockButton);
-	UndockIcon.addPixmap(internal::createTransparentPixmap(normalPixmap, 0.25), QIcon::Disabled);
-	UndockIcon.addPixmap(normalPixmap, QIcon::Normal);
-	UndockButton->setIcon(UndockIcon);
-	UndockButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    setTitleBarButtonIcon(UndockButton, QStyle::SP_TitleBarNormalButton);
+    UndockButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	TopLayout->addWidget(UndockButton, 0);
 	_this->connect(UndockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
 
+
+    // Close button
 	CloseButton = new tTileBarButton();
 	CloseButton->setObjectName("closeButton");
 	CloseButton->setAutoRaise(true);
-
-	// The standard icons does not look good on high DPI screens
-	QIcon CloseIcon;// =  _this->style()->standardIcon(QStyle::SP_TitleBarCloseButton);
-	normalPixmap = _this->style()->standardPixmap(QStyle::SP_TitleBarCloseButton, 0, CloseButton);
-	CloseIcon.addPixmap(internal::createTransparentPixmap(normalPixmap, 0.25), QIcon::Disabled);
-	CloseIcon.addPixmap(normalPixmap, QIcon::Normal);
-
-	CloseButton->setIcon(CloseIcon);
+    setTitleBarButtonIcon(CloseButton, QStyle::SP_TitleBarCloseButton);
 	#ifndef QT_NO_TOOLTIP
 	if (testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
 	{
