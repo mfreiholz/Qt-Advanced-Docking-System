@@ -1289,6 +1289,7 @@ bool CDockContainerWidget::restoreState(QXmlStreamReader& s, bool Testing)
 	{
 		d->VisibleDockAreaCount = -1;// invalidate the dock area count
 		d->DockAreas.clear();
+		std::fill(std::begin(d->LastAddedAreaCache),std::end(d->LastAddedAreaCache), nullptr);
 	}
 
 	if (IsFloating)
