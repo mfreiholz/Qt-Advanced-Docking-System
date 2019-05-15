@@ -586,6 +586,12 @@ CDockWidget* CDockManager::findDockWidget(const QString& ObjectName) const
 	return d->DockWidgetsMap.value(ObjectName, nullptr);
 }
 
+//============================================================================
+void CDockManager::removeDockWidget(CDockWidget* Dockwidget)
+{
+	d->DockWidgetsMap.remove(Dockwidget->objectName());
+	CDockContainerWidget::removeDockWidget(Dockwidget);
+}
 
 //============================================================================
 QMap<QString, CDockWidget*> CDockManager::dockWidgetsMap() const
