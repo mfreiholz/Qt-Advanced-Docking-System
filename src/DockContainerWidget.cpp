@@ -1066,6 +1066,12 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 	area->setParent(nullptr);
 	internal::hideEmptyParentSplitters(Splitter);
 
+	// Remove this area from cached areas
+	const auto& cache = d->LastAddedAreaCache;
+	if (auto p = std::find(cache, cache+sizeof(cache)/sizeof(cache[0]), area)) {
+		d->LastAddedAreaCache[std::distance(cache, p)] = nullptr;
+	}
+
 	// If splitter has more than 1 widgets, we are finished and can leave
 	if (Splitter->count() >  1)
 	{
