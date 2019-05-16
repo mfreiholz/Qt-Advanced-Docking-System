@@ -239,6 +239,11 @@ public:
 	void setWidget(QWidget* widget, eInsertMode InsertMode = AutoScrollArea);
 
 	/**
+	 * Remove the widget from the dock and give ownership back to the caller
+	 */
+	void releaseWidget();
+
+	/**
 	 * Returns the widget for the dock widget. This function returns zero if
 	 * the widget has not been set.
 	 */
