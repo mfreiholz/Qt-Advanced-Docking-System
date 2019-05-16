@@ -241,7 +241,7 @@ public:
 	/**
 	 * Remove the widget from the dock and give ownership back to the caller
 	 */
-	void releaseWidget();
+	QWidget* takeWidget();
 
 	/**
 	 * Returns the widget for the dock widget. This function returns zero if
