@@ -414,14 +414,15 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	auto TabWidget = DockWidget->tabWidget();
 	TabWidget->hide();
 	d->tabBar()->removeTab(TabWidget);
+	CDockContainerWidget* DockContainer = dockContainer();
 	if (NextOpenDockWidget)
 	{
 		setCurrentDockWidget(NextOpenDockWidget);
 	}
-	else if (d->ContentsLayout->isEmpty())
+	else if (d->ContentsLayout->isEmpty() && DockContainer->dockAreaCount() > 1)
 	{
 		qDebug() << "Dock Area empty";
-		dockContainer()->removeDockArea(this);
+		DockContainer->removeDockArea(this);
 		this->deleteLater();
 	}
 	else
@@ -434,14 +435,13 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 
 	d->updateCloseButtonState();
 	updateTitleBarVisibility();
-	auto TopLevelDockWidget = dockContainer()->topLevelDockWidget();
+	auto TopLevelDockWidget = DockContainer->topLevelDockWidget();
 	if (TopLevelDockWidget)
 	{
 		TopLevelDockWidget->emitTopLevelChanged(true);
 	}
 
 #if (ADS_DEBUG_LEVEL > 0)
-	CDockContainerWidget* DockContainer = dockContainer();
 	DockContainer->dumpLayout();
 #endif
 }

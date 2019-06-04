@@ -998,6 +998,15 @@ CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockW
 	}
 }
 
+//============================================================================
+void CDockContainerWidget::removeDockWidget(CDockWidget* Dockwidget)
+{
+	CDockAreaWidget* Area = Dockwidget->dockAreaWidget();
+	if (Area)
+	{
+		Area->removeDockWidget(Dockwidget);
+	}
+}
 
 //============================================================================
 unsigned int CDockContainerWidget::zOrderIndex() const
@@ -1056,6 +1065,12 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 	// splitters if it has no visible content
 	area->setParent(nullptr);
 	internal::hideEmptyParentSplitters(Splitter);
+
+	// Remove this area from cached areas
+	const auto& cache = d->LastAddedAreaCache;
+	if (auto p = std::find(cache, cache+sizeof(cache)/sizeof(cache[0]), area)) {
+		d->LastAddedAreaCache[std::distance(cache, p)] = nullptr;
+	}
 
 	// If splitter has more than 1 widgets, we are finished and can leave
 	if (Splitter->count() >  1)
@@ -1274,6 +1289,7 @@ bool CDockContainerWidget::restoreState(QXmlStreamReader& s, bool Testing)
 	{
 		d->VisibleDockAreaCount = -1;// invalidate the dock area count
 		d->DockAreas.clear();
+		std::fill(std::begin(d->LastAddedAreaCache),std::end(d->LastAddedAreaCache), nullptr);
 	}
 
 	if (IsFloating)

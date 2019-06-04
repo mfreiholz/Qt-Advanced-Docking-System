@@ -569,9 +569,13 @@ CDockAreaWidget* CDockManager::addDockWidgetTab(DockWidgetArea area,
 	{
 		return addDockWidget(ads::CenterDockWidgetArea, Dockwidget, AreaWidget);
 	}
+	else if (!openedDockAreas().isEmpty())
+	{
+		return addDockWidget(area, Dockwidget, openedDockAreas().last());
+	}
 	else
 	{
-		return addDockWidget(area, Dockwidget, AreaWidget);
+		return addDockWidget(area, Dockwidget, nullptr);
 	}
 }
 
@@ -590,6 +594,12 @@ CDockWidget* CDockManager::findDockWidget(const QString& ObjectName) const
 	return d->DockWidgetsMap.value(ObjectName, nullptr);
 }
 
+//============================================================================
+void CDockManager::removeDockWidget(CDockWidget* Dockwidget)
+{
+	d->DockWidgetsMap.remove(Dockwidget->objectName());
+	CDockContainerWidget::removeDockWidget(Dockwidget);
+}
 
 //============================================================================
 QMap<QString, CDockWidget*> CDockManager::dockWidgetsMap() const

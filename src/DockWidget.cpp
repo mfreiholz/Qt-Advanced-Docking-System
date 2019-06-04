@@ -263,6 +263,16 @@ void CDockWidget::setWidget(QWidget* widget, eInsertMode InsertMode)
 
 
 //============================================================================
+QWidget* CDockWidget::takeWidget()
+{
+	d->ScrollArea->takeWidget();
+	d->Layout->removeWidget(d->Widget);
+	d->Widget->setParent(nullptr);
+    return d->Widget;
+}
+
+
+//============================================================================
 QWidget* CDockWidget::widget() const
 {
 	return d->Widget;
