@@ -193,6 +193,11 @@ public:
 	CDockWidget* findDockWidget(const QString& ObjectName) const;
 
 	/**
+	 * Remove the given Dock from the dock manager
+	 */
+	void removeDockWidget(CDockWidget* Dockwidget);
+
+	/**
 	 * This function returns a readable reference to the internal dock
 	 * widgets map so that it is possible to iterate over all dock widgets
 	 */

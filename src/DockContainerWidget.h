@@ -167,6 +167,11 @@ public:
 		CDockAreaWidget* DockAreaWidget = nullptr);
 
 	/**
+	 * Removes dockwidget
+	 */
+	void removeDockWidget(CDockWidget* Dockwidget);
+
+	/**
 	 * Returns the current zOrderIndex
 	 */
 	virtual unsigned int zOrderIndex() const;
