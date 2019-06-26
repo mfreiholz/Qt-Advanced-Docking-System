@@ -336,8 +336,9 @@ void DockManagerPrivate::emitTopLevelEvents()
 
 
 //============================================================================
-bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
+bool DockManagerPrivate::restoreState(const QByteArray& State, int version)
 {
+	QByteArray state = State.startsWith("<?xml") ? State : qUncompress(State);
     if (!checkFormat(state, version))
     {
     	qDebug() << "checkFormat: Error checking format!!!!!!!";
@@ -489,11 +490,11 @@ unsigned int CDockManager::zOrderIndex() const
 
 
 //============================================================================
-QByteArray CDockManager::saveState(eXmlMode XmlMode, int version) const
+QByteArray CDockManager::saveState(int version) const
 {
     QByteArray xmldata;
     QXmlStreamWriter s(&xmldata);
-	s.setAutoFormatting(XmlAutoFormattingEnabled == XmlMode);
+	s.setAutoFormatting(d->ConfigFlags.testFlag(XmlAutoFormattingEnabled));
     s.writeStartDocument();
 		s.writeStartElement("QtAdvancedDockingSystem");
 		s.writeAttribute("Version", QString::number(version));
@@ -506,7 +507,7 @@ QByteArray CDockManager::saveState(eXmlMode XmlMode, int version) const
 		s.writeEndElement();
     s.writeEndDocument();
 
-    return xmldata;
+    return d->ConfigFlags.testFlag(XmlCompressionEnabled) ? qCompress(xmldata, 9) : xmldata;
 }
 
 
