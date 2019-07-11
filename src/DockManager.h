@@ -51,7 +51,9 @@ struct DockWidgetTabPrivate;
 struct DockAreaWidgetPrivate;
 
 /**
- * The central dock manager that maintains the complete docking system
+ * The central dock manager that maintains the complete docking system.
+ * With the configuration flags you can globally control the functionality
+ * of the docking system.
  **/
 class ADS_EXPORT CDockManager : public CDockContainerWidget
 {
@@ -108,12 +110,6 @@ public:
 		MenuAlphabeticallySorted
 	};
 
-	enum eXmlMode
-	{
-		XmlAutoFormattingDisabled,
-		XmlAutoFormattingEnabled
-	};
-
 	/**
 	 * These global configuration flags configure some global dock manager
 	 * settings.
@@ -124,7 +120,9 @@ public:
 		DockAreaHasCloseButton = 0x02,     //!< If the flag is set each dock area has a close button
 		DockAreaCloseButtonClosesTab = 0x04,//!< If the flag is set, the dock area close button closes the active tab, if not set, it closes the complete cock area
 		OpaqueSplitterResize = 0x08, //!< See QSplitter::setOpaqueResize() documentation
-		DefaultConfig = ActiveTabHasCloseButton | DockAreaHasCloseButton | OpaqueSplitterResize, ///< the default configuration
+		XmlAutoFormattingEnabled = 0x10,//!< If enabled, the XML writer automatically adds line-breaks and indentation to empty sections between elements (ignorable whitespace).
+		XmlCompressionEnabled = 0x20,//!< If enabled, the XML output will be compressed and is not human readable anymore
+		DefaultConfig = ActiveTabHasCloseButton | DockAreaHasCloseButton | OpaqueSplitterResize | XmlCompressionEnabled, ///< the default configuration
 	};
 	Q_DECLARE_FLAGS(ConfigFlags, eConfigFlag)
 
@@ -228,7 +226,7 @@ public:
 	 * The XmlMode XmlAutoFormattingDisabled is better if you would like to have
 	 * a more compact XML output - i.e. for storage in ini files.
 	 */
-	QByteArray saveState(eXmlMode XmlMode = XmlAutoFormattingDisabled, int version = 0) const;
+	QByteArray saveState(int version = 0) const;
 
 	/**
 	 * Restores the state of this dockmanagers dockwidgets.

@@ -205,6 +205,13 @@ void CDockAreaTabBar::mouseMoveEvent(QMouseEvent* ev)
 		return;
 	}
 
+	// If one single dock widget in this area is not floatable then the whole
+	// area is not floatable
+	if (!d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
+	{
+		return;
+	}
+
 	int DragDistance = (d->DragStartMousePos - ev->pos()).manhattanLength();
 	if (DragDistance >= CDockManager::startDragDistance())
 	{
@@ -225,6 +232,11 @@ void CDockAreaTabBar::mouseDoubleClickEvent(QMouseEvent *event)
 	// sense to move it to a new floating widget and leave this one
 	// empty
 	if (d->DockArea->dockContainer()->isFloating() && d->DockArea->dockContainer()->dockAreaCount() == 1)
+	{
+		return;
+	}
+
+	if (!d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
 	{
 		return;
 	}

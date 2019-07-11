@@ -141,7 +141,7 @@ public:
 	enum DockWidgetFeature
 	{
 		DockWidgetClosable = 0x01,
-		DockWidgetMovable = 0x02,
+		DockWidgetMovable = 0x02,///< this feature is not properly implemented yet and is ignored
 		DockWidgetFloatable = 0x04,
 		AllDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable,
 		NoDockWidgetFeatures = 0x00

@@ -291,7 +291,10 @@ void CDockAreaTitleBar::onCloseButtonClicked()
 //============================================================================
 void CDockAreaTitleBar::onUndockButtonClicked()
 {
-	d->TabBar->makeAreaFloating(mapFromGlobal(QCursor::pos()), DraggingInactive);
+	if (d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
+	{
+		d->TabBar->makeAreaFloating(mapFromGlobal(QCursor::pos()), DraggingInactive);
+	}
 }
 
 
@@ -346,9 +349,10 @@ void CDockAreaTitleBar::setVisible(bool Visible)
 void CDockAreaTitleBar::showContextMenu(const QPoint& pos)
 {
 	QMenu Menu(this);
-	Menu.addAction(tr("Detach Area"), this, SLOT(onUndockButtonClicked()));
+	auto Action = Menu.addAction(tr("Detach Area"), this, SLOT(onUndockButtonClicked()));
+	Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable));
 	Menu.addSeparator();
-	auto Action = Menu.addAction(tr("Close Area"), this, SLOT(onCloseButtonClicked()));
+	Action = Menu.addAction(tr("Close Area"), this, SLOT(onCloseButtonClicked()));
 	Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetClosable));
 	Menu.addAction(tr("Close Other Areas"), d->DockArea, SLOT(closeOtherAreas()));
 	Menu.exec(mapToGlobal(pos));

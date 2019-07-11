@@ -328,7 +328,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
 		}
 
     	// Floating is only allowed for widgets that are movable
-        if (d->DockWidget->features().testFlag(CDockWidget::DockWidgetMovable))
+        if (d->DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable))
         {
             d->startFloating();
         }
@@ -352,9 +352,10 @@ void CDockWidgetTab::contextMenuEvent(QContextMenuEvent* ev)
 
 	d->DragStartMousePosition = ev->pos();
 	QMenu Menu(this);
-	Menu.addAction(tr("Detach"), this, SLOT(onDetachActionTriggered()));
+	auto Action = Menu.addAction(tr("Detach"), this, SLOT(onDetachActionTriggered()));
+	Action->setEnabled(d->DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable));
 	Menu.addSeparator();
-	auto Action = Menu.addAction(tr("Close"), this, SIGNAL(closeRequested()));
+	Action = Menu.addAction(tr("Close"), this, SIGNAL(closeRequested()));
 	Action->setEnabled(isClosable());
 	Menu.addAction(tr("Close Others"), this, SIGNAL(closeOtherTabsRequested()));
 	Menu.exec(mapToGlobal(ev->pos()));
@@ -469,7 +470,8 @@ void CDockWidgetTab::mouseDoubleClickEvent(QMouseEvent *event)
 	// If this is the last dock area in a dock container it does not make
 	// sense to move it to a new floating widget and leave this one
 	// empty
-	if (!d->DockArea->dockContainer()->isFloating() || d->DockArea->dockWidgetsCount() > 1)
+	if ((!d->DockArea->dockContainer()->isFloating() || d->DockArea->dockWidgetsCount() > 1)
+		&& d->DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable))
 	{
 		d->DragStartMousePosition = event->pos();
 		d->startFloating(DraggingInactive);
@@ -505,11 +507,13 @@ bool CDockWidgetTab::isClosable() const
 //===========================================================================
 void CDockWidgetTab::onDetachActionTriggered()
 {
+	if (!d->DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable))
+	{
+		return;
+	}
 	d->DragStartMousePosition = mapFromGlobal(QCursor::pos());
 	d->startFloating(DraggingInactive);
 }
-
-
 
 
 //============================================================================
