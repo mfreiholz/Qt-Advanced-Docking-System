@@ -40,11 +40,9 @@ HEADERS += \
     DockOverlay.h \
     DockSplitter.h \
     DockAreaTitleBar.h \
-    ElidingLabel.h \
-    FloatingWidgetTitleBar.h
-    
-    
-    
+    ElidingLabel.h
+
+
 SOURCES += \
     ads_globals.cpp \
     DockAreaWidget.cpp \
@@ -57,8 +55,13 @@ SOURCES += \
     DockOverlay.cpp \
     DockSplitter.cpp \
     DockAreaTitleBar.cpp \
-    ElidingLabel.cpp \
-    FloatingWidgetTitleBar.cpp
+    ElidingLabel.cpp
+
+
+unix {
+HEADERS += linux/FloatingWidgetTitleBar.h
+SOURCES += linux/FloatingWidgetTitleBar.cpp
+}
 
 isEmpty(PREFIX){
 	PREFIX=..\installed

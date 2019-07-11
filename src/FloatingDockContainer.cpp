@@ -48,11 +48,12 @@
 #include "DockOverlay.h"
 
 #ifdef Q_OS_LINUX
-#include "FloatingWidgetTitleBar.h"
+#include "linux/FloatingWidgetTitleBar.h"
+#include <xcb/xcb.h>
 #endif
 
 #include <iostream>
-#include <xcb/xcb.h>
+
 
 namespace ads
 {
