@@ -241,7 +241,7 @@ struct DockAreaWidgetPrivate
 	DockAreaLayout*		ContentsLayout	= nullptr;
 	CDockAreaTitleBar*	TitleBar		= nullptr;
 	CDockManager*		DockManager		= nullptr;
-	bool UpdateCloseButton = false;
+	bool UpdateTitleBarButtons = false;
 
 	/**
 	 * Private data constructor
@@ -295,9 +295,9 @@ struct DockAreaWidgetPrivate
 	}
 
 	/**
-	 * Udpates the enable state of the close button
+	 * Udpates the enable state of the close and detach button
 	 */
-	void updateCloseButtonState();
+	void updateTitleBarButtonStates();
 };
 // struct DockAreaWidgetPrivate
 
@@ -322,17 +322,19 @@ void DockAreaWidgetPrivate::createTitleBar()
 
 
 //============================================================================
-void DockAreaWidgetPrivate::updateCloseButtonState()
+void DockAreaWidgetPrivate::updateTitleBarButtonStates()
 {
 	if (_this->isHidden())
 	{
-		UpdateCloseButton = true;
+		UpdateTitleBarButtons = true;
 		return;
 	}
 
 	TitleBar->button(TitleBarButtonClose)->setEnabled(
 		_this->features().testFlag(CDockWidget::DockWidgetClosable));
-	UpdateCloseButton = false;
+	TitleBar->button(TitleBarButtonUndock)->setEnabled(
+		_this->features().testFlag(CDockWidget::DockWidgetFloatable));
+	UpdateTitleBarButtons = false;
 }
 
 
@@ -400,7 +402,7 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 		setCurrentIndex(index);
 	}
 	DockWidget->setDockArea(this);
-	d->updateCloseButtonState();
+	d->updateTitleBarButtonStates();
 }
 
 
@@ -433,7 +435,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 		hideAreaWithNoVisibleContent();
 	}
 
-	d->updateCloseButtonState();
+	d->updateTitleBarButtonStates();
 	updateTitleBarVisibility();
 	auto TopLevelDockWidget = DockContainer->topLevelDockWidget();
 	if (TopLevelDockWidget)
@@ -765,9 +767,9 @@ void CDockAreaWidget::toggleView(bool Open)
 void CDockAreaWidget::setVisible(bool Visible)
 {
 	Super::setVisible(Visible);
-	if (d->UpdateCloseButton)
+	if (d->UpdateTitleBarButtons)
 	{
-		d->updateCloseButtonState();
+		d->updateTitleBarButtonStates();
 	}
 }
 
