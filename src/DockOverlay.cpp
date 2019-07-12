@@ -140,6 +140,7 @@ struct DockOverlayCrossPrivate
     qreal dropIndicatiorWidth(QLabel* l) const
     {
     #ifdef Q_OS_LINUX
+        Q_UNUSED(l)
         return 40;
     #else
         return static_cast<qreal>(l->fontMetrics().height()) * 3.f;
