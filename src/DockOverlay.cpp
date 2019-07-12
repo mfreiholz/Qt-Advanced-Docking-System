@@ -137,7 +137,7 @@ struct DockOverlayCrossPrivate
      * Helper function that returns the drop indicator width depending on the
      * operating system
      */
-    qreal dropIndicatiorWidth() const
+    qreal dropIndicatiorWidth(QLabel* l) const
     {
     #ifdef Q_OS_LINUX
         return 40;
@@ -154,7 +154,7 @@ struct DockOverlayCrossPrivate
 		QLabel* l = new QLabel();
 		l->setObjectName("DockWidgetAreaLabel");
 
-        const qreal metric = dropIndicatiorWidth();
+        const qreal metric = dropIndicatiorWidth(l);
 		const QSizeF size(metric, metric);
 
 		l->setPixmap(createHighDpiDropIndicatorPixmap(size, DockWidgetArea, Mode));
@@ -168,7 +168,7 @@ struct DockOverlayCrossPrivate
 	void updateDropIndicatorIcon(QWidget* DropIndicatorWidget)
 	{
 		QLabel* l = qobject_cast<QLabel*>(DropIndicatorWidget);
-        const qreal metric = dropIndicatiorWidth();
+        const qreal metric = dropIndicatiorWidth(l);
 		const QSizeF size(metric, metric);
 
 		int Area = l->property("dockWidgetArea").toInt();

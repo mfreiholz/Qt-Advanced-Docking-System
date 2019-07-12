@@ -38,8 +38,6 @@
 #include <QDebug>
 #include <QAbstractButton>
 #include <QElapsedTimer>
-#include <QTime>
-#include <QAbstractEventDispatcher>
 
 #include "DockContainerWidget.h"
 #include "DockAreaWidget.h"
@@ -51,8 +49,6 @@
 #include "linux/FloatingWidgetTitleBar.h"
 #include <xcb/xcb.h>
 #endif
-
-#include <iostream>
 
 
 namespace ads
@@ -71,8 +67,10 @@ struct FloatingDockContainerPrivate
 	QPoint DragStartMousePosition;
 	CDockContainerWidget* DropContainer = nullptr;
 	CDockAreaWidget* SingleDockArea = nullptr;
+#ifdef Q_OS_LINUX
     QWidget* MouseEventHandler = nullptr;
     CFloatingWidgetTitleBar* TitleBar = nullptr;
+#endif
 
 	/**
 	 * Private data constructor
@@ -257,6 +255,7 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager* DockManager) :
     l->setContentsMargins(0, 0, 0, 0);
     l->setSpacing(0);
     setLayout(l);
+    l->addWidget(d->DockContainer);
 #endif
 
 	DockManager->registerFloatingWidget(this);
@@ -494,6 +493,9 @@ bool CFloatingDockContainer::eventFilter(QObject *watched, QEvent *event)
 void CFloatingDockContainer::startFloating(const QPoint& DragStartMousePos, const QSize& Size,
     eDragState DragState, QWidget* MouseEventHandler)
 {
+#ifndef Q_OS_LINUX
+	Q_UNUSED(MouseEventHandler)
+#endif
 	resize(Size);
 	d->setState(DragState);
 	d->DragStartMousePosition = DragStartMousePos;
@@ -617,7 +619,7 @@ QList<CDockWidget*> CFloatingDockContainer::dockWidgets() const
 //============================================================================
 void CFloatingDockContainer::finishDragging()
 {
-    std::cout << "CFloatingDockContainer::finishDragging" << std::endl;
+    qDebug() << "CFloatingDockContainer::finishDragging";
 #ifdef Q_OS_LINUX
    setAttribute(Qt::WA_X11NetWmWindowTypeDock, false);
    setWindowOpacity(1);

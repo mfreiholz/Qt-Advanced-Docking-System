@@ -99,7 +99,7 @@ struct DockAreaTitleBarPrivate
 	}
 
     /**
-     * Helper class to set title bar burron icons depending on operating system
+     * Helper class to set title bar button icons depending on operating system
      * and to avoid duplicated code
      */
     void setTitleBarButtonIcon(tTileBarButton* Button, QStyle::StandardPixmap StandarPixmap)
