@@ -40,6 +40,7 @@ set(ads_SRCS
     src/ElidingLabel.cpp
     src/FloatingDockContainer.cpp
     src/ads.qrc
+    src/linux/FloatingWidgetTitleBar.cpp
 )
 set(ads_INSTALL_INCLUDE 
     src/ads_globals.h
@@ -54,6 +55,7 @@ set(ads_INSTALL_INCLUDE
     src/DockWidgetTab.h
     src/ElidingLabel.h
     src/FloatingDockContainer.h
+    src/linux/FloatingWidgetTitleBar.h
 )
 if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
     set(ads_PlatformDir "x86")
