@@ -74,7 +74,7 @@ The application can be compiled for macOS. A user reported, that the library wor
 ### Linux
 Ubuntu [![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
 
-The application can be compiled for Linux but the master branch doesn't work under Linux because some required features are not supported by Linux. But there is the branch **linux_experimental** which was developed and tested with **Kubuntu 18.04**. and which should also work on other Linux distributions. The branch needs more testing and maybe some imrpovements before it can be merged into master.
+The application can be compiled for Linux and has been developed and tested with **Kubuntu 18.04**.
 
 ![Advanced Docking on Linux](doc/linux_kubuntu_1804.png)
 
