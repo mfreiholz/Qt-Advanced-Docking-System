@@ -243,7 +243,7 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager* DockManager) :
 
 #ifdef Q_OS_LINUX
     d->TitleBar = new CFloatingWidgetTitleBar(this);
-    setWindowFlag(Qt::Tool);
+    setWindowFlags(windowFlags() | Qt::Tool);
     QDockWidget::setWidget(d->DockContainer);
     QDockWidget::setFloating(true);
     QDockWidget::setFeatures(QDockWidget::AllDockWidgetFeatures);
