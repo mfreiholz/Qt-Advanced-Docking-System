@@ -276,7 +276,7 @@ void CDockAreaTitleBar::onTabsMenuAboutToShow()
 //============================================================================
 void CDockAreaTitleBar::onCloseButtonClicked()
 {
-	qDebug() << "CDockAreaTitleBar::onCloseButtonClicked";
+    ADS_PRINT("CDockAreaTitleBar::onCloseButtonClicked");
 	if (d->testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
 	{
 		d->TabBar->closeTab(d->TabBar->currentIndex());

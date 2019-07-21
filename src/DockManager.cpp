@@ -174,7 +174,7 @@ bool DockManagerPrivate::restoreContainer(int Index, QXmlStreamReader& stream, b
 	}
 	else
 	{
-		qDebug() << "d->Containers[i]->restoreState ";
+        ADS_PRINT("d->Containers[i]->restoreState ");
 		auto Container = Containers[Index];
 		if (Container->isFloating())
 		{
@@ -211,7 +211,7 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     {
     	return false;
     }
-    qDebug() << s.attributes().value("Version");
+    ADS_PRINT(s.attributes().value("Version"));
     bool ok;
     int v = s.attributes().value("Version").toInt(&ok);
     if (!ok || v != version)
@@ -221,7 +221,7 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
 
     bool Result = true;
     int  DockContainers = s.attributes().value("Containers").toInt();
-    qDebug() << DockContainers;
+    ADS_PRINT(DockContainers);
     int DockContainerCount = 0;
     while (s.readNextStartElement())
     {
@@ -345,7 +345,7 @@ bool DockManagerPrivate::restoreState(const QByteArray& State, int version)
 	QByteArray state = State.startsWith("<?xml") ? State : qUncompress(State);
     if (!checkFormat(state, version))
     {
-    	qDebug() << "checkFormat: Error checking format!!!!!!!";
+        ADS_PRINT("checkFormat: Error checking format!!!!!!!");
     	return false;
     }
 
@@ -355,7 +355,7 @@ bool DockManagerPrivate::restoreState(const QByteArray& State, int version)
 
     if (!restoreStateFromXml(state, version))
     {
-    	qDebug() << "restoreState: Error restoring state!!!!!!!";
+        ADS_PRINT("restoreState: Error restoring state!!!!!!!");
     	return false;
     }
 
@@ -430,7 +430,7 @@ CDockManager::~CDockManager()
 void CDockManager::registerFloatingWidget(CFloatingDockContainer* FloatingWidget)
 {
 	d->FloatingWidgets.append(FloatingWidget);
-	qDebug() << "d->FloatingWidgets.count() " << d->FloatingWidgets.count();
+    ADS_PRINT("d->FloatingWidgets.count() " << d->FloatingWidgets.count());
 }
 
 
