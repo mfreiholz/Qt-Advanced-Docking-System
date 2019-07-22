@@ -171,7 +171,7 @@ void CDockAreaTabBar::mouseReleaseEvent(QMouseEvent* ev)
 {
 	if (ev->button() == Qt::LeftButton)
 	{
-		qDebug() << "CTabsScrollArea::mouseReleaseEvent";
+        ADS_PRINT("CTabsScrollArea::mouseReleaseEvent");
 		ev->accept();
 		d->FloatingWidget = nullptr;
 		d->DragStartMousePos = QPoint();
@@ -215,7 +215,7 @@ void CDockAreaTabBar::mouseMoveEvent(QMouseEvent* ev)
 	int DragDistance = (d->DragStartMousePos - ev->pos()).manhattanLength();
 	if (DragDistance >= CDockManager::startDragDistance())
 	{
-		qDebug() << "CTabsScrollArea::startFloating";
+        ADS_PRINT("CTabsScrollArea::startFloating");
 		startFloating(d->DragStartMousePos);
 		auto Overlay = d->DockArea->dockManager()->containerOverlay();
 		Overlay->setAllowedAreas(OuterDockAreas);
@@ -321,7 +321,7 @@ void CDockAreaTabBar::removeTab(CDockWidgetTab* Tab)
 	{
 		return;
 	}
-	qDebug() << "CDockAreaTabBar::removeTab ";
+    ADS_PRINT("CDockAreaTabBar::removeTab ");
 	int NewCurrentIndex = currentIndex();
 	int RemoveIndex = d->TabsLayout->indexOf(Tab);
 	if (count() == 1)
@@ -364,7 +364,7 @@ void CDockAreaTabBar::removeTab(CDockWidgetTab* Tab)
 	d->TabsLayout->removeWidget(Tab);
 	Tab->disconnect(this);
 	Tab->removeEventFilter(this);
-	qDebug() << "NewCurrentIndex " << NewCurrentIndex;
+    ADS_PRINT("NewCurrentIndex " << NewCurrentIndex);
 	if (NewCurrentIndex != d->CurrentIndex)
 	{
 		setCurrentIndex(NewCurrentIndex);
@@ -492,7 +492,7 @@ void CDockAreaTabBar::onTabWidgetMoved(const QPoint& GlobalPos)
 	{
 		if (MousePos.x() > tab(count() - 1)->geometry().right())
 		{
-			qDebug() << "after all tabs";
+            ADS_PRINT("after all tabs");
 			toIndex = count() - 1;
 		}
 		else
@@ -505,7 +505,7 @@ void CDockAreaTabBar::onTabWidgetMoved(const QPoint& GlobalPos)
 	d->TabsLayout->insertWidget(toIndex, MovingTab);
 	if (toIndex >= 0)
 	{
-		qDebug() << "tabMoved from " << fromIndex << " to " << toIndex;
+        ADS_PRINT("tabMoved from " << fromIndex << " to " << toIndex);
 		emit tabMoved(fromIndex, toIndex);
 		setCurrentIndex(toIndex);
 	}

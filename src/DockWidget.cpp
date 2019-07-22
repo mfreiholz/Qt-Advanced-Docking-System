@@ -224,7 +224,7 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 //============================================================================
 CDockWidget::~CDockWidget()
 {
-	qDebug() << "~CDockWidget()";
+    ADS_PRINT("~CDockWidget()");
 	delete d;
 }
 

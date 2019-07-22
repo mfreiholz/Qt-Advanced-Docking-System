@@ -193,9 +193,9 @@ void DockWidgetTabPrivate::moveTab(QMouseEvent* ev)
 bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
 {
 	auto dockContainer = DockWidget->dockContainer();
-	qDebug() << "isFloating " << dockContainer->isFloating();
-	qDebug() << "areaCount " << dockContainer->dockAreaCount();
-	qDebug() << "widgetCount " << DockWidget->dockAreaWidget()->dockWidgetsCount();
+    ADS_PRINT("isFloating " << dockContainer->isFloating());
+    ADS_PRINT("areaCount " << dockContainer->dockAreaCount());
+    ADS_PRINT("widgetCount " << DockWidget->dockAreaWidget()->dockWidgetsCount());
 	// if this is the last dock widget inside of this floating widget,
 	// then it does not make any sense, to make it floating because
 	// it is already floating
@@ -206,7 +206,7 @@ bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
 		return false;
 	}
 
-	qDebug() << "startFloating";
+    ADS_PRINT("startFloating");
 	DragState = DraggingState;
 	QSize Size = DockArea->size();
 	CFloatingDockContainer* FloatingWidget = nullptr;
@@ -251,7 +251,7 @@ CDockWidgetTab::CDockWidgetTab(CDockWidget* DockWidget, QWidget *parent) :
 //============================================================================
 CDockWidgetTab::~CDockWidgetTab()
 {
-	qDebug() << "~CDockWidgetTab()";
+    ADS_PRINT("~CDockWidgetTab()");
 	delete d;
 }
 

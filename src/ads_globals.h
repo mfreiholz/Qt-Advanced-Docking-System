@@ -45,6 +45,12 @@
 #define ADS_EXPORT
 #endif
 
+#ifdef ADS_DEBUG_PRINT
+#define ADS_PRINT(s) qDebug() << s
+#else
+#define ADS_PRINT(s)
+#endif
+
 #define ADS_DEBUG_LEVEL 0
 
 class QSplitter;
