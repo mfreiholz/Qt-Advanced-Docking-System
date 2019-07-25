@@ -8,3 +8,5 @@ moc_*
 ui_*
 Makefile
 
+# IDEs
+.idea
