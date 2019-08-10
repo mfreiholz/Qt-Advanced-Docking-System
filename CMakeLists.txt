@@ -86,7 +86,7 @@ install(TARGETS qtadvanceddocking
     ARCHIVE DESTINATION lib COMPONENT library
 )
 target_include_directories(qtadvanceddocking PUBLIC 
-    $<BUILD_INTERFACE:${ads_INCLUDE}>
+    "$<BUILD_INTERFACE:${ads_INCLUDE}>"
     $<INSTALL_INTERFACE:include>
     )
 target_link_libraries(qtadvanceddocking PUBLIC ${ads_LIBS})
