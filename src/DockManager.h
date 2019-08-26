@@ -131,7 +131,7 @@ public:
 	 * If the given parent is a QMainWindow, the dock manager sets itself as the
 	 * central widget.
 	 * Before you create any dock widgets, you should properly setup the
-	 * configuration flags via setConfigFlags()
+	 * configuration flags via setConfigFlags().
 	 */
 	CDockManager(QWidget* parent = 0);
 

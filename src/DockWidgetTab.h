@@ -143,7 +143,6 @@ public:
 	virtual bool event(QEvent *e) override;
 
 public slots:
-
 	  virtual void setVisible(bool visible) override;
 
 
