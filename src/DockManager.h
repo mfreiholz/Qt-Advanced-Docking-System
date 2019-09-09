@@ -53,7 +53,14 @@ struct DockAreaWidgetPrivate;
 /**
  * The central dock manager that maintains the complete docking system.
  * With the configuration flags you can globally control the functionality
- * of the docking system.
+ * of the docking system. The dock manager uses an internal stylesheet to
+ * style its components like splitters, tabs and buttons. If you want to
+ * disable this stylesheet because your application uses its own,
+ * just call the function for settings the stylesheet with an empty
+ * string.
+ * \code
+ * DockManager->setStyleSheet("");
+ * \endcode
  **/
 class ADS_EXPORT CDockManager : public CDockContainerWidget
 {
