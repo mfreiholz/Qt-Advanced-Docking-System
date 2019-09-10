@@ -129,6 +129,7 @@ public:
 		OpaqueSplitterResize = 0x08, //!< See QSplitter::setOpaqueResize() documentation
 		XmlAutoFormattingEnabled = 0x10,//!< If enabled, the XML writer automatically adds line-breaks and indentation to empty sections between elements (ignorable whitespace).
 		XmlCompressionEnabled = 0x20,//!< If enabled, the XML output will be compressed and is not human readable anymore
+		TabCloseButtonIsToolButton = 0x40,//! If enabled the tab close buttons will be QToolButtons instead of QPushButtons - disabled by default
 		DefaultConfig = ActiveTabHasCloseButton | DockAreaHasCloseButton | OpaqueSplitterResize | XmlCompressionEnabled, ///< the default configuration
 	};
 	Q_DECLARE_FLAGS(ConfigFlags, eConfigFlag)

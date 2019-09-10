@@ -55,7 +55,6 @@ namespace ads
 {
 
 using tTabLabel = CElidingLabel;
-using tCloseButton = QPushButton;
 
 /**
  * Private data class of CDockWidgetTab class (pimpl)
@@ -72,7 +71,7 @@ struct DockWidgetTabPrivate
 	eDragState DragState = DraggingInactive;
 	CFloatingDockContainer* FloatingWidget = nullptr;
 	QIcon Icon;
-	tCloseButton* CloseButton = nullptr;
+	QAbstractButton* CloseButton = nullptr;
 	QSpacerItem* IconTextSpacer;
 
 	/**
@@ -122,6 +121,21 @@ struct DockWidgetTabPrivate
 	{
 		return DockArea->dockManager()->configFlags().testFlag(Flag);
 	}
+
+	/**
+	 * Creates the close button as QPushButton or as QToolButton
+	 */
+	QAbstractButton* createCloseButton() const
+	{
+		if (testConfigFlag(CDockManager::TabCloseButtonIsToolButton))
+		{
+			return new QToolButton();
+		}
+		else
+		{
+			return new QPushButton();
+		}
+	}
 };
 // struct DockWidgetTabPrivate
 
@@ -143,7 +157,7 @@ void DockWidgetTabPrivate::createLayout()
 	TitleLabel->setObjectName("dockWidgetTabLabel");
 	TitleLabel->setAlignment(Qt::AlignCenter);
 
-	CloseButton = new tCloseButton();
+	CloseButton = createCloseButton();
 	CloseButton->setObjectName("tabCloseButton");
 	// The standard icons do does not look good on high DPI screens
 	QIcon CloseIcon;
@@ -154,9 +168,9 @@ void DockWidgetTabPrivate::createLayout()
 
     CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	CloseButton->setVisible(false);
-	#ifndef QT_NO_TOOLTIP
+#ifndef QT_NO_TOOLTIP
 	CloseButton->setToolTip(QObject::tr("Close Tab"));
-	#endif
+#endif
 	_this->connect(CloseButton, SIGNAL(clicked()), SIGNAL(closeRequested()));
 
 	QFontMetrics fm(TitleLabel->font());
