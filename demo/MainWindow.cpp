@@ -299,6 +299,10 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	d->ui.setupUi(this);
 	d->createActions();
 
+	// uncomment the following line if the tab close button should be
+	// a QToolButton instead of a QPushButton
+	//CDockManager::setConfigFlags(CDockManager::configFlags() | CDockManager::TabCloseButtonIsToolButton);
+
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
 

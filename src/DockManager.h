@@ -151,13 +151,13 @@ public:
 	/**
 	 * This function returns the global configuration flags
 	 */
-	ConfigFlags configFlags() const;
+	static ConfigFlags configFlags();
 
 	/**
 	 * Sets the global configuration flags for the whole docking system.
 	 * Call this function before you create your first dock widget.
 	 */
-	void setConfigFlags(const ConfigFlags Flags);
+	static void setConfigFlags(const ConfigFlags Flags);
 
 	/**
 	 * Adds dockwidget into the given area.

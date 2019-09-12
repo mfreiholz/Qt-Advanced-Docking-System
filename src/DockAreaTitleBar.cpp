@@ -95,7 +95,7 @@ struct DockAreaTitleBarPrivate
 	 */
 	bool testConfigFlag(CDockManager::eConfigFlag Flag) const
 	{
-		return DockArea->dockManager()->configFlags().testFlag(Flag);
+		return CDockManager::configFlags().testFlag(Flag);
 	}
 
     /**

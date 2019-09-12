@@ -56,6 +56,8 @@
 
 namespace ads
 {
+static CDockManager::ConfigFlags StaticConfigFlags = CDockManager::DefaultConfig;
+
 /**
  * Private data class of CDockManager class (pimpl)
  */
@@ -72,7 +74,6 @@ struct DockManagerPrivate
 	QMenu* ViewMenu;
 	CDockManager::eViewMenuInsertionOrder MenuInsertionOrder = CDockManager::MenuAlphabeticallySorted;
 	bool RestoringState = false;
-	CDockManager::ConfigFlags ConfigFlags = CDockManager::DefaultConfig;
 
 	/**
 	 * Private data constructor
@@ -498,7 +499,8 @@ QByteArray CDockManager::saveState(int version) const
 {
     QByteArray xmldata;
     QXmlStreamWriter s(&xmldata);
-	s.setAutoFormatting(d->ConfigFlags.testFlag(XmlAutoFormattingEnabled));
+    auto ConfigFlags = CDockManager::configFlags();
+	s.setAutoFormatting(ConfigFlags.testFlag(XmlAutoFormattingEnabled));
     s.writeStartDocument();
 		s.writeStartElement("QtAdvancedDockingSystem");
 		s.writeAttribute("Version", QString::number(version));
@@ -511,7 +513,8 @@ QByteArray CDockManager::saveState(int version) const
 		s.writeEndElement();
     s.writeEndDocument();
 
-    return d->ConfigFlags.testFlag(XmlCompressionEnabled) ? qCompress(xmldata, 9) : xmldata;
+    return ConfigFlags.testFlag(XmlCompressionEnabled)
+    	? qCompress(xmldata, 9) : xmldata;
 }
 
 
@@ -762,16 +765,16 @@ int CDockManager::startDragDistance()
 
 
 //===========================================================================
-CDockManager::ConfigFlags CDockManager::configFlags() const
+CDockManager::ConfigFlags CDockManager::configFlags()
 {
-	return d->ConfigFlags;
+	return StaticConfigFlags;
 }
 
 
 //===========================================================================
 void CDockManager::setConfigFlags(const ConfigFlags Flags)
 {
-	d->ConfigFlags = Flags;
+	StaticConfigFlags = Flags;
 }
 
 
