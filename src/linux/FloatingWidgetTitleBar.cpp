@@ -46,6 +46,7 @@ namespace ads
 
 using tTabLabel = CElidingLabel;
 using tCloseButton = QToolButton;
+using tMaximizeButton  = QToolButton;
 
 /**
  * @brief Private data class of public interface CFloatingWidgetTitleBar
@@ -56,6 +57,7 @@ struct FloatingWidgetTitleBarPrivate
 	QLabel *IconLabel = nullptr;
 	tTabLabel *TitleLabel;
 	tCloseButton *CloseButton = nullptr;
+    tMaximizeButton* MaximizeButton = nullptr;
 	CFloatingDockContainer *FloatingWidget = nullptr;
 	eDragState DragState = DraggingInactive;
 
@@ -83,6 +85,10 @@ void FloatingWidgetTitleBarPrivate::createLayout()
 	CloseButton->setObjectName("floatingTitleCloseButton");
     CloseButton->setAutoRaise(true);
 
+	MaximizeButton = new tMaximizeButton();
+	MaximizeButton->setObjectName("floatingTitleMaximizeButton");
+	MaximizeButton->setAutoRaise(true);
+
 	// The standard icons do does not look good on high DPI screens
 	QIcon CloseIcon;
 	QPixmap normalPixmap = _this->style()->standardPixmap(
@@ -97,6 +103,12 @@ void FloatingWidgetTitleBarPrivate::createLayout()
 	CloseButton->setFocusPolicy(Qt::NoFocus);
 	_this->connect(CloseButton, SIGNAL(clicked()), SIGNAL(closeRequested()));
 
+	_this->setMaximizedIcon(false);
+	MaximizeButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	MaximizeButton->setVisible(true);
+	MaximizeButton->setFocusPolicy(Qt::NoFocus);
+	_this->connect(MaximizeButton, &QPushButton::clicked, _this, &CFloatingWidgetTitleBar::maximizeRequested);
+
 	QFontMetrics fm(TitleLabel->font());
 	int Spacing = qRound(fm.height() / 4.0);
 
@@ -107,6 +119,7 @@ void FloatingWidgetTitleBarPrivate::createLayout()
 	_this->setLayout(Layout);
 	Layout->addWidget(TitleLabel, 1);
 	Layout->addSpacing(Spacing);
+    Layout->addWidget(MaximizeButton);
 	Layout->addWidget(CloseButton);
 	Layout->setAlignment(Qt::AlignCenter);
 
@@ -147,7 +160,7 @@ void CFloatingWidgetTitleBar::mouseReleaseEvent(QMouseEvent *ev)
 	d->DragState = DraggingInactive;
     if (d->FloatingWidget)
     {
-        d->FloatingWidget->finishDragging();
+		d->FloatingWidget->finishDragging();
     }
 	Super::mouseReleaseEvent(ev);
 }
@@ -165,6 +178,12 @@ void CFloatingWidgetTitleBar::mouseMoveEvent(QMouseEvent *ev)
 	// move floating window
 	if (DraggingFloatingWidget == d->DragState)
 	{
+#ifdef Q_OS_LINUX
+		if(d->FloatingWidget->isMaximized())
+		{
+			d->FloatingWidget->showNormal(true);
+		}
+#endif
 		d->FloatingWidget->moveFloating();
 		Super::mouseMoveEvent(ev);
 		return;
@@ -186,11 +205,43 @@ void CFloatingWidgetTitleBar::setTitle(const QString &Text)
 	d->TitleLabel->setText(Text);
 }
 
-
 //============================================================================
 void CFloatingWidgetTitleBar::updateStyle()
 {
     internal::repolishStyle(this, internal::RepolishDirectChildren);
+}
+
+void CFloatingWidgetTitleBar::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (event->buttons() & Qt::LeftButton)
+    {
+        emit maximizeRequested();
+        event->accept();
+    }
+    else
+    {
+        QWidget::mouseDoubleClickEvent(event);
+    }
+}
+
+void CFloatingWidgetTitleBar::setMaximizedIcon(bool maximized)
+{
+    if (maximized)
+    {
+        QIcon normalIcon;
+        auto normalPixmap = this->style()->standardPixmap(QStyle::SP_TitleBarNormalButton, 0, d->MaximizeButton);
+        normalIcon.addPixmap(normalPixmap, QIcon::Normal);
+        normalIcon.addPixmap(internal::createTransparentPixmap(normalPixmap, 0.25), QIcon::Disabled);
+        d->MaximizeButton->setIcon(normalIcon);
+    }
+    else
+    {
+        QIcon MaxIcon;
+        auto maxPixmap = this->style()->standardPixmap(QStyle::SP_TitleBarMaxButton, 0, d->MaximizeButton);
+        MaxIcon.addPixmap(maxPixmap, QIcon::Normal);
+        MaxIcon.addPixmap(internal::createTransparentPixmap(maxPixmap, 0.25), QIcon::Disabled);
+        d->MaximizeButton->setIcon(MaxIcon);
+    }
 }
 
 } // namespace ads

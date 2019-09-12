@@ -178,8 +178,16 @@ public:
 		FloatingContainerHasWidgetIcon = 0x80000, //!< If set, the Floating Widget icon reflects the icon of the current dock widget otherwise it displays application icon
 		HideSingleCentralWidgetTitleBar = 0x100000, //!< If there is only one single visible dock widget in the main dock container (the dock manager) and if this flag is set, then the titlebar of this dock widget will be hidden
 		                                            //!< this only makes sense for non draggable and non floatable widgets and enables the creation of some kind of "central" widget
+
 		FocusHighlighting = 0x200000, //!< enables styling of focused dock widget tabs or floating widget titlebar
 		EqualSplitOnInsertion = 0x400000, ///!< if enabled, the space is equally distributed to all widgets in a  splitter
+
+		FloatingContainerForceNativeTitleBar = 0x800000, //!< Linux only ! Forces all FloatingContainer to use the native title bar. This might break docking for FloatinContainer on some Window Managers (like Kwin/KDE).
+														 //!< If neither this nor FloatingContainerForceCustomTitleBar is set (the default) native titlebars are used except on known bad systems.
+														 //! Users can overwrite this by setting the environment variable ADS_UseNativeTitle to "1" or "0".
+		FloatingContainerForceCustomTitleBar = 0x1000000,//!< Linux only ! Forces all FloatingContainer to use a custom title bar.
+														 //!< If neither this nor FloatingContainerForceNativeTitleBar is set (the default) native titlebars are used except on known bad systems.
+														 //! Users can overwrite this by setting the environment variable ADS_UseNativeTitle to "1" or "0".
 
         DefaultDockAreaButtons = DockAreaHasCloseButton
 							   | DockAreaHasUndockButton
@@ -463,6 +471,10 @@ public:
 
 		widget->setFocus(Qt::OtherFocusReason);
 	}
+
+#ifdef Q_OS_LINUX
+	bool eventFilter(QObject *obj, QEvent *e) override;
+#endif
 
 public slots:
 	/**
