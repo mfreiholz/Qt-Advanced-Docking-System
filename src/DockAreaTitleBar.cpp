@@ -181,7 +181,10 @@ void DockAreaTitleBarPrivate::createButtons()
 #endif
 	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	CloseButton->setIconSize(QSize(16, 16));
-	TopLayout->addWidget(CloseButton, 0);
+	if (testConfigFlag(CDockManager::DockAreaHasCloseButton))
+	{
+		TopLayout->addWidget(CloseButton, 0);
+	}
 	_this->connect(CloseButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
 }
 

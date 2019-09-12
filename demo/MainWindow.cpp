@@ -308,8 +308,8 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	// Uncomment the following line to have the old style where the dock
 	// area close button closes the active tab
-	//d->DockManager->setConfigFlags({
-	//	CDockManager::DockAreaHasCloseButton | CDockManager::DockAreaCloseButtonClosesTab});
+	//CDockManager::setConfigFlags({CDockManager::DockAreaHasCloseButton
+	//	| CDockManager::DockAreaCloseButtonClosesTab});
 	connect(d->PerspectiveComboBox, SIGNAL(activated(const QString&)),
 		d->DockManager, SLOT(openPerspective(const QString&)));
 
