@@ -174,11 +174,11 @@ void setFlag(T& Flags, typename T::enum_type flag, bool on = true)
 #else
     if(on)
     {
-        d->Features |= flag;
+        Flags |= flag;
     }
     else
     {
-        d->Features &= ~flag;
+        Flags &= ~flag;
     }
 #endif
 }
