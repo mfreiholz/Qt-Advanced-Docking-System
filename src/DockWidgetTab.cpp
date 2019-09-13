@@ -167,9 +167,8 @@ void DockWidgetTabPrivate::createLayout()
 	CloseIcon.addPixmap(normalPixmap, QIcon::Normal);
 	CloseIcon.addPixmap(internal::createTransparentPixmap(normalPixmap, 0.25), QIcon::Disabled);
 	CloseButton->setIcon(CloseIcon);
-
     CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	CloseButton->setVisible(false);
+    _this->onDockWidgetFeaturesChanged();
 #ifndef QT_NO_TOOLTIP
 	CloseButton->setToolTip(QObject::tr("Close Tab"));
 #endif
@@ -389,8 +388,10 @@ bool CDockWidgetTab::isActiveTab() const
 void CDockWidgetTab::setActiveTab(bool active)
 {
 	bool DockWidgetClosable = d->DockWidget->features().testFlag(CDockWidget::DockWidgetClosable);
-	bool TabHasCloseButton = d->testConfigFlag(CDockManager::ActiveTabHasCloseButton);
-	d->CloseButton->setVisible(active && DockWidgetClosable && TabHasCloseButton);
+	bool ActiveTabHasCloseButton = d->testConfigFlag(CDockManager::ActiveTabHasCloseButton);
+	bool AllTabsHaveCloseButton = d->testConfigFlag(CDockManager::AllTabsHaveCloseButton);
+	bool TabHasCloseButton = (ActiveTabHasCloseButton && active) | AllTabsHaveCloseButton;
+	d->CloseButton->setVisible(DockWidgetClosable && TabHasCloseButton);
 	if (d->IsActiveTab == active)
 	{
 		return;
@@ -543,6 +544,17 @@ bool CDockWidgetTab::event(QEvent *e)
 	}
 	#endif
 	return Super::event(e);
+}
+
+
+//============================================================================
+void CDockWidgetTab::onDockWidgetFeaturesChanged()
+{
+	auto Features = d->DockWidget->features();
+	auto SizePolicy = d->CloseButton->sizePolicy();
+	SizePolicy.setRetainSizeWhenHidden(Features.testFlag(CDockWidget::DockWidgetClosable)
+		&& d->testConfigFlag(CDockManager::RetainTabSizeWhenCloseButtonHidden));
+	d->CloseButton->setSizePolicy(SizePolicy);
 }
 
 

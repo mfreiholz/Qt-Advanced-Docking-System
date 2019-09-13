@@ -162,6 +162,27 @@ T findParent(const QWidget* w)
  */
 QPixmap createTransparentPixmap(const QPixmap& Source, qreal Opacity);
 
+
+/**
+ * Helper function for settings flags in a QFlags instance.
+ */
+template <class T>
+void setFlag(T& Flags, typename T::enum_type flag, bool on = true)
+{
+#if QT_VERSION >= 0x050700
+	Flags.setFlag(flag, on);
+#else
+    if(on)
+    {
+        d->Features |= flag;
+    }
+    else
+    {
+        d->Features &= ~flag;
+    }
+#endif
+}
+
 } // namespace internal
 } // namespace ads
 

@@ -123,13 +123,15 @@ public:
 	 */
 	enum eConfigFlag
 	{
-		ActiveTabHasCloseButton = 0x01,    //!< If this flag is set, the active tab in a tab area has a close button
-		DockAreaHasCloseButton = 0x02,     //!< If the flag is set each dock area has a close button
-		DockAreaCloseButtonClosesTab = 0x04,//!< If the flag is set, the dock area close button closes the active tab, if not set, it closes the complete cock area
-		OpaqueSplitterResize = 0x08, //!< See QSplitter::setOpaqueResize() documentation
-		XmlAutoFormattingEnabled = 0x10,//!< If enabled, the XML writer automatically adds line-breaks and indentation to empty sections between elements (ignorable whitespace).
-		XmlCompressionEnabled = 0x20,//!< If enabled, the XML output will be compressed and is not human readable anymore
-		TabCloseButtonIsToolButton = 0x40,//! If enabled the tab close buttons will be QToolButtons instead of QPushButtons - disabled by default
+		ActiveTabHasCloseButton = 0x0001,    //!< If this flag is set, the active tab in a tab area has a close button
+		DockAreaHasCloseButton = 0x0002,     //!< If the flag is set each dock area has a close button
+		DockAreaCloseButtonClosesTab = 0x0004,//!< If the flag is set, the dock area close button closes the active tab, if not set, it closes the complete cock area
+		OpaqueSplitterResize = 0x0008, //!< See QSplitter::setOpaqueResize() documentation
+		XmlAutoFormattingEnabled = 0x0010,//!< If enabled, the XML writer automatically adds line-breaks and indentation to empty sections between elements (ignorable whitespace).
+		XmlCompressionEnabled = 0x0020,//!< If enabled, the XML output will be compressed and is not human readable anymore
+		TabCloseButtonIsToolButton = 0x0040,//! If enabled the tab close buttons will be QToolButtons instead of QPushButtons - disabled by default
+		AllTabsHaveCloseButton = 0x0080, //!< if this flag is set, then all tabs that are closable show a close button
+		RetainTabSizeWhenCloseButtonHidden = 0x0100, //!< if this flag is set, the space for the close button is reserved even if the close button is not visible
 		DefaultConfig = ActiveTabHasCloseButton | DockAreaHasCloseButton | OpaqueSplitterResize | XmlCompressionEnabled, ///< the default configuration
 	};
 	Q_DECLARE_FLAGS(ConfigFlags, eConfigFlag)
@@ -158,6 +160,11 @@ public:
 	 * Call this function before you create your first dock widget.
 	 */
 	static void setConfigFlags(const ConfigFlags Flags);
+
+	/**
+	 * Set a certain config flag
+	 */
+	static void setConfigFlag(eConfigFlag Flag, bool On = true);
 
 	/**
 	 * Adds dockwidget into the given area.

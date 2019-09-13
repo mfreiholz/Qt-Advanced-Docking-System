@@ -301,14 +301,18 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	// uncomment the following line if the tab close button should be
 	// a QToolButton instead of a QPushButton
-	//CDockManager::setConfigFlags(CDockManager::configFlags() | CDockManager::TabCloseButtonIsToolButton);
+	// CDockManager::setConfigFlags(CDockManager::configFlags() | CDockManager::TabCloseButtonIsToolButton);
+
+	// uncomment the following line if you wand a fixed tab width that does
+	// not change if the visibility of the close button changes
+	// CDockManager::setConfigFlag(CDockManager::RetainTabSizeWhenCloseButtonHidden, true);
 
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
 
 	// Uncomment the following line to have the old style where the dock
 	// area close button closes the active tab
-	//CDockManager::setConfigFlags({CDockManager::DockAreaHasCloseButton
+	// CDockManager::setConfigFlags({CDockManager::DockAreaHasCloseButton
 	//	| CDockManager::DockAreaCloseButtonClosesTab});
 	connect(d->PerspectiveComboBox, SIGNAL(activated(const QString&)),
 		d->DockManager, SLOT(openPerspective(const QString&)));

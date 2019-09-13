@@ -778,6 +778,13 @@ void CDockManager::setConfigFlags(const ConfigFlags Flags)
 }
 
 
+//===========================================================================
+void CDockManager::setConfigFlag(eConfigFlag Flag, bool On)
+{
+	internal::setFlag(StaticConfigFlags, Flag, On);
+}
+
+
 } // namespace ads
 
 //---------------------------------------------------------------------------
