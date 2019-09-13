@@ -156,6 +156,21 @@ public:
 	 */
 	bool isTabOpen(int Index) const;
 
+	/**
+	 * Overrides the minimumSizeHint() function of QScrollArea
+	 * The minimumSizeHint() is bigger than the sizeHint () for the scroll
+	 * area because even if the scrollbars are invisible, the required speace
+	 * is reserved in the minimumSizeHint(). This override simply returns
+	 * sizeHint();
+	 */
+	virtual QSize minimumSizeHint() const override;
+
+	/**
+	 * The function provides a sizeHint that matches the height of the
+	 * internal viewport.
+	 */
+	virtual QSize sizeHint() const override;
+
 public slots:
 	/**
 	 * This property sets the index of the tab bar's visible tab

@@ -130,6 +130,7 @@ DockAreaTitleBarPrivate::DockAreaTitleBarPrivate(CDockAreaTitleBar* _public) :
 //============================================================================
 void DockAreaTitleBarPrivate::createButtons()
 {
+	QSizePolicy ButtonSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     // Tabs menu button
 	TabsMenuButton = new tTileBarButton();
 	TabsMenuButton->setObjectName("tabsMenuButton");
@@ -145,7 +146,7 @@ void DockAreaTitleBarPrivate::createButtons()
 #ifndef QT_NO_TOOLTIP
 	TabsMenuButton->setToolTip(QObject::tr("List all tabs"));
 #endif
-	TabsMenuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+	TabsMenuButton->setSizePolicy(ButtonSizePolicy);
 	TopLayout->addWidget(TabsMenuButton, 0);
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
 		SLOT(onTabsMenuActionTriggered(QAction*)));
@@ -159,7 +160,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	UndockButton->setToolTip(QObject::tr("Detach Group"));
 #endif
     setTitleBarButtonIcon(UndockButton, QStyle::SP_TitleBarNormalButton);
-    UndockButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    UndockButton->setSizePolicy(ButtonSizePolicy);
 	TopLayout->addWidget(UndockButton, 0);
 	_this->connect(UndockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
 
@@ -179,7 +180,7 @@ void DockAreaTitleBarPrivate::createButtons()
 		CloseButton->setToolTip(QObject::tr("Close Group"));
 	}
 #endif
-	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+	CloseButton->setSizePolicy(ButtonSizePolicy);
 	CloseButton->setIconSize(QSize(16, 16));
 	if (testConfigFlag(CDockManager::DockAreaHasCloseButton))
 	{
