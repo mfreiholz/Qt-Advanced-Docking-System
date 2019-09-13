@@ -129,7 +129,9 @@ struct DockWidgetTabPrivate
 	{
 		if (testConfigFlag(CDockManager::TabCloseButtonIsToolButton))
 		{
-			return new QToolButton();
+			auto Button = new QToolButton();
+			Button->setAutoRaise(true);
+			return Button;
 		}
 		else
 		{
