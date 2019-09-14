@@ -63,8 +63,11 @@ static const char* const INDEX_PROPERTY = "index";
 static const char* const ACTION_PROPERTY = "action";
 
 /**
- * New dock area layout mimics stack layout but only inserts the current
- * widget into the internal QLayout object
+ * Internal dock area layout mimics stack layout but only inserts the current
+ * widget into the internal QLayout object.
+ * \warning Only the current widget has a parent. All other widgets
+ * do not have a parent. That means, a widget that is in this layout may
+ * return nullptr for its parent() function if it is not the current widget.
  */
 class CDockAreaLayout
 {
@@ -118,7 +121,7 @@ public:
 	}
 
 	/**
-	 * Removes the given widget from the lyout
+	 * Removes the given widget from the layout
 	 */
 	void removeWidget(QWidget* Widget)
 	{
@@ -241,7 +244,7 @@ struct DockAreaWidgetPrivate
 	DockAreaLayout*		ContentsLayout	= nullptr;
 	CDockAreaTitleBar*	TitleBar		= nullptr;
 	CDockManager*		DockManager		= nullptr;
-	bool UpdateCloseButton = false;
+	bool UpdateTitleBarButtons = false;
 
 	/**
 	 * Private data constructor
@@ -295,9 +298,9 @@ struct DockAreaWidgetPrivate
 	}
 
 	/**
-	 * Udpates the enable state of the close button
+	 * Udpates the enable state of the close and detach button
 	 */
-	void updateCloseButtonState();
+	void updateTitleBarButtonStates();
 };
 // struct DockAreaWidgetPrivate
 
@@ -322,17 +325,19 @@ void DockAreaWidgetPrivate::createTitleBar()
 
 
 //============================================================================
-void DockAreaWidgetPrivate::updateCloseButtonState()
+void DockAreaWidgetPrivate::updateTitleBarButtonStates()
 {
 	if (_this->isHidden())
 	{
-		UpdateCloseButton = true;
+		UpdateTitleBarButtons = true;
 		return;
 	}
 
 	TitleBar->button(TitleBarButtonClose)->setEnabled(
 		_this->features().testFlag(CDockWidget::DockWidgetClosable));
-	UpdateCloseButton = false;
+	TitleBar->button(TitleBarButtonUndock)->setEnabled(
+		_this->features().testFlag(CDockWidget::DockWidgetFloatable));
+	UpdateTitleBarButtons = false;
 }
 
 
@@ -354,7 +359,7 @@ CDockAreaWidget::CDockAreaWidget(CDockManager* DockManager, CDockContainerWidget
 //============================================================================
 CDockAreaWidget::~CDockAreaWidget()
 {
-	qDebug() << "~CDockAreaWidget()";
+    ADS_PRINT("~CDockAreaWidget()");
 	delete d->ContentsLayout;
 	delete d;
 }
@@ -400,28 +405,29 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 		setCurrentIndex(index);
 	}
 	DockWidget->setDockArea(this);
-	d->updateCloseButtonState();
+	d->updateTitleBarButtonStates();
 }
 
 
 //============================================================================
 void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 {
-	qDebug() << "CDockAreaWidget::removeDockWidget";
+    ADS_PRINT("CDockAreaWidget::removeDockWidget");
 	auto NextOpenDockWidget = nextOpenDockWidget(DockWidget);
 
 	d->ContentsLayout->removeWidget(DockWidget);
 	auto TabWidget = DockWidget->tabWidget();
 	TabWidget->hide();
 	d->tabBar()->removeTab(TabWidget);
+	CDockContainerWidget* DockContainer = dockContainer();
 	if (NextOpenDockWidget)
 	{
 		setCurrentDockWidget(NextOpenDockWidget);
 	}
-	else if (d->ContentsLayout->isEmpty())
+	else if (d->ContentsLayout->isEmpty() && DockContainer->dockAreaCount() > 1)
 	{
-		qDebug() << "Dock Area empty";
-		dockContainer()->removeDockArea(this);
+        ADS_PRINT("Dock Area empty");
+		DockContainer->removeDockArea(this);
 		this->deleteLater();
 	}
 	else
@@ -432,16 +438,15 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 		hideAreaWithNoVisibleContent();
 	}
 
-	d->updateCloseButtonState();
+	d->updateTitleBarButtonStates();
 	updateTitleBarVisibility();
-	auto TopLevelDockWidget = dockContainer()->topLevelDockWidget();
+	auto TopLevelDockWidget = DockContainer->topLevelDockWidget();
 	if (TopLevelDockWidget)
 	{
 		TopLevelDockWidget->emitTopLevelChanged(true);
 	}
 
 #if (ADS_DEBUG_LEVEL > 0)
-	CDockContainerWidget* DockContainer = dockContainer();
 	DockContainer->dumpLayout();
 #endif
 }
@@ -481,7 +486,7 @@ void CDockAreaWidget::hideAreaWithNoVisibleContent()
 //============================================================================
 void CDockAreaWidget::onTabCloseRequested(int Index)
 {
-	qDebug() << "CDockAreaWidget::onTabCloseRequested " << Index;
+    ADS_PRINT("CDockAreaWidget::onTabCloseRequested " << Index);
 	dockWidget(Index)->toggleView(false);
 }
 
@@ -644,11 +649,11 @@ CDockWidget* CDockAreaWidget::dockWidget(int Index) const
 //============================================================================
 void CDockAreaWidget::reorderDockWidget(int fromIndex, int toIndex)
 {
-	qDebug() << "CDockAreaWidget::reorderDockWidget";
+    ADS_PRINT("CDockAreaWidget::reorderDockWidget");
 	if (fromIndex >= d->ContentsLayout->count() || fromIndex < 0
      || toIndex >= d->ContentsLayout->count() || toIndex < 0 || fromIndex == toIndex)
 	{
-		qDebug() << "Invalid index for tab movement" << fromIndex << toIndex;
+        ADS_PRINT("Invalid index for tab movement" << fromIndex << toIndex);
 		return;
 	}
 
@@ -703,8 +708,8 @@ void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 	auto CurrentDockWidget = currentDockWidget();
 	QString Name = CurrentDockWidget ? CurrentDockWidget->objectName() : "";
 	s.writeAttribute("Current", Name);
-	qDebug() << "CDockAreaWidget::saveState TabCount: " << d->ContentsLayout->count()
-			<< " Current: " << Name;
+    ADS_PRINT("CDockAreaWidget::saveState TabCount: " << d->ContentsLayout->count()
+            << " Current: " << Name);
 	for (int i = 0; i < d->ContentsLayout->count(); ++i)
 	{
 		dockWidget(i)->saveState(s);
@@ -765,9 +770,9 @@ void CDockAreaWidget::toggleView(bool Open)
 void CDockAreaWidget::setVisible(bool Visible)
 {
 	Super::setVisible(Visible);
-	if (d->UpdateCloseButton)
+	if (d->UpdateTitleBarButtons)
 	{
-		d->updateCloseButtonState();
+		d->updateTitleBarButtonStates();
 	}
 }
 

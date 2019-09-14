@@ -1,6 +1,7 @@
 # Advanced Docking System for Qt 
 [![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
 [![Build status](https://ci.appveyor.com/api/projects/status/qcfb3cy932jw9mpy/branch/master?svg=true)](https://ci.appveyor.com/project/githubuser0xFFFF/qt-advanced-docking-system/branch/master)
+[![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](gnu-lgpl-v2.1.md)
 
 
 
@@ -8,7 +9,7 @@ Qt Advanced Docking System lets you create customizable layouts using a full
 featured window docking system similar to what is found in many popular 
 integrated development environements (IDEs) such as Visual Studio. 
 Everything is implemented with standard Qt functionality without any
-platform specific code. Basic usage of QWidgets an QLayouts and using basic 
+platform specific code. Basic usage of QWidgets and QLayouts and using basic 
 styles as much as possible.
 
 This work is based on and inspired by the 
@@ -60,9 +61,22 @@ main window layout.
 ![Perspective](doc/perspectives_dark.png)
 
 ## Tested Compatible Environments
-- Windows 10 [![Build status](https://ci.appveyor.com/api/projects/status/qcfb3cy932jw9mpy/branch/master?svg=true)](https://ci.appveyor.com/project/githubuser0xFFFF/qt-advanced-docking-system/branch/master)
-- Ubuntu [![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
-- macOS [![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
+### Windows
+Windows 10 [![Build status](https://ci.appveyor.com/api/projects/status/qcfb3cy932jw9mpy/branch/master?svg=true)](https://ci.appveyor.com/project/githubuser0xFFFF/qt-advanced-docking-system/branch/master)
+
+The library was developed on and for Windows. It is used in a commercial Windows application and is therefore constantly tested.
+
+### macOS
+macOS [![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
+
+The application can be compiled for macOS. A user reported, that the library works on macOS. If have not tested it.
+
+### Linux
+Ubuntu [![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
+
+The application can be compiled for Linux and has been developed and tested with **Kubuntu 18.04**.
+
+![Advanced Docking on Linux](doc/linux_kubuntu_1804.png)
 
 ## Build
 Open the `ads.pro` with QtCreator and start the build, that's it.
@@ -144,5 +158,6 @@ MainWindow::~MainWindow()
 - Manuel Freiholz 
 
 ## License information
+[![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](gnu-lgpl-v2.1.md)
 This project uses the [LGPLv2.1 license](gnu-lgpl-v2.1.md)
 

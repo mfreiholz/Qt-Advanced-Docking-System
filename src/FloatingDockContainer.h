@@ -29,9 +29,15 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include <QWidget>
-
 #include "ads_globals.h"
+
+#ifdef Q_OS_LINUX
+#include <QDockWidget>
+#define tFloatingWidgetBase QDockWidget
+#else
+#include <QWidget>
+#define tFloatingWidgetBase QWidget
+#endif
 
 class QXmlStreamReader;
 
@@ -49,13 +55,15 @@ class CDockWidgetTab;
 struct DockWidgetTabPrivate;
 class CDockAreaTitleBar;
 struct DockAreaTitleBarPrivate;
+class CFloatingWidgetTitleBar;
 
 /**
  * This implements a floating widget that is a dock container that accepts
  * docking of dock widgets like the main window and that can be docked into
- * another dock container
+ * another dock container.
+ * Every floating window of the docking system is a FloatingDockContainer.
  */
-class ADS_EXPORT CFloatingDockContainer : public QWidget
+class ADS_EXPORT CFloatingDockContainer : public tFloatingWidgetBase
 {
 	Q_OBJECT
 private:
@@ -70,6 +78,7 @@ private:
 	friend struct DockAreaTitleBarPrivate;
 	friend class CDockWidget;
 	friend class CDockAreaWidget;
+    friend class CFloatingWidgetTitleBar;
 
 private slots:
 	void onDockAreasAddedOrRemoved();
@@ -82,15 +91,22 @@ protected:
 	 * depending on the start position given in Pos parameter
 	 */
 	void startFloating(const QPoint& DragStartMousePos, const QSize& Size,
-		eDragState DragState);
+        eDragState DragState, QWidget* MouseEventHandler);
 
 	/**
 	 * Call this function to start dragging the floating widget
 	 */
-	void startDragging(const QPoint& DragStartMousePos, const QSize& Size)
+    void startDragging(const QPoint& DragStartMousePos, const QSize& Size,
+        QWidget* MouseEventHandler)
 	{
-		startFloating(DragStartMousePos, Size, DraggingFloatingWidget);
+        startFloating(DragStartMousePos, Size, DraggingFloatingWidget, MouseEventHandler);
 	}
+
+	/**
+	 * Call this function if you explecitely want to signal that dragging has
+	 * finished
+	 */
+	void finishDragging();
 
 	/**
 	 * Call this function if you just want to initialize the position
@@ -98,7 +114,7 @@ protected:
 	 */
 	void initFloatingGeometry(const QPoint& DragStartMousePos, const QSize& Size)
 	{
-		startFloating(DragStartMousePos, Size, DraggingInactive);
+        startFloating(DragStartMousePos, Size, DraggingInactive, nullptr);
 	}
 
 	/**

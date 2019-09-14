@@ -88,6 +88,32 @@ static ads::CDockWidget* createLongTextLabelDockWidget(QMenu* ViewMenu)
 }
 
 
+/**
+ * Function returns a features string with closable (c), movable (m) and floatable (f)
+ * features. i.e. The following string is for a not closable but movable and floatable
+ * widget: c- m+ f+
+ */
+static QString featuresString(ads::CDockWidget* DockWidget)
+{
+	auto f = DockWidget->features();
+	return QString("c%1 m%2 f%3")
+		.arg(f.testFlag(ads::CDockWidget::DockWidgetClosable) ? "+" : "-")
+		.arg(f.testFlag(ads::CDockWidget::DockWidgetMovable) ? "+" : "-")
+		.arg(f.testFlag(ads::CDockWidget::DockWidgetFloatable) ? "+" : "-");
+}
+
+
+/**
+ * Appends the string returned by featuresString() to the window title of
+ * the given DockWidget
+ */
+static void appendFeaturStringToWindowTitle(ads::CDockWidget* DockWidget)
+{
+	DockWidget->setWindowTitle(DockWidget->windowTitle()
+		+  QString(" (%1)").arg(featuresString(DockWidget)));
+}
+
+
 //============================================================================
 static ads::CDockWidget* createCalendarDockWidget(QMenu* ViewMenu)
 {
@@ -110,7 +136,8 @@ static ads::CDockWidget* createFileSystemTreeDockWidget(QMenu* ViewMenu)
 	QFileSystemModel* m = new QFileSystemModel(w);
 	m->setRootPath(QDir::currentPath());
 	w->setModel(m);
-	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Filesystem %1").arg(FileSystemCount++));
+	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Filesystem %1")
+		.arg(FileSystemCount++));
 	DockWidget->setWidget(w);
 	ViewMenu->addAction(DockWidget->toggleViewAction());
     return DockWidget;
@@ -185,6 +212,8 @@ void MainWindowPrivate::createContent()
 	ToolBar->addAction(ui.actionSaveState);
 	ToolBar->addAction(ui.actionRestoreState);
 	FileSystemWidget->setFeature(ads::CDockWidget::DockWidgetMovable, false);
+	FileSystemWidget->setFeature(ads::CDockWidget::DockWidgetFloatable, false);
+	appendFeaturStringToWindowTitle(FileSystemWidget);
 	auto TopDockArea = DockManager->addDockWidget(ads::TopDockWidgetArea, FileSystemWidget);
 	DockWidget = createCalendarDockWidget(ViewMenu);
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
@@ -270,19 +299,27 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	d->ui.setupUi(this);
 	d->createActions();
 
+	// uncomment the following line if the tab close button should be
+	// a QToolButton instead of a QPushButton
+	// CDockManager::setConfigFlags(CDockManager::configFlags() | CDockManager::TabCloseButtonIsToolButton);
+
+	// uncomment the following line if you wand a fixed tab width that does
+	// not change if the visibility of the close button changes
+	// CDockManager::setConfigFlag(CDockManager::RetainTabSizeWhenCloseButtonHidden, true);
+
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
 
 	// Uncomment the following line to have the old style where the dock
 	// area close button closes the active tab
-	//d->DockManager->setConfigFlags({
-	//	CDockManager::DockAreaHasCloseButton | CDockManager::DockAreaCloseButtonClosesTab});
+	// CDockManager::setConfigFlags({CDockManager::DockAreaHasCloseButton
+	//	| CDockManager::DockAreaCloseButtonClosesTab});
 	connect(d->PerspectiveComboBox, SIGNAL(activated(const QString&)),
 		d->DockManager, SLOT(openPerspective(const QString&)));
 
 	d->createContent();
 	// Default window geometry
-	resize(800, 600);
+    resize(1280, 720);
 
 	d->restoreState();
 	d->restorePerspectives();

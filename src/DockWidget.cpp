@@ -214,7 +214,7 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 	setObjectName(title);
 
 	d->TabWidget = new CDockWidgetTab(this);
-    d->ToggleViewAction = new QAction(title, nullptr);
+    d->ToggleViewAction = new QAction(title, this);
 	d->ToggleViewAction->setCheckable(true);
 	connect(d->ToggleViewAction, SIGNAL(triggered(bool)), this,
 		SLOT(toggleView(bool)));
@@ -224,7 +224,7 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 //============================================================================
 CDockWidget::~CDockWidget()
 {
-	qDebug() << "~CDockWidget()";
+    ADS_PRINT("~CDockWidget()");
 	delete d;
 }
 
@@ -243,18 +243,32 @@ void CDockWidget::setToggleViewActionChecked(bool Checked)
 void CDockWidget::setWidget(QWidget* widget, eInsertMode InsertMode)
 {
 	QScrollArea* ScrollAreaWidget = qobject_cast<QScrollArea*>(widget);
-	if (ScrollAreaWidget || ForceNoScrollArea != InsertMode)
+	if (ScrollAreaWidget || ForceNoScrollArea == InsertMode)
+	{
+		d->Layout->addWidget(widget);
+		if (ScrollAreaWidget && ScrollAreaWidget->viewport())
+		{
+			ScrollAreaWidget->viewport()->setProperty("dockWidgetContent", true);
+		}
+	}
+	else
 	{
 		d->setupScrollArea();
 		d->ScrollArea->setWidget(widget);
 	}
-	else
-	{
-		d->Layout->addWidget(widget);
-	}
 
 	d->Widget = widget;
 	d->Widget->setProperty("dockWidgetContent", true);
+}
+
+
+//============================================================================
+QWidget* CDockWidget::takeWidget()
+{
+	d->ScrollArea->takeWidget();
+	d->Layout->removeWidget(d->Widget);
+	d->Widget->setParent(nullptr);
+    return d->Widget;
 }
 
 
@@ -275,25 +289,21 @@ CDockWidgetTab* CDockWidget::tabWidget() const
 //============================================================================
 void CDockWidget::setFeatures(DockWidgetFeatures features)
 {
+	if (d->Features == features)
+	{
+		return;
+	}
 	d->Features = features;
+	d->TabWidget->onDockWidgetFeaturesChanged();
 }
 
 
 //============================================================================
 void CDockWidget::setFeature(DockWidgetFeature flag, bool on)
 {
-#if QT_VERSION >= 0x050700
-	d->Features.setFlag(flag, on);
-#else
-    if(on)
-    {
-        d->Features |= flag;
-    }
-    else
-    {
-        d->Features &= ~flag;
-    }
-#endif
+	auto Features = features();
+    internal::setFlag(Features, flag, on);
+    setFeatures(Features);
 }
 
 

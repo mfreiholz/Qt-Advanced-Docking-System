@@ -141,7 +141,7 @@ public:
 	enum DockWidgetFeature
 	{
 		DockWidgetClosable = 0x01,
-		DockWidgetMovable = 0x02,
+		DockWidgetMovable = 0x02,///< this feature is not properly implemented yet and is ignored
 		DockWidgetFloatable = 0x04,
 		AllDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable,
 		NoDockWidgetFeatures = 0x00
@@ -237,6 +237,11 @@ public:
 	 * provide the InsertMode ForceNoScrollArea
 	 */
 	void setWidget(QWidget* widget, eInsertMode InsertMode = AutoScrollArea);
+
+	/**
+	 * Remove the widget from the dock and give ownership back to the caller
+	 */
+	QWidget* takeWidget();
 
 	/**
 	 * Returns the widget for the dock widget. This function returns zero if

@@ -269,7 +269,7 @@ public:
 	CDockSplitter* newSplitter(Qt::Orientation orientation, QWidget* parent = nullptr)
 	{
 		CDockSplitter* s = new CDockSplitter(orientation, parent);
-		s->setOpaqueResize(DockManager->configFlags().testFlag(CDockManager::OpaqueSplitterResize));
+		s->setOpaqueResize(CDockManager::configFlags().testFlag(CDockManager::OpaqueSplitterResize));
 		s->setChildrenCollapsible(false);
 		return s;
 	}
@@ -557,8 +557,8 @@ void DockContainerWidgetPrivate::saveChildNodesState(QXmlStreamWriter& s, QWidge
 		s.writeStartElement("Splitter");
 		s.writeAttribute("Orientation", (Splitter->orientation() == Qt::Horizontal) ? "-" : "|");
 		s.writeAttribute("Count", QString::number(Splitter->count()));
-		qDebug() << "NodeSplitter orient: " << Splitter->orientation()
-			<< " WidgetCont: " << Splitter->count();
+        ADS_PRINT("NodeSplitter orient: " << Splitter->orientation()
+            << " WidgetCont: " << Splitter->count());
 			for (int i = 0; i < Splitter->count(); ++i)
 			{
 				saveChildNodesState(s, Splitter->widget(i));
@@ -608,8 +608,8 @@ bool DockContainerWidgetPrivate::restoreSplitter(QXmlStreamReader& s,
 	{
 		return false;
 	}
-	qDebug() << "Restore NodeSplitter Orientation: " <<  Orientation <<
-			" WidgetCount: " << WidgetCount;
+    ADS_PRINT("Restore NodeSplitter Orientation: " <<  Orientation <<
+            " WidgetCount: " << WidgetCount);
 	QSplitter* Splitter = nullptr;
 	if (!Testing)
 	{
@@ -632,7 +632,7 @@ bool DockContainerWidgetPrivate::restoreSplitter(QXmlStreamReader& s,
 		else if (s.name() == "Sizes")
 		{
 			QString sSizes = s.readElementText().trimmed();
-			qDebug() << "Sizes: " << sSizes;
+            ADS_PRINT("Sizes: " << sSizes);
 			QTextStream TextStream(&sSizes);
 			while (!TextStream.atEnd())
 			{
@@ -656,8 +656,8 @@ bool DockContainerWidgetPrivate::restoreSplitter(QXmlStreamReader& s,
 			continue;
 		}
 
-		qDebug() << "ChildNode isVisible " << ChildNode->isVisible()
-			<< " isVisibleTo " << ChildNode->isVisibleTo(Splitter);
+        ADS_PRINT("ChildNode isVisible " << ChildNode->isVisible()
+            << " isVisibleTo " << ChildNode->isVisibleTo(Splitter));
 		Splitter->addWidget(ChildNode);
 		Visible |= ChildNode->isVisibleTo(Splitter);
 	}
@@ -703,8 +703,8 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 
 
 	QString CurrentDockWidget = s.attributes().value("Current").toString();
-	qDebug() << "Restore NodeDockArea Tabs: " << Tabs << " Current: "
-			<< CurrentDockWidget;
+    ADS_PRINT("Restore NodeDockArea Tabs: " << Tabs << " Current: "
+            << CurrentDockWidget);
 
 	CDockAreaWidget* DockArea = nullptr;
 	if (!Testing)
@@ -738,7 +738,7 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 			continue;
 		}
 
-		qDebug() << "Dock Widget found - parent " << DockWidget->parent();
+        ADS_PRINT("Dock Widget found - parent " << DockWidget->parent());
 		// We hide the DockArea here to prevent the short display (the flashing)
 		// of the dock areas during application startup
 		DockArea->hide();
@@ -780,17 +780,17 @@ bool DockContainerWidgetPrivate::restoreChildNodes(QXmlStreamReader& s,
 		if (s.name() == "Splitter")
 		{
 			Result = restoreSplitter(s, CreatedWidget, Testing);
-			qDebug() << "Splitter";
+            ADS_PRINT("Splitter");
 		}
 		else if (s.name() == "Area")
 		{
 			Result = restoreDockArea(s, CreatedWidget, Testing);
-			qDebug() << "DockAreaWidget";
+            ADS_PRINT("DockAreaWidget");
 		}
 		else
 		{
 			s.skipCurrentElement();
-			qDebug() << "Unknown element";
+            ADS_PRINT("Unknown element");
 		}
 	}
 
@@ -862,15 +862,17 @@ void DockContainerWidgetPrivate::dumpRecursive(int level, QWidget* widget)
     buf.fill(' ', level * 4);
 	if (Splitter)
 	{
+#ifdef ADS_DEBUG_PRINT
 		qDebug("%sSplitter %s v: %s c: %s",
 			(const char*)buf,
 			(Splitter->orientation() == Qt::Vertical) ? "--" : "|",
 			 Splitter->isHidden() ? " " : "v",
 			 QString::number(Splitter->count()).toStdString().c_str());
-		std::cout << (const char*)buf << "Splitter "
-			<< ((Splitter->orientation() == Qt::Vertical) ? "--" : "|") << " "
-			<< (Splitter->isHidden() ? " " : "v") << " "
-		    << QString::number(Splitter->count()).toStdString() << std::endl;
+        std::cout << (const char*)buf << "Splitter "
+            << ((Splitter->orientation() == Qt::Vertical) ? "--" : "|") << " "
+            << (Splitter->isHidden() ? " " : "v") << " "
+            << QString::number(Splitter->count()).toStdString() << std::endl;
+#endif
 		for (int i = 0; i < Splitter->count(); ++i)
 		{
 			dumpRecursive(level + 1, Splitter->widget(i));
@@ -883,6 +885,7 @@ void DockContainerWidgetPrivate::dumpRecursive(int level, QWidget* widget)
 		{
 			return;
 		}
+#ifdef ADS_DEBUG_PRINT
 		qDebug("%sDockArea", (const char*)buf);
 		std::cout << (const char*)buf
 			<< (DockArea->isHidden() ? " " : "v")
@@ -896,7 +899,8 @@ void DockContainerWidgetPrivate::dumpRecursive(int level, QWidget* widget)
 			std::cout << (DockWidget->isHidden() ? " " : "v");
 			std::cout << (DockWidget->isClosed() ? "c" : " ") << " ";
 			std::cout << DockWidget->windowTitle().toStdString() << std::endl;
-		}
+        }
+#endif
 	}
 #else
 	Q_UNUSED(level);
@@ -923,12 +927,12 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetAr
 	int index = TargetAreaSplitter ->indexOf(TargetDockArea);
 	if (TargetAreaSplitter->orientation() == InsertParam.orientation())
 	{
-		qDebug() << "TargetAreaSplitter->orientation() == InsertParam.orientation()";
+        ADS_PRINT("TargetAreaSplitter->orientation() == InsertParam.orientation()");
 		TargetAreaSplitter->insertWidget(index + InsertParam.insertOffset(), NewDockArea);
 	}
 	else
 	{
-		qDebug() << "TargetAreaSplitter->orientation() != InsertParam.orientation()";
+        ADS_PRINT("TargetAreaSplitter->orientation() != InsertParam.orientation()");
 		QSplitter* NewSplitter = newSplitter(InsertParam.orientation());
 		NewSplitter->addWidget(TargetDockArea);
 		insertWidgetIntoSplitter(NewSplitter, NewDockArea, InsertParam.append());
@@ -998,6 +1002,15 @@ CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockW
 	}
 }
 
+//============================================================================
+void CDockContainerWidget::removeDockWidget(CDockWidget* Dockwidget)
+{
+	CDockAreaWidget* Area = Dockwidget->dockAreaWidget();
+	if (Area)
+	{
+		Area->removeDockWidget(Dockwidget);
+	}
+}
 
 //============================================================================
 unsigned int CDockContainerWidget::zOrderIndex() const
@@ -1047,7 +1060,7 @@ void CDockContainerWidget::addDockArea(CDockAreaWidget* DockAreaWidget,
 //============================================================================
 void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 {
-	qDebug() << "CDockContainerWidget::removeDockArea";
+    ADS_PRINT("CDockContainerWidget::removeDockArea");
 	area->disconnect(this);
 	d->DockAreas.removeAll(area);
 	CDockSplitter* Splitter = internal::findParent<CDockSplitter*>(area);
@@ -1056,6 +1069,12 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 	// splitters if it has no visible content
 	area->setParent(nullptr);
 	internal::hideEmptyParentSplitters(Splitter);
+
+	// Remove this area from cached areas
+	const auto& cache = d->LastAddedAreaCache;
+	if (auto p = std::find(cache, cache+sizeof(cache)/sizeof(cache[0]), area)) {
+		d->LastAddedAreaCache[std::distance(cache, p)] = nullptr;
+	}
 
 	// If splitter has more than 1 widgets, we are finished and can leave
 	if (Splitter->count() >  1)
@@ -1067,7 +1086,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 	// avoid too many empty splitters
 	if (Splitter == d->RootSplitter)
 	{
-		qDebug() << "Removed from RootSplitter";
+        ADS_PRINT("Removed from RootSplitter");
 		// If splitter is empty, we are finished
 		if (!Splitter->count())
 		{
@@ -1089,11 +1108,11 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 		QLayoutItem* li = d->Layout->replaceWidget(Splitter, ChildSplitter);
 		d->RootSplitter = ChildSplitter;
 		delete li;
-		qDebug() << "RootSplitter replaced by child splitter";
+        ADS_PRINT("RootSplitter replaced by child splitter");
 	}
 	else if (Splitter->count() == 1)
 	{
-		qDebug() << "Replacing splitter with content";
+        ADS_PRINT("Replacing splitter with content");
 		QSplitter* ParentSplitter = internal::findParent<QSplitter*>(Splitter);
 		auto Sizes = ParentSplitter->sizes();
 		QWidget* widget = Splitter->widget(0);
@@ -1172,7 +1191,7 @@ int CDockContainerWidget::visibleDockAreaCount() const
 void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWidget,
 	const QPoint& TargetPos)
 {
-	qDebug() << "CDockContainerWidget::dropFloatingWidget";
+    ADS_PRINT("CDockContainerWidget::dropFloatingWidget");
 	CDockAreaWidget* DockArea = dockAreaAt(TargetPos);
 	auto dropArea = InvalidDockWidgetArea;
 	auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
@@ -1192,7 +1211,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 
 		if (dropArea != InvalidDockWidgetArea)
 		{
-			qDebug() << "Dock Area Drop Content: " << dropArea;
+            ADS_PRINT("Dock Area Drop Content: " << dropArea);
 			d->dropIntoSection(FloatingWidget, DockArea, dropArea);
 		}
 	}
@@ -1201,7 +1220,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	if (InvalidDockWidgetArea == dropArea)
 	{
 		dropArea = ContainerDropArea;
-		qDebug()  << "Container Drop Content: " << dropArea;
+        ADS_PRINT("Container Drop Content: " << dropArea);
 		if (dropArea != InvalidDockWidgetArea)
 		{
 			d->dropIntoContainer(FloatingWidget, dropArea);
@@ -1243,8 +1262,8 @@ QList<CDockAreaWidget*> CDockContainerWidget::openedDockAreas() const
 //============================================================================
 void CDockContainerWidget::saveState(QXmlStreamWriter& s) const
 {
-	qDebug() << "CDockContainerWidget::saveState isFloating "
-		<< isFloating();
+    ADS_PRINT("CDockContainerWidget::saveState isFloating "
+        << isFloating());
 
 	s.writeStartElement("Container");
 	s.writeAttribute("Floating", QString::number(isFloating() ? 1 : 0));
@@ -1267,18 +1286,19 @@ void CDockContainerWidget::saveState(QXmlStreamWriter& s) const
 bool CDockContainerWidget::restoreState(QXmlStreamReader& s, bool Testing)
 {
 	bool IsFloating = s.attributes().value("Floating").toInt();
-	qDebug() << "Restore CDockContainerWidget Floating" << IsFloating;
+    ADS_PRINT("Restore CDockContainerWidget Floating" << IsFloating);
 
 	QWidget*NewRootSplitter {};
 	if (!Testing)
 	{
 		d->VisibleDockAreaCount = -1;// invalidate the dock area count
 		d->DockAreas.clear();
+		std::fill(std::begin(d->LastAddedAreaCache),std::end(d->LastAddedAreaCache), nullptr);
 	}
 
 	if (IsFloating)
 	{
-		qDebug() << "Restore floating widget";
+        ADS_PRINT("Restore floating widget");
 		if (!s.readNextStartElement() || s.name() != "Geometry")
 		{
 			return false;

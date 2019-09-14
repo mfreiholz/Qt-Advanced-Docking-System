@@ -76,21 +76,21 @@ QScrollArea#dockWidgetScrollArea
 
 #tabCloseButton
 {
-	margin-top: 2px;
-	background: none;
-	border: none;
-	padding: 0px -2px;
+        margin-top: 2px;
+        background: none;
+        border: none;
+        padding: 0px -2px;
 }
 
 #tabCloseButton:hover
 {
-	border: 1px solid rgba(0, 0, 0, 32);
-	background: rgba(0, 0, 0, 16);
+        border: 1px solid rgba(0, 0, 0, 32);
+        background: rgba(0, 0, 0, 16);
 }
 
 #tabCloseButton:pressed
 {
-	background: rgba(0, 0, 0, 32);
+        background: rgba(0, 0, 0, 32);
 }
 
 

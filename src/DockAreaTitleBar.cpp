@@ -95,8 +95,26 @@ struct DockAreaTitleBarPrivate
 	 */
 	bool testConfigFlag(CDockManager::eConfigFlag Flag) const
 	{
-		return DockArea->dockManager()->configFlags().testFlag(Flag);
+		return CDockManager::configFlags().testFlag(Flag);
 	}
+
+    /**
+     * Helper function to set title bar button icons depending on operating
+     * system and to avoid duplicated code. On windows the standard icons
+     * are blurry since Qt 5.11 so we need to do some additional steps
+     */
+    void setTitleBarButtonIcon(tTileBarButton* Button, QStyle::StandardPixmap StandarPixmap)
+    {
+    #ifdef Q_OS_LINUX
+        Button->setIcon(_this->style()->standardIcon(StandarPixmap));
+    #else
+        QIcon Icon;
+        QPixmap normalPixmap = _this->style()->standardPixmap(StandarPixmap, 0, Button);
+        Icon.addPixmap(internal::createTransparentPixmap(normalPixmap, 0.25), QIcon::Disabled);
+        Icon.addPixmap(normalPixmap, QIcon::Normal);
+        Button->setIcon(Icon);
+    #endif
+    }
 };// struct DockAreaTitleBarPrivate
 
 
@@ -112,50 +130,47 @@ DockAreaTitleBarPrivate::DockAreaTitleBarPrivate(CDockAreaTitleBar* _public) :
 //============================================================================
 void DockAreaTitleBarPrivate::createButtons()
 {
+	QSizePolicy ButtonSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    // Tabs menu button
 	TabsMenuButton = new tTileBarButton();
 	TabsMenuButton->setObjectName("tabsMenuButton");
 	TabsMenuButton->setAutoRaise(true);
 	TabsMenuButton->setPopupMode(QToolButton::InstantPopup);
-	TabsMenuButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarUnshadeButton));
-
+    setTitleBarButtonIcon(TabsMenuButton, QStyle::SP_TitleBarUnshadeButton);
 	QMenu* TabsMenu = new QMenu(TabsMenuButton);
-	#ifndef QT_NO_TOOLTIP
+#ifndef QT_NO_TOOLTIP
 	TabsMenu->setToolTipsVisible(true);
-	#endif
+#endif
 	_this->connect(TabsMenu, SIGNAL(aboutToShow()), SLOT(onTabsMenuAboutToShow()));
 	TabsMenuButton->setMenu(TabsMenu);
-	#ifndef QT_NO_TOOLTIP
+#ifndef QT_NO_TOOLTIP
 	TabsMenuButton->setToolTip(QObject::tr("List all tabs"));
-	#endif
-	TabsMenuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+#endif
+	TabsMenuButton->setSizePolicy(ButtonSizePolicy);
 	TopLayout->addWidget(TabsMenuButton, 0);
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
 		SLOT(onTabsMenuActionTriggered(QAction*)));
+
 
 	// Undock button
 	UndockButton = new tTileBarButton();
 	UndockButton->setObjectName("undockButton");
 	UndockButton->setAutoRaise(true);
-	#ifndef QT_NO_TOOLTIP
+#ifndef QT_NO_TOOLTIP
 	UndockButton->setToolTip(QObject::tr("Detach Group"));
-	#endif
-	UndockButton->setIcon(_this->style()->standardIcon(QStyle::SP_TitleBarNormalButton));
-	UndockButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+#endif
+    setTitleBarButtonIcon(UndockButton, QStyle::SP_TitleBarNormalButton);
+    UndockButton->setSizePolicy(ButtonSizePolicy);
 	TopLayout->addWidget(UndockButton, 0);
 	_this->connect(UndockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
 
+
+    // Close button
 	CloseButton = new tTileBarButton();
 	CloseButton->setObjectName("closeButton");
 	CloseButton->setAutoRaise(true);
-
-	// The standard icons do not look good on high DPI screens
-	QIcon CloseIcon =  _this->style()->standardIcon(QStyle::SP_TitleBarCloseButton);
-	QPixmap normalPixmap = _this->style()->standardPixmap(QStyle::SP_TitleBarCloseButton, 0, CloseButton);
-	QPixmap disabledPixmap = internal::createTransparentPixmap(normalPixmap, 0.25);
-	CloseIcon.addPixmap(disabledPixmap, QIcon::Disabled);
-
-	CloseButton->setIcon(CloseIcon);
-	#ifndef QT_NO_TOOLTIP
+    setTitleBarButtonIcon(CloseButton, QStyle::SP_TitleBarCloseButton);
+#ifndef QT_NO_TOOLTIP
 	if (testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
 	{
 		CloseButton->setToolTip(QObject::tr("Close Active Tab"));
@@ -164,9 +179,13 @@ void DockAreaTitleBarPrivate::createButtons()
 	{
 		CloseButton->setToolTip(QObject::tr("Close Group"));
 	}
-	#endif
-	CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	TopLayout->addWidget(CloseButton, 0);
+#endif
+	CloseButton->setSizePolicy(ButtonSizePolicy);
+	CloseButton->setIconSize(QSize(16, 16));
+	if (testConfigFlag(CDockManager::DockAreaHasCloseButton))
+	{
+		TopLayout->addWidget(CloseButton, 0);
+	}
 	_this->connect(CloseButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
 }
 
@@ -262,7 +281,7 @@ void CDockAreaTitleBar::onTabsMenuAboutToShow()
 //============================================================================
 void CDockAreaTitleBar::onCloseButtonClicked()
 {
-	qDebug() << "CDockAreaTitleBar::onCloseButtonClicked";
+    ADS_PRINT("CDockAreaTitleBar::onCloseButtonClicked");
 	if (d->testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
 	{
 		d->TabBar->closeTab(d->TabBar->currentIndex());
@@ -277,7 +296,10 @@ void CDockAreaTitleBar::onCloseButtonClicked()
 //============================================================================
 void CDockAreaTitleBar::onUndockButtonClicked()
 {
-	d->TabBar->makeAreaFloating(mapFromGlobal(QCursor::pos()), DraggingInactive);
+	if (d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
+	{
+		d->TabBar->makeAreaFloating(mapFromGlobal(QCursor::pos()), DraggingInactive);
+	}
 }
 
 
@@ -332,9 +354,10 @@ void CDockAreaTitleBar::setVisible(bool Visible)
 void CDockAreaTitleBar::showContextMenu(const QPoint& pos)
 {
 	QMenu Menu(this);
-	Menu.addAction(tr("Detach Area"), this, SLOT(onUndockButtonClicked()));
+	auto Action = Menu.addAction(tr("Detach Area"), this, SLOT(onUndockButtonClicked()));
+	Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable));
 	Menu.addSeparator();
-	auto Action = Menu.addAction(tr("Close Area"), this, SLOT(onCloseButtonClicked()));
+	Action = Menu.addAction(tr("Close Area"), this, SLOT(onCloseButtonClicked()));
 	Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetClosable));
 	Menu.addAction(tr("Close Other Areas"), d->DockArea, SLOT(closeOtherAreas()));
 	Menu.exec(mapToGlobal(pos));

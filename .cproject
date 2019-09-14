@@ -71,15 +71,6 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope"/>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.mingw.base.1119687795;cdt.managedbuild.toolchain.gnu.mingw.base.1119687795.1949777584;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base.1947822681;cdt.managedbuild.tool.gnu.cpp.compiler.input.1318830536">
-			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.mingw.base.1119687795;cdt.managedbuild.toolchain.gnu.mingw.base.1119687795.1949777584;cdt.managedbuild.tool.gnu.c.compiler.mingw.base.389117097;cdt.managedbuild.tool.gnu.c.compiler.input.1568363924">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 		<buildTargets>
 			<target name="Build all" path=" build" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
@@ -355,5 +346,14 @@
 				<runAllBuilders>false</runAllBuilders>
 			</target>
 		</buildTargets>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.mingw.base.1119687795;cdt.managedbuild.toolchain.gnu.mingw.base.1119687795.1949777584;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base.1947822681;cdt.managedbuild.tool.gnu.cpp.compiler.input.1318830536">
+			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.mingw.base.1119687795;cdt.managedbuild.toolchain.gnu.mingw.base.1119687795.1949777584;cdt.managedbuild.tool.gnu.c.compiler.mingw.base.389117097;cdt.managedbuild.tool.gnu.c.compiler.input.1568363924">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
 	</storageModule>
 </cproject>

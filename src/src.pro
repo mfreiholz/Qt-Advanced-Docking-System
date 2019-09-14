@@ -41,9 +41,8 @@ HEADERS += \
     DockSplitter.h \
     DockAreaTitleBar.h \
     ElidingLabel.h
-    
-    
-    
+
+
 SOURCES += \
     ads_globals.cpp \
     DockAreaWidget.cpp \
@@ -58,6 +57,12 @@ SOURCES += \
     DockAreaTitleBar.cpp \
     ElidingLabel.cpp
 
+
+unix {
+HEADERS += linux/FloatingWidgetTitleBar.h
+SOURCES += linux/FloatingWidgetTitleBar.cpp
+}
+
 isEmpty(PREFIX){
 	PREFIX=..\installed
 	warning("Install Prefix not set")
@@ -66,3 +71,5 @@ headers.path=$$PREFIX/include
 headers.files=$$HEADERS
 target.path=$$PREFIX/lib
 INSTALLS += headers target
+
+DISTFILES +=

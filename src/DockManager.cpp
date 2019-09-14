@@ -56,6 +56,8 @@
 
 namespace ads
 {
+static CDockManager::ConfigFlags StaticConfigFlags = CDockManager::DefaultConfig;
+
 /**
  * Private data class of CDockManager class (pimpl)
  */
@@ -72,7 +74,6 @@ struct DockManagerPrivate
 	QMenu* ViewMenu;
 	CDockManager::eViewMenuInsertionOrder MenuInsertionOrder = CDockManager::MenuAlphabeticallySorted;
 	bool RestoringState = false;
-	CDockManager::ConfigFlags ConfigFlags = CDockManager::DefaultConfig;
 
 	/**
 	 * Private data constructor
@@ -145,7 +146,11 @@ DockManagerPrivate::DockManagerPrivate(CDockManager* _public) :
 void DockManagerPrivate::loadStylesheet()
 {
 	QString Result;
+#ifdef Q_OS_LINUX
+    QFile StyleSheetFile(":ads/stylesheets/default_linux.css");
+#else
 	QFile StyleSheetFile(":ads/stylesheets/default.css");
+#endif
 	StyleSheetFile.open(QIODevice::ReadOnly);
 	QTextStream StyleSheetStream(&StyleSheetFile);
 	Result = StyleSheetStream.readAll();
@@ -170,7 +175,7 @@ bool DockManagerPrivate::restoreContainer(int Index, QXmlStreamReader& stream, b
 	}
 	else
 	{
-		qDebug() << "d->Containers[i]->restoreState ";
+        ADS_PRINT("d->Containers[i]->restoreState ");
 		auto Container = Containers[Index];
 		if (Container->isFloating())
 		{
@@ -207,7 +212,7 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     {
     	return false;
     }
-    qDebug() << s.attributes().value("Version");
+    ADS_PRINT(s.attributes().value("Version"));
     bool ok;
     int v = s.attributes().value("Version").toInt(&ok);
     if (!ok || v != version)
@@ -217,7 +222,7 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
 
     bool Result = true;
     int  DockContainers = s.attributes().value("Containers").toInt();
-    qDebug() << DockContainers;
+    ADS_PRINT(DockContainers);
     int DockContainerCount = 0;
     while (s.readNextStartElement())
     {
@@ -336,11 +341,12 @@ void DockManagerPrivate::emitTopLevelEvents()
 
 
 //============================================================================
-bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
+bool DockManagerPrivate::restoreState(const QByteArray& State, int version)
 {
+	QByteArray state = State.startsWith("<?xml") ? State : qUncompress(State);
     if (!checkFormat(state, version))
     {
-    	qDebug() << "checkFormat: Error checking format!!!!!!!";
+        ADS_PRINT("checkFormat: Error checking format!!!!!!!");
     	return false;
     }
 
@@ -350,7 +356,7 @@ bool DockManagerPrivate::restoreState(const QByteArray &state, int version)
 
     if (!restoreStateFromXml(state, version))
     {
-    	qDebug() << "restoreState: Error restoring state!!!!!!!";
+        ADS_PRINT("restoreState: Error restoring state!!!!!!!");
     	return false;
     }
 
@@ -425,7 +431,7 @@ CDockManager::~CDockManager()
 void CDockManager::registerFloatingWidget(CFloatingDockContainer* FloatingWidget)
 {
 	d->FloatingWidgets.append(FloatingWidget);
-	qDebug() << "d->FloatingWidgets.count() " << d->FloatingWidgets.count();
+    ADS_PRINT("d->FloatingWidgets.count() " << d->FloatingWidgets.count());
 }
 
 
@@ -489,11 +495,12 @@ unsigned int CDockManager::zOrderIndex() const
 
 
 //============================================================================
-QByteArray CDockManager::saveState(eXmlMode XmlMode, int version) const
+QByteArray CDockManager::saveState(int version) const
 {
     QByteArray xmldata;
     QXmlStreamWriter s(&xmldata);
-	s.setAutoFormatting(XmlAutoFormattingEnabled == XmlMode);
+    auto ConfigFlags = CDockManager::configFlags();
+	s.setAutoFormatting(ConfigFlags.testFlag(XmlAutoFormattingEnabled));
     s.writeStartDocument();
 		s.writeStartElement("QtAdvancedDockingSystem");
 		s.writeAttribute("Version", QString::number(version));
@@ -506,7 +513,8 @@ QByteArray CDockManager::saveState(eXmlMode XmlMode, int version) const
 		s.writeEndElement();
     s.writeEndDocument();
 
-    return xmldata;
+    return ConfigFlags.testFlag(XmlCompressionEnabled)
+    	? qCompress(xmldata, 9) : xmldata;
 }
 
 
@@ -565,9 +573,13 @@ CDockAreaWidget* CDockManager::addDockWidgetTab(DockWidgetArea area,
 	{
 		return addDockWidget(ads::CenterDockWidgetArea, Dockwidget, AreaWidget);
 	}
+	else if (!openedDockAreas().isEmpty())
+	{
+		return addDockWidget(area, Dockwidget, openedDockAreas().last());
+	}
 	else
 	{
-		return addDockWidget(area, Dockwidget, AreaWidget);
+		return addDockWidget(area, Dockwidget, nullptr);
 	}
 }
 
@@ -586,6 +598,12 @@ CDockWidget* CDockManager::findDockWidget(const QString& ObjectName) const
 	return d->DockWidgetsMap.value(ObjectName, nullptr);
 }
 
+//============================================================================
+void CDockManager::removeDockWidget(CDockWidget* Dockwidget)
+{
+	d->DockWidgetsMap.remove(Dockwidget->objectName());
+	CDockContainerWidget::removeDockWidget(Dockwidget);
+}
 
 //============================================================================
 QMap<QString, CDockWidget*> CDockManager::dockWidgetsMap() const
@@ -747,16 +765,23 @@ int CDockManager::startDragDistance()
 
 
 //===========================================================================
-CDockManager::ConfigFlags CDockManager::configFlags() const
+CDockManager::ConfigFlags CDockManager::configFlags()
 {
-	return d->ConfigFlags;
+	return StaticConfigFlags;
 }
 
 
 //===========================================================================
 void CDockManager::setConfigFlags(const ConfigFlags Flags)
 {
-	d->ConfigFlags = Flags;
+	StaticConfigFlags = Flags;
+}
+
+
+//===========================================================================
+void CDockManager::setConfigFlag(eConfigFlag Flag, bool On)
+{
+	internal::setFlag(StaticConfigFlags, Flag, On);
 }
 
 
