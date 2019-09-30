@@ -916,6 +916,7 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetAr
 	if (CenterDockWidgetArea == area)
 	{
 		TargetDockArea->addDockWidget(Dockwidget);
+		TargetDockArea->updateTitleBarVisibility();
 		return TargetDockArea;
 	}
 
