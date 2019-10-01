@@ -100,6 +100,8 @@ namespace internal
 {
 static const bool RestoreTesting = true;
 static const bool Restore = false;
+static const char* const ClosedProperty = "close";
+static const char* const DirtyProperty = "dirty";
 
 /**
  * Replace the from widget in the given splitter with the To widget

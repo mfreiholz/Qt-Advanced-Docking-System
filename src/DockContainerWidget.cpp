@@ -695,12 +695,13 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 	QWidget*& CreatedWidget, bool Testing)
 {
 	bool Ok;
+#ifdef ADS_DEBUG_PRINT
 	int Tabs = s.attributes().value("Tabs").toInt(&Ok);
 	if (!Ok)
 	{
 		return false;
 	}
-
+#endif
 
 	QString CurrentDockWidget = s.attributes().value("Current").toString();
     ADS_PRINT("Restore NodeDockArea Tabs: " << Tabs << " Current: "
@@ -745,8 +746,8 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 		DockArea->addDockWidget(DockWidget);
 		DockWidget->setToggleViewActionChecked(!Closed);
 		DockWidget->setClosedState(Closed);
-		DockWidget->setProperty("closed", Closed);
-		DockWidget->setProperty("dirty", false);
+		DockWidget->setProperty(internal::ClosedProperty, Closed);
+		DockWidget->setProperty(internal::DirtyProperty, false);
 	}
 
 	if (Testing)

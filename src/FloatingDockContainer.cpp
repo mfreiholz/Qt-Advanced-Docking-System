@@ -373,6 +373,12 @@ void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 void CFloatingDockContainer::hideEvent(QHideEvent *event)
 {
 	Super::hideEvent(event);
+    // Prevent toogleView() events during restore state
+    if (d->DockManager->isRestoringState())
+    {
+        return;
+    }
+
 	for (auto DockArea : d->DockContainer->openedDockAreas())
 	{
 		for (auto DockWidget : DockArea->openedDockWidgets())

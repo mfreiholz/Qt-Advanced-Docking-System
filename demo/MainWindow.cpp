@@ -226,6 +226,13 @@ void MainWindowPrivate::createContent()
 	auto BottomDockArea = DockManager->addDockWidget(ads::BottomDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
+    //DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
+    //DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
+
+	for (auto DockWidget : DockManager->dockWidgetsMap())
+	{
+		_this->connect(DockWidget, SIGNAL(viewToggled(bool)), SLOT(onViewToggled(bool)));
+	}
 }
 
 
@@ -373,5 +380,18 @@ void CMainWindow::savePerspective()
 	d->PerspectiveComboBox->setCurrentText(PerspectiveName);
 
 	d->savePerspectives();
+}
+
+
+//============================================================================
+void CMainWindow::onViewToggled(bool Open)
+{
+	auto DockWidget = qobject_cast<ads::CDockWidget*>(sender());
+	if (!DockWidget)
+	{
+		return;
+	}
+
+	qDebug() << DockWidget->objectName() << " viewToggled(" << Open << ")";
 }
 

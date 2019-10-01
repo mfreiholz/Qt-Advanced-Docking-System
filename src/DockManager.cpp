@@ -102,7 +102,7 @@ struct DockManagerPrivate
 
 	void hideFloatingWidgets()
 	{
-		// Hide updates of floating widgets from use
+		// Hide updates of floating widgets from user
 		for (auto FloatingWidget : FloatingWidgets)
 		{
 			FloatingWidget->hide();
@@ -221,7 +221,9 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     }
 
     bool Result = true;
+#ifdef ADS_DEBUG_PRINT
     int  DockContainers = s.attributes().value("Containers").toInt();
+#endif
     ADS_PRINT(DockContainers);
     int DockContainerCount = 0;
     while (s.readNextStartElement())
@@ -262,13 +264,14 @@ void DockManagerPrivate::restoreDockWidgetsOpenState()
     // toggle view action the next time
     for (auto DockWidget : DockWidgetsMap)
     {
-    	if (DockWidget->property("dirty").toBool())
+    	if (DockWidget->property(internal::DirtyProperty).toBool())
     	{
     		DockWidget->flagAsUnassigned();
+            emit DockWidget->viewToggled(false);
     	}
     	else
     	{
-    		DockWidget->toggleViewInternal(!DockWidget->property("closed").toBool());
+    		DockWidget->toggleViewInternal(!DockWidget->property(internal::ClosedProperty).toBool());
     	}
     }
 }
