@@ -28,7 +28,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include <DockWidgetTab.h>
+#include "DockWidgetTab.h"
 #include "DockWidget.h"
 
 #include <QBoxLayout>

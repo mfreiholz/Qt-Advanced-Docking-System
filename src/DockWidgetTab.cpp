@@ -28,7 +28,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include <ElidingLabel.h>
+#include "ElidingLabel.h"
 #include "DockWidgetTab.h"
 
 #include <QBoxLayout>
