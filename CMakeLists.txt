@@ -64,10 +64,10 @@ else()
 endif()
 if(BUILD_STATIC)
     add_library(qtadvanceddocking STATIC ${ads_SRCS})
-    set(ads_COMPILE_DEFINE ${ads_COMPILE_DEFINE} ADS_STATIC)
+    target_compile_definitions(qtadvanceddocking PUBLIC ADS_STATIC)
 else()
     add_library(qtadvanceddocking SHARED ${ads_SRCS})
-    set(ads_COMPILE_DEFINE ${ads_COMPILE_DEFINE} ADS_SHARED_EXPORT)
+    target_compile_definitions(qtadvanceddocking PUBLIC ADS_SHARED_EXPORT)
 endif()
 install(FILES ${ads_INSTALL_INCLUDE}
     DESTINATION include 
