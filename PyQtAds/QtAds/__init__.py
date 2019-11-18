@@ -1,5 +1,5 @@
 from .ads import ads
-from ._version import *
+from .._version import *
 
 import inspect
 
