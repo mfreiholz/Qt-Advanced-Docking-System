@@ -391,6 +391,13 @@ signals:
      * perspective
      */
     void perspectiveOpened(const QString& PerspectiveName);
+
+    /**
+     * This signal is emitted, if a new DockArea has been created.
+     * An application can use this signal to set custom icons or custom
+     * tooltips for the DockArea buttons.
+     */
+    void dockAreaCreated(CDockAreaWidget* DockArea);
 }; // class DockManager
 } // namespace ads
 //-----------------------------------------------------------------------------
