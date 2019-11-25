@@ -318,10 +318,6 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// uncomment the following line if the tab close button should be
 	// a QToolButton instead of a QPushButton
 	// CDockManager::setConfigFlags(CDockManager::configFlags() | CDockManager::TabCloseButtonIsToolButton);
-	auto Flags = CDockManager::configFlags();
-	Flags.setFlag(CDockManager::XmlAutoFormattingEnabled, true);
-	Flags.setFlag(CDockManager::XmlCompressionEnabled, false);
-	CDockManager::setConfigFlags(Flags);
 
 	// uncomment the following line if you wand a fixed tab width that does
 	// not change if the visibility of the close button changes
