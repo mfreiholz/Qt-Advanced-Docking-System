@@ -57,6 +57,7 @@
 #include "DockManager.h"
 #include "DockWidget.h"
 #include "DockAreaWidget.h"
+#include "FloatingDockContainer.h"
 
 
 //============================================================================
@@ -226,8 +227,11 @@ void MainWindowPrivate::createContent()
 	auto BottomDockArea = DockManager->addDockWidget(ads::BottomDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
-    //DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
-    //DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
+
+	// Test creation of floating dock widgets
+    auto FloatingWidget = DockManager->addDockWidgetFloating(createFileSystemTreeDockWidget(ViewMenu));
+    FloatingWidget->move(QPoint(0,0));
+    DockManager->addDockWidgetFloating(createLongTextLabelDockWidget(ViewMenu));
 
 	for (auto DockWidget : DockManager->dockWidgetsMap())
 	{
@@ -309,6 +313,10 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// uncomment the following line if the tab close button should be
 	// a QToolButton instead of a QPushButton
 	// CDockManager::setConfigFlags(CDockManager::configFlags() | CDockManager::TabCloseButtonIsToolButton);
+	auto Flags = CDockManager::configFlags();
+	Flags.setFlag(CDockManager::XmlAutoFormattingEnabled, true);
+	Flags.setFlag(CDockManager::XmlCompressionEnabled, false);
+	CDockManager::setConfigFlags(Flags);
 
 	// uncomment the following line if you wand a fixed tab width that does
 	// not change if the visibility of the close button changes
@@ -328,7 +336,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// Default window geometry
     resize(1280, 720);
 
-	d->restoreState();
+	//d->restoreState();
 	d->restorePerspectives();
 }
 

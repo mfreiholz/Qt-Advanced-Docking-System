@@ -111,7 +111,14 @@ protected:
 	 */
 	CDockOverlay* dockAreaOverlay() const;
 
+	/**
+	 * Show the floating widgets that has been created floating
+	 */
+	virtual void showEvent(QShowEvent *event) override;
+
 public:
+	using Super = CDockContainerWidget;
+
 	enum eViewMenuInsertionOrder
 	{
 		MenuSortedByInsertion,
@@ -205,6 +212,12 @@ public:
 	 */
 	CDockAreaWidget* addDockWidgetTabToArea(CDockWidget* Dockwidget,
 		CDockAreaWidget* DockAreaWidget);
+
+	/**
+	 * Adds the given DockWidget floating and returns the created
+	 * CFloatingDockContainer instance.
+	 */
+	CFloatingDockContainer* addDockWidgetFloating(CDockWidget* Dockwidget);
 
 	/**
 	 * Searches for a registered doc widget with the given ObjectName
