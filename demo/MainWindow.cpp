@@ -229,9 +229,14 @@ void MainWindowPrivate::createContent()
 	DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
 
 	// Test creation of floating dock widgets
-    auto FloatingWidget = DockManager->addDockWidgetFloating(createFileSystemTreeDockWidget(ViewMenu));
+	DockWidget = createFileSystemTreeDockWidget(ViewMenu);
+    auto FloatingWidget = DockManager->addDockWidgetFloating(DockWidget);
     FloatingWidget->move(QPoint(0,0));
-    DockManager->addDockWidgetFloating(createLongTextLabelDockWidget(ViewMenu));
+    FloatingWidget = DockManager->addDockWidgetFloating(createLongTextLabelDockWidget(ViewMenu));
+
+    auto Action = ui.menuView->addAction(QString("Set %1 floating").arg(DockWidget->windowTitle()));
+    DockWidget->connect(Action, SIGNAL(triggered()), SLOT(setFloating()));
+
 
 	for (auto DockWidget : DockManager->dockWidgetsMap())
 	{

@@ -371,7 +371,7 @@ void CDockWidgetTab::contextMenuEvent(QContextMenuEvent* ev)
 
 	d->DragStartMousePosition = ev->pos();
 	QMenu Menu(this);
-	auto Action = Menu.addAction(tr("Detach"), this, SLOT(onDetachActionTriggered()));
+	auto Action = Menu.addAction(tr("Detach"), this, SLOT(detachDockWidget()));
 	Action->setEnabled(d->DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable));
 	Menu.addSeparator();
 	Action = Menu.addAction(tr("Close"), this, SIGNAL(closeRequested()));
@@ -526,7 +526,7 @@ bool CDockWidgetTab::isClosable() const
 
 
 //===========================================================================
-void CDockWidgetTab::onDetachActionTriggered()
+void CDockWidgetTab::detachDockWidget()
 {
 	if (!d->DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable))
 	{

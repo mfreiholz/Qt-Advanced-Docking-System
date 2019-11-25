@@ -414,6 +414,11 @@ public slots:
 	 */
 	void toggleView(bool Open = true);
 
+	/**
+	 * This function will make a docked widget floating
+	 */
+	void setFloating();
+
 signals:
 	/**
 	 * This signal is emitted if the dock widget is opened or closed
