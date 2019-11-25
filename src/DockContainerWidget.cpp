@@ -555,7 +555,7 @@ void DockContainerWidgetPrivate::saveChildNodesState(QXmlStreamWriter& s, QWidge
 	if (Splitter)
 	{
 		s.writeStartElement("Splitter");
-		s.writeAttribute("Orientation", (Splitter->orientation() == Qt::Horizontal) ? "-" : "|");
+		s.writeAttribute("Orientation", (Splitter->orientation() == Qt::Horizontal) ? "|" : "-");
 		s.writeAttribute("Count", QString::number(Splitter->count()));
         ADS_PRINT("NodeSplitter orient: " << Splitter->orientation()
             << " WidgetCont: " << Splitter->count());
@@ -590,11 +590,11 @@ bool DockContainerWidgetPrivate::restoreSplitter(QXmlStreamReader& s,
 	bool Ok;
 	QString OrientationStr = s.attributes().value("Orientation").toString();
 	int Orientation;
-	if (OrientationStr.startsWith("-"))
+	if (OrientationStr.startsWith("|"))
 	{
 		Orientation = Qt::Horizontal;
 	}
-	else if (OrientationStr.startsWith("|"))
+	else if (OrientationStr.startsWith("-"))
 	{
 		Orientation = Qt::Vertical;
 	}
