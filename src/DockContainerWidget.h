@@ -47,6 +47,8 @@ class CDockManager;
 struct DockManagerPrivate;
 class CFloatingDockContainer;
 struct FloatingDockContainerPrivate;
+class CFloatingOverlay;
+struct FloatingOverlayPrivate;
 
 /**
  * Container that manages a number of dock areas with single dock widgets
@@ -68,6 +70,9 @@ private:
 	friend class CFloatingDockContainer;
 	friend struct FloatingDockContainerPrivate;
 	friend class CDockWidget;
+	friend class CFloatingOverlay;
+	friend struct FloatingOverlayPrivate;
+
 protected:
 	/**
 	 * Handles activation events to update zOrderIndex
@@ -88,6 +93,11 @@ protected:
 	 * Drop floating widget into the container
 	 */
 	void dropFloatingWidget(CFloatingDockContainer* FloatingWidget, const QPoint& TargetPos);
+
+	/**
+	 * Drop a dock area or a dock widget given in widget parameter
+	 */
+	void dropWidget(QWidget* Widget, const QPoint& TargetPos);
 
 	/**
 	 * Adds the given dock area to this container widget

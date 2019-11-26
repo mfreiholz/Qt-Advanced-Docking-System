@@ -31,6 +31,8 @@
 //============================================================================
 #include "ads_globals.h"
 
+#include <QRubberBand>
+
 #ifdef Q_OS_LINUX
 #include <QDockWidget>
 #define tFloatingWidgetBase QDockWidget
@@ -58,12 +60,29 @@ struct DockAreaTitleBarPrivate;
 class CFloatingWidgetTitleBar;
 
 /**
+ * Pure virtual interface for floating widgets
+ */
+class IFloatingWidget
+{
+public:
+	virtual void startFloating(const QPoint& DragStartMousePos, const QSize& Size,
+        eDragState DragState, QWidget* MouseEventHandler) = 0;
+
+	/**
+	 * Moves the widget to a new position relative to the position given when
+	 * startFloating() was called
+	 */
+	virtual void moveFloating() = 0;
+};
+
+
+/**
  * This implements a floating widget that is a dock container that accepts
  * docking of dock widgets like the main window and that can be docked into
  * another dock container.
  * Every floating window of the docking system is a FloatingDockContainer.
  */
-class ADS_EXPORT CFloatingDockContainer : public tFloatingWidgetBase
+class ADS_EXPORT CFloatingDockContainer : public tFloatingWidgetBase, public IFloatingWidget
 {
 	Q_OBJECT
 private:
@@ -103,7 +122,7 @@ protected:
 	}
 
 	/**
-	 * Call this function if you explecitely want to signal that dragging has
+	 * Call this function if you explicitly want to signal that dragging has
 	 * finished
 	 */
 	void finishDragging();
@@ -150,7 +169,7 @@ public:
 	using Super = QWidget;
 
 	/**
-	 * Create empty flatingb widget - required for restore state
+	 * Create empty floating widget - required for restore state
 	 */
 	CFloatingDockContainer(CDockManager* DockManager);
 

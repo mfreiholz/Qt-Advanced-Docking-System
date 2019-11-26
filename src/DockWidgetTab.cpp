@@ -46,6 +46,7 @@
 #include "DockWidget.h"
 #include "DockAreaWidget.h"
 #include "FloatingDockContainer.h"
+#include "FloatingOverlay.h"
 #include "DockOverlay.h"
 #include "DockManager.h"
 #include "IconProvider.h"
@@ -70,7 +71,7 @@ struct DockWidgetTabPrivate
 	bool IsActiveTab = false;
 	CDockAreaWidget* DockArea = nullptr;
 	eDragState DragState = DraggingInactive;
-	CFloatingDockContainer* FloatingWidget = nullptr;
+	IFloatingWidget* FloatingWidget = nullptr;
 	QIcon Icon;
 	QAbstractButton* CloseButton = nullptr;
 	QSpacerItem* IconTextSpacer;
@@ -228,29 +229,46 @@ bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
     ADS_PRINT("startFloating");
 	DragState = DraggingState;
 	QSize Size = DockArea->size();
-	CFloatingDockContainer* FloatingWidget = nullptr;
+	IFloatingWidget* FloatingWidget = nullptr;
+	bool OpaqueUndocking = CDockManager::configFlags().testFlag(CDockManager::OpaqueUndocking) ||
+		(DraggingFloatingWidget != DraggingState);
+	std::cout << "OpaqueUndocking " << OpaqueUndocking << std::endl;
 	if (DockArea->dockWidgetsCount() > 1)
 	{
 		// If section widget has multiple tabs, we take only one tab
-		FloatingWidget = new CFloatingDockContainer(DockWidget);
+		if (OpaqueUndocking)
+		{
+			FloatingWidget = new CFloatingDockContainer(DockWidget);
+		}
+		else
+		{
+			FloatingWidget = new CFloatingOverlay(DockWidget);
+		}
 	}
 	else
 	{
 		// If section widget has only one content widget, we can move the complete
 		// dock area into floating widget
-		FloatingWidget = new CFloatingDockContainer(DockArea);
+		if (OpaqueUndocking)
+		{
+			FloatingWidget = new CFloatingDockContainer(DockArea);
+		}
+		else
+		{
+			FloatingWidget = new CFloatingOverlay(DockArea);
+		}
 	}
 
     if (DraggingFloatingWidget == DraggingState)
     {
-        FloatingWidget->startDragging(DragStartMousePosition, Size, _this);
+        FloatingWidget->startFloating(DragStartMousePosition, Size, DraggingFloatingWidget, _this);
     	auto Overlay = DockWidget->dockManager()->containerOverlay();
     	Overlay->setAllowedAreas(OuterDockAreas);
     	this->FloatingWidget = FloatingWidget;
     }
     else
     {
-     	FloatingWidget->initFloatingGeometry(DragStartMousePosition, Size);
+     	FloatingWidget->startFloating(DragStartMousePosition, Size, DraggingInactive, nullptr);
     }
     DockWidget->emitTopLevelChanged(true);
 	return true;

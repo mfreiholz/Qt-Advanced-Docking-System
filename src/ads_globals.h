@@ -34,6 +34,7 @@
 #include <QtCore/QtGlobal>
 #include <QPixmap>
 #include <QWidget>
+#include <QDebug>
 
 #ifndef ADS_STATIC
 #ifdef ADS_SHARED_EXPORT
@@ -46,6 +47,7 @@
 #endif
 
 // Define ADS_DEBUG_PRINT to enable a lot of debug output
+#define ADS_DEBUG_PRINT
 #ifdef ADS_DEBUG_PRINT
 #define ADS_PRINT(s) qDebug() << s
 #else

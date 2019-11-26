@@ -52,7 +52,6 @@ struct DockOverlayPrivate
 	DockWidgetAreas AllowedAreas = InvalidDockWidgetArea;
 	CDockOverlayCross* Cross;
 	QPointer<QWidget> TargetWidget;
-	QRect TargetRect;
 	DockWidgetArea LastLocation = InvalidDockWidgetArea;
 	bool DropPreviewEnabled = true;
 	CDockOverlay::eMode Mode = CDockOverlay::ModeDockAreaOverlay;
@@ -408,7 +407,6 @@ DockWidgetArea CDockOverlay::showOverlay(QWidget* target)
 	}
 
 	d->TargetWidget = target;
-	d->TargetRect = QRect();
 	d->LastLocation = InvalidDockWidgetArea;
 
 	// Move it over the target.
@@ -427,8 +425,8 @@ void CDockOverlay::hideOverlay()
 {
 	hide();
 	d->TargetWidget.clear();
-	d->TargetRect = QRect();
 	d->LastLocation = InvalidDockWidgetArea;
+	d->DropAreaRect = QRect();
 }
 
 
@@ -437,6 +435,13 @@ void CDockOverlay::enableDropPreview(bool Enable)
 {
 	d->DropPreviewEnabled = Enable;
 	update();
+}
+
+
+//============================================================================
+bool CDockOverlay::dropPreviewEnabled() const
+{
+	return d->DropPreviewEnabled;
 }
 
 

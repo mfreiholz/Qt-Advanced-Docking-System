@@ -36,6 +36,7 @@
 #include <QApplication>
 
 #include "FloatingDockContainer.h"
+#include "FloatingOverlay.h"
 #include "DockAreaWidget.h"
 #include "DockOverlay.h"
 #include "DockManager.h"
@@ -55,7 +56,7 @@ struct DockAreaTabBarPrivate
 	CDockAreaTabBar* _this;
 	QPoint DragStartMousePos;
 	CDockAreaWidget* DockArea;
-	CFloatingDockContainer* FloatingWidget = nullptr;
+	IFloatingWidget* FloatingWidget = nullptr;
 	QWidget* TabsContainerWidget;
 	QBoxLayout* TabsLayout;
 	int CurrentIndex = -1;
@@ -245,17 +246,31 @@ void CDockAreaTabBar::mouseDoubleClickEvent(QMouseEvent *event)
 
 
 //============================================================================
-CFloatingDockContainer* CDockAreaTabBar::makeAreaFloating(const QPoint& Offset,
-	eDragState DragState)
+IFloatingWidget* CDockAreaTabBar::makeAreaFloating(const QPoint& Offset, eDragState DragState)
 {
 	QSize Size = d->DockArea->size();
-	CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(d->DockArea);
-    FloatingWidget->startFloating(Offset, Size, DragState, nullptr);
-	auto TopLevelDockWidget = FloatingWidget->topLevelDockWidget();
-	if (TopLevelDockWidget)
+	bool OpaqueUndocking = CDockManager::configFlags().testFlag(CDockManager::OpaqueUndocking) ||
+		(DraggingFloatingWidget != DragState);
+	CFloatingDockContainer* FloatingDockContainer = nullptr;
+	IFloatingWidget* FloatingWidget;
+	if (OpaqueUndocking)
 	{
-		TopLevelDockWidget->emitTopLevelChanged(true);
+		FloatingWidget = FloatingDockContainer = new CFloatingDockContainer(d->DockArea);
 	}
+	else
+	{
+		FloatingWidget = new CFloatingOverlay(d->DockArea);
+	}
+
+    FloatingWidget->startFloating(Offset, Size, DragState, nullptr);
+    if (FloatingDockContainer)
+    {
+		auto TopLevelDockWidget = FloatingDockContainer->topLevelDockWidget();
+		if (TopLevelDockWidget)
+		{
+			TopLevelDockWidget->emitTopLevelChanged(true);
+		}
+    }
 
 	return FloatingWidget;
 }

@@ -30,10 +30,18 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include "DockContainerWidget.h"
-#include <QIcon>
-
-#include "ads_globals.h"
+#include <ads_globals.h>
+#include <DockContainerWidget.h>
+#include <DockWidget.h>
+#include <FloatingDockContainer.h>
+#include <qbytearray.h>
+#include <qflags.h>
+#include <qlist.h>
+#include <qmap.h>
+#include <qobjectdefs.h>
+#include <qstring.h>
+#include <qstringlist.h>
+#include <QtGui/qicon.h>
 
 class QSettings;
 class QMenu;
@@ -76,6 +84,8 @@ private:
 	friend class CDockWidgetTab;
 	friend struct DockAreaWidgetPrivate;
 	friend struct DockWidgetTabPrivate;
+	friend class CFloatingOverlay;
+	friend struct FloatingOverlayPrivate;
 
 protected:
 	/**
@@ -140,7 +150,12 @@ public:
 		TabCloseButtonIsToolButton = 0x0040,//! If enabled the tab close buttons will be QToolButtons instead of QPushButtons - disabled by default
 		AllTabsHaveCloseButton = 0x0080, //!< if this flag is set, then all tabs that are closable show a close button
 		RetainTabSizeWhenCloseButtonHidden = 0x0100, //!< if this flag is set, the space for the close button is reserved even if the close button is not visible
-		DefaultConfig = ActiveTabHasCloseButton | DockAreaHasCloseButton | OpaqueSplitterResize | XmlCompressionEnabled, ///< the default configuration
+		OpaqueUndocking = 0x0200,
+		DefaultConfig = ActiveTabHasCloseButton
+		              | DockAreaHasCloseButton
+		              | OpaqueSplitterResize
+		              | XmlCompressionEnabled
+		              | OpaqueUndocking, ///< the default configuration
 	};
 	Q_DECLARE_FLAGS(ConfigFlags, eConfigFlag)
 

@@ -131,7 +131,6 @@ protected:
 	 */
 	void internalSetCurrentDockWidget(CDockWidget* DockWidget);
 
-
 	/**
 	 * Marks tabs menu to update
 	 */

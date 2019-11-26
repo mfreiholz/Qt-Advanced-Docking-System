@@ -165,10 +165,22 @@ public:
 		CDockAreaWidget* TargetArea, DockWidgetArea area);
 
 	/**
+	 * Moves the dock widget or dock area given in Widget parameter to a
+	 * new dock widget area
+	 */
+	void moveToNewSection(QWidget* Widget, CDockAreaWidget* TargetArea, DockWidgetArea area);
+
+	/**
 	 * Creates a new tab for a widget dropped into the center of a section
 	 */
 	void dropIntoCenterOfSection(CFloatingDockContainer* FloatingWidget,
 		CDockAreaWidget* TargetArea);
+
+	/**
+	 * Creates a new tab for a widget dropped into the center of a section
+	 */
+	void moveIntoCenterOfSection(QWidget* Widget, CDockAreaWidget* TargetArea);
+
 
 	/**
 	 * Adds new dock areas to the internal dock area list
@@ -500,6 +512,53 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 	FloatingWidget->deleteLater();
 	addDockAreasToList(NewDockAreas);
 	_this->dumpLayout();
+}
+
+
+//============================================================================
+void DockContainerWidgetPrivate::moveIntoCenterOfSection(QWidget* Widget, CDockAreaWidget* TargetArea)
+{
+	auto DroppedDockWidget = qobject_cast<CDockWidget*>(Widget);
+	auto DroppedArea = qobject_cast<CDockAreaWidget*>(Widget);
+
+	if (DroppedDockWidget)
+	{
+		CDockAreaWidget* OldDockArea = DroppedDockWidget->dockAreaWidget();
+		if (OldDockArea)
+		{
+			OldDockArea->removeDockWidget(DroppedDockWidget);
+		}
+		TargetArea->insertDockWidget(0, DroppedDockWidget, false);
+	}
+	else
+	{
+		QList<CDockWidget*> NewDockWidgets = DroppedArea->dockWidgets();
+		int NewCurrentIndex = DroppedArea->currentIndex();
+		for (int i = 0; i < NewDockWidgets.count(); ++i)
+		{
+			CDockWidget* DockWidget = NewDockWidgets[i];
+			TargetArea->insertDockWidget(i, DockWidget, false);
+		}
+		TargetArea->setCurrentIndex(NewCurrentIndex);
+		DroppedArea->dockContainer()->removeDockArea(DroppedArea);
+		DroppedArea->deleteLater();
+	}
+
+	TargetArea->updateTitleBarVisibility();
+	return;
+}
+
+
+//============================================================================
+void DockContainerWidgetPrivate::moveToNewSection(QWidget* Widget, CDockAreaWidget* TargetArea, DockWidgetArea area)
+{
+	// Dropping into center means all dock widgets in the dropped floating
+	// widget will become tabs of the drop area
+	if (CenterDockWidgetArea == area)
+	{
+		moveIntoCenterOfSection(Widget, TargetArea);
+		return;
+	}
 }
 
 
@@ -1241,6 +1300,53 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	if (FloatingTopLevelDockWidget)
 	{
 		FloatingTopLevelDockWidget->emitTopLevelChanged(false);
+	}
+}
+
+
+//============================================================================
+void CDockContainerWidget::dropWidget(QWidget* DockWidget, const QPoint& TargetPos)
+{
+    ADS_PRINT("CDockContainerWidget::dropFloatingWidget");
+	CDockAreaWidget* DockArea = dockAreaAt(TargetPos);
+	auto dropArea = InvalidDockWidgetArea;
+	auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
+	CDockWidget* TopLevelDockWidget = topLevelDockWidget();
+
+	if (DockArea)
+	{
+		auto dropOverlay = d->DockManager->dockAreaOverlay();
+		dropOverlay->setAllowedAreas(AllDockAreas);
+		dropArea = dropOverlay->showOverlay(DockArea);
+		if (ContainerDropArea != InvalidDockWidgetArea &&
+			ContainerDropArea != dropArea)
+		{
+			dropArea = InvalidDockWidgetArea;
+		}
+
+		if (dropArea != InvalidDockWidgetArea)
+		{
+            ADS_PRINT("Dock Area Drop Content: " << dropArea);
+            d->moveToNewSection(DockWidget, DockArea, dropArea);
+		}
+	}
+
+	// mouse is over container
+	if (InvalidDockWidgetArea == dropArea)
+	{
+		dropArea = ContainerDropArea;
+        ADS_PRINT("Container Drop Content: " << dropArea);
+		if (dropArea != InvalidDockWidgetArea)
+		{
+			//d->dropIntoContainer(FloatingWidget, dropArea);
+		}
+	}
+
+	// If there was a top level widget before the drop, then it is not top
+	// level widget anymore
+	if (TopLevelDockWidget)
+	{
+		TopLevelDockWidget->emitTopLevelChanged(false);
 	}
 }
 
