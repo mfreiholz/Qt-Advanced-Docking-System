@@ -275,6 +275,11 @@ CFloatingDockContainer::CFloatingDockContainer(CDockAreaWidget *DockArea) :
 #ifdef Q_OS_LINUX
     d->TitleBar->enableCloseButton(isClosable());
 #endif
+    auto TopLevelDockWidget = topLevelDockWidget();
+    if (TopLevelDockWidget)
+    {
+    	TopLevelDockWidget->emitTopLevelChanged(true);
+    }
 }
 
 //============================================================================
@@ -285,6 +290,11 @@ CFloatingDockContainer::CFloatingDockContainer(CDockWidget *DockWidget) :
 #ifdef Q_OS_LINUX
     d->TitleBar->enableCloseButton(isClosable());
 #endif
+    auto TopLevelDockWidget = topLevelDockWidget();
+    if (TopLevelDockWidget)
+    {
+    	TopLevelDockWidget->emitTopLevelChanged(true);
+    }
 }
 
 //============================================================================

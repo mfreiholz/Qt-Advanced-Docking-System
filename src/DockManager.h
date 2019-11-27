@@ -52,6 +52,7 @@ struct DockManagerPrivate;
 class CFloatingDockContainer;
 struct FloatingDockContainerPrivate;
 class CDockContainerWidget;
+class DockContainerWidgetPrivate;
 class CDockOverlay;
 class CDockAreaTabBar;
 class CDockWidgetTab;
@@ -80,6 +81,7 @@ private:
 	friend class CFloatingDockContainer;
 	friend struct FloatingDockContainerPrivate;
 	friend class CDockContainerWidget;
+	friend class DockContainerWidgetPrivate;
 	friend class CDockAreaTabBar;
 	friend class CDockWidgetTab;
 	friend struct DockAreaWidgetPrivate;

@@ -270,7 +270,7 @@ bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
     {
      	FloatingWidget->startFloating(DragStartMousePosition, Size, DraggingInactive, nullptr);
     }
-    DockWidget->emitTopLevelChanged(true);
+
 	return true;
 }
 
