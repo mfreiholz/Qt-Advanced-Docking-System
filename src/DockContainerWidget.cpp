@@ -603,13 +603,13 @@ void DockContainerWidgetPrivate::moveIntoCenterOfSection(QWidget* Widget, CDockA
 
 
 //============================================================================
-void DockContainerWidgetPrivate::moveToNewSection(QWidget* Widget, CDockAreaWidget* TargetDockArea, DockWidgetArea area)
+void DockContainerWidgetPrivate::moveToNewSection(QWidget* Widget, CDockAreaWidget* TargetArea, DockWidgetArea area)
 {
 	// Dropping into center means all dock widgets in the dropped floating
 	// widget will become tabs of the drop area
 	if (CenterDockWidgetArea == area)
 	{
-		moveIntoCenterOfSection(Widget, TargetDockArea);
+		moveIntoCenterOfSection(Widget, TargetArea);
 		return;
 	}
 
@@ -634,21 +634,29 @@ void DockContainerWidgetPrivate::moveToNewSection(QWidget* Widget, CDockAreaWidg
 	}
 
 	auto InsertParam = internal::dockAreaInsertParameters(area);
-	QSplitter* TargetAreaSplitter = internal::findParent<QSplitter*>(TargetDockArea);
-	int index = TargetAreaSplitter ->indexOf(TargetDockArea);
+	QSplitter* TargetAreaSplitter = internal::findParent<QSplitter*>(TargetArea);
+	int AreaIndex = TargetAreaSplitter->indexOf(TargetArea);
+	auto Sizes = TargetAreaSplitter->sizes();
 	if (TargetAreaSplitter->orientation() == InsertParam.orientation())
 	{
-        ADS_PRINT("TargetAreaSplitter->orientation() == InsertParam.orientation()");
-		TargetAreaSplitter->insertWidget(index + InsertParam.insertOffset(), NewDockArea);
+		int TargetAreaSize = (InsertParam.orientation() == Qt::Horizontal) ? TargetArea->width() : TargetArea->height();
+		TargetAreaSplitter->insertWidget(AreaIndex + InsertParam.insertOffset(), NewDockArea);
+		int Size = (TargetAreaSize - TargetAreaSplitter->handleWidth()) / 2;
+		Sizes[AreaIndex] = Size;
+		Sizes.insert(AreaIndex, Size);
 	}
 	else
 	{
-        ADS_PRINT("TargetAreaSplitter->orientation() != InsertParam.orientation()");
+		auto Sizes = TargetAreaSplitter->sizes();
+		int TargetAreaSize = (InsertParam.orientation() == Qt::Horizontal) ? TargetArea->width() : TargetArea->height();
 		QSplitter* NewSplitter = newSplitter(InsertParam.orientation());
-		NewSplitter->addWidget(TargetDockArea);
+		NewSplitter->addWidget(TargetArea);
 		insertWidgetIntoSplitter(NewSplitter, NewDockArea, InsertParam.append());
-		TargetAreaSplitter->insertWidget(index, NewSplitter);
+		int Size = TargetAreaSize / 2;
+		NewSplitter->setSizes({Size, Size});
+		TargetAreaSplitter->insertWidget(AreaIndex, NewSplitter);
 	}
+	TargetAreaSplitter->setSizes(Sizes);
 
 	addDockAreasToList({NewDockArea});
 }
