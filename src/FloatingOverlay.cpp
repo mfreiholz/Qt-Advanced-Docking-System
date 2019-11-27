@@ -32,11 +32,14 @@ struct FloatingOverlayPrivate
 {
 	CFloatingOverlay *_this;
 	QWidget* Content;
+	CDockAreaWidget* ContentSourceArea = nullptr;
+	CDockContainerWidget* ContenSourceContainer = nullptr;
 	QPoint DragStartMousePosition;
 	CDockManager* DockManager;
 	CDockContainerWidget *DropContainer = nullptr;
 	qreal WindowOpacity;
 	bool Hidden = false;
+	bool IgnoreMouseEvents = false;
 
 
 	/**
@@ -89,6 +92,8 @@ void FloatingOverlayPrivate::updateDropOverlays(const QPoint &GlobalPos)
 	DropContainer = TopContainer;
 	auto ContainerOverlay = DockManager->containerOverlay();
 	auto DockAreaOverlay = DockManager->dockAreaOverlay();
+	auto DockDropArea = DockAreaOverlay->dropAreaUnderCursor();
+	auto ContainerDropArea = ContainerOverlay->dropAreaUnderCursor();
 
 	if (!TopContainer)
 	{
@@ -104,7 +109,7 @@ void FloatingOverlayPrivate::updateDropOverlays(const QPoint &GlobalPos)
 	DockWidgetArea ContainerArea = ContainerOverlay->showOverlay(TopContainer);
 	ContainerOverlay->enableDropPreview(ContainerArea != InvalidDockWidgetArea);
 	auto DockArea = TopContainer->dockAreaAt(GlobalPos);
-	if (DockArea && DockArea->isVisible() && VisibleDockAreas > 0)
+	if (DockArea && DockArea->isVisible() && VisibleDockAreas > 0 && DockArea != ContentSourceArea)
 	{
 		DockAreaOverlay->enableDropPreview(true);
 		DockAreaOverlay->setAllowedAreas(
@@ -129,10 +134,12 @@ void FloatingOverlayPrivate::updateDropOverlays(const QPoint &GlobalPos)
 	else
 	{
 		DockAreaOverlay->hideOverlay();
+		if (DockArea == ContentSourceArea && InvalidDockWidgetArea == ContainerDropArea)
+		{
+			DropContainer = nullptr;
+		}
 	}
 
-	auto DockDropArea = DockAreaOverlay->dropAreaUnderCursor();
-	auto ContainerDropArea = ContainerOverlay->dropAreaUnderCursor();
 	setHidden(DockDropArea != InvalidDockWidgetArea || ContainerDropArea != InvalidDockWidgetArea);
 }
 
@@ -165,18 +172,25 @@ CFloatingOverlay::CFloatingOverlay(QWidget* Content, QWidget* parent) :
 
 
 //============================================================================
-CFloatingOverlay::CFloatingOverlay(CDockWidget* Content, QWidget* parent)
+CFloatingOverlay::CFloatingOverlay(CDockWidget* Content)
 	: CFloatingOverlay((QWidget*)Content, Content->dockManager())
 {
 	d->DockManager = Content->dockManager();
+	if (Content->dockAreaWidget()->openDockWidgetsCount() == 1)
+	{
+		d->ContentSourceArea = Content->dockAreaWidget();
+		d->ContenSourceContainer = Content->dockContainer();
+	}
 }
 
 
 //============================================================================
-CFloatingOverlay::CFloatingOverlay(CDockAreaWidget* Content, QWidget* parent)
+CFloatingOverlay::CFloatingOverlay(CDockAreaWidget* Content)
 	: CFloatingOverlay((QWidget*)Content, Content->dockManager())
 {
 	d->DockManager = Content->dockManager();
+	d->ContentSourceArea = Content;
+	d->ContenSourceContainer = Content->dockContainer();
 }
 
 
@@ -224,7 +238,7 @@ void CFloatingOverlay::moveEvent(QMoveEvent *event)
 bool CFloatingOverlay::eventFilter(QObject *watched, QEvent *event)
 {
 	Q_UNUSED(watched);
-	if (event->type() == QEvent::MouseButtonRelease)
+	if (event->type() == QEvent::MouseButtonRelease && !d->IgnoreMouseEvents)
 	{
 		ADS_PRINT("FloatingWidget::eventFilter QEvent::MouseButtonRelease");
 		std::cout << "CFloatingOverlay::eventFilter QEvent::MouseButtonRelease" << std::endl;
@@ -234,10 +248,27 @@ bool CFloatingOverlay::eventFilter(QObject *watched, QEvent *event)
 			d->DropContainer->dropWidget(d->Content, QCursor::pos());
 			d->DropContainer = nullptr;
 		}
+		else
+		{
+			CDockWidget* DockWidget = qobject_cast<CDockWidget*>(d->Content);
+			CFloatingDockContainer* FloatingWidget;
+			if (DockWidget)
+			{
+				FloatingWidget = new CFloatingDockContainer(DockWidget);
+			}
+			else
+			{
+				CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(d->Content);
+				FloatingWidget = new CFloatingDockContainer(DockArea);
+			}
+			FloatingWidget->setGeometry(this->geometry());
+			FloatingWidget->show();
+		}
 
 		this->close();
 		d->DockManager->containerOverlay()->hideOverlay();
 		d->DockManager->dockAreaOverlay()->hideOverlay();
+		d->IgnoreMouseEvents = true;
 	}
 
 	return false;

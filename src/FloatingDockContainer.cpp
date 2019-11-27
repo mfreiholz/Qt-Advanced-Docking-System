@@ -517,7 +517,6 @@ void CFloatingDockContainer::startFloating(const QPoint &DragStartMousePos,
 #endif
 	moveFloating();
 	show();
-
 }
 
 //============================================================================

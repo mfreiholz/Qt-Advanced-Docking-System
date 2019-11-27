@@ -41,8 +41,8 @@ protected:
 
 public:
 	using Super = QRubberBand;
-	CFloatingOverlay(CDockWidget* Content, QWidget* parent = nullptr);
-	CFloatingOverlay(CDockAreaWidget* Content, QWidget* parent = nullptr);
+	CFloatingOverlay(CDockWidget* Content);
+	CFloatingOverlay(CDockAreaWidget* Content);
 
 	/**
 	 * Delete private data
