@@ -243,10 +243,12 @@ bool CFloatingOverlay::eventFilter(QObject *watched, QEvent *event)
 		ADS_PRINT("FloatingWidget::eventFilter QEvent::MouseButtonRelease");
 		std::cout << "CFloatingOverlay::eventFilter QEvent::MouseButtonRelease" << std::endl;
 
-		if (d->DropContainer)
+		auto DockDropArea = d->DockManager->dockAreaOverlay()->dropAreaUnderCursor();
+		auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
+		bool DropPossible = (DockDropArea != InvalidDockWidgetArea) || (ContainerDropArea != InvalidDockWidgetArea);
+		if (d->DropContainer && DropPossible)
 		{
 			d->DropContainer->dropWidget(d->Content, QCursor::pos());
-			d->DropContainer = nullptr;
 		}
 		else
 		{
@@ -263,6 +265,11 @@ bool CFloatingOverlay::eventFilter(QObject *watched, QEvent *event)
 			}
 			FloatingWidget->setGeometry(this->geometry());
 			FloatingWidget->show();
+			QApplication::processEvents();
+			int FrameHeight = FloatingWidget->frameGeometry().height() - FloatingWidget->geometry().height();
+			QRect FixedGeometry = this->geometry();
+			FixedGeometry.adjust(0, FrameHeight, 0, 0);
+			FloatingWidget->setGeometry(FixedGeometry);
 		}
 
 		this->close();
