@@ -249,6 +249,7 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager *DockManager) :
     QDockWidget::setFeatures(QDockWidget::AllDockWidgetFeatures);
     setTitleBarWidget(d->TitleBar);
     connect(d->TitleBar, SIGNAL(closeRequested()), SLOT(close()));
+    setAttribute(Qt::WA_X11NetWmWindowTypeDock, true);
 #else
 	setWindowFlags(
 	    Qt::Window | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
@@ -509,7 +510,7 @@ void CFloatingDockContainer::startFloating(const QPoint &DragStartMousePos,
 #ifdef Q_OS_LINUX
 	if (DraggingFloatingWidget == DragState)
 	{
-        setAttribute(Qt::WA_X11NetWmWindowTypeDock, true);
+        //setAttribute(Qt::WA_X11NetWmWindowTypeDock, true);
 		d->MouseEventHandler = MouseEventHandler;
 		if (d->MouseEventHandler)
 		{
@@ -619,7 +620,7 @@ void CFloatingDockContainer::finishDragging()
 {
 	ADS_PRINT("CFloatingDockContainer::finishDragging");
 #ifdef Q_OS_LINUX
-   setAttribute(Qt::WA_X11NetWmWindowTypeDock, false);
+   //setAttribute(Qt::WA_X11NetWmWindowTypeDock, false);
    setWindowOpacity(1);
    activateWindow();
    if (d->MouseEventHandler)

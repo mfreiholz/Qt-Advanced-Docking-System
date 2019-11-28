@@ -232,7 +232,7 @@ void MainWindowPrivate::createContent()
 	// Test creation of floating dock widgets
 	DockWidget = createFileSystemTreeDockWidget(ViewMenu);
     auto FloatingWidget = DockManager->addDockWidgetFloating(DockWidget);
-    FloatingWidget->move(QPoint(0, 0));
+    FloatingWidget->move(QPoint(20, 20));
     FloatingWidget = DockManager->addDockWidgetFloating(createLongTextLabelDockWidget(ViewMenu));
     FloatingWidget->move(QPoint(100, 100));
 
