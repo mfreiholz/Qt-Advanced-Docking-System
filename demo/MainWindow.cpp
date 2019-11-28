@@ -320,11 +320,13 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// a QToolButton instead of a QPushButton
 	// CDockManager::setConfigFlags(CDockManager::configFlags() | CDockManager::TabCloseButtonIsToolButton);
 
-	// uncomment the following line if you wand a fixed tab width that does
+    // uncomment the following line if you want a fixed tab width that does
 	// not change if the visibility of the close button changes
-	//CDockManager::setConfigFlag(CDockManager::OpaqueUndocking, false);
-	//CDockManager::setConfigFlag(CDockManager::DragPreviewIsDynamic, false);
-	CDockManager::setConfigFlags(CDockManager::NonOpaqueWithWindowFrame);
+    // CDockManager::setConfigFlag(CDockManager::RetainTabSizeWhenCloseButtonHidden, true);
+
+    // uncomment the follwing line if you want to use non opaque undocking and splitter
+    // moevements
+    //CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig);
 
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
