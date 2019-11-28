@@ -332,7 +332,11 @@ CDockOverlay::CDockOverlay(QWidget* parent, eMode Mode) :
 {
 	d->Mode = Mode;
 	d->Cross = new CDockOverlayCross(this);
+#ifdef Q_OS_LINUX
+	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
+#else
 	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+#endif
 	setWindowOpacity(1);
 	setWindowTitle("DockOverlay");
 	setAttribute(Qt::WA_NoSystemBackground);
@@ -573,7 +577,11 @@ CDockOverlayCross::CDockOverlayCross(CDockOverlay* overlay) :
 	d(new DockOverlayCrossPrivate(this))
 {
 	d->DockOverlay = overlay;
+#ifdef Q_OS_LINUX
+	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
+#else
 	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+#endif
 	setWindowTitle("DockOverlayCross");
 	setAttribute(Qt::WA_TranslucentBackground);
 
