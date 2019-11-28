@@ -322,7 +322,9 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	// uncomment the following line if you wand a fixed tab width that does
 	// not change if the visibility of the close button changes
-	CDockManager::setConfigFlag(CDockManager::OpaqueUndocking, false);
+	//CDockManager::setConfigFlag(CDockManager::OpaqueUndocking, false);
+	//CDockManager::setConfigFlag(CDockManager::DragPreviewIsDynamic, false);
+	CDockManager::setConfigFlags(CDockManager::NonOpaqueWithWindowFrame);
 
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);

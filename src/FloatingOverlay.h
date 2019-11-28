@@ -10,7 +10,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include <QFrame>
+#include <QWidget>
 #include "FloatingDockContainer.h"
 
 namespace ads
@@ -23,7 +23,7 @@ struct FloatingOverlayPrivate;
  * A floating overlay is a temporary floating widget that is just used to
  * indicate the floating widget movement
  */
-class CFloatingOverlay : public QFrame, public IFloatingWidget
+class CFloatingOverlay : public QWidget, public IFloatingWidget
 {
 private:
 	FloatingOverlayPrivate* d;
@@ -40,7 +40,7 @@ protected:
 	CFloatingOverlay(QWidget* Content, QWidget* parent);
 
 public:
-	using Super = QRubberBand;
+	using Super = QWidget;
 	CFloatingOverlay(CDockWidget* Content);
 	CFloatingOverlay(CDockAreaWidget* Content);
 
