@@ -177,6 +177,12 @@ CFloatingOverlay::CFloatingOverlay(QWidget* Content, QWidget* parent) :
 		setAttribute(Qt::WA_TranslucentBackground);
 	}
 
+#ifdef Q_OS_LINUX
+    auto Flags = windowFlags();
+    Flags |= Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint;
+    setWindowFlags(Flags);
+#endif
+
 	setWindowOpacity(0.6);
 	// We install an event filter to detect mouse release events because we
 	// do not receive mouse release event if the floating widget is behind

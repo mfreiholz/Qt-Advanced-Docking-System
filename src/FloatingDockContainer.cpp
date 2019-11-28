@@ -509,7 +509,7 @@ void CFloatingDockContainer::startFloating(const QPoint &DragStartMousePos,
 #ifdef Q_OS_LINUX
 	if (DraggingFloatingWidget == DragState)
 	{
-		setAttribute(Qt::WA_X11NetWmWindowTypeDock, true);
+        setAttribute(Qt::WA_X11NetWmWindowTypeDock, true);
 		d->MouseEventHandler = MouseEventHandler;
 		if (d->MouseEventHandler)
 		{

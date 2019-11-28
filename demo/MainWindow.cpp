@@ -232,8 +232,9 @@ void MainWindowPrivate::createContent()
 	// Test creation of floating dock widgets
 	DockWidget = createFileSystemTreeDockWidget(ViewMenu);
     auto FloatingWidget = DockManager->addDockWidgetFloating(DockWidget);
-    FloatingWidget->move(QPoint(0,0));
+    FloatingWidget->move(QPoint(0, 0));
     FloatingWidget = DockManager->addDockWidgetFloating(createLongTextLabelDockWidget(ViewMenu));
+    FloatingWidget->move(QPoint(100, 100));
 
     auto Action = ui.menuView->addAction(QString("Set %1 floating").arg(DockWidget->windowTitle()));
     DockWidget->connect(Action, SIGNAL(triggered()), SLOT(setFloating()));
@@ -326,7 +327,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
     // uncomment the follwing line if you want to use non opaque undocking and splitter
     // moevements
-    //CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig);
+    CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig);
 
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
