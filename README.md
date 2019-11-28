@@ -161,3 +161,12 @@ MainWindow::~MainWindow()
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](gnu-lgpl-v2.1.md)
 This project uses the [LGPLv2.1 license](gnu-lgpl-v2.1.md)
 
+## Alternative Docking System Implementations
+If this Qt Advanced Docking System does not fit to your needs you may consider some of the alternative docking system solutions for Qt.
+
+### KDDockWidgets
+This is an advanced docking framework for Qt from KDAB. The interesting thing is, that they separated GUI code from logic, so they can easily provide a QtQuick backend in the future.
+
+- ![Blog post about KDDockWidgets](https://www.kdab.com/kddockwidgets/)
+- ![GitHub project](https://github.com/KDAB/KDDockWidgets)
+
