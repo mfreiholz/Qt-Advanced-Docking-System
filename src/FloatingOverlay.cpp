@@ -253,7 +253,6 @@ void CFloatingOverlay::startFloating(const QPoint &DragStartMousePos,
 //============================================================================
 void CFloatingOverlay::moveEvent(QMoveEvent *event)
 {
-	std::cout << "CFloatingOverlay::moveEvent" << std::endl;
 	QWidget::moveEvent(event);
 	d->updateDropOverlays(QCursor::pos());
 }
@@ -327,6 +326,8 @@ void CFloatingOverlay::paintEvent(QPaintEvent* event)
 		painter.drawPixmap(QPoint(0, 0), d->ContentPreviewPixmap);
 	}
 
+	// If we do not have a window frame then we paint a QRubberBadn like
+	// frameless window
 	if (!CDockManager::configFlags().testFlag(CDockManager::DragPreviewHasWindowFrame))
 	{
 		QColor Color = palette().color(QPalette::Active, QPalette::Highlight);

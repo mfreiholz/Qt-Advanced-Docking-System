@@ -75,6 +75,7 @@ struct DockWidgetTabPrivate
 	QIcon Icon;
 	QAbstractButton* CloseButton = nullptr;
 	QSpacerItem* IconTextSpacer;
+	QPoint TabDragStartPosition;
 
 	/**
 	 * Private data constructor
@@ -138,6 +139,19 @@ struct DockWidgetTabPrivate
 		else
 		{
 			return new QPushButton();
+		}
+	}
+
+	template <typename T>
+	IFloatingWidget* createFloatingWidget(T* Widget, bool OpaqueUndocking)
+	{
+		if (OpaqueUndocking)
+		{
+			return new CFloatingDockContainer(Widget);
+		}
+		else
+		{
+			return new CFloatingOverlay(Widget);
 		}
 	}
 };
@@ -232,31 +246,16 @@ bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
 	IFloatingWidget* FloatingWidget = nullptr;
 	bool OpaqueUndocking = CDockManager::configFlags().testFlag(CDockManager::OpaqueUndocking) ||
 		(DraggingFloatingWidget != DraggingState);
-	std::cout << "OpaqueUndocking " << OpaqueUndocking << std::endl;
+	// If section widget has multiple tabs, we take only one tab
+	// If it has only one single tab, we can move the complete
+	// dock area into floating widget
 	if (DockArea->dockWidgetsCount() > 1)
 	{
-		// If section widget has multiple tabs, we take only one tab
-		if (OpaqueUndocking)
-		{
-			FloatingWidget = new CFloatingDockContainer(DockWidget);
-		}
-		else
-		{
-			FloatingWidget = new CFloatingOverlay(DockWidget);
-		}
+		FloatingWidget = createFloatingWidget(DockWidget, OpaqueUndocking);
 	}
 	else
 	{
-		// If section widget has only one content widget, we can move the complete
-		// dock area into floating widget
-		if (OpaqueUndocking)
-		{
-			FloatingWidget = new CFloatingDockContainer(DockArea);
-		}
-		else
-		{
-			FloatingWidget = new CFloatingOverlay(DockArea);
-		}
+		FloatingWidget = createFloatingWidget(DockArea, OpaqueUndocking);
 	}
 
     if (DraggingFloatingWidget == DraggingState)
@@ -347,6 +346,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     {
         // Moving the tab is always allowed because it does not mean moving the
     	// dock widget around
+    	qDebug() << "DraggingTab";
     	d->moveTab(ev);
     }
 
@@ -367,6 +367,12 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     	// Floating is only allowed for widgets that are movable
         if (d->DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable))
         {
+        	// If we undock, we need to restore the initial position of this
+        	// tab because it looks strange if it remains on its dragged position
+        	if (d->isDraggingState(DraggingTab) && !CDockManager::configFlags().testFlag(CDockManager::OpaqueUndocking))
+			{
+				this->move(d->TabDragStartPosition);
+			}
             d->startFloating();
         }
     	return;
@@ -374,6 +380,12 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     else if (d->DockArea->openDockWidgetsCount() > 1
      && (ev->pos() - d->DragStartMousePosition).manhattanLength() >= QApplication::startDragDistance()) // Wait a few pixels before start moving
 	{
+    	// If we start dragging the tab, we save its inital position to
+    	// restore it later
+    	if (DraggingTab != d->DragState)
+    	{
+    		d->TabDragStartPosition = this->pos();
+    	}
         d->DragState = DraggingTab;
 		return;
 	}
