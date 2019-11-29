@@ -14,4 +14,4 @@ jobs:
     - name: qmake
       run: qmake
     - name: make
-      run: make
+      run: make -j4
