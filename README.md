@@ -165,13 +165,13 @@ This project uses the [LGPLv2.1 license](gnu-lgpl-v2.1.md)
 If this Qt Advanced Docking System does not fit to your needs you may consider some of the alternative docking system solutions for Qt.
 
 ### KDDockWidgets
-This is an advanced docking framework for Qt from ![KDAB](https://www.kdab.com/). The interesting thing is, that they separated GUI code from logic, so they can easily provide a QtQuick backend in the future.
+This is an advanced docking framework for Qt from [KDAB](https://www.kdab.com/). The interesting thing is, that they separated GUI code from logic, so they can easily provide a QtQuick backend in the future.
 
-- ![Blog post about KDDockWidgets](https://www.kdab.com/kddockwidgets/)
-- ![GitHub project](https://github.com/KDAB/KDDockWidgets)
+- [Blog post about KDDockWidgets](https://www.kdab.com/kddockwidgets/)
+- [GitHub project](https://github.com/KDAB/KDDockWidgets)
 
 
 ### QtitanDocking
-This is a commercial component from ![Developer Machines](https://www.devmachines.com/) for Qt Framework that allows to create a Microsoft like dockable user interface. They also offer a lot of other interesting and useful components for Qt.
+This is a commercial component from [Developer Machines](https://www.devmachines.com/) for Qt Framework that allows to create a Microsoft like dockable user interface. They also offer a lot of other interesting and useful components for Qt.
 
-- ![Product page](https://www.devmachines.com/qtitandocking-overview.html)
+- [Product page](https://www.devmachines.com/qtitandocking-overview.html)
