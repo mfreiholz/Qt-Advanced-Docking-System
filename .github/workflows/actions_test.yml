@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: install qt
-      run: sudo apt-get -o Acquire::Check-Valid-Until=false install qt5-default
+      run: sudo apt-get install qt5-default
     - name: qmake
       run: qmake
     - name: make
