@@ -36,7 +36,7 @@
 #include "DockWidget.h"
 
 class QXmlStreamWriter;
-class QXmlStreamReader;
+
 
 namespace ads
 {
@@ -49,6 +49,7 @@ class CFloatingDockContainer;
 struct FloatingDockContainerPrivate;
 class CFloatingOverlay;
 struct FloatingOverlayPrivate;
+class CDockingStateReader;
 
 /**
  * Container that manages a number of dock areas with single dock widgets
@@ -120,7 +121,7 @@ protected:
 	 * stream but does not restore anything. You can use this check for
 	 * faulty files before you start restoring the state
 	 */
-	bool restoreState(QXmlStreamReader& Stream, bool Testing);
+	bool restoreState(CDockingStateReader& Stream, bool Testing);
 
 	/**
 	 * This function returns the last added dock area widget for the given

@@ -37,6 +37,7 @@ set(ads_SRCS
     src/DockSplitter.cpp
     src/DockWidget.cpp
     src/DockWidgetTab.cpp
+	src/DockingStateReader.cpp
     src/ElidingLabel.cpp
     src/FloatingDockContainer.cpp
 	src/FloatingOverlay.cpp
@@ -55,6 +56,7 @@ set(ads_INSTALL_INCLUDE
     src/DockSplitter.h
     src/DockWidget.h
     src/DockWidgetTab.h
+	src/DockingStateReader.h
     src/ElidingLabel.h
     src/FloatingDockContainer.h
 	src/FloatingOverlay.h

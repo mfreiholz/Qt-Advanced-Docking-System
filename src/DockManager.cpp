@@ -42,7 +42,6 @@
 #include <QFile>
 #include <QAction>
 #include <QXmlStreamWriter>
-#include <QXmlStreamReader>
 #include <QSettings>
 #include <QMenu>
 #include <QApplication>
@@ -53,6 +52,7 @@
 #include "ads_globals.h"
 #include "DockAreaWidget.h"
 #include "IconProvider.h"
+#include "DockingStateReader.h"
 
 
 
@@ -123,7 +123,7 @@ struct DockManagerPrivate
 	/**
 	 * Restores the container with the given index
 	 */
-	bool restoreContainer(int Index, QXmlStreamReader& stream, bool Testing);
+	bool restoreContainer(int Index, CDockingStateReader& stream, bool Testing);
 
 	/**
 	 * Loads the stylesheet
@@ -163,7 +163,7 @@ void DockManagerPrivate::loadStylesheet()
 
 
 //============================================================================
-bool DockManagerPrivate::restoreContainer(int Index, QXmlStreamReader& stream, bool Testing)
+bool DockManagerPrivate::restoreContainer(int Index, CDockingStateReader& stream, bool Testing)
 {
 	if (Testing)
 	{
@@ -209,7 +209,7 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     {
         return false;
     }
-    QXmlStreamReader s(state);
+    CDockingStateReader s(state);
     s.readNextStartElement();
     if (s.name() != "QtAdvancedDockingSystem")
     {
@@ -218,11 +218,12 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     ADS_PRINT(s.attributes().value("Version"));
     bool ok;
     int v = s.attributes().value("Version").toInt(&ok);
-    if (!ok || v != version)
+    if (!ok || v > CurrentVersion)
     {
     	return false;
     }
 
+    s.setFileVersion(v);
     bool Result = true;
 #ifdef ADS_DEBUG_PRINT
     int  DockContainers = s.attributes().value("Containers").toInt();

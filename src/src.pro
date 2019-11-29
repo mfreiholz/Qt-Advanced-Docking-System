@@ -35,7 +35,8 @@ HEADERS += \
     DockContainerWidget.h \
     DockManager.h \
     DockWidget.h \
-    DockWidgetTab.h \
+    DockWidgetTab.h \ 
+    DockingStateReader.h \
     FloatingDockContainer.h \
     FloatingOverlay.h \
     DockOverlay.h \
@@ -52,6 +53,7 @@ SOURCES += \
     DockContainerWidget.cpp \
     DockManager.cpp \
     DockWidget.cpp \
+    DockingStateReader.cpp \
     DockWidgetTab.cpp \
     FloatingDockContainer.cpp \
     FloatingOverlay.cpp \

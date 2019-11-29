@@ -61,6 +61,13 @@ class QSplitter;
 
 namespace ads
 {
+enum eStateFileVersion
+{
+	InitialVerison = 0,
+	Version1 = 1,
+	CurrentVersion = Version1
+};
+
 class CDockSplitter;
 
 enum DockWidgetArea

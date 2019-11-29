@@ -42,6 +42,7 @@
 #include "DockManager.h"
 #include "DockAreaWidget.h"
 #include "DockWidget.h"
+#include "DockingStateReader.h"
 #include "FloatingDockContainer.h"
 #include "DockOverlay.h"
 #include "ads_globals.h"
@@ -218,21 +219,21 @@ public:
 	 * \param[in] Testing If Testing is true, only the stream data is
 	 * parsed without modifiying anything.
 	 */
-	bool restoreChildNodes(QXmlStreamReader& Stream, QWidget*& CreatedWidget,
+	bool restoreChildNodes(CDockingStateReader& Stream, QWidget*& CreatedWidget,
 		bool Testing);
 
 	/**
 	 * Restores a splitter.
 	 * \see restoreChildNodes() for details
 	 */
-	bool restoreSplitter(QXmlStreamReader& Stream, QWidget*& CreatedWidget,
+	bool restoreSplitter(CDockingStateReader& Stream, QWidget*& CreatedWidget,
 		bool Testing);
 
 	/**
 	 * Restores a dock area.
 	 * \see restoreChildNodes() for details
 	 */
-	bool restoreDockArea(QXmlStreamReader& Stream, QWidget*& CreatedWidget,
+	bool restoreDockArea(CDockingStateReader& Stream, QWidget*& CreatedWidget,
 		bool Testing);
 
 	/**
@@ -771,25 +772,30 @@ void DockContainerWidgetPrivate::saveChildNodesState(QXmlStreamWriter& s, QWidge
 
 
 //============================================================================
-bool DockContainerWidgetPrivate::restoreSplitter(QXmlStreamReader& s,
+bool DockContainerWidgetPrivate::restoreSplitter(CDockingStateReader& s,
 	QWidget*& CreatedWidget, bool Testing)
 {
 	bool Ok;
 	QString OrientationStr = s.attributes().value("Orientation").toString();
-	int Orientation;
-	if (OrientationStr.startsWith("|"))
-	{
-		Orientation = Qt::Horizontal;
-	}
-	else if (OrientationStr.startsWith("-"))
-	{
-		Orientation = Qt::Vertical;
-	}
-	else
+
+	// Check if the orientation string is right
+	if (!OrientationStr.startsWith("|") && !OrientationStr.startsWith("-"))
 	{
 		return false;
 	}
 
+	// The "|" shall indicate a vertical splitter handle which in turn means
+	// a Horizontal orientation of the splitter layout.
+	bool HorizontalSplitter = OrientationStr.startsWith("|");
+	// In version 0 we had a small bug. The "|" indicated a vertical orientation,
+	// but this is wrong, because only the splitter handle is vertical, the
+	// layout of the splitter is a horizontal layout. We fix this here
+	if (s.fileVersion() == 0)
+	{
+		HorizontalSplitter = !HorizontalSplitter;
+	}
+
+	int Orientation = HorizontalSplitter ? Qt::Horizontal : Qt::Vertical;
 	int WidgetCount = s.attributes().value("Count").toInt(&Ok);
 	if (!Ok)
 	{
@@ -878,7 +884,7 @@ bool DockContainerWidgetPrivate::restoreSplitter(QXmlStreamReader& s,
 
 
 //============================================================================
-bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
+bool DockContainerWidgetPrivate::restoreDockArea(CDockingStateReader& s,
 	QWidget*& CreatedWidget, bool Testing)
 {
 	bool Ok;
@@ -959,7 +965,7 @@ bool DockContainerWidgetPrivate::restoreDockArea(QXmlStreamReader& s,
 
 
 //============================================================================
-bool DockContainerWidgetPrivate::restoreChildNodes(QXmlStreamReader& s,
+bool DockContainerWidgetPrivate::restoreChildNodes(CDockingStateReader& s,
 	QWidget*& CreatedWidget, bool Testing)
 {
 	bool Result = true;
@@ -1508,7 +1514,7 @@ void CDockContainerWidget::saveState(QXmlStreamWriter& s) const
 
 
 //============================================================================
-bool CDockContainerWidget::restoreState(QXmlStreamReader& s, bool Testing)
+bool CDockContainerWidget::restoreState(CDockingStateReader& s, bool Testing)
 {
 	bool IsFloating = s.attributes().value("Floating").toInt();
     ADS_PRINT("Restore CDockContainerWidget Floating" << IsFloating);
@@ -1529,7 +1535,7 @@ bool CDockContainerWidget::restoreState(QXmlStreamReader& s, bool Testing)
 			return false;
 		}
 
-		QByteArray GeometryString = s.readElementText(QXmlStreamReader::ErrorOnUnexpectedElement).toLocal8Bit();
+		QByteArray GeometryString = s.readElementText(CDockingStateReader::ErrorOnUnexpectedElement).toLocal8Bit();
 		QByteArray Geometry = QByteArray::fromHex(GeometryString);
 		if (Geometry.isEmpty())
 		{

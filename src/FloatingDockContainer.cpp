@@ -589,7 +589,7 @@ void CFloatingDockContainer::onDockAreaCurrentChanged(int Index)
 }
 
 //============================================================================
-bool CFloatingDockContainer::restoreState(QXmlStreamReader &Stream,
+bool CFloatingDockContainer::restoreState(CDockingStateReader &Stream,
     bool Testing)
 {
 	if (!d->DockContainer->restoreState(Stream, Testing))

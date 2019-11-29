@@ -41,7 +41,7 @@
 #define tFloatingWidgetBase QWidget
 #endif
 
-class QXmlStreamReader;
+class CDockingStateReader;
 
 namespace ads
 {
@@ -58,6 +58,7 @@ struct DockWidgetTabPrivate;
 class CDockAreaTitleBar;
 struct DockAreaTitleBarPrivate;
 class CFloatingWidgetTitleBar;
+class CDockingStateReader;
 
 /**
  * Pure virtual interface for floating widgets
@@ -148,7 +149,7 @@ protected:
 	 * stream but does not restore anything. You can use this check for
 	 * faulty files before you start restoring the state
 	 */
-	bool restoreState(QXmlStreamReader& Stream, bool Testing);
+	bool restoreState(CDockingStateReader& Stream, bool Testing);
 
 	/**
 	 * Call this function to update the window title
