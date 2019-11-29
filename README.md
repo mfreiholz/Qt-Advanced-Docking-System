@@ -2,13 +2,14 @@
 [![Build Status](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System.svg?branch=master)](https://travis-ci.org/githubuser0xFFFF/Qt-Advanced-Docking-System)
 [![Build status](https://ci.appveyor.com/api/projects/status/qcfb3cy932jw9mpy/branch/master?svg=true)](https://ci.appveyor.com/project/githubuser0xFFFF/qt-advanced-docking-system/branch/master)
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](gnu-lgpl-v2.1.md)
-![](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/workflows/.github/workflows/actions_test.yml/badge.svg)
-
-
+![Build status](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/workflows/ubuntu1804-build/badge.svg)
 
 Qt Advanced Docking System lets you create customizable layouts using a full 
 featured window docking system similar to what is found in many popular 
-integrated development environements (IDEs) such as Visual Studio. 
+integrated development environments (IDEs) such as Visual Studio. 
+
+[![Video Advanced Docking](doc/advanced-docking_video.png)](https://www.youtube.com/watch?v=7pdNfafg3Qc)
+
 Everything is implemented with standard Qt functionality without any
 platform specific code. Basic usage of QWidgets and QLayouts and using basic 
 styles as much as possible.
@@ -18,10 +19,6 @@ This work is based on and inspired by the
 from Manuel Freiholz. I did an almost complete rewrite of his code to improve
 code quality, readibility and to fix all issues from the issue tracker 
 of his docking system project.
-
-The following video gives a first impression what is possible with the Advanced Docking System for Qt.
-
-[![Video Advanced Docking](doc/advanced-docking_video.png)](https://www.youtube.com/watch?v=7pdNfafg3Qc)
 
 ## Features
 ### Docking everywhere - no central widget
