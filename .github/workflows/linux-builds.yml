@@ -1,4 +1,4 @@
-name: ubuntu1804-build
+name: linux-builds
 
 on: [push]
 
