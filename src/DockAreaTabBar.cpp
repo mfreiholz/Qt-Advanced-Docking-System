@@ -172,7 +172,7 @@ void CDockAreaTabBar::mouseReleaseEvent(QMouseEvent* ev)
 {
 	if (ev->button() == Qt::LeftButton)
 	{
-        ADS_PRINT("CTabsScrollArea::mouseReleaseEvent");
+        ADS_PRINT("CDockAreaTabBar::mouseReleaseEvent");
 		ev->accept();
 		d->FloatingWidget = nullptr;
 		d->DragStartMousePos = QPoint();

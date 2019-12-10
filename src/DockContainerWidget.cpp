@@ -427,7 +427,6 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 
 	RootSplitter = Splitter;
 	addDockAreasToList(NewDockAreas);
-	FloatingWidget->deleteLater();
 
 	// If we dropped the floating widget into the main dock container that does
 	// not contain any dock widgets, then splitter is invisible and we need to
@@ -470,7 +469,6 @@ void DockContainerWidgetPrivate::dropIntoCenterOfSection(
 		}
 	}
 	TargetArea->setCurrentIndex(NewCurrentIndex);
-	FloatingWidget->deleteLater();
 	TargetArea->updateTitleBarVisibility();
 	return;
 }
@@ -563,7 +561,6 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 		TargetAreaSplitter->setSizes(Sizes);
 	}
 
-	FloatingWidget->deleteLater();
 	addDockAreasToList(NewDockAreas);
 	_this->dumpLayout();
 }
@@ -1390,6 +1387,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	CDockAreaWidget* DockArea = dockAreaAt(TargetPos);
 	auto dropArea = InvalidDockWidgetArea;
 	auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
+	bool Dropped = false;
 
 	if (DockArea)
 	{
@@ -1406,6 +1404,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 		{
             ADS_PRINT("Dock Area Drop Content: " << dropArea);
 			d->dropIntoSection(FloatingWidget, DockArea, dropArea);
+			Dropped = true;
 		}
 	}
 
@@ -1417,16 +1416,22 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 		if (dropArea != InvalidDockWidgetArea)
 		{
 			d->dropIntoContainer(FloatingWidget, dropArea);
+			Dropped = true;
 		}
 	}
 
-	// If we dropped a floating widget with only one single dock widget, then we
-	// drop a top level widget that changes from floating to docked now
-	CDockWidget::emitTopLevelEventForWidget(SingleDroppedDockWidget, false);
+	if (Dropped)
+	{
+		FloatingWidget->deleteLater();
 
-	// If there was a top level widget before the drop, then it is not top
-	// level widget anymore
-	CDockWidget::emitTopLevelEventForWidget(SingleDockWidget, false);
+		// If we dropped a floating widget with only one single dock widget, then we
+		// drop a top level widget that changes from floating to docked now
+		CDockWidget::emitTopLevelEventForWidget(SingleDroppedDockWidget, false);
+
+		// If there was a top level widget before the drop, then it is not top
+		// level widget anymore
+		CDockWidget::emitTopLevelEventForWidget(SingleDockWidget, false);
+	}
 }
 
 
