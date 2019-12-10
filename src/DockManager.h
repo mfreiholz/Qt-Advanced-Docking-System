@@ -440,6 +440,20 @@ signals:
      * tooltips for the DockArea buttons.
      */
     void dockAreaCreated(CDockAreaWidget* DockArea);
+
+    /**
+     * This signal is emitted just before the given dock widget is removed
+     * from the
+     */
+    void dockWidgetAboutToBeRemoved(CDockWidget* DockWidget);
+
+    /**
+     * This signal is emitted if a dock widget has been removed with the remove
+     * removeDockWidget() function.
+     * If this signal is emitted, the dock widget has been removed from the
+     * docking system but it is not deleted yet.
+     */
+    void dockWidgetRemoved(CDockWidget* DockWidget);
 }; // class DockManager
 } // namespace ads
 //-----------------------------------------------------------------------------

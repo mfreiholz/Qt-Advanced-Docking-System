@@ -491,7 +491,15 @@ void CDockAreaWidget::hideAreaWithNoVisibleContent()
 void CDockAreaWidget::onTabCloseRequested(int Index)
 {
     ADS_PRINT("CDockAreaWidget::onTabCloseRequested " << Index);
-	dockWidget(Index)->toggleView(false);
+    auto* DockWidget = dockWidget(Index);
+    if (DockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
+    {
+    	DockWidget->deleteDockWidget();
+    }
+    else
+    {
+    	DockWidget->toggleView(false);
+    }
 }
 
 

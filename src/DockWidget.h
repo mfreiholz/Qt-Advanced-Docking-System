@@ -143,6 +143,7 @@ public:
 		DockWidgetClosable = 0x01,
 		DockWidgetMovable = 0x02,///< this feature is not properly implemented yet and is ignored
 		DockWidgetFloatable = 0x04,
+		DockWidgetDeleteOnClose = 0x08, ///< deletes the dock widget when it is closed
 		AllDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable,
 		NoDockWidgetFeatures = 0x00
 	};
@@ -418,6 +419,12 @@ public slots:
 	 * This function will make a docked widget floating
 	 */
 	void setFloating();
+
+	/**
+	 * This function will delete the dock widget and its content from the
+	 * docking system
+	 */
+	void deleteDockWidget();
 
 signals:
 	/**

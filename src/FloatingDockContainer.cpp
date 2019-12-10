@@ -353,6 +353,13 @@ void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 
 	if (isClosable())
 	{
+		auto TopLevelDockWidget = topLevelDockWidget();
+		if (TopLevelDockWidget && TopLevelDockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
+		{
+			TopLevelDockWidget->deleteDockWidget();
+			this->deleteLater();
+		}
+
 		// In Qt version after 5.9.2 there seems to be a bug that causes the
 		// QWidget::event() function to not receive any NonClientArea mouse
 		// events anymore after a close/show cycle. The bug is reported here:

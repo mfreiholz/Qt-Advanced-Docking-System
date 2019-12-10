@@ -59,6 +59,7 @@ private slots:
 	void on_actionRestoreState_triggered(bool);
 	void savePerspective();
 	void onViewToggled(bool Open);
+	void createEditor();
 };
 
 #endif // MAINWINDOW_H

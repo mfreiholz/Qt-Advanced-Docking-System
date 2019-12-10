@@ -346,7 +346,6 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     {
         // Moving the tab is always allowed because it does not mean moving the
     	// dock widget around
-    	qDebug() << "DraggingTab";
     	d->moveTab(ev);
     }
 

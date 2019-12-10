@@ -737,6 +737,14 @@ void CDockWidget::setFloating()
 }
 
 
+//============================================================================
+void CDockWidget::deleteDockWidget()
+{
+	dockManager()->removeDockWidget(this);
+	deleteLater();
+}
+
+
 } // namespace ads
 
 //---------------------------------------------------------------------------
