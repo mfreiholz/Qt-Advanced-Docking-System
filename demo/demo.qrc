@@ -8,5 +8,6 @@
         <file>images/save.svg</file>
         <file>images/date_range.svg</file>
         <file>images/edit.svg</file>
+        <file>images/grid_on.svg</file>
     </qresource>
 </RCC>

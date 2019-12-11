@@ -52,6 +52,7 @@
 #include <QInputDialog>
 #include <QRubberBand>
 #include <QPlainTextEdit>
+#include <QTableWidget>
 
 #include <QMap>
 #include <QElapsedTimer>
@@ -157,6 +158,45 @@ static ads::CDockWidget* createFileSystemTreeDockWidget(QMenu* ViewMenu)
 	DockWidget->setWidget(w);
 	ViewMenu->addAction(DockWidget->toggleViewAction());
     return DockWidget;
+}
+
+//============================================================================
+static ads::CDockWidget* createEditorWidget(QMenu* ViewMenu)
+{
+	static int EditorCount = 0;
+	QPlainTextEdit* w = new QPlainTextEdit();
+	w->setPlaceholderText("This is an editor. If you close the editor, it will be "
+		"deleted. Enter your text here.");
+	w->setStyleSheet("border: none");
+	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Editor %1").arg(EditorCount++));
+	DockWidget->setWidget(w);
+	DockWidget->setIcon(svgIcon(":/adsdemo/images/edit.svg"));
+	ViewMenu->addAction(DockWidget->toggleViewAction());
+	return DockWidget;
+}
+
+//============================================================================
+static ads::CDockWidget* createTableWidget(QMenu* ViewMenu)
+{
+   static int TableCount = 0;
+   QTableWidget* w = new QTableWidget();
+   ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Table %1").arg(TableCount++));
+   static int colCount = 5;
+   static int rowCount = 30;
+   w->setColumnCount(colCount);
+   w->setRowCount(rowCount);
+   for (int col = 0; col < colCount; ++col)
+   {
+      w->setHorizontalHeaderItem(col, new QTableWidgetItem(QString("Col %1").arg(col+1)));
+      for (int row = 0; row < rowCount; ++row)
+      {
+         w->setItem(row, col, new QTableWidgetItem(QString("T %1-%2").arg(row + 1).arg(col+1)));
+      }
+   }
+   DockWidget->setWidget(w);
+   DockWidget->setIcon(svgIcon(":/adsdemo/images/grid_on.svg"));
+   ViewMenu->addAction(DockWidget->toggleViewAction());
+   return DockWidget;
 }
 
 
@@ -277,6 +317,11 @@ void MainWindowPrivate::createActions()
 	a->setToolTip("Creates floating dynamic dockable editor windows that are deleted on close");
 	a->setIcon(svgIcon(":/adsdemo/images/note_add.svg"));
 	_this->connect(a, SIGNAL(triggered()), SLOT(createEditor()));
+
+	a = ui.toolBar->addAction("Create Table");
+	a->setToolTip("Creates floating dynamic dockable table with millions of entries");
+	a->setIcon(svgIcon(":/adsdemo/images/grid_on.svg"));
+	_this->connect(a, SIGNAL(triggered()), SLOT(createTable()));
 }
 
 
@@ -426,19 +471,19 @@ void CMainWindow::onViewToggled(bool Open)
 //============================================================================
 void CMainWindow::createEditor()
 {
-	static int EditorCount = 0;
-	QPlainTextEdit* w = new QPlainTextEdit();
-	w->setPlaceholderText("This is an editor. If you close the editor, it will be "
-		"deleted. Enter your text here.");
-	w->setStyleSheet("border: none");
-	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Editor %1").arg(EditorCount++));
-	DockWidget->setWidget(w);
-	DockWidget->setToggleViewActionMode(ads::CDockWidget::ActionModeShow);
-	DockWidget->setIcon(svgIcon(":/adsdemo/images/edit.svg"));
+	auto DockWidget = createEditorWidget(d->ui.menuView);
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetDeleteOnClose, true);
-	d->ui.menuView->addAction(DockWidget->toggleViewAction());
-
 	auto FloatingWidget = d->DockManager->addDockWidgetFloating(DockWidget);
     FloatingWidget->move(QPoint(20, 20));
+}
+
+
+//============================================================================
+void CMainWindow::createTable()
+{
+	auto DockWidget = createTableWidget(d->ui.menuView);
+	DockWidget->setFeature(ads::CDockWidget::DockWidgetDeleteOnClose, true);
+	auto FloatingWidget = d->DockManager->addDockWidgetFloating(DockWidget);
+    FloatingWidget->move(QPoint(40, 40));
 }
 

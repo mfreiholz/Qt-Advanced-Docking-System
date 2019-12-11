@@ -60,6 +60,7 @@ private slots:
 	void savePerspective();
 	void onViewToggled(bool Open);
 	void createEditor();
+	void createTable();
 };
 
 #endif // MAINWINDOW_H
