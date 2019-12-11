@@ -799,9 +799,19 @@ QAbstractButton* CDockAreaWidget::titleBarButton(TitleBarButton which) const
 //============================================================================
 void CDockAreaWidget::closeArea()
 {
-	for (auto DockWidget : openedDockWidgets())
+	// If there is only one single dock widget and this widget has the
+	// DeleteOnClose feature, then we delete the dock widget now
+	auto OpenDockWidgets = openedDockWidgets();
+	if (OpenDockWidgets.count() == 1 && OpenDockWidgets[0]->features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
 	{
-		DockWidget->toggleView(false);
+		OpenDockWidgets[0]->deleteDockWidget();
+	}
+	else
+	{
+		for (auto DockWidget : openedDockWidgets())
+		{
+			DockWidget->toggleView(false);
+		}
 	}
 }
 
