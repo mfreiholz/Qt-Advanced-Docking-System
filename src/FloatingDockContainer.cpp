@@ -334,6 +334,13 @@ void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 
 	case DraggingFloatingWidget:
 		d->updateDropOverlays(QCursor::pos());
+#ifdef Q_OS_MACOS
+		// In OSX when hiding the DockAreaOverlay the application would set
+		// the main window as the active window for some reason. This fixes
+		// that by resetting the active window to the floating widget after
+		// updating the overlays.
+		QApplication::setActiveWindow(this);
+#endif
 		break;
 	default:
 		break;
