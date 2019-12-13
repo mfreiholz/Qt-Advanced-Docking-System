@@ -260,11 +260,6 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager *DockManager) :
 #endif
 
 	DockManager->registerFloatingWidget(this);
-
-	// We install an event filter to detect mouse release events because we
-	// do not receive mouse release event if the floating widget is behind
-	// the drop overlay cross
-	qApp->installEventFilter(this);
 }
 
 //============================================================================
@@ -493,20 +488,6 @@ bool CFloatingDockContainer::event(QEvent *e)
 	return QWidget::event(e);
 }
 
-//============================================================================
-bool CFloatingDockContainer::eventFilter(QObject *watched, QEvent *event)
-{
-	Q_UNUSED(watched);
-	if (event->type() == QEvent::MouseButtonRelease
-	    && d->isState(DraggingFloatingWidget))
-	{
-		ADS_PRINT("FloatingWidget::eventFilter QEvent::MouseButtonRelease");
-		finishDragging();
-		d->titleMouseReleaseEvent();
-	}
-
-	return false;
-}
 
 //============================================================================
 void CFloatingDockContainer::startFloating(const QPoint &DragStartMousePos,
@@ -640,6 +621,7 @@ void CFloatingDockContainer::finishDragging()
        d->MouseEventHandler = nullptr;
    }
 #endif
+   d->titleMouseReleaseEvent();
 }
 
 } // namespace ads

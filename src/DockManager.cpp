@@ -205,6 +205,8 @@ bool DockManagerPrivate::checkFormat(const QByteArray &state, int version)
 bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int version,
 	bool Testing)
 {
+	Q_UNUSED(version);
+
     if (state.isEmpty())
     {
         return false;

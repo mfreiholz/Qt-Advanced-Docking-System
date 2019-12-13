@@ -39,7 +39,6 @@ struct FloatingOverlayPrivate
 	CDockContainerWidget *DropContainer = nullptr;
 	qreal WindowOpacity;
 	bool Hidden = false;
-	bool IgnoreMouseEvents = false;
 	QPixmap ContentPreviewPixmap;
 
 
@@ -184,10 +183,6 @@ CFloatingOverlay::CFloatingOverlay(QWidget* Content, QWidget* parent) :
 #endif
 
 	setWindowOpacity(0.6);
-	// We install an event filter to detect mouse release events because we
-	// do not receive mouse release event if the floating widget is behind
-	// the drop overlay cross
-	qApp->installEventFilter(this);
 
 	// Create a static image of the widget that should get undocked
 	// This is like some kind preview image like it is uses in drag and drop
@@ -265,55 +260,44 @@ void CFloatingOverlay::moveEvent(QMoveEvent *event)
 
 
 //============================================================================
-bool CFloatingOverlay::eventFilter(QObject *watched, QEvent *event)
+void CFloatingOverlay::finishDragging()
 {
-	Q_UNUSED(watched);
-	if (event->type() == QEvent::MouseButtonRelease && !d->IgnoreMouseEvents)
+	ADS_PRINT("CFloatingOverlay::finishDragging");
+	auto DockDropArea = d->DockManager->dockAreaOverlay()->dropAreaUnderCursor();
+	auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
+	bool DropPossible = (DockDropArea != InvalidDockWidgetArea) || (ContainerDropArea != InvalidDockWidgetArea);
+	if (d->DropContainer && DropPossible)
 	{
-		ADS_PRINT("FloatingWidget::eventFilter QEvent::MouseButtonRelease");
-
-		auto DockDropArea = d->DockManager->dockAreaOverlay()->dropAreaUnderCursor();
-		auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
-		bool DropPossible = (DockDropArea != InvalidDockWidgetArea) || (ContainerDropArea != InvalidDockWidgetArea);
-		if (d->DropContainer && DropPossible)
+		d->DropContainer->dropWidget(d->Content, QCursor::pos());
+	}
+	else
+	{
+		CDockWidget* DockWidget = qobject_cast<CDockWidget*>(d->Content);
+		CFloatingDockContainer* FloatingWidget;
+		if (DockWidget)
 		{
-			d->DropContainer->dropWidget(d->Content, QCursor::pos());
+			FloatingWidget = new CFloatingDockContainer(DockWidget);
 		}
 		else
 		{
-			CDockWidget* DockWidget = qobject_cast<CDockWidget*>(d->Content);
-			CFloatingDockContainer* FloatingWidget;
-			if (DockWidget)
-			{
-				FloatingWidget = new CFloatingDockContainer(DockWidget);
-			}
-			else
-			{
-				CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(d->Content);
-				FloatingWidget = new CFloatingDockContainer(DockArea);
-			}
-			FloatingWidget->setGeometry(this->geometry());
-			FloatingWidget->show();
-			if (!CDockManager::configFlags().testFlag(CDockManager::DragPreviewHasWindowFrame))
-			{
-				QApplication::processEvents();
-				int FrameHeight = FloatingWidget->frameGeometry().height() - FloatingWidget->geometry().height();
-				QRect FixedGeometry = this->geometry();
-				FixedGeometry.adjust(0, FrameHeight, 0, 0);
-				FloatingWidget->setGeometry(FixedGeometry);
-			}
+			CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(d->Content);
+			FloatingWidget = new CFloatingDockContainer(DockArea);
 		}
-
-		this->close();
-		d->DockManager->containerOverlay()->hideOverlay();
-		d->DockManager->dockAreaOverlay()->hideOverlay();
-		// Because we use the event filter, we receive multiple mouse release
-		// events. To prevent multiple code execution, we ignore all mouse
-		// events after the first mouse event
-		d->IgnoreMouseEvents = true;
+		FloatingWidget->setGeometry(this->geometry());
+		FloatingWidget->show();
+		if (!CDockManager::configFlags().testFlag(CDockManager::DragPreviewHasWindowFrame))
+		{
+			QApplication::processEvents();
+			int FrameHeight = FloatingWidget->frameGeometry().height() - FloatingWidget->geometry().height();
+			QRect FixedGeometry = this->geometry();
+			FixedGeometry.adjust(0, FrameHeight, 0, 0);
+			FloatingWidget->setGeometry(FixedGeometry);
+		}
 	}
 
-	return false;
+	this->close();
+	d->DockManager->containerOverlay()->hideOverlay();
+	d->DockManager->dockAreaOverlay()->hideOverlay();
 }
 
 

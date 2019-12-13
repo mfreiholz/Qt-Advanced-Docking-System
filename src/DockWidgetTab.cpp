@@ -311,14 +311,27 @@ void CDockWidgetTab::mousePressEvent(QMouseEvent* ev)
 //============================================================================
 void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 {
-	// End of tab moving, emit signal
-	if (d->isDraggingState(DraggingTab) && d->DockArea)
-	{
-		emit moved(ev->globalPos());
-	}
-
+	auto CurrentDragState = d->DragState;
     d->DragStartMousePosition = QPoint();
     d->DragState = DraggingInactive;
+
+    switch (CurrentDragState)
+    {
+    case DraggingTab:
+		// End of tab moving, emit signal
+		if (d->DockArea)
+		{
+			emit moved(ev->globalPos());
+		}
+    	break;
+
+    case DraggingFloatingWidget:
+    	 d->FloatingWidget->finishDragging();
+    	 break;
+
+    default:; // do nothing
+    }
+
 	Super::mouseReleaseEvent(ev);
 }
 

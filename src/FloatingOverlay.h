@@ -31,7 +31,6 @@ private:
 
 protected:
 	virtual void moveEvent(QMoveEvent *event) override;
-	virtual bool eventFilter(QObject *watched, QEvent *event) override;
 	virtual void paintEvent(QPaintEvent *e) override;
 
 	/**
@@ -57,6 +56,11 @@ public:
 	 * startFloating() was called
 	 */
 	virtual void moveFloating() override;
+
+	/**
+	 * Finishes dragging
+	 */
+	virtual void finishDragging() override;
 };
 
 

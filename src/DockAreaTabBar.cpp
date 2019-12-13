@@ -174,8 +174,13 @@ void CDockAreaTabBar::mouseReleaseEvent(QMouseEvent* ev)
 	{
         ADS_PRINT("CDockAreaTabBar::mouseReleaseEvent");
 		ev->accept();
-		d->FloatingWidget = nullptr;
 		d->DragStartMousePos = QPoint();
+		if (d->FloatingWidget)
+		{
+			auto FloatingWidget = d->FloatingWidget;
+			d->FloatingWidget = nullptr;
+			FloatingWidget->finishDragging();
+		}
 		return;
 	}
 	QScrollArea::mouseReleaseEvent(ev);

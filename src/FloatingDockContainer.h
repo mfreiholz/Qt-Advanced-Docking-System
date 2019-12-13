@@ -74,6 +74,11 @@ public:
 	 * startFloating() was called
 	 */
 	virtual void moveFloating() = 0;
+
+	/**
+	 * Tells the widget that to finish dragging if the mouse is released
+	 */
+	virtual void finishDragging() = 0;
 };
 
 
@@ -110,8 +115,8 @@ protected:
 	 * Use moveToGlobalPos() to move the widget to a new position
 	 * depending on the start position given in Pos parameter
 	 */
-	void startFloating(const QPoint& DragStartMousePos, const QSize& Size,
-        eDragState DragState, QWidget* MouseEventHandler);
+	virtual void startFloating(const QPoint& DragStartMousePos, const QSize& Size,
+        eDragState DragState, QWidget* MouseEventHandler) override;
 
 	/**
 	 * Call this function to start dragging the floating widget
@@ -126,7 +131,7 @@ protected:
 	 * Call this function if you explicitly want to signal that dragging has
 	 * finished
 	 */
-	void finishDragging();
+	virtual void finishDragging() override;
 
 	/**
 	 * Call this function if you just want to initialize the position
@@ -164,7 +169,6 @@ protected: // reimplements QWidget
 	virtual void closeEvent(QCloseEvent *event) override;
 	virtual void hideEvent(QHideEvent *event) override;
 	virtual void showEvent(QShowEvent *event) override;
-	virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
 public:
 	using Super = QWidget;
