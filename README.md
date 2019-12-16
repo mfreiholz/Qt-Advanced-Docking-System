@@ -82,10 +82,16 @@ The drag preview widget can be configured by a number of global dock manager fla
 The best way to test non-opaque undocking is to set the standard flags: `CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig)`.
 
 ### Tab-menu for easy handling of many tabbed dock widgets
-Tabs are a good way to quickly switch between dockwidgets in a dockarea. However, if the number of dockwidgets is too large, this may affect the usability of the tab bar. To keep track in this situation, you can use the tab menu. The menu allows you to quickly select the dockwidget you want to activate from a drop down menu.
+Tabs are a good way to quickly switch between dockwidgets in a dockarea. However, if the number of dockwidgets in a dockarea is too large, this may affect the usability of the tab bar. To keep track in this situation, you can use the tab menu. The menu allows you to quickly select the dockwidget you want to activate from a drop down menu.
 
 ### Many different ways to detach dock widgets
+You can detach dock widgets and also dock areas in the following ways:
+- by dragging the dock widget tab or the dock area title bar
+- by double clicking the tab or title bar
+- by using the detach menu entry from the tab and title bar drop down menu
+
 ### Supports deletion of dynamically created dock widgets
+Normally clicking the close button of a dock widget will just hide the widget and the user can show it again using the toggleView() action of the dock widget. This is meant for user interfaces with a static amount of widgets. But the advanced docking system also supports dynamic dock widgets that will get deleted on close. If you set the dock widget flag `DockWidgetDeleteOnClose` for a certain dock widget, then it will be deleted as soon as you close this dock widget. This enables the implementation of user interfaces with dynamically created editors, like in word processing applications or source code development tools.
 
 ## Tested Compatible Environments
 ### Windows
