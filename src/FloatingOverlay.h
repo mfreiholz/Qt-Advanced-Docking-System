@@ -32,6 +32,9 @@ private:
 	FloatingOverlayPrivate* d;
 	friend class FloatingOverlayPrivate;
 
+private slots:
+	void onApplicationStateChanged(Qt::ApplicationState state);
+
 protected:
 	/**
 	 * Updates the drop overlays
@@ -42,6 +45,8 @@ protected:
 	 * Cares about painting the
 	 */
 	virtual void paintEvent(QPaintEvent *e) override;
+
+	virtual void keyPressEvent(QKeyEvent *event) override;
 
 	/**
 	 * The content is a DockArea or a DockWidget
@@ -84,6 +89,13 @@ public: // implements IFloatingWidget -----------------------------------------
 	 * of the assigned Content widget
 	 */
 	virtual void finishDragging() override;
+
+signals:
+	/**
+	 * This signal is emitted, if dragging has been canceled by escape key
+	 * or by active application switching via task manager
+	 */
+	void draggingCanceled();
 };
 
 

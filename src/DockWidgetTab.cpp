@@ -151,7 +151,12 @@ struct DockWidgetTabPrivate
 		}
 		else
 		{
-			return new CFloatingOverlay(Widget);
+			auto w = new CFloatingOverlay(Widget);
+			_this->connect(w, &CFloatingOverlay::draggingCanceled, [=]()
+			{
+				DragState = DraggingInactive;
+			});
+			return w;
 		}
 	}
 };
@@ -246,6 +251,7 @@ bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
 	IFloatingWidget* FloatingWidget = nullptr;
 	bool OpaqueUndocking = CDockManager::configFlags().testFlag(CDockManager::OpaqueUndocking) ||
 		(DraggingFloatingWidget != DraggingState);
+
 	// If section widget has multiple tabs, we take only one tab
 	// If it has only one single tab, we can move the complete
 	// dock area into floating widget

@@ -201,8 +201,9 @@ void CDockAreaTabBar::mouseReleaseEvent(QMouseEvent* ev)
 void CDockAreaTabBar::mouseMoveEvent(QMouseEvent* ev)
 {
 	QScrollArea::mouseMoveEvent(ev);
-	if (ev->buttons() != Qt::LeftButton)
+	if (!(ev->buttons() & Qt::LeftButton) || d->isDraggingState(DraggingInactive))
 	{
+		d->DragState = DraggingInactive;
 		return;
 	}
 
@@ -276,7 +277,12 @@ IFloatingWidget* CDockAreaTabBar::makeAreaFloating(const QPoint& Offset, eDragSt
 	}
 	else
 	{
-		FloatingWidget = new CFloatingOverlay(d->DockArea);
+		auto w = new CFloatingOverlay(d->DockArea);
+		connect(w, &CFloatingOverlay::draggingCanceled, [=]()
+		{
+			d->DragState = DraggingInactive;
+		});
+		FloatingWidget = w;
 	}
 
     FloatingWidget->startFloating(Offset, Size, DragState, nullptr);

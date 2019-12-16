@@ -15,6 +15,7 @@
 #include <QEvent>
 #include <QApplication>
 #include <QPainter>
+#include <QKeyEvent>
 
 #include "DockWidget.h"
 #include "DockAreaWidget.h"
@@ -52,6 +53,17 @@ struct FloatingOverlayPrivate
 	{
 		Hidden = Value;
 		_this->update();
+	}
+
+	/**
+	 * Cancel dragging and emit the draggingCanceled event
+	 */
+	void cancelDragging()
+	{
+		emit _this->draggingCanceled();
+		DockManager->containerOverlay()->hideOverlay();
+		DockManager->dockAreaOverlay()->hideOverlay();
+		_this->close();
 	}
 };
 // struct LedArrayPanelPrivate
@@ -192,6 +204,9 @@ CFloatingOverlay::CFloatingOverlay(QWidget* Content, QWidget* parent) :
 		d->ContentPreviewPixmap = QPixmap(Content->size());
 		Content->render(&d->ContentPreviewPixmap);
 	}
+
+	connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)),
+		SLOT(onApplicationStateChanged(Qt::ApplicationState)));
 }
 
 
@@ -333,6 +348,30 @@ void CFloatingOverlay::paintEvent(QPaintEvent* event)
 		painter.drawRect(rect().adjusted(0, 0, -1, -1));
 	}
 }
+
+
+//============================================================================
+void CFloatingOverlay::keyPressEvent(QKeyEvent *event)
+{
+	Super::keyPressEvent(event);
+	if (event->key() == Qt::Key_Escape)
+	{
+		d->cancelDragging();
+	}
+}
+
+
+//============================================================================
+void CFloatingOverlay::onApplicationStateChanged(Qt::ApplicationState state)
+{
+	if (state != Qt::ApplicationActive)
+	{
+		disconnect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)),
+			this, SLOT(onApplicationStateChanged(Qt::ApplicationState)));
+		d->cancelDragging();
+	}
+}
+
 
 
 
