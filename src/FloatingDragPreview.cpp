@@ -206,6 +206,13 @@ CFloatingDragPreview::CFloatingDragPreview(QWidget* Content, QWidget* parent) :
 
 	connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)),
 		SLOT(onApplicationStateChanged(Qt::ApplicationState)));
+
+#ifdef Q_OS_LINUX
+    // In Windows this widget directly receives the escape key press events
+    // in Linux we need to install an event filter for the given Content
+    // widget to receive the escape key press
+    Content->installEventFilter(this);
+#endif
 }
 
 
@@ -369,6 +376,23 @@ void CFloatingDragPreview::onApplicationStateChanged(Qt::ApplicationState state)
 			this, SLOT(onApplicationStateChanged(Qt::ApplicationState)));
 		d->cancelDragging();
 	}
+}
+
+
+//============================================================================
+bool CFloatingDragPreview::eventFilter(QObject *watched, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress)
+    {
+        QKeyEvent* e = static_cast<QKeyEvent*>(event);
+        if (e->key() == Qt::Key_Escape)
+        {
+            d->Content->removeEventFilter(this);
+            d->cancelDragging();
+        }
+    }
+
+    return false;
 }
 
 

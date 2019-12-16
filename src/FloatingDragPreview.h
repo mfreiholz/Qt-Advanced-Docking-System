@@ -78,6 +78,12 @@ public:
 	 */
 	~CFloatingDragPreview();
 
+    /**
+     * We filter the events of the assigned content widget to receive
+     * escape key presses for canceling the drag operation
+     */
+    virtual bool eventFilter(QObject *watched, QEvent *event) override;
+
 
 public: // implements IFloatingWidget -----------------------------------------
 	virtual void startFloating(const QPoint& DragStartMousePos, const QSize& Size,
