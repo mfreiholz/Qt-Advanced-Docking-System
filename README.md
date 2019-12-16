@@ -69,6 +69,8 @@ main window layout.
 ![Perspective](doc/perspectives_dark.png)
 
 ### Opaque and non-opaque splitter resizing
+The advanced docking system uses standard QSplitters as resize separators and thus supports opaque and non-opaque resizing functionality of QSplitter. In some rare cases, for very complex widgets or on slow machines resizing via separator on the fly may cause flicking and glaring of rendered content inside a widget. The global CDockManager flag `OpaqueSplitterResize` configures the resizing behaviour of the splitters. If this flag is set, then widgets are resized dynamically (opaquely) while interactively moving the splitters. If this flag is cleared, the widget resizing is deferred until the mouse button is released - this is some kind of lazy resizing separator.
+
 ### Opaque and non-opaque undocking
 ### Tab-menu for easy handling of many tabbed dock widgets
 ### Many different ways to detach dock widgets
