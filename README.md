@@ -20,6 +20,12 @@ code quality, readibility and to fix all issues from the issue tracker
 of his docking system project.
 
 ## Features
+### Overview
+- [Docking everywhere - no central widget](#docking-everywhere---no-central-widget)
+- [Docking inside floating windows](#docking-inside-floating-windows)
+- [Grouped dragging](#grouped-dragging)
+- [Perspectives for fast switching of the complete main window layout](#perspectives-for-fast-switching-of-the-complete-main-window-layout)
+
 ### Docking everywhere - no central widget
 There is no central widget like in the Qt docking system. You can dock on every
 border of the main window or you can dock into each dock area - so you are
