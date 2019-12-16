@@ -82,6 +82,8 @@ The drag preview widget can be configured by a number of global dock manager fla
 The best way to test non-opaque undocking is to set the standard flags: `CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig)`.
 
 ### Tab-menu for easy handling of many tabbed dock widgets
+Tabs are a good way to quickly switch between dockwidgets in a dockarea. However, if the number of dockwidgets is too large, this may affect the usability of the tab bar. To keep track in this situation, you can use the tab menu. The menu allows you to quickly select the dockwidget you want to activate from a drop down menu.
+
 ### Many different ways to detach dock widgets
 ### Supports deletion of dynamically created dock widgets
 
