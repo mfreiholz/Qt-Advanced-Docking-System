@@ -382,6 +382,7 @@ void CFloatingDragPreview::onApplicationStateChanged(Qt::ApplicationState state)
 //============================================================================
 bool CFloatingDragPreview::eventFilter(QObject *watched, QEvent *event)
 {
+	Q_UNUSED(watched);
     if (event->type() == QEvent::KeyPress)
     {
         QKeyEvent* e = static_cast<QKeyEvent*>(event);
