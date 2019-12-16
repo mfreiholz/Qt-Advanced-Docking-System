@@ -27,6 +27,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <FloatingDragPreview.h>
 #include "DockAreaTabBar.h"
 
 #include <QMouseEvent>
@@ -36,7 +37,6 @@
 #include <QApplication>
 
 #include "FloatingDockContainer.h"
-#include "FloatingOverlay.h"
 #include "DockAreaWidget.h"
 #include "DockOverlay.h"
 #include "DockManager.h"
@@ -277,8 +277,8 @@ IFloatingWidget* CDockAreaTabBar::makeAreaFloating(const QPoint& Offset, eDragSt
 	}
 	else
 	{
-		auto w = new CFloatingOverlay(d->DockArea);
-		connect(w, &CFloatingOverlay::draggingCanceled, [=]()
+		auto w = new CFloatingDragPreview(d->DockArea);
+		connect(w, &CFloatingDragPreview::draggingCanceled, [=]()
 		{
 			d->DragState = DraggingInactive;
 		});

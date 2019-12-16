@@ -1,10 +1,10 @@
-#ifndef FloatingOverlayH
-#define FloatingOverlayH
+#ifndef FloatingDragPreviewH
+#define FloatingDragPreviewH
 //============================================================================
-/// \file   FloatingOverlay.h
+/// \file   FloatingDragPreview.h
 /// \author Uwe Kindler
 /// \date   26.11.2019
-/// \brief  Declaration of CFloatingOverlay
+/// \brief  Declaration of CFloatingDragPreview
 //============================================================================
 
 //============================================================================
@@ -17,7 +17,7 @@ namespace ads
 {
 class CDockWidget;
 class CDockAreaWidget;
-struct FloatingOverlayPrivate;
+struct FloatingDragPreviewPrivate;
 
 /**
  * A floating overlay is a temporary floating widget that is just used to
@@ -25,14 +25,17 @@ struct FloatingOverlayPrivate;
  * This widget is used as a placeholder for drag operations for non-opaque
  * docking
  */
-class CFloatingOverlay : public QWidget, public IFloatingWidget
+class CFloatingDragPreview : public QWidget, public IFloatingWidget
 {
 	Q_OBJECT
 private:
-	FloatingOverlayPrivate* d;
-	friend class FloatingOverlayPrivate;
+	FloatingDragPreviewPrivate* d;
+	friend class FloatingDragPreviewPrivate;
 
 private slots:
+	/**
+	 * Cancel non opaque undocking if application becomes inactive
+	 */
 	void onApplicationStateChanged(Qt::ApplicationState state);
 
 protected:
@@ -46,12 +49,15 @@ protected:
 	 */
 	virtual void paintEvent(QPaintEvent *e) override;
 
+	/**
+	 * Cancel non opaque undocking with escape key
+	 */
 	virtual void keyPressEvent(QKeyEvent *event) override;
 
 	/**
 	 * The content is a DockArea or a DockWidget
 	 */
-	CFloatingOverlay(QWidget* Content, QWidget* parent);
+	CFloatingDragPreview(QWidget* Content, QWidget* parent);
 
 public:
 	using Super = QWidget;
@@ -59,18 +65,18 @@ public:
 	/**
 	 * Creates an instance for undocking the DockWidget in Content parameter
 	 */
-	CFloatingOverlay(CDockWidget* Content);
+	CFloatingDragPreview(CDockWidget* Content);
 
 	/**
 	 * Creates an instance for undocking the DockArea given in Content
 	 * parameters
 	 */
-	CFloatingOverlay(CDockAreaWidget* Content);
+	CFloatingDragPreview(CDockAreaWidget* Content);
 
 	/**
 	 * Delete private data
 	 */
-	~CFloatingOverlay();
+	~CFloatingDragPreview();
 
 
 public: // implements IFloatingWidget -----------------------------------------
@@ -102,5 +108,5 @@ signals:
 } // namespace ads
 
 //---------------------------------------------------------------------------
-#endif // FloatingOverlayH
+#endif // FloatingDragPreviewH
 

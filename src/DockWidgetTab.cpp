@@ -28,6 +28,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <FloatingDragPreview.h>
 #include "ElidingLabel.h"
 #include "DockWidgetTab.h"
 
@@ -46,7 +47,6 @@
 #include "DockWidget.h"
 #include "DockAreaWidget.h"
 #include "FloatingDockContainer.h"
-#include "FloatingOverlay.h"
 #include "DockOverlay.h"
 #include "DockManager.h"
 #include "IconProvider.h"
@@ -151,8 +151,8 @@ struct DockWidgetTabPrivate
 		}
 		else
 		{
-			auto w = new CFloatingOverlay(Widget);
-			_this->connect(w, &CFloatingOverlay::draggingCanceled, [=]()
+			auto w = new CFloatingDragPreview(Widget);
+			_this->connect(w, &CFloatingDragPreview::draggingCanceled, [=]()
 			{
 				DragState = DraggingInactive;
 			});
