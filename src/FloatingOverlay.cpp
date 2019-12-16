@@ -316,7 +316,7 @@ void CFloatingOverlay::paintEvent(QPaintEvent* event)
 		painter.drawPixmap(QPoint(0, 0), d->ContentPreviewPixmap);
 	}
 
-	// If we do not have a window frame then we paint a QRubberBadn like
+	// If we do not have a window frame then we paint a QRubberBand like
 	// frameless window
 	if (!CDockManager::configFlags().testFlag(CDockManager::DragPreviewHasWindowFrame))
 	{

@@ -21,7 +21,9 @@ struct FloatingOverlayPrivate;
 
 /**
  * A floating overlay is a temporary floating widget that is just used to
- * indicate the floating widget movement
+ * indicate the floating widget movement.
+ * This widget is used as a placeholder for drag operations for non-opaque
+ * docking
  */
 class CFloatingOverlay : public QWidget, public IFloatingWidget
 {
@@ -30,7 +32,14 @@ private:
 	friend class FloatingOverlayPrivate;
 
 protected:
+	/**
+	 * Updates the drop overlays
+	 */
 	virtual void moveEvent(QMoveEvent *event) override;
+
+	/**
+	 * Cares about painting the
+	 */
 	virtual void paintEvent(QPaintEvent *e) override;
 
 	/**
@@ -40,7 +49,16 @@ protected:
 
 public:
 	using Super = QWidget;
+
+	/**
+	 * Creates an instance for undocking the DockWidget in Content parameter
+	 */
 	CFloatingOverlay(CDockWidget* Content);
+
+	/**
+	 * Creates an instance for undocking the DockArea given in Content
+	 * parameters
+	 */
 	CFloatingOverlay(CDockAreaWidget* Content);
 
 	/**
@@ -48,6 +66,8 @@ public:
 	 */
 	~CFloatingOverlay();
 
+
+public: // implements IFloatingWidget -----------------------------------------
 	virtual void startFloating(const QPoint& DragStartMousePos, const QSize& Size,
         eDragState DragState, QWidget* MouseEventHandler) override;
 
@@ -58,7 +78,9 @@ public:
 	virtual void moveFloating() override;
 
 	/**
-	 * Finishes dragging
+	 * Finishes dragging.
+	 * Hides the dock overlays and executes the real undocking and docking
+	 * of the assigned Content widget
 	 */
 	virtual void finishDragging() override;
 };

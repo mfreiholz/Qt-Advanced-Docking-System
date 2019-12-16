@@ -384,7 +384,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
     // uncomment the follwing line if you want to use non opaque undocking and splitter
     // moevements
-    // CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig);
+    CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig);
 
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
