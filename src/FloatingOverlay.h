@@ -27,6 +27,7 @@ struct FloatingOverlayPrivate;
  */
 class CFloatingOverlay : public QWidget, public IFloatingWidget
 {
+	Q_OBJECT
 private:
 	FloatingOverlayPrivate* d;
 	friend class FloatingOverlayPrivate;

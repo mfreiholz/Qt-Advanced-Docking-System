@@ -60,6 +60,7 @@ struct DockAreaTabBarPrivate
 	QWidget* TabsContainerWidget;
 	QBoxLayout* TabsLayout;
 	int CurrentIndex = -1;
+	eDragState DragState = DraggingInactive;
 
 	/**
 	 * Private data constructor
@@ -71,6 +72,14 @@ struct DockAreaTabBarPrivate
 	 * The function reassigns the stylesheet to update the tabs
 	 */
 	void updateTabs();
+
+	/**
+	 * Test function for current drag state
+	 */
+	bool isDraggingState(eDragState dragState) const
+	{
+		return this->DragState == dragState;
+	}
 };
 // struct DockAreaTabBarPrivate
 
@@ -161,6 +170,7 @@ void CDockAreaTabBar::mousePressEvent(QMouseEvent* ev)
 	{
 		ev->accept();
 		d->DragStartMousePos = ev->pos();
+		d->DragState = DraggingMousePressed;
 		return;
 	}
 	QScrollArea::mousePressEvent(ev);
@@ -174,12 +184,12 @@ void CDockAreaTabBar::mouseReleaseEvent(QMouseEvent* ev)
 	{
         ADS_PRINT("CDockAreaTabBar::mouseReleaseEvent");
 		ev->accept();
+		auto CurrentDragState = d->DragState;
 		d->DragStartMousePos = QPoint();
-		if (d->FloatingWidget)
+		d->DragState = DraggingInactive;
+		if (DraggingFloatingWidget == CurrentDragState)
 		{
-			auto FloatingWidget = d->FloatingWidget;
-			d->FloatingWidget = nullptr;
-			FloatingWidget->finishDragging();
+			d->FloatingWidget->finishDragging();
 		}
 		return;
 	}
@@ -196,11 +206,12 @@ void CDockAreaTabBar::mouseMoveEvent(QMouseEvent* ev)
 		return;
 	}
 
-	if (d->FloatingWidget)
-	{
-		d->FloatingWidget->moveFloating();
-		return;
-	}
+    // move floating window
+    if (d->isDraggingState(DraggingFloatingWidget))
+    {
+        d->FloatingWidget->moveFloating();
+        return;
+    }
 
 	// If this is the last dock area in a dock container it does not make
 	// sense to move it to a new floating widget and leave this one
@@ -254,6 +265,7 @@ void CDockAreaTabBar::mouseDoubleClickEvent(QMouseEvent *event)
 IFloatingWidget* CDockAreaTabBar::makeAreaFloating(const QPoint& Offset, eDragState DragState)
 {
 	QSize Size = d->DockArea->size();
+	d->DragState = DragState;
 	bool OpaqueUndocking = CDockManager::configFlags().testFlag(CDockManager::OpaqueUndocking) ||
 		(DraggingFloatingWidget != DragState);
 	CFloatingDockContainer* FloatingDockContainer = nullptr;
