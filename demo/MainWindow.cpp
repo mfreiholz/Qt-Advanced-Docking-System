@@ -383,7 +383,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
     // CDockManager::setConfigFlag(CDockManager::RetainTabSizeWhenCloseButtonHidden, true);
 
     // uncomment the follwing line if you want to use non opaque undocking and splitter
-    // moevements
+    // movements
     // CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig);
 
 	// Now create the dock manager and its content
