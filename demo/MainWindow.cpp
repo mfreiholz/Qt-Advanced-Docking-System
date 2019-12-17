@@ -382,14 +382,14 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// not change if the visibility of the close button changes
     // CDockManager::setConfigFlag(CDockManager::RetainTabSizeWhenCloseButtonHidden, true);
 
-    // uncomment the follwing line if you want to use non opaque undocking and splitter
+    // uncomment the following line if you want to use non opaque undocking and splitter
     // movements
     // CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig);
 
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
 
-	// Uncomment the following line to have the old style where the dock
+	// uncomment the following line to have the old style where the dock
 	// area close button closes the active tab
 	// CDockManager::setConfigFlags({CDockManager::DockAreaHasCloseButton
 	//	| CDockManager::DockAreaCloseButtonClosesTab});
