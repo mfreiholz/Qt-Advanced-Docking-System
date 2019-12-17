@@ -84,6 +84,8 @@ The best way to test non-opaque undocking is to set the standard flags: `CDockMa
 ### Tab-menu for easy handling of many tabbed dock widgets
 Tabs are a good way to quickly switch between dockwidgets in a dockarea. However, if the number of dockwidgets in a dockarea is too large, this may affect the usability of the tab bar. To keep track in this situation, you can use the tab menu. The menu allows you to quickly select the dockwidget you want to activate from a drop down menu.
 
+![Tab menu](doc/tab_menu.gif)
+
 ### Many different ways to detach dock widgets
 You can detach dock widgets and also dock areas in the following ways:
 - by dragging the dock widget tab or the dock area title bar
