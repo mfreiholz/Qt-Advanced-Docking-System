@@ -20,7 +20,8 @@ protected:
 	void startFloating(const QPoint& Offset);
 	ads::IFloatingWidget* makeAreaFloating(const QPoint& Offset,
 		ads::eDragState DragState);
-    
+    ads::eDragState dragState() const;
+
 public:
 	CDockAreaTabBar(ads::CDockAreaWidget* parent /TransferThis/);
 	virtual ~CDockAreaTabBar();

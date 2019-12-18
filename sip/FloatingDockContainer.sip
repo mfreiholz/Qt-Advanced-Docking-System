@@ -16,6 +16,7 @@ public:
         ads::eDragState DragState, QWidget* MouseEventHandler) = 0;
 
 	virtual void moveFloating() = 0;
+	virtual void finishDragging() = 0;
 };
 
 
@@ -27,11 +28,11 @@ class CFloatingDockContainer : QWidget, ads::IFloatingWidget
     %End
     
 protected:
-	void startFloating(const QPoint& DragStartMousePos, const QSize& Size,
+	virtual void startFloating(const QPoint& DragStartMousePos, const QSize& Size,
         ads::eDragState DragState, QWidget* MouseEventHandler);
     void startDragging(const QPoint& DragStartMousePos, const QSize& Size,
         QWidget* MouseEventHandler);
-	void finishDragging();
+	virtual void finishDragging();
 	void initFloatingGeometry(const QPoint& DragStartMousePos, const QSize& Size);
 	void moveFloating();
 	bool restoreState(ads::CDockingStateReader& Stream, bool Testing);

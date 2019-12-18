@@ -207,6 +207,8 @@ signals:
     void openingPerspective(const QString& PerspectiveName);
     void perspectiveOpened(const QString& PerspectiveName);
     void dockAreaCreated(ads::CDockAreaWidget* DockArea);
+    void dockWidgetAboutToBeRemoved(ads::CDockWidget* DockWidget);
+    void dockWidgetRemoved(ads::CDockWidget* DockWidget);
 };
 
 };
