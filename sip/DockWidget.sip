@@ -88,6 +88,7 @@ public:
 
 public slots:
 	void toggleView(bool Open = true);
+    void setFloating();
 
 signals:
 	void viewToggled(bool Open);
