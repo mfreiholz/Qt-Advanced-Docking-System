@@ -14,8 +14,8 @@ from PyQt5.QtCore import PYQT_CONFIGURATION
 from PyQt5.pyrcc_main import processResourceFile
 
 MAJOR = 2
-MINOR = 5
-MICRO = 1
+MINOR = 7
+MICRO = 0
 ISRELEASED = True
 VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
 MODULE_NAME = "ads"

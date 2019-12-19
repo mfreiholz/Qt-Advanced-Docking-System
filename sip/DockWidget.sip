@@ -28,6 +28,7 @@ public:
 		DockWidgetClosable,
 		DockWidgetMovable,
 		DockWidgetFloatable,
+		DockWidgetDeleteOnClose,
 		AllDockWidgetFeatures,
 		NoDockWidgetFeatures
 	};
@@ -88,6 +89,8 @@ public:
 
 public slots:
 	void toggleView(bool Open = true);
+    void setFloating();
+    void deleteDockWidget();
 
 signals:
 	void viewToggled(bool Open);
