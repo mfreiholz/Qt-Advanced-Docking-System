@@ -133,7 +133,7 @@ public:
 	void setText(const QString& title);
 
 	/**
-	 * This function returns true if the assigned dock widget is closeable
+	 * This function returns true if the assigned dock widget is closable
 	 */
 	bool isClosable() const;
 

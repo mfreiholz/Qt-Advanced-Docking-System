@@ -135,6 +135,12 @@ protected:
 	 */
 	void toggleViewInternal(bool Open);
 
+	/**
+	 * Internal close dock widget implementation.
+	 * The function returns true if the dock widget has been closed or hidden
+	 */
+	bool closeDockWidgetInternal();
+
 public:
 	using Super = QFrame;
 
@@ -425,6 +431,12 @@ public slots:
 	 * docking system
 	 */
 	void deleteDockWidget();
+
+	/**
+	 * Closes the dock widget
+	 */
+	void closeDockWidget();
+
 
 signals:
 	/**

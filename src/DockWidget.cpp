@@ -31,6 +31,8 @@
 #include "DockWidgetTab.h"
 #include "DockWidget.h"
 
+#include <iostream>
+
 #include <QBoxLayout>
 #include <QAction>
 #include <QSplitter>
@@ -742,6 +744,42 @@ void CDockWidget::deleteDockWidget()
 {
 	dockManager()->removeDockWidget(this);
 	deleteLater();
+}
+
+
+//============================================================================
+bool CDockWidget::handleCloseRequest()
+{
+	std::cout << "CDockWidget::handleCloseRequest()" << std::endl;
+	return true;
+}
+
+
+//============================================================================
+void CDockWidget::closeDockWidget()
+{
+	closeDockWidgetInternal();
+}
+
+
+//============================================================================
+bool CDockWidget::closeDockWidgetInternal()
+{
+	if (features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
+    {
+		if (handleCloseRequest())
+		{
+			deleteDockWidget();
+			return true;
+		}
+    }
+    else
+    {
+    	toggleView(false);
+    	return true;
+    }
+
+	return false;
 }
 
 
