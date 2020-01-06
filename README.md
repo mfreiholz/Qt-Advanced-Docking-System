@@ -64,7 +64,7 @@ perspective to make your own custom perspective. Later you can simply
 select a perspective from the perspective list to quickly switch the complete 
 main window layout.
 
-![Perspective](doc/perspectives.png)\
+![Perspective](doc/perspectives.gif)\
 \
 ![Perspective](doc/perspectives_dark.png)
 
