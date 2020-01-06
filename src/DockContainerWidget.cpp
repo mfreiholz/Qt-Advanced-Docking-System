@@ -1713,10 +1713,24 @@ void CDockContainerWidget::closeOtherAreas(CDockAreaWidget* KeepOpenArea)
 {
 	for (const auto DockArea : d->DockAreas)
 	{
-		if (DockArea != KeepOpenArea && DockArea->features().testFlag(CDockWidget::DockWidgetClosable))
+		if (DockArea == KeepOpenArea)
 		{
-			DockArea->closeArea();
+			continue;
 		}
+
+		if (!DockArea->features(BitwiseAnd).testFlag(CDockWidget::DockWidgetClosable))
+		{
+			continue;
+		}
+
+		// We do not close areas with widgets with custom close handling
+		if (DockArea->features(BitwiseOr).testFlag(CDockWidget::CustomCloseHandling))
+		{
+			std::cout << "CDockWidget::CustomCloseHandling" << std::endl;
+			continue;
+		}
+
+		DockArea->closeArea();
 	}
 }
 

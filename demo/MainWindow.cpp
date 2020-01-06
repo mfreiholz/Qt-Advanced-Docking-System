@@ -53,6 +53,7 @@
 #include <QRubberBand>
 #include <QPlainTextEdit>
 #include <QTableWidget>
+#include <QMessageBox>
 
 #include <QMap>
 #include <QElapsedTimer>
@@ -171,6 +172,7 @@ static ads::CDockWidget* createEditorWidget(QMenu* ViewMenu)
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Editor %1").arg(EditorCount++));
 	DockWidget->setWidget(w);
 	DockWidget->setIcon(svgIcon(":/adsdemo/images/edit.svg"));
+	DockWidget->setFeature(ads::CDockWidget::CustomCloseHandling, true);
 	ViewMenu->addAction(DockWidget->toggleViewAction());
 	return DockWidget;
 }
@@ -475,6 +477,21 @@ void CMainWindow::createEditor()
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetDeleteOnClose, true);
 	auto FloatingWidget = d->DockManager->addDockWidgetFloating(DockWidget);
     FloatingWidget->move(QPoint(20, 20));
+    connect(DockWidget, SIGNAL(closeRequested()), SLOT(onEditorCloseRequested()));
+}
+
+
+//============================================================================
+void CMainWindow::onEditorCloseRequested()
+{
+	auto DockWidget = qobject_cast<ads::CDockWidget*>(sender());
+	int Result = QMessageBox::question(this, "Close Editor", QString("Editor %1 "
+		"contains unsaved changes? Would you like to close it?")
+		.arg(DockWidget->windowTitle()));
+	if (QMessageBox::Yes == Result)
+	{
+		DockWidget->closeDockWidget();
+	}
 }
 
 

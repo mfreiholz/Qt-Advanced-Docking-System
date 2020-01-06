@@ -495,7 +495,7 @@ void CDockAreaWidget::onTabCloseRequested(int Index)
     if (DockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
     {
     	//DockWidget->deleteDockWidget();
-    	DockWidget->closeDockWidget();
+    	DockWidget->closeDockWidgetInternal();
     }
     else
     {
@@ -758,15 +758,26 @@ CDockWidget* CDockAreaWidget::nextOpenDockWidget(CDockWidget* DockWidget) const
 
 
 //============================================================================
-CDockWidget::DockWidgetFeatures CDockAreaWidget::features() const
+CDockWidget::DockWidgetFeatures CDockAreaWidget::features(eBitwiseOperator Mode) const
 {
-	CDockWidget::DockWidgetFeatures Features(CDockWidget::AllDockWidgetFeatures);
-	for (const auto DockWidget : dockWidgets())
+	if (BitwiseAnd == Mode)
 	{
-		Features &= DockWidget->features();
+		CDockWidget::DockWidgetFeatures Features(CDockWidget::AllDockWidgetFeatures);
+		for (const auto DockWidget : dockWidgets())
+		{
+			Features &= DockWidget->features();
+		}
+		return Features;
 	}
-
-	return Features;
+	else
+	{
+		CDockWidget::DockWidgetFeatures Features(CDockWidget::NoDockWidgetFeatures);
+		for (const auto DockWidget : dockWidgets())
+		{
+			Features |= DockWidget->features();
+		}
+		return Features;
+	}
 }
 
 
@@ -805,7 +816,7 @@ void CDockAreaWidget::closeArea()
 	auto OpenDockWidgets = openedDockWidgets();
 	if (OpenDockWidgets.count() == 1 && OpenDockWidgets[0]->features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
 	{
-		OpenDockWidgets[0]->deleteDockWidget();
+		OpenDockWidgets[0]->closeDockWidgetInternal();
 	}
 	else
 	{

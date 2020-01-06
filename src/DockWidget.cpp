@@ -64,7 +64,7 @@ struct DockWidgetPrivate
 	QBoxLayout* Layout = nullptr;
 	QWidget* Widget = nullptr;
 	CDockWidgetTab* TabWidget = nullptr;
-	CDockWidget::DockWidgetFeatures Features = CDockWidget::AllDockWidgetFeatures;
+	CDockWidget::DockWidgetFeatures Features = CDockWidget::DefaultDockWidgetFeatures;
 	CDockManager* DockManager = nullptr;
 	CDockAreaWidget* DockArea = nullptr;
 	QAction* ToggleViewAction = nullptr;
@@ -744,42 +744,40 @@ void CDockWidget::deleteDockWidget()
 {
 	dockManager()->removeDockWidget(this);
 	deleteLater();
-}
-
-
-//============================================================================
-bool CDockWidget::handleCloseRequest()
-{
-	std::cout << "CDockWidget::handleCloseRequest()" << std::endl;
-	return true;
+	d->Closed = true;
 }
 
 
 //============================================================================
 void CDockWidget::closeDockWidget()
 {
-	closeDockWidgetInternal();
+	closeDockWidgetInternal(true);
 }
 
 
 //============================================================================
-bool CDockWidget::closeDockWidgetInternal()
+bool CDockWidget::closeDockWidgetInternal(bool ForceClose)
 {
+	if (!ForceClose)
+	{
+		emit closeRequested();
+	}
+
+	if (!ForceClose && features().testFlag(CDockWidget::CustomCloseHandling))
+	{
+		return false;
+	}
+
 	if (features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
     {
-		if (handleCloseRequest())
-		{
-			deleteDockWidget();
-			return true;
-		}
+		deleteDockWidget();
     }
     else
     {
     	toggleView(false);
-    	return true;
     }
 
-	return false;
+	return true;
 }
 
 

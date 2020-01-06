@@ -117,6 +117,15 @@ enum eIcon
 	IconCount,         //!< just a delimiter for range checks
 };
 
+/**
+ * For bitwise combination of dock wdget features
+ */
+enum eBitwiseOperator
+{
+	BitwiseAnd,
+	BitwiseOr
+};
+
 namespace internal
 {
 static const bool RestoreTesting = true;

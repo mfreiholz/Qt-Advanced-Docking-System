@@ -28,6 +28,8 @@
 //============================================================================
 #include "FloatingDockContainer.h"
 
+#include <iostream>
+
 #include <QBoxLayout>
 #include <QApplication>
 #include <QMouseEvent>
@@ -358,8 +360,15 @@ void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 		auto TopLevelDockWidget = topLevelDockWidget();
 		if (TopLevelDockWidget && TopLevelDockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
 		{
-			TopLevelDockWidget->deleteDockWidget();
-			this->deleteLater();
+			if (TopLevelDockWidget->closeDockWidgetInternal())
+			{
+				this->deleteLater();
+			}
+			else
+			{
+				event->ignore();
+				return;
+			}
 		}
 
 		// In Qt version after 5.9.2 there seems to be a bug that causes the
