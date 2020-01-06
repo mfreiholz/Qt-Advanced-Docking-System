@@ -53,7 +53,7 @@ When dragging the titlebar of a dock, all the tabs that are tabbed with it are
 going to be dragged. So you can move complete groups of tabbed widgets into
 a floating widget or from one dock area to another one.
 
-![Grouped dragging](doc/grouped-dragging.png)\
+![Grouped dragging](doc/grouped-dragging.gif)\
 \
 ![Grouped dragging](doc/grouped-dragging_dark.png)
 
