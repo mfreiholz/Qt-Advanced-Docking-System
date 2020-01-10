@@ -53,6 +53,7 @@
 #include <QRubberBand>
 #include <QPlainTextEdit>
 #include <QTableWidget>
+#include <QAxWidget>
 
 #include <QMap>
 #include <QElapsedTimer>
@@ -201,6 +202,18 @@ static ads::CDockWidget* createTableWidget(QMenu* ViewMenu)
 
 
 //============================================================================
+static ads::CDockWidget* createActiveXWidget(QMenu* ViewMenu, QWidget* parent = nullptr)
+{
+   static int ActiveXCount = 0;
+   QAxWidget* w = new QAxWidget("{6bf52a52-394a-11d3-b153-00c04f79faa6}", parent);
+   ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Active X %1").arg(ActiveXCount++));
+   DockWidget->setWidget(w);
+   ViewMenu->addAction(DockWidget->toggleViewAction());
+   return DockWidget;
+}
+
+
+//============================================================================
 /**
  * Private data class pimpl
  */
@@ -284,6 +297,8 @@ void MainWindowPrivate::createContent()
 
     auto Action = ui.menuView->addAction(QString("Set %1 floating").arg(DockWidget->windowTitle()));
     DockWidget->connect(Action, SIGNAL(triggered()), SLOT(setFloating()));
+
+    DockManager->addDockWidgetFloating(createActiveXWidget(ViewMenu));
 
 	for (auto DockWidget : DockManager->dockWidgetsMap())
 	{
@@ -384,7 +399,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
     // uncomment the following line if you want to use non opaque undocking and splitter
     // movements
-    // CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig);
+    CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig);
 
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
