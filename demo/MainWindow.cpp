@@ -53,7 +53,10 @@
 #include <QRubberBand>
 #include <QPlainTextEdit>
 #include <QTableWidget>
+
+#ifdef Q_OS_WIN
 #include <QAxWidget>
+#endif
 
 #include <QMap>
 #include <QElapsedTimer>
@@ -201,6 +204,7 @@ static ads::CDockWidget* createTableWidget(QMenu* ViewMenu)
 }
 
 
+#ifdef Q_OS_WIN
 //============================================================================
 static ads::CDockWidget* createActiveXWidget(QMenu* ViewMenu, QWidget* parent = nullptr)
 {
@@ -211,6 +215,7 @@ static ads::CDockWidget* createActiveXWidget(QMenu* ViewMenu, QWidget* parent = 
    ViewMenu->addAction(DockWidget->toggleViewAction());
    return DockWidget;
 }
+#endif
 
 
 //============================================================================
@@ -298,7 +303,9 @@ void MainWindowPrivate::createContent()
     auto Action = ui.menuView->addAction(QString("Set %1 floating").arg(DockWidget->windowTitle()));
     DockWidget->connect(Action, SIGNAL(triggered()), SLOT(setFloating()));
 
+#ifdef Q_OS_WIN
     DockManager->addDockWidgetFloating(createActiveXWidget(ViewMenu));
+#endif
 
 	for (auto DockWidget : DockManager->dockWidgetsMap())
 	{
