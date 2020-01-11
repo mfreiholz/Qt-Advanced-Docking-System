@@ -53,6 +53,8 @@
 #include <QRubberBand>
 #include <QPlainTextEdit>
 #include <QTableWidget>
+#include <QScreen>
+#include <QStyle>
 
 #ifdef Q_OS_WIN
 #include <QAxWidget>
@@ -297,14 +299,17 @@ void MainWindowPrivate::createContent()
 	auto RighDockArea = DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), TopDockArea);
 	DockManager->addDockWidget(ads::TopDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	auto BottomDockArea = DockManager->addDockWidget(ads::BottomDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
-	DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
+	DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
 
     auto Action = ui.menuView->addAction(QString("Set %1 floating").arg(DockWidget->windowTitle()));
     DockWidget->connect(Action, SIGNAL(triggered()), SLOT(setFloating()));
 
 #ifdef Q_OS_WIN
-    DockManager->addDockWidgetFloating(createActiveXWidget(ViewMenu));
+    if (!DockManager->configFlags().testFlag(ads::CDockManager::OpaqueUndocking))
+    {
+    	DockManager->addDockWidget(ads::CenterDockWidgetArea, createActiveXWidget(ViewMenu), RighDockArea);
+    }
 #endif
 
 	for (auto DockWidget : DockManager->dockWidgetsMap())
@@ -404,8 +409,8 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// not change if the visibility of the close button changes
     // CDockManager::setConfigFlag(CDockManager::RetainTabSizeWhenCloseButtonHidden, true);
 
-    // uncomment the following line if you want to use non opaque undocking and splitter
-    // movements
+    // comment the following line if you want to use opaque undocking and
+	// opaque splitter resizing
     CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig);
 
 	// Now create the dock manager and its content
@@ -419,8 +424,12 @@ CMainWindow::CMainWindow(QWidget *parent) :
 		d->DockManager, SLOT(openPerspective(const QString&)));
 
 	d->createContent();
-	// Default window geometry
+	// Default window geometry - center on screen
     resize(1280, 720);
+    setGeometry(QStyle::alignedRect(
+        Qt::LeftToRight, Qt::AlignCenter, frameSize(),
+        QGuiApplication::primaryScreen()->availableGeometry()
+    ));
 
 	//d->restoreState();
 	d->restorePerspectives();
