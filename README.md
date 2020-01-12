@@ -53,7 +53,7 @@ When dragging the titlebar of a dock, all the tabs that are tabbed with it are
 going to be dragged. So you can move complete groups of tabbed widgets into
 a floating widget or from one dock area to another one.
 
-![Grouped dragging](doc/grouped-dragging.png)\
+![Grouped dragging](doc/grouped-dragging.gif)\
 \
 ![Grouped dragging](doc/grouped-dragging_dark.png)
 
@@ -64,7 +64,7 @@ perspective to make your own custom perspective. Later you can simply
 select a perspective from the perspective list to quickly switch the complete 
 main window layout.
 
-![Perspective](doc/perspectives.png)\
+![Perspective](doc/perspectives.gif)\
 \
 ![Perspective](doc/perspectives_dark.png)
 

@@ -354,6 +354,7 @@ void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 {
 	ADS_PRINT("CFloatingDockContainer closeEvent");
 	d->setState(DraggingInactive);
+	event->ignore();
 
 	if (isClosable())
 	{
@@ -380,20 +381,7 @@ void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 		// Starting from Qt version 5.12.2 this seems to work again. But
 		// now the QEvent::NonClientAreaMouseButtonPress function returns always
 		// Qt::RightButton even if the left button was pressed
-#ifndef Q_OS_LINUX
-#if (QT_VERSION > QT_VERSION_CHECK(5, 9, 2) && QT_VERSION < QT_VERSION_CHECK(5, 12, 2))
-        event->ignore();
         this->hide();
-#else
-		Super::closeEvent(event);
-#endif
-#else // Q_OS_LINUX
-        Super::closeEvent(event);
-#endif
-	}
-	else
-	{
-		event->ignore();
 	}
 }
 
