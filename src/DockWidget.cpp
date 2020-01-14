@@ -770,6 +770,21 @@ bool CDockWidget::closeDockWidgetInternal(bool ForceClose)
 
 	if (features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
     {
+		// If the dock widget is floating, then we check if we also need to
+		// delete the floating widget
+		if (isFloating())
+		{
+			CFloatingDockContainer* FloatingWidget = internal::findParent<
+					CFloatingDockContainer*>(this);
+			if (FloatingWidget->dockWidgets().count() == 1)
+			{
+				FloatingWidget->deleteLater();
+			}
+			else
+			{
+				FloatingWidget->hide();
+			}
+		}
 		deleteDockWidget();
     }
     else

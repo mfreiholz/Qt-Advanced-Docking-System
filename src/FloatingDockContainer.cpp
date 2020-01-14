@@ -361,13 +361,8 @@ void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 		auto TopLevelDockWidget = topLevelDockWidget();
 		if (TopLevelDockWidget && TopLevelDockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
 		{
-			if (TopLevelDockWidget->closeDockWidgetInternal())
+			if (!TopLevelDockWidget->closeDockWidgetInternal())
 			{
-				this->deleteLater();
-			}
-			else
-			{
-				event->ignore();
 				return;
 			}
 		}

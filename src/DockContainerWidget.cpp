@@ -1726,7 +1726,6 @@ void CDockContainerWidget::closeOtherAreas(CDockAreaWidget* KeepOpenArea)
 		// We do not close areas with widgets with custom close handling
 		if (DockArea->features(BitwiseOr).testFlag(CDockWidget::CustomCloseHandling))
 		{
-			std::cout << "CDockWidget::CustomCloseHandling" << std::endl;
 			continue;
 		}
 
