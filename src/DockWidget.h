@@ -468,6 +468,19 @@ signals:
      * This signal is emitted, if close is requested
      */
     void closeRequested();
+
+    /**
+     * This signal is emitted when the dock widget becomes visible (or invisible).
+     * This happens when the widget is hidden or shown, as well as when it is
+     * docked in a tabbed dock area and its tab becomes selected or unselected.
+     */
+    void visibilityChanged(bool visible);
+
+    /**
+     * This signal is emitted when the features property changes.
+     * The features parameter gives the new value of the property.
+     */
+    void featuresChanged(DockWidgetFeatures features);
 }; // class DockWidget
 }
  // namespace ads

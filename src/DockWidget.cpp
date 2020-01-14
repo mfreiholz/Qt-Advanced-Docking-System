@@ -45,6 +45,10 @@
 #include <QToolBar>
 #include <QXmlStreamWriter>
 
+#include <QGuiApplication>
+#include <QScreen>
+#include <QWindow>
+
 #include "DockContainerWidget.h"
 #include "DockAreaWidget.h"
 #include "DockManager.h"
@@ -296,6 +300,7 @@ void CDockWidget::setFeatures(DockWidgetFeatures features)
 		return;
 	}
 	d->Features = features;
+	emit featuresChanged(d->Features);
 	d->TabWidget->onDockWidgetFeaturesChanged();
 }
 
@@ -517,23 +522,50 @@ void CDockWidget::flagAsUnassigned()
 //============================================================================
 bool CDockWidget::event(QEvent *e)
 {
-	if (e->type() == QEvent::WindowTitleChange)
+	switch (e->type())
 	{
-		const auto title = windowTitle();
-		if (d->TabWidget)
+	case QEvent::Hide:
+		emit visibilityChanged(false);
+		break;
+
+	case QEvent::Show:
 		{
-			d->TabWidget->setText(title);
-		}
-		if (d->ToggleViewAction)
+			QPoint parentTopLeft(0, 0);
+			if (isWindow())
+			{
+				if (const QWindow *window = windowHandle())
+					parentTopLeft = window->screen()->availableVirtualGeometry().topLeft();
+				else
+					parentTopLeft = QGuiApplication::primaryScreen()->availableVirtualGeometry().topLeft();
+				std::cout << "QEvent::Show isWindow()" << std::endl;
+			}
+			emit visibilityChanged(geometry().right() >= parentTopLeft.x() && geometry().bottom() >= parentTopLeft.y());
+        }
+        break;
+
+	case QEvent::WindowTitleChange :
 		{
-			d->ToggleViewAction->setText(title);
+			const auto title = windowTitle();
+			if (d->TabWidget)
+			{
+				d->TabWidget->setText(title);
+			}
+			if (d->ToggleViewAction)
+			{
+				d->ToggleViewAction->setText(title);
+			}
+			if (d->DockArea)
+			{
+				d->DockArea->markTitleBarMenuOutdated();//update tabs menu
+			}
+			emit titleChanged(title);
 		}
-		if (d->DockArea)
-		{
-			d->DockArea->markTitleBarMenuOutdated();//update tabs menu
-		}
-		emit titleChanged(title);
+		break;
+
+	default:
+		break;
 	}
+
 	return Super::event(e);
 }
 

@@ -317,6 +317,7 @@ void MainWindowPrivate::createContent()
 	for (auto DockWidget : DockManager->dockWidgetsMap())
 	{
 		_this->connect(DockWidget, SIGNAL(viewToggled(bool)), SLOT(onViewToggled(bool)));
+		_this->connect(DockWidget, SIGNAL(visibilityChanged(bool)), SLOT(onViewVisibilityChanged(bool)));
 	}
 }
 
@@ -498,6 +499,19 @@ void CMainWindow::onViewToggled(bool Open)
 	}
 
 	qDebug() << DockWidget->objectName() << " viewToggled(" << Open << ")";
+}
+
+
+//============================================================================
+void CMainWindow::onViewVisibilityChanged(bool Visible)
+{
+	auto DockWidget = qobject_cast<ads::CDockWidget*>(sender());
+    if (!DockWidget)
+    {
+        return;
+    }
+
+    qDebug() << DockWidget->objectName() << " visibilityChanged(" << Visible << ")";
 }
 
 
