@@ -525,16 +525,11 @@ bool CDockWidget::event(QEvent *e)
 	switch (e->type())
 	{
 	case QEvent::Hide:
-		std::cout << this->objectName().toStdString() << " visible: " << isVisible()
-			<< " hidden: " << isHidden() << " visibleTo: " << isVisibleTo(d->DockManager) << std::endl;
 		emit visibilityChanged(false);
 		break;
 
 	case QEvent::Show:
-		{
-			QPoint parentTopLeft(0, 0);
-			emit visibilityChanged(geometry().right() >= parentTopLeft.x() && geometry().bottom() >= parentTopLeft.y());
-        }
+		emit visibilityChanged(geometry().right() >= 0 && geometry().bottom() >= 0);
         break;
 
 	case QEvent::WindowTitleChange :
