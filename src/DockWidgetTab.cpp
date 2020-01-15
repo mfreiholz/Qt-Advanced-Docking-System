@@ -221,7 +221,7 @@ void DockWidgetTabPrivate::moveTab(QMouseEvent* ev)
     ev->accept();
     int left, top, right, bottom;
     _this->getContentsMargins(&left, &top, &right, &bottom);
-    QPoint moveToPos = _this->mapToParent(ev->pos()) - DragStartMousePosition;
+    QPoint moveToPos = ev->globalPos() - DragStartMousePosition;
     moveToPos.setY(0);
     _this->move(moveToPos);
     _this->raise();
@@ -266,14 +266,16 @@ bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
 
     if (DraggingFloatingWidget == DraggingState)
     {
-        FloatingWidget->startFloating(DragStartMousePosition, Size, DraggingFloatingWidget, _this);
+        FloatingWidget->startFloating(_this->mapFromGlobal(DragStartMousePosition),
+        	Size, DraggingFloatingWidget, _this);
     	auto Overlay = DockWidget->dockManager()->containerOverlay();
     	Overlay->setAllowedAreas(OuterDockAreas);
     	this->FloatingWidget = FloatingWidget;
     }
     else
     {
-     	FloatingWidget->startFloating(DragStartMousePosition, Size, DraggingInactive, nullptr);
+     	FloatingWidget->startFloating(_this->mapFromGlobal(DragStartMousePosition),
+     		Size, DraggingInactive, nullptr);
     }
 
 	return true;
@@ -304,7 +306,7 @@ void CDockWidgetTab::mousePressEvent(QMouseEvent* ev)
 	if (ev->button() == Qt::LeftButton)
 	{
 		ev->accept();
-        d->DragStartMousePosition = ev->pos();
+        d->DragStartMousePosition = ev->globalPos();
         d->DragState = DraggingMousePressed;
         emit clicked();
 		return;
@@ -372,7 +374,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     }
 
     // Maybe a fixed drag distance is better here ?
-    int DragDistanceY = qAbs(d->DragStartMousePosition.y() - ev->pos().y());
+    int DragDistanceY = qAbs(d->DragStartMousePosition.y() - ev->globalPos().y());
     if (DragDistanceY >= CDockManager::startDragDistance())
 	{
 		// If this is the last dock area in a dock container with only
@@ -399,7 +401,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     	return;
 	}
     else if (d->DockArea->openDockWidgetsCount() > 1
-     && (ev->pos() - d->DragStartMousePosition).manhattanLength() >= QApplication::startDragDistance()) // Wait a few pixels before start moving
+     && (ev->globalPos() - d->DragStartMousePosition).manhattanLength() >= QApplication::startDragDistance()) // Wait a few pixels before start moving
 	{
     	// If we start dragging the tab, we save its inital position to
     	// restore it later
@@ -424,7 +426,7 @@ void CDockWidgetTab::contextMenuEvent(QContextMenuEvent* ev)
 		return;
 	}
 
-	d->DragStartMousePosition = ev->pos();
+	d->DragStartMousePosition = ev->globalPos();
 	QMenu Menu(this);
 	auto Action = Menu.addAction(tr("Detach"), this, SLOT(detachDockWidget()));
 	Action->setEnabled(d->DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable));
@@ -432,7 +434,7 @@ void CDockWidgetTab::contextMenuEvent(QContextMenuEvent* ev)
 	Action = Menu.addAction(tr("Close"), this, SIGNAL(closeRequested()));
 	Action->setEnabled(isClosable());
 	Menu.addAction(tr("Close Others"), this, SIGNAL(closeOtherTabsRequested()));
-	Menu.exec(mapToGlobal(ev->pos()));
+	Menu.exec(ev->globalPos());
 }
 
 
@@ -549,7 +551,7 @@ void CDockWidgetTab::mouseDoubleClickEvent(QMouseEvent *event)
 	if ((!d->DockArea->dockContainer()->isFloating() || d->DockArea->dockWidgetsCount() > 1)
 		&& d->DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable))
 	{
-		d->DragStartMousePosition = event->pos();
+		d->DragStartMousePosition = event->globalPos();
 		d->startFloating(DraggingInactive);
 	}
 
@@ -587,7 +589,7 @@ void CDockWidgetTab::detachDockWidget()
 	{
 		return;
 	}
-	d->DragStartMousePosition = mapFromGlobal(QCursor::pos());
+	d->DragStartMousePosition = QCursor::pos();
 	d->startFloating(DraggingInactive);
 }
 
@@ -595,13 +597,13 @@ void CDockWidgetTab::detachDockWidget()
 //============================================================================
 bool CDockWidgetTab::event(QEvent *e)
 {
-	#ifndef QT_NO_TOOLTIP
+#ifndef QT_NO_TOOLTIP
 	if (e->type() == QEvent::ToolTipChange)
 	{
 		const auto text = toolTip();
 		d->TitleLabel->setToolTip(text);
 	}
-	#endif
+#endif
 	return Super::event(e);
 }
 
