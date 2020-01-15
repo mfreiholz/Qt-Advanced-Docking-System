@@ -546,16 +546,18 @@ void CDockAreaWidget::internalSetCurrentDockWidget(CDockWidget* DockWidget)
 void CDockAreaWidget::setCurrentIndex(int index)
 {
 	auto TabBar = d->tabBar();
-	/*if (TabBar->currentIndex() == index)
-	{
-		return;
-	}*/
-
 	if (index < 0 || index > (TabBar->count() - 1))
 	{
 		qWarning() << Q_FUNC_INFO << "Invalid index" << index;
 		return;
     }
+
+	auto cw = d->ContentsLayout->currentWidget();
+	auto nw = d->ContentsLayout->widget(index);
+	if (cw == nw && !nw->isHidden())
+	{
+		return;
+	}
 
     emit currentChanging(index);
     TabBar->setCurrentIndex(index);

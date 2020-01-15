@@ -134,8 +134,8 @@ void DockWidgetPrivate::showDockWidget()
 	}
 	else
 	{
-		DockArea->toggleView(true);
 		DockArea->setCurrentDockWidget(_this);
+		DockArea->toggleView(true);
 		TabWidget->show();
 		QSplitter* Splitter = internal::findParent<QSplitter*>(DockArea);
 		while (Splitter && !Splitter->isVisible())
@@ -525,20 +525,14 @@ bool CDockWidget::event(QEvent *e)
 	switch (e->type())
 	{
 	case QEvent::Hide:
+		std::cout << this->objectName().toStdString() << " visible: " << isVisible()
+			<< " hidden: " << isHidden() << " visibleTo: " << isVisibleTo(d->DockManager) << std::endl;
 		emit visibilityChanged(false);
 		break;
 
 	case QEvent::Show:
 		{
 			QPoint parentTopLeft(0, 0);
-			if (isWindow())
-			{
-				if (const QWindow *window = windowHandle())
-					parentTopLeft = window->screen()->availableVirtualGeometry().topLeft();
-				else
-					parentTopLeft = QGuiApplication::primaryScreen()->availableVirtualGeometry().topLeft();
-				std::cout << "QEvent::Show isWindow()" << std::endl;
-			}
 			emit visibilityChanged(geometry().right() >= parentTopLeft.x() && geometry().bottom() >= parentTopLeft.y());
         }
         break;
