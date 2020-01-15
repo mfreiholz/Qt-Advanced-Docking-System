@@ -219,11 +219,10 @@ void DockWidgetTabPrivate::createLayout()
 void DockWidgetTabPrivate::moveTab(QMouseEvent* ev)
 {
     ev->accept();
-    int left, top, right, bottom;
-    _this->getContentsMargins(&left, &top, &right, &bottom);
-    QPoint moveToPos = ev->globalPos() - DragStartMousePosition;
-    moveToPos.setY(0);
-    _this->move(moveToPos);
+    QPoint Distance = ev->globalPos() - DragStartMousePosition;
+    Distance.setY(0);
+    auto TargetPos = Distance + TabDragStartPosition;
+    _this->move(TargetPos);
     _this->raise();
 }
 
