@@ -411,6 +411,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
     // comment the following line if you want to use opaque undocking and
 	// opaque splitter resizing
     CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig);
+    //CDockManager::setConfigFlag(CDockManager::DockAreaHasCloseButton, false);
 
     // uncomment the following line if you want a fixed tab width that does
 	// not change if the visibility of the close button changes

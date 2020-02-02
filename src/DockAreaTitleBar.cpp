@@ -37,6 +37,7 @@
 #include <QScrollArea>
 #include <QMouseEvent>
 #include <QDebug>
+#include <QPointer>
 
 #include "ads_globals.h"
 #include "FloatingDockContainer.h"
@@ -52,16 +53,40 @@
 
 namespace ads
 {
-using tTileBarButton = QToolButton;
+using tTitleBarButton = QToolButton;
+
+/**
+ * Some kind of dummy button that is used if certain buttons are hidden
+ * by dock manager config flags (i.e CDockManager::DockAreaHasCloseButton is
+ * disabled)
+ */
+class CInvisibleButton : public tTitleBarButton
+{
+public:
+	CInvisibleButton(QWidget* parent = nullptr)
+		: tTitleBarButton(parent)
+	{
+		this->hide();
+	}
+
+
+    virtual void setVisible(bool visible) override
+    {
+    	Q_UNUSED(visible);
+        tTitleBarButton::setVisible(false);
+    }
+};
+
+
 /**
  * Private data class of CDockAreaTitleBar class (pimpl)
  */
 struct DockAreaTitleBarPrivate
 {
 	CDockAreaTitleBar* _this;
-	tTileBarButton* TabsMenuButton;
-	tTileBarButton* UndockButton;
-	tTileBarButton* CloseButton;
+	QPointer<tTitleBarButton> TabsMenuButton;
+	QPointer<tTitleBarButton> UndockButton;
+	QPointer<tTitleBarButton> CloseButton;
 	QBoxLayout* TopLayout;
 	CDockAreaWidget* DockArea;
 	CDockAreaTabBar* TabBar;
@@ -106,7 +131,7 @@ struct DockAreaTitleBarPrivate
      * If the global IconPovider of the dockmanager provides a custom
      * Icon for the given CustomIconId, the this icon will be used.
      */
-    void setTitleBarButtonIcon(tTileBarButton* Button, QStyle::StandardPixmap StandarPixmap,
+    void setTitleBarButtonIcon(tTitleBarButton* Button, QStyle::StandardPixmap StandarPixmap,
     	ads::eIcon CustomIconId)
     {
     	// First we try to use custom icons if available
@@ -143,7 +168,7 @@ void DockAreaTitleBarPrivate::createButtons()
 {
 	QSizePolicy ButtonSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     // Tabs menu button
-	TabsMenuButton = new tTileBarButton();
+	TabsMenuButton = new tTitleBarButton();
 	TabsMenuButton->setObjectName("tabsMenuButton");
 	TabsMenuButton->setAutoRaise(true);
 	TabsMenuButton->setPopupMode(QToolButton::InstantPopup);
@@ -164,40 +189,43 @@ void DockAreaTitleBarPrivate::createButtons()
 
 
 	// Undock button
-	UndockButton = new tTileBarButton();
+	UndockButton = new tTitleBarButton();
 	UndockButton->setObjectName("undockButton");
 	UndockButton->setAutoRaise(true);
 #ifndef QT_NO_TOOLTIP
 	UndockButton->setToolTip(QObject::tr("Detach Group"));
 #endif
-    setTitleBarButtonIcon(UndockButton, QStyle::SP_TitleBarNormalButton, ads::DockAreaUndockIcon);
-    UndockButton->setSizePolicy(ButtonSizePolicy);
+	setTitleBarButtonIcon(UndockButton, QStyle::SP_TitleBarNormalButton, ads::DockAreaUndockIcon);
+	UndockButton->setSizePolicy(ButtonSizePolicy);
 	TopLayout->addWidget(UndockButton, 0);
 	_this->connect(UndockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
 
-
-    // Close button
-	CloseButton = new tTileBarButton();
-	CloseButton->setObjectName("closeButton");
-	CloseButton->setAutoRaise(true);
-    setTitleBarButtonIcon(CloseButton, QStyle::SP_TitleBarCloseButton, ads::DockAreaCloseIcon);
-#ifndef QT_NO_TOOLTIP
-	if (testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
+	if (testConfigFlag(CDockManager::DockAreaHasCloseButton))
 	{
-		CloseButton->setToolTip(QObject::tr("Close Active Tab"));
+		// Close button
+		CloseButton = new tTitleBarButton();
+		CloseButton->setObjectName("closeButton");
+		CloseButton->setAutoRaise(true);
+		setTitleBarButtonIcon(CloseButton, QStyle::SP_TitleBarCloseButton, ads::DockAreaCloseIcon);
+#ifndef QT_NO_TOOLTIP
+		if (testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
+		{
+			CloseButton->setToolTip(QObject::tr("Close Active Tab"));
+		}
+		else
+		{
+			CloseButton->setToolTip(QObject::tr("Close Group"));
+		}
+#endif
+		CloseButton->setSizePolicy(ButtonSizePolicy);
+		CloseButton->setIconSize(QSize(16, 16));
+		TopLayout->addWidget(CloseButton, 0);
+		_this->connect(CloseButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
 	}
 	else
 	{
-		CloseButton->setToolTip(QObject::tr("Close Group"));
+		CloseButton = new CInvisibleButton();
 	}
-#endif
-	CloseButton->setSizePolicy(ButtonSizePolicy);
-	CloseButton->setIconSize(QSize(16, 16));
-	if (testConfigFlag(CDockManager::DockAreaHasCloseButton))
-	{
-		TopLayout->addWidget(CloseButton, 0);
-	}
-	_this->connect(CloseButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
 }
 
 
@@ -243,6 +271,20 @@ CDockAreaTitleBar::CDockAreaTitleBar(CDockAreaWidget* parent) :
 //============================================================================
 CDockAreaTitleBar::~CDockAreaTitleBar()
 {
+	if (!d->CloseButton.isNull())
+	{
+		delete d->CloseButton;
+	}
+
+	if (!d->TabsMenuButton.isNull())
+	{
+		delete d->TabsMenuButton;
+	}
+
+	if (!d->UndockButton.isNull())
+	{
+		delete d->UndockButton;
+	}
 	delete d;
 }
 
