@@ -167,38 +167,53 @@ DockAreaTitleBarPrivate::DockAreaTitleBarPrivate(CDockAreaTitleBar* _public) :
 void DockAreaTitleBarPrivate::createButtons()
 {
 	QSizePolicy ButtonSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    // Tabs menu button
-	TabsMenuButton = new tTitleBarButton();
-	TabsMenuButton->setObjectName("tabsMenuButton");
-	TabsMenuButton->setAutoRaise(true);
-	TabsMenuButton->setPopupMode(QToolButton::InstantPopup);
-    setTitleBarButtonIcon(TabsMenuButton, QStyle::SP_TitleBarUnshadeButton, ads::DockAreaMenuIcon);
-	QMenu* TabsMenu = new QMenu(TabsMenuButton);
+
+    if (testConfigFlag(CDockManager::DockAreaHasTabsMenuButton))
+	{
+		// Tabs menu button
+		TabsMenuButton = new tTitleBarButton();
+		TabsMenuButton->setObjectName("tabsMenuButton");
+		TabsMenuButton->setAutoRaise(true);
+		TabsMenuButton->setPopupMode(QToolButton::InstantPopup);
+	    setTitleBarButtonIcon(TabsMenuButton, QStyle::SP_TitleBarUnshadeButton, ads::DockAreaMenuIcon);
+		QMenu* TabsMenu = new QMenu(TabsMenuButton);
 #ifndef QT_NO_TOOLTIP
-	TabsMenu->setToolTipsVisible(true);
+		TabsMenu->setToolTipsVisible(true);
 #endif
-	_this->connect(TabsMenu, SIGNAL(aboutToShow()), SLOT(onTabsMenuAboutToShow()));
-	TabsMenuButton->setMenu(TabsMenu);
+		_this->connect(TabsMenu, SIGNAL(aboutToShow()), SLOT(onTabsMenuAboutToShow()));
+		TabsMenuButton->setMenu(TabsMenu);
 #ifndef QT_NO_TOOLTIP
-	TabsMenuButton->setToolTip(QObject::tr("List all tabs"));
+		TabsMenuButton->setToolTip(QObject::tr("List all tabs"));
 #endif
-	TabsMenuButton->setSizePolicy(ButtonSizePolicy);
-	TopLayout->addWidget(TabsMenuButton, 0);
-	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
-		SLOT(onTabsMenuActionTriggered(QAction*)));
+		TabsMenuButton->setSizePolicy(ButtonSizePolicy);
+		TopLayout->addWidget(TabsMenuButton, 0);
+		_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
+			SLOT(onTabsMenuActionTriggered(QAction*)));
+	}
+	else
+	{
+		TabsMenuButton = new CInvisibleButton();
+	}
 
 
-	// Undock button
-	UndockButton = new tTitleBarButton();
-	UndockButton->setObjectName("undockButton");
-	UndockButton->setAutoRaise(true);
+	if (testConfigFlag(CDockManager::DockAreaHasUndockButton))
+	{
+		// Undock button
+		UndockButton = new tTitleBarButton();
+		UndockButton->setObjectName("undockButton");
+		UndockButton->setAutoRaise(true);
 #ifndef QT_NO_TOOLTIP
-	UndockButton->setToolTip(QObject::tr("Detach Group"));
+		UndockButton->setToolTip(QObject::tr("Detach Group"));
 #endif
-	setTitleBarButtonIcon(UndockButton, QStyle::SP_TitleBarNormalButton, ads::DockAreaUndockIcon);
-	UndockButton->setSizePolicy(ButtonSizePolicy);
-	TopLayout->addWidget(UndockButton, 0);
-	_this->connect(UndockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
+		setTitleBarButtonIcon(UndockButton, QStyle::SP_TitleBarNormalButton, ads::DockAreaUndockIcon);
+		UndockButton->setSizePolicy(ButtonSizePolicy);
+		TopLayout->addWidget(UndockButton, 0);
+		_this->connect(UndockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
+	}
+	else
+	{
+		UndockButton = new CInvisibleButton();
+	}
 
 	if (testConfigFlag(CDockManager::DockAreaHasCloseButton))
 	{

@@ -157,17 +157,25 @@ public:
 		DragPreviewShowsContentPixmap = 0x0800,///< If opaque undocking is disabled, the created drag preview window shows a copy of the content of the dock widget / dock are that is dragged
 		DragPreviewHasWindowFrame = 0x1000,///< If opaque undocking is disabled, then this flag configures if the drag preview is frameless or looks like a real window
         AlwaysShowTabs = 0x2000,///< If this option is enabled, the tab of a dock widget is always displayed - even if it is the only visible dock widget in a floating widget.
+        DockAreaHasUndockButton = 0x4000,     //!< If the flag is set each dock area has an undock button
+        DockAreaHasTabsMenuButton = 0x8000,     //!< If the flag is set each dock area has a tabs menu button
 		DefaultConfig = ActiveTabHasCloseButton
 		              | DockAreaHasCloseButton
+		              | DockAreaHasUndockButton
+		              | DockAreaHasTabsMenuButton
 		              | OpaqueSplitterResize
 		              | XmlCompressionEnabled
 		              | OpaqueUndocking, ///< the default configuration
 		DefaultNonOpaqueConfig = ActiveTabHasCloseButton
 		              | DockAreaHasCloseButton
+		              | DockAreaHasUndockButton
+		              | DockAreaHasTabsMenuButton
 		              | XmlCompressionEnabled
 		              | DragPreviewShowsContentPixmap, ///< the default configuration for non opaque operations
 		NonOpaqueWithWindowFrame = ActiveTabHasCloseButton
 		              | DockAreaHasCloseButton
+		              | DockAreaHasUndockButton
+		              | DockAreaHasTabsMenuButton
 		              | XmlCompressionEnabled
 		              | DragPreviewShowsContentPixmap
 		              | DragPreviewHasWindowFrame ///< the default configuration for non opaque operations that show a real window with frame
