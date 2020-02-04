@@ -10,7 +10,7 @@
         "url": "https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System"
     },
     "contact": "https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/issues",
-    "icon": "-----------------",
+    "icon": "https://raw.githubusercontent.com/githubuser0xFFFF/Qt-Advanced-Docking-System/master/doc/ads_icon_512.png",
     "licenses": [
       { "licenseType": "LGPLv2.1",
         "licenseUrl": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html" }
