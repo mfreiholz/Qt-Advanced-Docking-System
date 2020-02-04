@@ -268,7 +268,7 @@ This is a commercial component from [Developer Machines](https://www.devmachines
 
 ## Donation
 
-If this project help you reduce time to develop, you can give me a cup of coffee :wink:.
+If this project help you reduce time to develop or if you just like it, you can give me a cup of coffee :coffee::wink:.
 
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=85R64TMMSY9T6">
   <img src="doc/donate.png" alt="Donate with PayPal" width="160"/>
