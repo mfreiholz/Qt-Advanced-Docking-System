@@ -10,7 +10,7 @@
    version="1.1"
    viewBox="0,0,1024,1024"
    id="svg1145"
-   sodipodi:docname="ads_iccon.svg"
+   sodipodi:docname="ads_icon.svg"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    inkscape:export-filename="C:\CodingXP\cetoni_projects\QtAdvancedDockingSystem\doc\ads_icon_256.png"
    inkscape:export-xdpi="24"
@@ -23,7 +23,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -42,9 +42,9 @@
      inkscape:window-height="1017"
      id="namedview1147"
      showgrid="false"
-     inkscape:zoom="0.11523437"
-     inkscape:cx="409.67791"
-     inkscape:cy="-249.5888"
+     inkscape:zoom="0.32593202"
+     inkscape:cx="256.13402"
+     inkscape:cy="235.82602"
      inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -54,9 +54,9 @@
   <path
      id="path1797-1"
      visibility="hidden"
-     d="M 72.6743,291.42858 H 951.3257 L 952,292.10286 v 586.07998 l -0.6743,0.67429 H 72.6743 L 72,878.18284 V 292.10286 Z"
+     d="M 71.53142,291.89723 H 950.1828 l 0.6743,0.6742 v 586.08 l -0.6743,0.6743 H 71.53142 l -0.6743,-0.6743 v -586.08 z"
      inkscape:connector-curvature="0"
-     style="visibility:hidden;mix-blend-mode:normal;fill:#ffffff;fill-rule:nonzero;stroke-width:0.99999988" />
+     style="visibility:hidden;mix-blend-mode:normal;fill:#ffffff;fill-rule:nonzero;stroke-width:0.99999988;fill-opacity:1" />
   <rect
      transform="rotate(-90)"
      y="412.13489"
