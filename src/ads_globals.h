@@ -215,6 +215,22 @@ void setFlag(T& Flags, typename T::enum_type flag, bool on = true)
 #endif
 }
 
+
+/**
+ * Helper function for settings tooltips without cluttering the code with
+ * tests for preprocessor macros
+ */
+template <class QObjectPtr>
+void setToolTip(QObjectPtr obj, const QString &tip)
+{
+#ifndef QT_NO_TOOLTIP
+	obj->setToolTip(tip);
+#else
+	Q_UNUSED(obj);
+	Q_UNUSED(tip);
+#endif
+}
+
 } // namespace internal
 } // namespace ads
 

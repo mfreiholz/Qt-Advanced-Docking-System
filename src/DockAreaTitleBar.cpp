@@ -207,9 +207,7 @@ void DockAreaTitleBarPrivate::createButtons()
 #endif
 	_this->connect(TabsMenu, SIGNAL(aboutToShow()), SLOT(onTabsMenuAboutToShow()));
 	TabsMenuButton->setMenu(TabsMenu);
-#ifndef QT_NO_TOOLTIP
-	TabsMenuButton->setToolTip(QObject::tr("List all tabs"));
-#endif
+	internal::setToolTip(TabsMenuButton, QObject::tr("List all tabs"));
 	TabsMenuButton->setSizePolicy(ButtonSizePolicy);
 	TopLayout->addWidget(TabsMenuButton, 0);
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
@@ -220,9 +218,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	UndockButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasUndockButton));
 	UndockButton->setObjectName("undockButton");
 	UndockButton->setAutoRaise(true);
-#ifndef QT_NO_TOOLTIP
-	UndockButton->setToolTip(QObject::tr("Detach Group"));
-#endif
+	internal::setToolTip(UndockButton, QObject::tr("Detach Group"));
 	setTitleBarButtonIcon(UndockButton, QStyle::SP_TitleBarNormalButton, ads::DockAreaUndockIcon);
 	UndockButton->setSizePolicy(ButtonSizePolicy);
 	TopLayout->addWidget(UndockButton, 0);
@@ -233,16 +229,14 @@ void DockAreaTitleBarPrivate::createButtons()
 	CloseButton->setObjectName("closeButton");
 	CloseButton->setAutoRaise(true);
 	setTitleBarButtonIcon(CloseButton, QStyle::SP_TitleBarCloseButton, ads::DockAreaCloseIcon);
-#ifndef QT_NO_TOOLTIP
 	if (testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
 	{
-		CloseButton->setToolTip(QObject::tr("Close Active Tab"));
+		internal::setToolTip(CloseButton, QObject::tr("Close Active Tab"));
 	}
 	else
 	{
-		CloseButton->setToolTip(QObject::tr("Close Group"));
+		internal::setToolTip(CloseButton, QObject::tr("Close Group"));
 	}
-#endif
 	CloseButton->setSizePolicy(ButtonSizePolicy);
 	CloseButton->setIconSize(QSize(16, 16));
 	TopLayout->addWidget(CloseButton, 0);
@@ -342,9 +336,7 @@ void CDockAreaTitleBar::onTabsMenuAboutToShow()
 		}
 		auto Tab = d->TabBar->tab(i);
 		QAction* Action = menu->addAction(Tab->icon(), Tab->text());
-		#ifndef QT_NO_TOOLTIP
-		Action->setToolTip(Tab->toolTip());
-		#endif
+		internal::setToolTip(Action, Tab->toolTip());
 		Action->setData(i);
 	}
 
