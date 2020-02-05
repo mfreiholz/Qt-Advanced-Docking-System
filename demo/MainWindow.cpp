@@ -276,6 +276,8 @@ void MainWindowPrivate::createContent()
 	QMenu* ViewMenu = ui.menuView;
 	auto DockWidget = createCalendarDockWidget(ViewMenu);
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
+	DockWidget->setFeature(ads::CDockWidget::DockWidgetMovable, false);
+	DockWidget->setFeature(ads::CDockWidget::DockWidgetFloatable, false);
 	auto SpecialDockArea = DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
 
 	// For this Special Dock Area we want to avoid dropping on the center of it (i.e. we don't want this widget to be ever tabbified):
@@ -431,6 +433,9 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	// uncomment the following line if you don't want tabs menu button on DockArea's title bar
 	//CDockManager::setConfigFlag(CDockManager::DockAreaHasTabsMenuButton, false);
+
+	// uncomment the following line if you don't want disabled buttons to appear on DockArea's title bar
+	//CDockManager::setConfigFlag(CDockManager::DockAreaHideDisabledButtons, true);
 
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);

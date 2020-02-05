@@ -837,6 +837,12 @@ void CDockManager::setConfigFlag(eConfigFlag Flag, bool On)
 	internal::setFlag(StaticConfigFlags, Flag, On);
 }
 
+//===========================================================================
+bool CDockManager::testConfigFlag(eConfigFlag Flag)
+{
+    return configFlags().testFlag(Flag);
+}
+
 
 //===========================================================================
 CIconProvider& CDockManager::iconProvider()
