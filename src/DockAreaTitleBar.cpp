@@ -70,6 +70,7 @@ struct DockAreaTitleBarPrivate
 	CDockAreaTabBar* TabBar;
 	bool MenuOutdated = true;
 	QMenu* TabsMenu;
+	QList<tTitleBarButton*> DockWidgetActionsButtons;
 
 	/**
 	 * Private data constructor
@@ -187,7 +188,6 @@ void DockAreaTitleBarPrivate::createButtons()
 	TopLayout->addWidget(TabsMenuButton, 0);
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
 		SLOT(onTabsMenuActionTriggered(QAction*)));
-
 
 	// Undock button
 	UndockButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasUndockButton));
@@ -361,10 +361,38 @@ void CDockAreaTitleBar::onCurrentTabChanged(int Index)
 		return;
 	}
 
+	CDockWidget* DockWidget = d->TabBar->tab(Index)->dockWidget();
 	if (d->testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
 	{
-		CDockWidget* DockWidget = d->TabBar->tab(Index)->dockWidget();
 		d->CloseButton->setEnabled(DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));
+	}
+
+	if (!d->DockWidgetActionsButtons.isEmpty())
+	{
+		for (auto Button : d->DockWidgetActionsButtons)
+		{
+			d->TopLayout->removeWidget(Button);
+			delete Button;
+		}
+		d->DockWidgetActionsButtons.clear();
+	}
+
+	auto Actions = DockWidget->titleBarActions();
+	if (Actions.isEmpty())
+	{
+		return;
+	}
+
+	int InsertIndex = 2;
+	for (auto Action : Actions)
+	{
+		auto Button = new CTitleBarButton(true, this);
+		Button->setDefaultAction(Action);
+		Button->setAutoRaise(true);
+		Button->setPopupMode(QToolButton::InstantPopup);
+		Button->setObjectName(Action->objectName());
+		d->TopLayout->insertWidget(InsertIndex++, Button, 0);
+		d->DockWidgetActionsButtons.append(Button);
 	}
 }
 

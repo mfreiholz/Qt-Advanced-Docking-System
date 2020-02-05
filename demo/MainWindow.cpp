@@ -56,6 +56,7 @@
 #include <QScreen>
 #include <QStyle>
 #include <QMessageBox>
+#include <QMenu>
 
 #ifdef Q_OS_WIN
 #include <QAxWidget>
@@ -129,7 +130,7 @@ static void appendFeaturStringToWindowTitle(ads::CDockWidget* DockWidget)
  */
 static QIcon svgIcon(const QString& File)
 {
-	// This is a workaround, because because in item views SVG icons are not
+	// This is a workaround, because in item views SVG icons are not
 	// properly scaled an look blurry or pixelate
 	QIcon SvgIcon(File);
 	SvgIcon.addPixmap(SvgIcon.pixmap(92));
@@ -180,6 +181,18 @@ static ads::CDockWidget* createEditorWidget(QMenu* ViewMenu)
 	DockWidget->setIcon(svgIcon(":/adsdemo/images/edit.svg"));
 	DockWidget->setFeature(ads::CDockWidget::CustomCloseHandling, true);
 	ViewMenu->addAction(DockWidget->toggleViewAction());
+
+	QMenu* OptionsMenu = new QMenu(DockWidget);
+	OptionsMenu->setTitle(QObject::tr("Options"));
+	OptionsMenu->setToolTip(OptionsMenu->title());
+	OptionsMenu->setIcon(svgIcon(":/adsdemo/images/custom-menu-button.svg"));
+	auto MenuAction = OptionsMenu->menuAction();
+	// The object name of the action will be set for the QToolButton that
+	// is created in the dock area title bar. You can use this name for CSS
+	// styling
+	MenuAction->setObjectName("optionsMenu");
+	DockWidget->setTitleBarActions({OptionsMenu->menuAction()});
+
 	return DockWidget;
 }
 
