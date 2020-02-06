@@ -338,6 +338,7 @@ void DockAreaWidgetPrivate::updateTitleBarButtonStates()
 		_this->features().testFlag(CDockWidget::DockWidgetClosable));
 	TitleBar->button(TitleBarButtonUndock)->setEnabled(
 		_this->features().testFlag(CDockWidget::DockWidgetFloatable));
+	TitleBar->updateDockWidgetActionsButtons();
 	UpdateTitleBarButtons = false;
 }
 

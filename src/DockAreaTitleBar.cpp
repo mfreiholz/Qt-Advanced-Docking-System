@@ -113,6 +113,7 @@ struct DockAreaTitleBarPrivate
  */
 class CTitleBarButton : public tTitleBarButton
 {
+	Q_OBJECT
 	bool Visible = true;
 	bool HideWhenDisabled = false;
 public:
@@ -354,19 +355,9 @@ void CDockAreaTitleBar::onTabsMenuActionTriggered(QAction* Action)
 
 
 //============================================================================
-void CDockAreaTitleBar::onCurrentTabChanged(int Index)
+void CDockAreaTitleBar::updateDockWidgetActionsButtons()
 {
-	if (Index < 0)
-	{
-		return;
-	}
-
-	CDockWidget* DockWidget = d->TabBar->tab(Index)->dockWidget();
-	if (d->testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
-	{
-		d->CloseButton->setEnabled(DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));
-	}
-
+	CDockWidget* DockWidget = d->TabBar->currentTab()->dockWidget();
 	if (!d->DockWidgetActionsButtons.isEmpty())
 	{
 		for (auto Button : d->DockWidgetActionsButtons)
@@ -394,6 +385,24 @@ void CDockAreaTitleBar::onCurrentTabChanged(int Index)
 		d->TopLayout->insertWidget(InsertIndex++, Button, 0);
 		d->DockWidgetActionsButtons.append(Button);
 	}
+}
+
+
+//============================================================================
+void CDockAreaTitleBar::onCurrentTabChanged(int Index)
+{
+	if (Index < 0)
+	{
+		return;
+	}
+
+	if (d->testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
+	{
+		CDockWidget* DockWidget = d->TabBar->tab(Index)->dockWidget();
+		d->CloseButton->setEnabled(DockWidget->features().testFlag(CDockWidget::DockWidgetClosable));
+	}
+
+	updateDockWidgetActionsButtons();
 }
 
 
@@ -439,6 +448,8 @@ void CDockAreaTitleBar::showContextMenu(const QPoint& pos)
 
 
 } // namespace ads
+
+#include "DockAreaTitleBar.moc"
 
 //---------------------------------------------------------------------------
 // EOF DockAreaTitleBar.cpp

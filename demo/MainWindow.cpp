@@ -192,6 +192,8 @@ static ads::CDockWidget* createEditorWidget(QMenu* ViewMenu)
 	// styling
 	MenuAction->setObjectName("optionsMenu");
 	DockWidget->setTitleBarActions({OptionsMenu->menuAction()});
+	auto a = OptionsMenu->addAction(QObject::tr("Clear Editor"));
+	w->connect(a, SIGNAL(triggered()), SLOT(clear()));
 
 	return DockWidget;
 }
@@ -424,6 +426,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 {
 	using namespace ads;
 	d->ui.setupUi(this);
+
 	d->createActions();
 
 	// uncomment the following line if the tab close button should be
