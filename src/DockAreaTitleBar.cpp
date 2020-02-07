@@ -460,7 +460,7 @@ void CDockAreaTitleBar::updateDockWidgetActionsButtons()
 		return;
 	}
 
-	int InsertIndex = 2;
+	int InsertIndex = indexOf(d->TabsMenuButton);
 	for (auto Action : Actions)
 	{
 		auto Button = new CTitleBarButton(true, this);

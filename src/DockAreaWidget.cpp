@@ -856,6 +856,13 @@ void CDockAreaWidget::closeOtherAreas()
 {
 	dockContainer()->closeOtherAreas(this);
 }
+
+
+//============================================================================
+CDockAreaTitleBar* CDockAreaWidget::titleBar() const
+{
+	return d->TitleBar;
+}
 } // namespace ads
 
 //---------------------------------------------------------------------------

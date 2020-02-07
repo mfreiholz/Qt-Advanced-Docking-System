@@ -57,6 +57,8 @@
 #include <QStyle>
 #include <QMessageBox>
 #include <QMenu>
+#include <QToolButton>
+
 
 #ifdef Q_OS_WIN
 #include <QAxWidget>
@@ -68,6 +70,8 @@
 #include "DockManager.h"
 #include "DockWidget.h"
 #include "DockAreaWidget.h"
+#include "DockAreaTitleBar.h"
+#include "DockAreaTabBar.h"
 #include "FloatingDockContainer.h"
 
 
@@ -315,10 +319,32 @@ void MainWindowPrivate::createContent()
 	FileSystemWidget->setFeature(ads::CDockWidget::DockWidgetFloatable, false);
 	appendFeaturStringToWindowTitle(FileSystemWidget);
 	auto TopDockArea = DockManager->addDockWidget(ads::TopDockWidgetArea, FileSystemWidget);
+
+	// We create a calender widget and clear all flags to prevent the dock area
+	// from closing
 	DockWidget = createCalendarDockWidget(ViewMenu);
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
+	DockWidget->setFeature(ads::CDockWidget::DockWidgetMovable, false);
+	DockWidget->setFeature(ads::CDockWidget::DockWidgetFloatable, false);
 	DockWidget->setTabToolTip(QString("Tab ToolTip\nHodie est dies magna"));
-	DockManager->addDockWidget(ads::CenterDockWidgetArea, DockWidget, TopDockArea);
+	auto DockArea = DockManager->addDockWidget(ads::CenterDockWidgetArea, DockWidget, TopDockArea);
+
+	// Now we add a custom button to the dock area title bar that will create
+	// new editor widgets when clicked
+	auto CustomButton = new QToolButton(DockArea);
+	CustomButton->setToolTip(QObject::tr("Create Editor"));
+	CustomButton->setIcon(svgIcon(":/adsdemo/images/plus.svg"));
+	CustomButton->setAutoRaise(true);
+	auto TitleBar = DockArea->titleBar();
+	int Index = TitleBar->indexOf(TitleBar->tabBar());
+	TitleBar->insertWidget(Index + 1, CustomButton);
+	QObject::connect(CustomButton, &QToolButton::clicked, [=]()
+	{
+		auto DockWidget = createEditorWidget(ui.menuView);
+		DockWidget->setFeature(ads::CDockWidget::DockWidgetDeleteOnClose, true);
+		DockManager->addDockWidgetTabToArea(DockWidget, DockArea);
+		_this->connect(DockWidget, SIGNAL(closeRequested()), SLOT(onEditorCloseRequested()));
+	});
 
 	// Test dock area docking
 	auto RighDockArea = DockManager->addDockWidget(ads::RightDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), TopDockArea);
