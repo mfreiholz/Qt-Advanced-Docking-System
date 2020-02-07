@@ -259,10 +259,6 @@ void DockAreaTitleBarPrivate::createTabBar()
 	_this->connect(TabBar, SIGNAL(currentChanged(int)), SLOT(onCurrentTabChanged(int)));
 	_this->connect(TabBar, SIGNAL(tabBarClicked(int)), SIGNAL(tabBarClicked(int)));
 	_this->connect(TabBar, SIGNAL(elidedChanged(bool)), SLOT(markTabsMenuOutdated()));
-
-	TabBar->setContextMenuPolicy(Qt::CustomContextMenu);
-	_this->connect(TabBar, SIGNAL(customContextMenuRequested(const QPoint&)),
-		SLOT(showContextMenu(const QPoint&)));
 }
 
 
@@ -520,25 +516,6 @@ void CDockAreaTitleBar::setVisible(bool Visible)
 
 
 //============================================================================
-void CDockAreaTitleBar::showContextMenu(const QPoint& pos)
-{
-	if (d->DragState == DraggingFloatingWidget)
-	{
-		return;
-	}
-
-	QMenu Menu(this);
-	auto Action = Menu.addAction(tr("Detach Area"), this, SLOT(onUndockButtonClicked()));
-	Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable));
-	Menu.addSeparator();
-	Action = Menu.addAction(tr("Close Area"), this, SLOT(onCloseButtonClicked()));
-	Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetClosable));
-	Menu.addAction(tr("Close Other Areas"), d->DockArea, SLOT(closeOtherAreas()));
-	Menu.exec(mapToGlobal(pos));
-}
-
-
-//============================================================================
 void CDockAreaTitleBar::mousePressEvent(QMouseEvent* ev)
 {
 	if (ev->button() == Qt::LeftButton)
@@ -634,6 +611,26 @@ void CDockAreaTitleBar::mouseDoubleClickEvent(QMouseEvent *event)
 		return;
 	}
 	d->makeAreaFloating(event->pos(), DraggingInactive);
+}
+
+
+//============================================================================
+void CDockAreaTitleBar::contextMenuEvent(QContextMenuEvent* ev)
+{
+	ev->accept();
+	if (d->isDraggingState(DraggingFloatingWidget))
+	{
+		return;
+	}
+
+	QMenu Menu(this);
+	auto Action = Menu.addAction(tr("Detach Area"), this, SLOT(onUndockButtonClicked()));
+	Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable));
+	Menu.addSeparator();
+	Action = Menu.addAction(tr("Close Area"), this, SLOT(onCloseButtonClicked()));
+	Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetClosable));
+	Menu.addAction(tr("Close Other Areas"), d->DockArea, SLOT(closeOtherAreas()));
+	Menu.exec(ev->globalPos());
 }
 
 

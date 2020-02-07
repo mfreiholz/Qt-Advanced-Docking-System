@@ -60,7 +60,6 @@ private slots:
 	void onUndockButtonClicked();
 	void onTabsMenuActionTriggered(QAction* Action);
 	void onCurrentTabChanged(int Index);
-	void showContextMenu(const QPoint& pos);
 
 protected:
 		/**
@@ -83,6 +82,11 @@ protected:
 	 * Double clicking the title bar also starts floating of the complete area
 	 */
 	virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
+
+	/**
+	 * Show context menu
+	 */
+	virtual void contextMenuEvent(QContextMenuEvent *event);
 
 public slots:
 	/**
