@@ -88,6 +88,7 @@ private:
 	friend struct DockWidgetTabPrivate;
 	friend class CFloatingDragPreview;
 	friend struct FloatingDragPreviewPrivate;
+	friend class CDockAreaTitleBar;
 
 protected:
 	/**

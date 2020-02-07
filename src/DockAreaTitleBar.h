@@ -62,6 +62,28 @@ private slots:
 	void onCurrentTabChanged(int Index);
 	void showContextMenu(const QPoint& pos);
 
+protected:
+		/**
+	 * Stores mouse position to detect dragging
+	 */
+	virtual void mousePressEvent(QMouseEvent* ev) override;
+
+	/**
+	 * Stores mouse position to detect dragging
+	 */
+	virtual void mouseReleaseEvent(QMouseEvent* ev) override;
+
+	/**
+	 * Starts floating the complete docking area including all dock widgets,
+	 * if it is not the last dock area in a floating widget
+	 */
+	virtual void mouseMoveEvent(QMouseEvent* ev) override;
+
+	/**
+	 * Double clicking the title bar also starts floating of the complete area
+	 */
+	virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
+
 public slots:
 	/**
 	 * Call this slot to tell the title bar that it should update the tabs menu

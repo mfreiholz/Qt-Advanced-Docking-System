@@ -41,6 +41,7 @@
 
 #include "ads_globals.h"
 #include "FloatingDockContainer.h"
+#include "FloatingDragPreview.h"
 #include "DockAreaWidget.h"
 #include "DockOverlay.h"
 #include "DockManager.h"
@@ -72,6 +73,11 @@ struct DockAreaTitleBarPrivate
 	QMenu* TabsMenu;
 	QList<tTitleBarButton*> DockWidgetActionsButtons;
 
+	QPoint DragStartMousePos;
+	eDragState DragState = DraggingInactive;
+	IFloatingWidget* FloatingWidget = nullptr;
+
+
 	/**
 	 * Private data constructor
 	 */
@@ -102,6 +108,25 @@ struct DockAreaTitleBarPrivate
 	{
 		return CDockManager::configFlags().testFlag(Flag);
 	}
+
+	/**
+	 * Test function for current drag state
+	 */
+	bool isDraggingState(eDragState dragState) const
+	{
+		return this->DragState == dragState;
+	}
+
+
+	/**
+	 * Starts floating
+	 */
+	void startFloating(const QPoint& Offset);
+
+	/**
+	 * Makes the dock area floating
+	 */
+	IFloatingWidget* makeAreaFloating(const QPoint& Offset, eDragState DragState);
 };// struct DockAreaTitleBarPrivate
 
 
@@ -242,6 +267,50 @@ void DockAreaTitleBarPrivate::createTabBar()
 
 
 //============================================================================
+IFloatingWidget* DockAreaTitleBarPrivate::makeAreaFloating(const QPoint& Offset, eDragState DragState)
+{
+	QSize Size = DockArea->size();
+	this->DragState = DragState;
+	bool OpaqueUndocking = CDockManager::configFlags().testFlag(CDockManager::OpaqueUndocking) ||
+		(DraggingFloatingWidget != DragState);
+	CFloatingDockContainer* FloatingDockContainer = nullptr;
+	IFloatingWidget* FloatingWidget;
+	if (OpaqueUndocking)
+	{
+		FloatingWidget = FloatingDockContainer = new CFloatingDockContainer(DockArea);
+	}
+	else
+	{
+		auto w = new CFloatingDragPreview(DockArea);
+		QObject::connect(w, &CFloatingDragPreview::draggingCanceled, [=]()
+		{
+			this->DragState = DraggingInactive;
+		});
+		FloatingWidget = w;
+	}
+
+    FloatingWidget->startFloating(Offset, Size, DragState, nullptr);
+    if (FloatingDockContainer)
+    {
+		auto TopLevelDockWidget = FloatingDockContainer->topLevelDockWidget();
+		if (TopLevelDockWidget)
+		{
+			TopLevelDockWidget->emitTopLevelChanged(true);
+		}
+    }
+
+	return FloatingWidget;
+}
+
+
+//============================================================================
+void DockAreaTitleBarPrivate::startFloating(const QPoint& Offset)
+{
+	FloatingWidget = makeAreaFloating(Offset, DraggingFloatingWidget);
+}
+
+
+//============================================================================
 CDockAreaTitleBar::CDockAreaTitleBar(CDockAreaWidget* parent) :
 	QFrame(parent),
 	d(new DockAreaTitleBarPrivate(this))
@@ -362,7 +431,7 @@ void CDockAreaTitleBar::onUndockButtonClicked()
 {
 	if (d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
 	{
-		d->TabBar->makeAreaFloating(mapFromGlobal(QCursor::pos()), DraggingInactive);
+		d->makeAreaFloating(mapFromGlobal(QCursor::pos()), DraggingInactive);
 	}
 }
 
@@ -453,7 +522,7 @@ void CDockAreaTitleBar::setVisible(bool Visible)
 //============================================================================
 void CDockAreaTitleBar::showContextMenu(const QPoint& pos)
 {
-	if (d->TabBar->dragState() == DraggingFloatingWidget)
+	if (d->DragState == DraggingFloatingWidget)
 	{
 		return;
 	}
@@ -466,6 +535,105 @@ void CDockAreaTitleBar::showContextMenu(const QPoint& pos)
 	Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetClosable));
 	Menu.addAction(tr("Close Other Areas"), d->DockArea, SLOT(closeOtherAreas()));
 	Menu.exec(mapToGlobal(pos));
+}
+
+
+//============================================================================
+void CDockAreaTitleBar::mousePressEvent(QMouseEvent* ev)
+{
+	if (ev->button() == Qt::LeftButton)
+	{
+		ev->accept();
+		d->DragStartMousePos = ev->pos();
+		d->DragState = DraggingMousePressed;
+		return;
+	}
+	Super::mousePressEvent(ev);
+}
+
+
+//============================================================================
+void CDockAreaTitleBar::mouseReleaseEvent(QMouseEvent* ev)
+{
+	if (ev->button() == Qt::LeftButton)
+	{
+        ADS_PRINT("CDockAreaTitleBar::mouseReleaseEvent");
+		ev->accept();
+		auto CurrentDragState = d->DragState;
+		d->DragStartMousePos = QPoint();
+		d->DragState = DraggingInactive;
+		if (DraggingFloatingWidget == CurrentDragState)
+		{
+			d->FloatingWidget->finishDragging();
+		}
+		return;
+	}
+	Super::mouseReleaseEvent(ev);
+}
+
+
+//============================================================================
+void CDockAreaTitleBar::mouseMoveEvent(QMouseEvent* ev)
+{
+	Super::mouseMoveEvent(ev);
+	if (!(ev->buttons() & Qt::LeftButton) || d->isDraggingState(DraggingInactive))
+	{
+		d->DragState = DraggingInactive;
+		return;
+	}
+
+    // move floating window
+    if (d->isDraggingState(DraggingFloatingWidget))
+    {
+        d->FloatingWidget->moveFloating();
+        return;
+    }
+
+	// If this is the last dock area in a dock container it does not make
+	// sense to move it to a new floating widget and leave this one
+	// empty
+	if (d->DockArea->dockContainer()->isFloating()
+	 && d->DockArea->dockContainer()->visibleDockAreaCount() == 1)
+	{
+		return;
+	}
+
+	// If one single dock widget in this area is not floatable then the whole
+	// area is not floatable
+	if (!d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
+	{
+		return;
+	}
+
+	int DragDistance = (d->DragStartMousePos - ev->pos()).manhattanLength();
+	if (DragDistance >= CDockManager::startDragDistance())
+	{
+        ADS_PRINT("CTabsScrollArea::startFloating");
+		d->startFloating(d->DragStartMousePos);
+		auto Overlay = d->DockArea->dockManager()->containerOverlay();
+		Overlay->setAllowedAreas(OuterDockAreas);
+	}
+
+	return;
+}
+
+
+//============================================================================
+void CDockAreaTitleBar::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	// If this is the last dock area in a dock container it does not make
+	// sense to move it to a new floating widget and leave this one
+	// empty
+	if (d->DockArea->dockContainer()->isFloating() && d->DockArea->dockContainer()->dockAreaCount() == 1)
+	{
+		return;
+	}
+
+	if (!d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
+	{
+		return;
+	}
+	d->makeAreaFloating(event->pos(), DraggingInactive);
 }
 
 
