@@ -66,7 +66,7 @@ struct DockAreaTitleBarPrivate
 	QPointer<tTitleBarButton> TabsMenuButton;
 	QPointer<tTitleBarButton> UndockButton;
 	QPointer<tTitleBarButton> CloseButton;
-	QBoxLayout* TopLayout;
+	QBoxLayout* Layout;
 	CDockAreaWidget* DockArea;
 	CDockAreaTabBar* TabBar;
 	bool MenuOutdated = true;
@@ -212,7 +212,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	TabsMenuButton->setMenu(TabsMenu);
 	internal::setToolTip(TabsMenuButton, QObject::tr("List all tabs"));
 	TabsMenuButton->setSizePolicy(ButtonSizePolicy);
-	TopLayout->addWidget(TabsMenuButton, 0);
+	Layout->addWidget(TabsMenuButton, 0);
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
 		SLOT(onTabsMenuActionTriggered(QAction*)));
 
@@ -223,7 +223,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	internal::setToolTip(UndockButton, QObject::tr("Detach Group"));
 	internal::setButtonIcon(UndockButton, QStyle::SP_TitleBarNormalButton, ads::DockAreaUndockIcon);
 	UndockButton->setSizePolicy(ButtonSizePolicy);
-	TopLayout->addWidget(UndockButton, 0);
+	Layout->addWidget(UndockButton, 0);
 	_this->connect(UndockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
 
 	// Close button
@@ -241,7 +241,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	}
 	CloseButton->setSizePolicy(ButtonSizePolicy);
 	CloseButton->setIconSize(QSize(16, 16));
-	TopLayout->addWidget(CloseButton, 0);
+	Layout->addWidget(CloseButton, 0);
 	_this->connect(CloseButton, SIGNAL(clicked()), SLOT(onCloseButtonClicked()));
 }
 
@@ -250,7 +250,8 @@ void DockAreaTitleBarPrivate::createButtons()
 void DockAreaTitleBarPrivate::createTabBar()
 {
 	TabBar = new CDockAreaTabBar(DockArea);
-	TopLayout->addWidget(TabBar);
+    TabBar->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+	Layout->addWidget(TabBar);
 	_this->connect(TabBar, SIGNAL(tabClosed(int)), SLOT(markTabsMenuOutdated()));
 	_this->connect(TabBar, SIGNAL(tabOpened(int)), SLOT(markTabsMenuOutdated()));
 	_this->connect(TabBar, SIGNAL(tabInserted(int)), SLOT(markTabsMenuOutdated()));
@@ -314,18 +315,16 @@ CDockAreaTitleBar::CDockAreaTitleBar(CDockAreaWidget* parent) :
 	d->DockArea = parent;
 
 	setObjectName("dockAreaTitleBar");
-	d->TopLayout = new QBoxLayout(QBoxLayout::LeftToRight);
-	d->TopLayout->setContentsMargins(0, 0, 0, 0);
-	d->TopLayout->setSpacing(0);
-	setLayout(d->TopLayout);
+	d->Layout = new QBoxLayout(QBoxLayout::LeftToRight);
+	d->Layout->setContentsMargins(0, 0, 0, 0);
+	d->Layout->setSpacing(0);
+	setLayout(d->Layout);
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
 	d->createTabBar();
-	d->TabBar->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 	auto horizontalSpacer = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
-	d->TopLayout->addSpacerItem(horizontalSpacer);
+	d->Layout->addSpacerItem(horizontalSpacer);
 	d->createButtons();
-
 }
 
 
@@ -449,7 +448,7 @@ void CDockAreaTitleBar::updateDockWidgetActionsButtons()
 	{
 		for (auto Button : d->DockWidgetActionsButtons)
 		{
-			d->TopLayout->removeWidget(Button);
+			d->Layout->removeWidget(Button);
 			delete Button;
 		}
 		d->DockWidgetActionsButtons.clear();
@@ -469,7 +468,7 @@ void CDockAreaTitleBar::updateDockWidgetActionsButtons()
 		Button->setAutoRaise(true);
 		Button->setPopupMode(QToolButton::InstantPopup);
 		Button->setObjectName(Action->objectName());
-		d->TopLayout->insertWidget(InsertIndex++, Button, 0);
+		d->Layout->insertWidget(InsertIndex++, Button, 0);
 		d->DockWidgetActionsButtons.append(Button);
 	}
 }
@@ -631,6 +630,20 @@ void CDockAreaTitleBar::contextMenuEvent(QContextMenuEvent* ev)
 	Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetClosable));
 	Menu.addAction(tr("Close Other Areas"), d->DockArea, SLOT(closeOtherAreas()));
 	Menu.exec(ev->globalPos());
+}
+
+
+//============================================================================
+void CDockAreaTitleBar::insertWidget(int index, QWidget *widget)
+{
+	d->Layout->insertWidget(index, widget);
+}
+
+
+//============================================================================
+int CDockAreaTitleBar::indexOf(QWidget *widget) const
+{
+	return d->Layout->indexOf(widget);
 }
 
 

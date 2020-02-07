@@ -170,6 +170,7 @@ void CDockAreaTabBar::setCurrentIndex(int index)
     emit currentChanging(index);
 	d->CurrentIndex = index;
 	d->updateTabs();
+	updateGeometry();
 	emit currentChanged(index);
 }
 
