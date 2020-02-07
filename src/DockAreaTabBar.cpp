@@ -445,9 +445,15 @@ bool CDockAreaTabBar::eventFilter(QObject *watched, QEvent *event)
 	switch (event->type())
 	{
 	case QEvent::Hide:
-		 emit tabClosed(d->TabsLayout->indexOf(Tab)); break;
+		 emit tabClosed(d->TabsLayout->indexOf(Tab));
+		 updateGeometry();
+		 break;
+
 	case QEvent::Show:
-		 emit tabOpened(d->TabsLayout->indexOf(Tab)); break;
+		 emit tabOpened(d->TabsLayout->indexOf(Tab));
+		 updateGeometry();
+		 break;
+
 	default:
 		break;
 	}
