@@ -123,22 +123,23 @@ CDockAreaTabBar::CDockAreaTabBar(CDockAreaWidget* parent) :
 	d(new DockAreaTabBarPrivate(this))
 {
 	d->DockArea = parent;
-	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 	setFrameStyle(QFrame::NoFrame);
 	setWidgetResizable(true);
 	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 	d->TabsContainerWidget = new QWidget();
+	d->TabsContainerWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 	d->TabsContainerWidget->setObjectName("tabsContainerWidget");
-	setWidget(d->TabsContainerWidget);
-
 	d->TabsLayout = new QBoxLayout(QBoxLayout::LeftToRight);
 	d->TabsLayout->setContentsMargins(0, 0, 0, 0);
 	d->TabsLayout->setSpacing(0);
 	d->TabsLayout->addStretch(1);
 	d->TabsContainerWidget->setLayout(d->TabsLayout);
+	setWidget(d->TabsContainerWidget);
 }
+
 
 //============================================================================
 CDockAreaTabBar::~CDockAreaTabBar()
@@ -350,6 +351,8 @@ void CDockAreaTabBar::insertTab(int Index, CDockWidgetTab* Tab)
 	{
 		setCurrentIndex(d->CurrentIndex + 1);
 	}
+
+	updateGeometry();
 }
 
 
@@ -412,6 +415,8 @@ void CDockAreaTabBar::removeTab(CDockWidgetTab* Tab)
 	{
 		d->updateTabs();
 	}
+
+	updateGeometry();
 }
 
 
@@ -620,7 +625,8 @@ bool CDockAreaTabBar::isTabOpen(int Index) const
 QSize CDockAreaTabBar::minimumSizeHint() const
 {
 	QSize Size = sizeHint();
-	Size.setWidth(Super::minimumSizeHint().width());// this defines the minimum width of a dock area
+	//Size.setWidth(Super::minimumSizeHint().width());// this defines the minimum width of a dock area
+	Size.setWidth(10);
 	return Size;
 }
 
@@ -628,9 +634,7 @@ QSize CDockAreaTabBar::minimumSizeHint() const
 //===========================================================================
 QSize CDockAreaTabBar::sizeHint() const
 {
-	QSize Size = Super::sizeHint();
-	Size.setHeight(d->TabsContainerWidget->sizeHint().height());
-	return Size;
+	return d->TabsContainerWidget->sizeHint();
 }
 
 

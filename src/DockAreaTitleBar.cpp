@@ -253,9 +253,12 @@ CDockAreaTitleBar::CDockAreaTitleBar(CDockAreaWidget* parent) :
 	d->TopLayout->setContentsMargins(0, 0, 0, 0);
 	d->TopLayout->setSpacing(0);
 	setLayout(d->TopLayout);
-	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
 	d->createTabBar();
+	d->TabBar->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+	auto horizontalSpacer = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
+	d->TopLayout->addSpacerItem(horizontalSpacer);
 	d->createButtons();
 
 }
