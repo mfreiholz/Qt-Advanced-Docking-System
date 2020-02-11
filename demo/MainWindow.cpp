@@ -73,6 +73,8 @@
 #include "DockAreaTitleBar.h"
 #include "DockAreaTabBar.h"
 #include "FloatingDockContainer.h"
+#include "DockComponentsFactory.h"
+
 
 
 //============================================================================
@@ -143,6 +145,25 @@ static QIcon svgIcon(const QString& File)
 
 
 //============================================================================
+class CCustomComponentsFactory : public ads::CDockComponentsFactory
+{
+public:
+	using Super = ads::CDockComponentsFactory;
+	ads::CDockAreaTitleBar* createDockAreaTitleBar(ads::CDockAreaWidget* DockArea) const override
+	{
+		auto TitleBar = Super::createDockAreaTitleBar(DockArea);
+		auto CustomButton = new QToolButton(DockArea);
+		CustomButton->setToolTip(QObject::tr("Help"));
+		CustomButton->setIcon(svgIcon(":/adsdemo/images/help_outline.svg"));
+		CustomButton->setAutoRaise(true);
+		int Index = TitleBar->indexOf(TitleBar->button(ads::TitleBarButtonTabsMenu));
+		TitleBar->insertWidget(Index + 1, CustomButton);
+		return TitleBar;
+	}
+};
+
+
+//============================================================================
 static ads::CDockWidget* createCalendarDockWidget(QMenu* ViewMenu)
 {
 	static int CalendarCount = 0;
@@ -202,28 +223,29 @@ static ads::CDockWidget* createEditorWidget(QMenu* ViewMenu)
 	return DockWidget;
 }
 
+
 //============================================================================
 static ads::CDockWidget* createTableWidget(QMenu* ViewMenu)
 {
-   static int TableCount = 0;
-   QTableWidget* w = new QTableWidget();
-   ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Table %1").arg(TableCount++));
-   static int colCount = 5;
-   static int rowCount = 30;
-   w->setColumnCount(colCount);
-   w->setRowCount(rowCount);
-   for (int col = 0; col < colCount; ++col)
-   {
-      w->setHorizontalHeaderItem(col, new QTableWidgetItem(QString("Col %1").arg(col+1)));
-      for (int row = 0; row < rowCount; ++row)
-      {
-         w->setItem(row, col, new QTableWidgetItem(QString("T %1-%2").arg(row + 1).arg(col+1)));
-      }
-   }
-   DockWidget->setWidget(w);
-   DockWidget->setIcon(svgIcon(":/adsdemo/images/grid_on.svg"));
-   ViewMenu->addAction(DockWidget->toggleViewAction());
-   return DockWidget;
+	static int TableCount = 0;
+	QTableWidget* w = new QTableWidget();
+	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Table %1").arg(TableCount++));
+	static int colCount = 5;
+	static int rowCount = 30;
+	w->setColumnCount(colCount);
+	w->setRowCount(rowCount);
+	for (int col = 0; col < colCount; ++col)
+	{
+	  w->setHorizontalHeaderItem(col, new QTableWidgetItem(QString("Col %1").arg(col+1)));
+	  for (int row = 0; row < rowCount; ++row)
+	  {
+		 w->setItem(row, col, new QTableWidgetItem(QString("T %1-%2").arg(row + 1).arg(col+1)));
+	  }
+	}
+	DockWidget->setWidget(w);
+	DockWidget->setIcon(svgIcon(":/adsdemo/images/grid_on.svg"));
+	ViewMenu->addAction(DockWidget->toggleViewAction());
+	return DockWidget;
 }
 
 
@@ -318,7 +340,11 @@ void MainWindowPrivate::createContent()
 	FileSystemWidget->setFeature(ads::CDockWidget::DockWidgetMovable, false);
 	FileSystemWidget->setFeature(ads::CDockWidget::DockWidgetFloatable, false);
 	appendFeaturStringToWindowTitle(FileSystemWidget);
+
+	// Test custom factory - we inject a help button into the title bar
+	ads::CDockComponentsFactory::setFactory(new CCustomComponentsFactory());
 	auto TopDockArea = DockManager->addDockWidget(ads::TopDockWidgetArea, FileSystemWidget);
+	ads::CDockComponentsFactory::resetDefaultFactory();
 
 	// We create a calender widget and clear all flags to prevent the dock area
 	// from closing

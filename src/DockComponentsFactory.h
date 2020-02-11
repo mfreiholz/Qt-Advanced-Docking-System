@@ -10,6 +10,8 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include "ads_globals.h"
+
 namespace ads
 {
 class CDockWidgetTab;
@@ -30,7 +32,7 @@ class CDockWidget;
  * CDockComponentsFactory::setDefaultFactory(new MyComponentsFactory()));
  * \endcode
  */
-class CDockComponentsFactory
+class ADS_EXPORT CDockComponentsFactory
 {
 public:
 	/**
@@ -45,13 +47,18 @@ public:
 	/**
 	 * Returns the default components factory
 	 */
-	static const CDockComponentsFactory* defaultFactory();
+	static const CDockComponentsFactory* factory();
 
 	/**
 	 * Sets a new default factory for creation of GUI elements.
 	 * This function takes ownership of the given Factory.
 	 */
-	static void setDefaultFactory(CDockComponentsFactory* Factory);
+	static void setFactory(CDockComponentsFactory* Factory);
+
+	/**
+	 * Resets the current factory to the
+	 */
+	static void resetDefaultFactory();
 };
 
 
@@ -60,7 +67,7 @@ public:
  */
 inline const CDockComponentsFactory* componentsFactory()
 {
-	return CDockComponentsFactory::defaultFactory();
+	return CDockComponentsFactory::factory();
 }
 
 } // namespace ads

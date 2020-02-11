@@ -44,16 +44,23 @@ CDockAreaTitleBar* CDockComponentsFactory::createDockAreaTitleBar(CDockAreaWidge
 
 
 //============================================================================
-const CDockComponentsFactory* CDockComponentsFactory::defaultFactory()
+const CDockComponentsFactory* CDockComponentsFactory::factory()
 {
 	return DefaultFactory.get();
 }
 
 
 //============================================================================
-void CDockComponentsFactory::setDefaultFactory(CDockComponentsFactory* Factory)
+void CDockComponentsFactory::setFactory(CDockComponentsFactory* Factory)
 {
 	DefaultFactory.reset(Factory);
+}
+
+
+//============================================================================
+void CDockComponentsFactory::resetDefaultFactory()
+{
+	DefaultFactory.reset(new CDockComponentsFactory());
 }
 } // namespace ads
 
