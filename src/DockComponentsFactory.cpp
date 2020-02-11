@@ -46,7 +46,7 @@ CDockAreaTitleBar* CDockComponentsFactory::createDockAreaTitleBar(CDockAreaWidge
 //============================================================================
 const CDockComponentsFactory* CDockComponentsFactory::factory()
 {
-	return DefaultFactory.get();
+	return DefaultFactory.data();
 }
 
 
