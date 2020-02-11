@@ -40,8 +40,22 @@ public:
 	 */
 	virtual ~CDockComponentsFactory() {}
 
+	/**
+	 * This default implementation just creates a dock widget tab with
+	 * new CDockWidgetTab(DockWIdget).
+	 */
 	virtual CDockWidgetTab* createDockWidgetTab(CDockWidget* DockWidget) const;
+
+	/**
+	 * This default implementation just creates a dock area tab bar with
+	 * new CDockAreaTabBar(DockArea).
+	 */
 	virtual CDockAreaTabBar* createDockAreaTabBar(CDockAreaWidget* DockArea) const;
+
+	/**
+	 * This default implementation just creates a dock area title bar with
+	 * new CDockAreaTitleBar(DockArea).
+	 */
 	virtual CDockAreaTitleBar* createDockAreaTitleBar(CDockAreaWidget* DockArea) const;
 
 	/**

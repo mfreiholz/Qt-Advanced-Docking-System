@@ -151,7 +151,7 @@ public:
 	using Super = ads::CDockComponentsFactory;
 	ads::CDockAreaTitleBar* createDockAreaTitleBar(ads::CDockAreaWidget* DockArea) const override
 	{
-		auto TitleBar = Super::createDockAreaTitleBar(DockArea);
+		auto TitleBar = new ads::CDockAreaTitleBar(DockArea);
 		auto CustomButton = new QToolButton(DockArea);
 		CustomButton->setToolTip(QObject::tr("Help"));
 		CustomButton->setIcon(svgIcon(":/adsdemo/images/help_outline.svg"));
