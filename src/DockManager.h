@@ -59,6 +59,7 @@ class CDockWidgetTab;
 struct DockWidgetTabPrivate;
 struct DockAreaWidgetPrivate;
 class CIconProvider;
+class CDockComponentsFactory;
 
 /**
  * The central dock manager that maintains the complete docking system.

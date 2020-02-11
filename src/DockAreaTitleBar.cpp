@@ -49,6 +49,7 @@
 #include "DockWidgetTab.h"
 #include "DockAreaTabBar.h"
 #include "IconProvider.h"
+#include "DockComponentsFactory.h"
 
 #include <iostream>
 
@@ -273,7 +274,7 @@ void DockAreaTitleBarPrivate::createButtons()
 //============================================================================
 void DockAreaTitleBarPrivate::createTabBar()
 {
-	TabBar = new CDockAreaTabBar(DockArea);
+	TabBar = componentsFactory()->createDockAreaTabBar(DockArea);
     TabBar->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 	Layout->addWidget(TabBar);
 	_this->connect(TabBar, SIGNAL(tabClosed(int)), SLOT(markTabsMenuOutdated()));
