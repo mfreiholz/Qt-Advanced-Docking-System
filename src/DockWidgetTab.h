@@ -100,19 +100,6 @@ public:
 	CDockWidget* dockWidget() const;
 
 	/**
-	 * Sets the dock area widget the dockWidget returned by dockWidget()
-	 * function belongs to.
-	 */
-	void setDockAreaWidget(CDockAreaWidget* DockArea);
-
-	/**
-	 * Returns the dock area widget this title bar belongs to.
-	 * \return This function returns 0 if the dock widget that owns this title
-	 * bar widget has not been added to any dock area yet.
-	 */
-	CDockAreaWidget* dockAreaWidget() const;
-
-	/**
 	 * Sets the icon to show in title bar
 	 */
 	void setIcon(const QIcon& Icon);
