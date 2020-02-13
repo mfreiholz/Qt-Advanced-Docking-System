@@ -346,7 +346,7 @@ void MainWindowPrivate::createContent()
 	auto TopDockArea = DockManager->addDockWidget(ads::TopDockWidgetArea, FileSystemWidget);
 	ads::CDockComponentsFactory::resetDefaultFactory();
 
-	// We create a calender widget and clear all flags to prevent the dock area
+	// We create a calendar widget and clear all flags to prevent the dock area
 	// from closing
 	DockWidget = createCalendarDockWidget(ViewMenu);
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
@@ -506,6 +506,12 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	// uncomment the following line if you want to show tabs menu button on DockArea's title bar only when there are more than one tab and at least of them has elided title
 	//CDockManager::setConfigFlag(CDockManager::DockAreaDynamicTabsMenuButtonVisibility, true);
+
+	// uncomment the following line if you want floating container to always show application title instead of active dock widget's title
+	//CDockManager::setConfigFlag(CDockManager::FloatingContainerHasWidgetTitle, false);
+
+	// uncomment the following line if you want floating container to show active dock widget's icon instead of always showing application icon
+	//CDockManager::setConfigFlag(CDockManager::FloatingContainerHasWidgetIcon, true);
 
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
