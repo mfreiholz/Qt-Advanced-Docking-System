@@ -9,7 +9,8 @@
 //                                   INCLUDES
 //============================================================================
 #include <DockComponentsFactory.h>
-#include <QScopedPointer>
+
+#include <memory>
 
 #include "DockWidgetTab.h"
 #include "DockAreaTabBar.h"
@@ -19,7 +20,7 @@
 
 namespace ads
 {
-static QScopedPointer<CDockComponentsFactory> DefaultFactory(new CDockComponentsFactory());
+static std::unique_ptr<CDockComponentsFactory> DefaultFactory(new CDockComponentsFactory());
 
 
 //============================================================================
@@ -46,7 +47,7 @@ CDockAreaTitleBar* CDockComponentsFactory::createDockAreaTitleBar(CDockAreaWidge
 //============================================================================
 const CDockComponentsFactory* CDockComponentsFactory::factory()
 {
-	return DefaultFactory.data();
+	return DefaultFactory.get();
 }
 
 
