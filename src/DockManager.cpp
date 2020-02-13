@@ -411,7 +411,7 @@ CDockManager::CDockManager(QWidget *parent) :
 	d(new DockManagerPrivate(this))
 {
 	createRootSplitter();
-	QMainWindow* MainWindow = dynamic_cast<QMainWindow*>(parent);
+	QMainWindow* MainWindow = qobject_cast<QMainWindow*>(parent);
 	if (MainWindow)
 	{
 		MainWindow->setCentralWidget(this);
