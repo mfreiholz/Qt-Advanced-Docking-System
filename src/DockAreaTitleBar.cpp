@@ -235,7 +235,7 @@ void DockAreaTitleBarPrivate::createButtons()
 #endif
 	_this->connect(TabsMenu, SIGNAL(aboutToShow()), SLOT(onTabsMenuAboutToShow()));
 	TabsMenuButton->setMenu(TabsMenu);
-	internal::setToolTip(TabsMenuButton, QObject::tr("List all tabs"));
+	internal::setToolTip(TabsMenuButton, QObject::tr("List All Tabs"));
 	TabsMenuButton->setSizePolicy(ButtonSizePolicy);
 	Layout->addWidget(TabsMenuButton, 0);
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),

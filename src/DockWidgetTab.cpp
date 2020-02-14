@@ -465,6 +465,20 @@ CDockWidget* CDockWidgetTab::dockWidget() const
 
 
 //============================================================================
+void CDockWidgetTab::setDockAreaWidget(CDockAreaWidget* DockArea)
+{
+	d->DockArea = DockArea;
+}
+
+
+//============================================================================
+CDockAreaWidget* CDockWidgetTab::dockAreaWidget() const
+{
+	return d->DockArea;
+}
+
+
+//============================================================================
 void CDockWidgetTab::setIcon(const QIcon& Icon)
 {
 	QBoxLayout* Layout = qobject_cast<QBoxLayout*>(layout());
