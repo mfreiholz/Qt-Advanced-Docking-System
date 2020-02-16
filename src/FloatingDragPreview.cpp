@@ -291,25 +291,33 @@ void CFloatingDragPreview::finishDragging()
 	else
 	{
 		CDockWidget* DockWidget = qobject_cast<CDockWidget*>(d->Content);
-		CFloatingDockContainer* FloatingWidget;
-		if (DockWidget)
+		CFloatingDockContainer* FloatingWidget = nullptr;
+
+		if (DockWidget && DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable))
 		{
 			FloatingWidget = new CFloatingDockContainer(DockWidget);
 		}
 		else
 		{
 			CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(d->Content);
-			FloatingWidget = new CFloatingDockContainer(DockArea);
+			if (DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
+			{
+				FloatingWidget = new CFloatingDockContainer(DockArea);
+			}
 		}
-		FloatingWidget->setGeometry(this->geometry());
-		FloatingWidget->show();
-		if (!CDockManager::configFlags().testFlag(CDockManager::DragPreviewHasWindowFrame))
+
+		if (FloatingWidget)
 		{
-			QApplication::processEvents();
-			int FrameHeight = FloatingWidget->frameGeometry().height() - FloatingWidget->geometry().height();
-			QRect FixedGeometry = this->geometry();
-			FixedGeometry.adjust(0, FrameHeight, 0, 0);
-			FloatingWidget->setGeometry(FixedGeometry);
+			FloatingWidget->setGeometry(this->geometry());
+			FloatingWidget->show();
+			if (!CDockManager::configFlags().testFlag(CDockManager::DragPreviewHasWindowFrame))
+			{
+				QApplication::processEvents();
+				int FrameHeight = FloatingWidget->frameGeometry().height() - FloatingWidget->geometry().height();
+				QRect FixedGeometry = this->geometry();
+				FixedGeometry.adjust(0, FrameHeight, 0, 0);
+				FloatingWidget->setGeometry(FixedGeometry);
+			}
 		}
 	}
 

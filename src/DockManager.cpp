@@ -58,7 +58,7 @@
 
 namespace ads
 {
-static CDockManager::ConfigFlags StaticConfigFlags = CDockManager::DefaultOpaqueConfig;
+static CDockManager::ConfigFlags StaticConfigFlags = CDockManager::DefaultNonOpaqueConfig;
 
 /**
  * Private data class of CDockManager class (pimpl)

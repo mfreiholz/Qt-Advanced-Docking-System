@@ -600,7 +600,11 @@ void CDockAreaTitleBar::mouseMoveEvent(QMouseEvent* ev)
 
 	// If one single dock widget in this area is not floatable then the whole
 	// area is not floatable
-	if (!d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
+	// If we do non opaque undocking, then we can create the floating drag
+	// preview if the dock widget is movable
+	auto Features = d->DockArea->features();
+    if (!Features.testFlag(CDockWidget::DockWidgetFloatable)
+    && !(Features.testFlag(CDockWidget::DockWidgetMovable) && !CDockManager::testConfigFlag(CDockManager::OpaqueUndocking)))
 	{
 		return;
 	}
