@@ -68,6 +68,7 @@ struct DockWidgetTabPrivate
 	QLabel* IconLabel = nullptr;
 	tTabLabel* TitleLabel;
 	QPoint GlobalDragStartMousePosition;
+	QPoint DragStartMousePosition;
 	bool IsActiveTab = false;
 	CDockAreaWidget* DockArea = nullptr;
 	eDragState DragState = DraggingInactive;
@@ -150,6 +151,15 @@ struct DockWidgetTabPrivate
 			return w;
 		}
 	}
+
+	/**
+	 * Saves the drag start position in global and local coordinates
+	 */
+	void saveDragStartMousePosition(const QPoint& GlobalPos)
+	{
+		GlobalDragStartMousePosition = GlobalPos;
+		DragStartMousePosition = _this->mapFromGlobal(GlobalPos);
+	}
 };
 // struct DockWidgetTabPrivate
 
@@ -229,7 +239,6 @@ bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
 
     ADS_PRINT("startFloating");
 	DragState = DraggingState;
-	auto DragStartMousePosition = _this->mapFromGlobal(GlobalDragStartMousePosition);
 	QSize Size = DockArea->size();
 	IFloatingWidget* FloatingWidget = nullptr;
 	bool OpaqueUndocking = CDockManager::configFlags().testFlag(CDockManager::OpaqueUndocking) ||
@@ -287,7 +296,7 @@ void CDockWidgetTab::mousePressEvent(QMouseEvent* ev)
 	if (ev->button() == Qt::LeftButton)
 	{
 		ev->accept();
-        d->GlobalDragStartMousePosition = ev->globalPos();
+        d->saveDragStartMousePosition(ev->globalPos());
         d->DragState = DraggingMousePressed;
         emit clicked();
 		return;
@@ -304,6 +313,7 @@ void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 	{
 		auto CurrentDragState = d->DragState;
 		d->GlobalDragStartMousePosition = QPoint();
+		d->DragStartMousePosition = QPoint();
 		d->DragState = DraggingInactive;
 
 		switch (CurrentDragState)
@@ -412,7 +422,7 @@ void CDockWidgetTab::contextMenuEvent(QContextMenuEvent* ev)
 		return;
 	}
 
-	d->GlobalDragStartMousePosition = ev->globalPos();
+	d->saveDragStartMousePosition(ev->globalPos());
 	QMenu Menu(this);
 
     const bool isFloatable = d->DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable);
@@ -542,7 +552,7 @@ void CDockWidgetTab::mouseDoubleClickEvent(QMouseEvent *event)
 	if ((!d->DockArea->dockContainer()->isFloating() || d->DockArea->dockWidgetsCount() > 1)
 		&& d->DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable))
 	{
-		d->GlobalDragStartMousePosition = event->globalPos();
+		d->saveDragStartMousePosition(event->globalPos());
 		d->startFloating(DraggingInactive);
 	}
 
@@ -585,7 +595,8 @@ void CDockWidgetTab::detachDockWidget()
 	{
 		return;
 	}
-	d->GlobalDragStartMousePosition = QCursor::pos();
+
+	d->saveDragStartMousePosition(QCursor::pos());
 	d->startFloating(DraggingInactive);
 }
 
