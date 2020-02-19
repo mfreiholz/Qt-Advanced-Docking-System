@@ -357,16 +357,19 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     }
 
     // move tab
+    bool TabOutsideBar = false;
     if (d->isDraggingState(DraggingTab))
     {
         // Moving the tab is always allowed because it does not mean moving the
     	// dock widget around
     	d->moveTab(ev);
+    	TabOutsideBar = (geometry().right() < 0) || (geometry().left() > parentWidget()->rect().right());
     }
+
 
     // Maybe a fixed drag distance is better here ?
     int DragDistanceY = qAbs(d->GlobalDragStartMousePosition.y() - ev->globalPos().y());
-    if (DragDistanceY >= CDockManager::startDragDistance())
+    if (DragDistanceY >= CDockManager::startDragDistance() || TabOutsideBar)
 	{
 		// If this is the last dock area in a dock container with only
     	// one single dock widget it does not make  sense to move it to a new
@@ -390,7 +393,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
         	// tab because it looks strange if it remains on its dragged position
         	if (d->isDraggingState(DraggingTab) && !CDockManager::configFlags().testFlag(CDockManager::OpaqueUndocking))
 			{
-				this->move(d->TabDragStartPosition);
+        		parentWidget()->layout()->update();
 			}
             d->startFloating();
         }
