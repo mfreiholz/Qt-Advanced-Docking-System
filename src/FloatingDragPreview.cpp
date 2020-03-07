@@ -148,7 +148,7 @@ void FloatingDragPreviewPrivate::updateDropOverlays(const QPoint &GlobalPos)
 		// If there is only one single visible dock area in a container, then
 		// it does not make sense to show a dock overlay because the dock area
 		// would be removed and inserted at the same position
-		if (1 <= VisibleDockAreas)
+		if (VisibleDockAreas <= 1)
 		{
 			ContainerOverlay->hide();
 		}
