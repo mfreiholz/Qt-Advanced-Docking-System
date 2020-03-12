@@ -1452,30 +1452,9 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 }
 
 
-/**
- * Returns the dock area for a dropped widget.
- */
-CDockAreaWidget* droppedDockArea(QWidget* Widget)
-{
-	auto DroppedArea = qobject_cast<CDockAreaWidget*>(Widget);
-	if (!DroppedArea)
-	{
-		auto DroppedWidget = qobject_cast<CDockWidget*>(Widget);
-		DroppedArea = DroppedWidget->dockAreaWidget();
-	}
-
-	return DroppedArea;
-}
-
-
 //============================================================================
 void CDockContainerWidget::dropWidget(QWidget* Widget, DockWidgetArea DropArea, CDockAreaWidget* TargetAreaWidget)
 {
-	if (TargetAreaWidget && TargetAreaWidget == droppedDockArea(Widget))
-	{
-		return;
-	}
-
     CDockWidget* SingleDockWidget = topLevelDockWidget();
 	if (TargetAreaWidget)
 	{
