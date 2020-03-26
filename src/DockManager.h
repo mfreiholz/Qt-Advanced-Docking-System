@@ -30,18 +30,11 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include <ads_globals.h>
-#include <DockContainerWidget.h>
-#include <DockWidget.h>
-#include <FloatingDockContainer.h>
-#include <qbytearray.h>
-#include <qflags.h>
-#include <qlist.h>
-#include <qmap.h>
-#include <qobjectdefs.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <QtGui/qicon.h>
+#include "ads_globals.h"
+#include "DockContainerWidget.h"
+#include "DockWidget.h"
+#include "FloatingDockContainer.h"
+
 
 class QSettings;
 class QMenu;
