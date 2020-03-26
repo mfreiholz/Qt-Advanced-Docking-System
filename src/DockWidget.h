@@ -189,6 +189,23 @@ public:
         ForceNoScrollArea
     };
 
+
+    /**
+     * The mode of the minimumSizeHint() that is returned by the DockWidget
+     * minimumSizeHint() function.
+     * To ensure, that a dock widget does not block resizing, the dock widget
+     * reimplements minimumSizeHint() function to return a very small minimum
+     * size hint. If you would like to adhere the minimumSizeHint() from the
+     * content widget, the set the minimumSizeHintMode() to
+     * MinimumSizeHintFromContent.
+     */
+    enum eMinimumSizeHintMode
+    {
+    	MinimumSizeHintFromDockWidget,
+    	MinimumSizeHintFromContent
+    };
+
+
     /**
      * This mode configures the behavior of the toggle view action.
      * If the mode if ActionModeToggle, then the toggle view action is
@@ -333,6 +350,13 @@ public:
      * \see eToggleViewActionMode for a detailed description
      */
     void setToggleViewActionMode(eToggleViewActionMode Mode);
+
+    /**
+     * Configures the minimum size hint that is returned by the
+     * minimumSizeHint() function.
+     * \see eMinimumSizeHintMode for a detailed description
+     */
+    void setMinimumSizeHintMode(eMinimumSizeHintMode Mode);
 
     /**
      * Sets the dock widget icon that is shown in tabs and in toggle view

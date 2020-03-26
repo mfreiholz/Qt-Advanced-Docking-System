@@ -82,6 +82,7 @@ struct DockWidgetPrivate
 	QSize ToolBarIconSizeFloating = QSize(24, 24);
 	bool IsFloatingTopLevel = false;
 	QList<QAction*> TitleBarActions;
+	CDockWidget::eMinimumSizeHintMode MinimumSizeHintMode = CDockWidget::MinimumSizeHintFromDockWidget;
 
 	/**
 	 * Private data constructor
@@ -425,6 +426,13 @@ void CDockWidget::setToggleViewActionMode(eToggleViewActionMode Mode)
 
 
 //============================================================================
+void CDockWidget::setMinimumSizeHintMode(eMinimumSizeHintMode Mode)
+{
+	d->MinimumSizeHintMode = Mode;
+}
+
+
+//============================================================================
 void CDockWidget::toggleView(bool Open)
 {
 	// If the toggle view action mode is ActionModeShow, then Open is always
@@ -753,7 +761,14 @@ void CDockWidget::setClosedState(bool Closed)
 //============================================================================
 QSize CDockWidget::minimumSizeHint() const
 {
-	return QSize(60, 40);
+	if (d->MinimumSizeHintMode == CDockWidget::MinimumSizeHintFromDockWidget || !d->Widget)
+	{
+		return QSize(60, 40);
+	}
+	else
+	{
+		return d->Widget->minimumSizeHint();
+	}
 }
 
 
