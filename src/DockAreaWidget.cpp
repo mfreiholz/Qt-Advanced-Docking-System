@@ -247,6 +247,7 @@ struct DockAreaWidgetPrivate
 	CDockManager*		DockManager		= nullptr;
 	bool UpdateTitleBarButtons = false;
 	DockWidgetAreas		AllowedAreas	= AllDockAreas;
+	QSize MinSizeHint;
 
 	/**
 	 * Private data constructor
@@ -303,6 +304,20 @@ struct DockAreaWidgetPrivate
 	 * Udpates the enable state of the close and detach button
 	 */
 	void updateTitleBarButtonStates();
+
+	/**
+	 * Scans all contained dock widgets for the max. minimum size hint
+	 */
+	void updateMinimumSizeHint()
+	{
+		MinSizeHint = QSize();
+		for (int i = 0; i < ContentsLayout->count(); ++i)
+		{
+			auto Widget = ContentsLayout->widget(i);
+			MinSizeHint.setHeight(qMax(MinSizeHint.height(), Widget->minimumSizeHint().height()));
+			MinSizeHint.setWidth(qMax(MinSizeHint.width(), Widget->minimumSizeHint().width()));
+		}
+	}
 };
 // struct DockAreaWidgetPrivate
 
@@ -407,6 +422,8 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 	d->tabBar()->blockSignals(false);
 	TabWidget->setVisible(!DockWidget->isClosed());
 	DockWidget->setProperty(INDEX_PROPERTY, index);
+	d->MinSizeHint.setHeight(qMax(d->MinSizeHint.height(), DockWidget->minimumSizeHint().height()));
+	d->MinSizeHint.setWidth(qMax(d->MinSizeHint.width(), DockWidget->minimumSizeHint().width()));
 	if (Activate)
 	{
 		setCurrentIndex(index);
@@ -447,6 +464,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 
 	d->updateTitleBarButtonStates();
 	updateTitleBarVisibility();
+	d->updateMinimumSizeHint();
 	auto TopLevelDockWidget = DockContainer->topLevelDockWidget();
 	if (TopLevelDockWidget)
 	{
@@ -862,6 +880,13 @@ void CDockAreaWidget::closeOtherAreas()
 CDockAreaTitleBar* CDockAreaWidget::titleBar() const
 {
 	return d->TitleBar;
+}
+
+
+//============================================================================
+QSize CDockAreaWidget::minimumSizeHint() const
+{
+	return d->MinSizeHint.isValid() ? d->MinSizeHint : Super::minimumSizeHint();
 }
 } // namespace ads
 

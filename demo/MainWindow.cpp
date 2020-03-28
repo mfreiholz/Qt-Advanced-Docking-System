@@ -224,11 +224,27 @@ static ads::CDockWidget* createEditorWidget(QMenu* ViewMenu)
 }
 
 
+//===========================================================================
+/**
+ * Custom QTableWidget with a minimum size hint to test CDockWidget
+ * setMinimumSizeHintMode() function of CDockWidget
+ */
+class CMinSizeTableWidget : public QTableWidget
+{
+public:
+	using QTableWidget::QTableWidget;
+	virtual QSize minimumSizeHint() const override
+	{
+		return QSize(300, 100);
+	}
+};
+
+
 //============================================================================
 static ads::CDockWidget* createTableWidget(QMenu* ViewMenu)
 {
 	static int TableCount = 0;
-	QTableWidget* w = new QTableWidget();
+	auto w = new CMinSizeTableWidget();
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Table %1").arg(TableCount++));
 	static int colCount = 5;
 	static int rowCount = 30;
@@ -244,6 +260,7 @@ static ads::CDockWidget* createTableWidget(QMenu* ViewMenu)
 	}
 	DockWidget->setWidget(w);
 	DockWidget->setIcon(svgIcon(":/adsdemo/images/grid_on.svg"));
+	DockWidget->setMinimumSizeHintMode(ads::CDockWidget::MinimumSizeHintFromContent);
 	ViewMenu->addAction(DockWidget->toggleViewAction());
 	return DockWidget;
 }

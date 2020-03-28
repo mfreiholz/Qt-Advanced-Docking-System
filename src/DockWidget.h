@@ -242,7 +242,8 @@ public:
     virtual ~CDockWidget();
 
     /**
-     * We return a fixed minimum size hint for all dock widgets
+     * We return a fixed minimum size hint or the size hint of the content
+     * widget if minimum size hint mode is MinimumSizeHintFromContent
      */
     virtual QSize minimumSizeHint() const override;
 
