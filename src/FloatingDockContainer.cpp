@@ -385,7 +385,9 @@ void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 	switch (d->DraggingState)
 	{
 	case DraggingMousePressed:
+#ifdef Q_OS_WIN
 		qApp->installEventFilter(this);
+#endif
 		d->setState(DraggingFloatingWidget);
 		d->updateDropOverlays(QCursor::pos());
 		break;
@@ -484,8 +486,7 @@ bool CFloatingDockContainer::event(QEvent *e)
 		// It is really great to work around the whole NonClientMouseArea
 		// bugs
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 2))
-		if (e->type()
-		    == QEvent::NonClientAreaMouseButtonPress /*&& QGuiApplication::mouseButtons().testFlag(Qt::LeftButton)*/)
+		if (e->type() == QEvent::NonClientAreaMouseButtonPress /*&& QGuiApplication::mouseButtons().testFlag(Qt::LeftButton)*/)
 #else
 		if (e->type() == QEvent::NonClientAreaMouseButtonPress && QGuiApplication::mouseButtons().testFlag(Qt::LeftButton))
 #endif
