@@ -169,7 +169,12 @@ static ads::CDockWidget* createCalendarDockWidget(QMenu* ViewMenu)
 	static int CalendarCount = 0;
 	QCalendarWidget* w = new QCalendarWidget();
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Calendar %1").arg(CalendarCount++));
+	// The following lines are for testing the setWidget() and takeWidget()
+	// functionality
 	DockWidget->setWidget(w);
+	DockWidget->setWidget(w); // what happens if we set a widget if a widget is already set
+	DockWidget->takeWidget(); // we remove the widget
+	DockWidget->setWidget(w); // and set the widget again - there should be no error
 	DockWidget->setToggleViewActionMode(ads::CDockWidget::ActionModeShow);
 	DockWidget->setIcon(svgIcon(":/adsdemo/images/date_range.svg"));
 	ViewMenu->addAction(DockWidget->toggleViewAction());

@@ -257,6 +257,11 @@ void CDockWidget::setToggleViewActionChecked(bool Checked)
 //============================================================================
 void CDockWidget::setWidget(QWidget* widget, eInsertMode InsertMode)
 {
+	if (d->Widget)
+	{
+		takeWidget();
+	}
+
 	QScrollArea* ScrollAreaWidget = qobject_cast<QScrollArea*>(widget);
 	if (ScrollAreaWidget || ForceNoScrollArea == InsertMode)
 	{
@@ -280,10 +285,26 @@ void CDockWidget::setWidget(QWidget* widget, eInsertMode InsertMode)
 //============================================================================
 QWidget* CDockWidget::takeWidget()
 {
-	d->ScrollArea->takeWidget();
-	d->Layout->removeWidget(d->Widget);
-	d->Widget->setParent(nullptr);
-    return d->Widget;
+	QWidget* w = nullptr;
+	if (d->ScrollArea)
+	{
+		d->Layout->removeWidget(d->ScrollArea);
+		w = d->ScrollArea->takeWidget();
+		delete d->ScrollArea;
+		d->ScrollArea = nullptr;
+	}
+	else if (d->Widget)
+	{
+		d->Layout->removeWidget(d->Widget);
+		w = d->Widget;
+		d->Widget = nullptr;
+	}
+
+	if (w)
+	{
+		w->setParent(nullptr);
+	}
+    return w;
 }
 
 
