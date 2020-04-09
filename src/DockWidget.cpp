@@ -876,6 +876,48 @@ QList<QAction*> CDockWidget::titleBarActions() const
 }
 
 
+//============================================================================
+void CDockWidget::showFullScreen()
+{
+	if (isFloating())
+	{
+		dockContainer()->floatingWidget()->showFullScreen();
+	}
+	else
+	{
+		Super::showFullScreen();
+	}
+}
+
+
+//============================================================================
+void CDockWidget::showNormal()
+{
+	if (isFloating())
+	{
+		dockContainer()->floatingWidget()->showNormal();
+	}
+	else
+	{
+		Super::showFullScreen();
+	}
+}
+
+
+//============================================================================
+bool CDockWidget::isFullScreen() const
+{
+	if (isFloating())
+	{
+		return dockContainer()->floatingWidget()->isFullScreen();
+	}
+	else
+	{
+		return Super::isFullScreen();
+	}
+}
+
+
 } // namespace ads
 
 //---------------------------------------------------------------------------

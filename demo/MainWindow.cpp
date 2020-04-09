@@ -266,6 +266,19 @@ static ads::CDockWidget* createTableWidget(QMenu* ViewMenu)
 	DockWidget->setWidget(w);
 	DockWidget->setIcon(svgIcon(":/adsdemo/images/grid_on.svg"));
 	DockWidget->setMinimumSizeHintMode(ads::CDockWidget::MinimumSizeHintFromContent);
+	auto ToolBar = DockWidget->createDefaultToolBar();
+	auto Action = ToolBar->addAction(svgIcon(":/adsdemo/images/fullscreen.svg"), "Toggle Fullscreen");
+	QObject::connect(Action, &QAction::triggered, [=]()
+		{
+			if (DockWidget->isFullScreen())
+			{
+				DockWidget->showNormal();
+			}
+			else
+			{
+				DockWidget->showFullScreen();
+			}
+		});
 	ViewMenu->addAction(DockWidget->toggleViewAction());
 	return DockWidget;
 }
@@ -668,5 +681,12 @@ void CMainWindow::createTable()
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetDeleteOnClose, true);
 	auto FloatingWidget = d->DockManager->addDockWidgetFloating(DockWidget);
     FloatingWidget->move(QPoint(40, 40));
+}
+
+
+//============================================================================
+void CMainWindow::onFullscreenActionTriggered()
+{
+	std::cout << "CMainWindow::onFullscreenActionTriggered()" << std::endl;
 }
 

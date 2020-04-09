@@ -449,6 +449,12 @@ public:
     void setTabToolTip(const QString &text);
 #endif
 
+    /**
+     * Returns true if the dock widget is floating and if the floating dock
+     * container is full screen
+     */
+    bool isFullScreen() const;
+
 public: // reimplements QFrame -----------------------------------------------
     /**
      * Emits titleChanged signal if title change event occurs
@@ -477,6 +483,20 @@ public slots:
      * Closes the dock widget
      */
     void closeDockWidget();
+
+    /**
+     * Shows the widget in full-screen mode.
+     * Normally this function only affects windows. To make the interface
+     * compatible to QDockWidget, this function also maximizes a floating
+     * dock widget.
+     */
+    void showFullScreen();
+
+    /**
+     * This function complements showFullScreen() to restore the widget
+     * after it has been in full screen mode.
+     */
+    void showNormal();
 
 
 signals:
