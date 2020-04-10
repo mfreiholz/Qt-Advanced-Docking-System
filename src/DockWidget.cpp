@@ -899,7 +899,7 @@ void CDockWidget::showNormal()
 	}
 	else
 	{
-		Super::showFullScreen();
+		Super::showNormal();
 	}
 }
 
