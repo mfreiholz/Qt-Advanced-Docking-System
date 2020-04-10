@@ -489,6 +489,12 @@ public slots:
      * Normally this function only affects windows. To make the interface
      * compatible to QDockWidget, this function also maximizes a floating
      * dock widget.
+     *
+     * \note Full-screen mode works fine under Windows, but has certain
+     * problems (doe not work) under X (Linux). These problems are due to
+     * limitations of the ICCCM protocol that specifies the communication
+     * between X11 clients and the window manager. ICCCM simply does not
+     * understand the concept of non-decorated full-screen windows.
      */
     void showFullScreen();
 
