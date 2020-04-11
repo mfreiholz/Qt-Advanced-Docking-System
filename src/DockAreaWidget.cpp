@@ -488,7 +488,7 @@ void CDockAreaWidget::hideAreaWithNoVisibleContent()
 
 	//Hide empty floating widget
 	CDockContainerWidget* Container = this->dockContainer();
-	if (!Container->isFloating())
+	if (!Container->isFloating() && !CDockManager::testConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar))
 	{
 		return;
 	}
@@ -498,10 +498,13 @@ void CDockAreaWidget::hideAreaWithNoVisibleContent()
 	auto FloatingWidget = Container->floatingWidget();
 	if (TopLevelWidget)
 	{
-		FloatingWidget->updateWindowTitle();
+		if (FloatingWidget)
+		{
+			FloatingWidget->updateWindowTitle();
+		}
 		CDockWidget::emitTopLevelEventForWidget(TopLevelWidget, true);
 	}
-	else if (Container->openedDockAreas().isEmpty())
+	else if (Container->openedDockAreas().isEmpty() && FloatingWidget)
 	{
 		FloatingWidget->hide();
 	}
@@ -729,7 +732,9 @@ void CDockAreaWidget::updateTitleBarVisibility()
 
 	if (d->TitleBar)
 	{
-		d->TitleBar->setVisible(!Container->isFloating() || !Container->hasTopLevelDockWidget());
+		bool Hidden = Container->hasTopLevelDockWidget() && (Container->isFloating()
+			|| CDockManager::configFlags().testFlag(CDockManager::HideSingleCentralWidgetTitleBar));
+		d->TitleBar->setVisible(!Hidden);
 	}
 }
 

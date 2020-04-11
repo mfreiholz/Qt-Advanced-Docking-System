@@ -386,7 +386,6 @@ void MainWindowPrivate::createContent()
 	// We create a calendar widget and clear all flags to prevent the dock area
 	// from closing
 	DockWidget = createCalendarDockWidget(ViewMenu);
-	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetMovable, false);
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetFloatable, false);
 	DockWidget->setTabToolTip(QString("Tab ToolTip\nHodie est dies magna"));
@@ -549,6 +548,11 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	// uncomment the following line if you want floating container to show active dock widget's icon instead of always showing application icon
 	//CDockManager::setConfigFlag(CDockManager::FloatingContainerHasWidgetIcon, true);
+
+	// uncomment the following line if you want a central widget in the main dock container (the dock manager) without a titlebar
+	// If you enable this code, you can test it in the demo with the Calendar 0
+	// dock widget.
+	// CDockManager::setConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar, true);
 
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
