@@ -690,10 +690,3 @@ void CMainWindow::createTable()
     FloatingWidget->move(QPoint(40, 40));
 }
 
-
-//============================================================================
-void CMainWindow::onFullscreenActionTriggered()
-{
-	std::cout << "CMainWindow::onFullscreenActionTriggered()" << std::endl;
-}
-
