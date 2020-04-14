@@ -88,3 +88,4 @@ If enabled the tab close buttons will be `QToolButtons` instead of `QPushButtons
 disabled by default. Normally the default configuration should be ok but if your
 application requires `QToolButtons` instead of `QPushButtons` for styling reasons
 or for any other reasons, then you can enable this flag.
+
