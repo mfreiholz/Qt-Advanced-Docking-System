@@ -31,7 +31,6 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionExit"/>
     <addaction name="actionSaveState"/>
     <addaction name="actionRestoreState"/>
    </widget>

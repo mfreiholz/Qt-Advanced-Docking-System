@@ -74,6 +74,7 @@
 #include "DockAreaTabBar.h"
 #include "FloatingDockContainer.h"
 #include "DockComponentsFactory.h"
+#include "StatusDialog.h"
 
 
 
@@ -466,6 +467,11 @@ void MainWindowPrivate::createActions()
 	a->setIcon(svgIcon(":/adsdemo/images/grid_on.svg"));
 	_this->connect(a, SIGNAL(triggered()), SLOT(createTable()));
 	ui.menuTests->addAction(a);
+
+	ui.menuTests->addSeparator();
+	a = ui.menuTests->addAction("Show Status Dialog");
+	_this->connect(a, SIGNAL(triggered()), SLOT(showStatusDialog()));
+	ui.menuTests->addSeparator();
 }
 
 
@@ -688,5 +694,13 @@ void CMainWindow::createTable()
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetDeleteOnClose, true);
 	auto FloatingWidget = d->DockManager->addDockWidgetFloating(DockWidget);
     FloatingWidget->move(QPoint(40, 40));
+}
+
+
+//============================================================================
+void CMainWindow::showStatusDialog()
+{
+	CStatusDialog Dialog(d->DockManager);
+	Dialog.exec();
 }
 
