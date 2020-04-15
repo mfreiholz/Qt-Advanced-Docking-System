@@ -1,5 +1,18 @@
 # User Guide
 
+- [Configuration Flags](#configuration-flags)
+  - [Setting Configuration Flags](#setting-configuration-flags)
+  - [`ActiveTabHasCloseButton`](#activetabhasclosebutton)
+  - [`DockAreaHasCloseButton`](#dockareahasclosebutton)
+  - [`DockAreaCloseButtonClosesTab`](#dockareaclosebuttonclosestab)
+  - [`OpaqueSplitterResize`](#opaquesplitterresize)
+  - [`XmlAutoFormattingEnabled`](#xmlautoformattingenabled)
+  - [`XmlCompressionEnabled`](#xmlcompressionenabled)
+  - [`TabCloseButtonIsToolButton`](#tabclosebuttonistoolbutton)
+  - [`AllTabsHaveCloseButton`](#alltabshaveclosebutton)
+  - [`RetainTabSizeWhenCloseButtonHidden`](#retaintabsizewhenclosebuttonhidden)
+  - [`OpaqueUndocking`](#opaqueundocking)
+
 ## Configuration Flags
 
 The Advanced Docking System has a number of global configuration options to
@@ -62,7 +75,7 @@ if not set, it closes the complete dock area (default).
 
 ### `OpaqueSplitterResize`
 
-The advanced docking system uses standard QSplitters as resize separators and thus supports opaque and non-opaque resizing functionality of QSplitter. In some rare cases, for very complex widgets or on slow machines resizing via separator on the fly may cause flicking and glaring of rendered content inside a widget. This global dock manager flag configures the resizing behaviour of the splitters. If this flag is set, then widgets are resized dynamically (opaquely) while interactively moving the splitters. If you select the predefined configuration `DefaultOpaqueConfig`, then this is the configured behaviour.
+The advanced docking system uses standard `QSplitters` as resize separators and thus supports opaque and non-opaque resizing functionality of `QSplitter`. In some rare cases, for very complex widgets or on slow machines resizing via separator on the fly may cause flicking and glaring of rendered content inside a widget. This global dock manager flag configures the resizing behaviour of the splitters. If this flag is set, then widgets are resized dynamically (opaquely) while interactively moving the splitters. If you select the predefined configuration `DefaultOpaqueConfig`, then this is the configured behaviour.
 
 ![Opaque resizing](opaque_resizing.gif)
 
@@ -88,3 +101,58 @@ If enabled the tab close buttons will be `QToolButtons` instead of `QPushButtons
 disabled by default. Normally the default configuration should be ok but if your
 application requires `QToolButtons` instead of `QPushButtons` for styling reasons
 or for any other reasons, then you can enable this flag.
+
+### `AllTabsHaveCloseButton`
+
+If this flag is set, then all tabs that are closable show a close button. The
+advantage of this setting is that the size of the tabs does not change and the
+user can immediately close each tab. The disadvantage is that all tabs take up
+more space.
+
+![AllTabsHaveCloseButton true](cfg_flag_AllTabsHaveCloseButton_true.png)
+
+If this flas is cleared, then only the active tab has a close button (default)
+and therefore the tabs need less space.
+
+![AllTabsHaveCloseButton false](cfg_flag_ActiveTabHasCloseButton_true.png)
+
+### `RetainTabSizeWhenCloseButtonHidden`
+
+If this flag is set, the space for the close button is reserved even if the
+close button is not visible. This flag is disabled by default. If this flag
+is disabled, the tab size dynamically changes if the close button is
+visible / hidden in a tab. If this flag is enabled, the tab size always remains
+constant, that means, if enabled, the tabs need more space.
+
+![AllTabsHaveCloseButton false](cfg_flag_RetainTabSizeWhenCloseButtonHidden_true.png)
+
+### `OpaqueUndocking`
+
+If this flag is set, opaque undocking is active. That means, as soon as you drag a dock widget or a dock area with a number of dock widgets it will be undocked and moved into a floating widget and then the floating widget will be dragged around. That means undocking will take place immediatelly. You can compare this with opaque splitter resizing.
+
+![OpaqueUndocking true](opaque_undocking.gif)
+
+If you would like to test opaque undocking, you should set the pedefined config
+flags `CDockManager::DefaultOpaqueConfig`.
+
+```c++
+CDockManager::setConfigFlags(CDockManager::DefaultOpaqueConfig);
+```
+
+If this flag is cleared (default), then non-opaque undocking is active. In this mode, undocking is more like a standard drag and drop operation. That means, the dragged dock widget or dock area is not undocked immediatelly. Instead, a drag preview widget is created and dragged around to indicate the future position of the dock widget or dock area. The actual dock operation is only executed when the mouse button is released. That makes it possible, to cancel an active drag operation with the escape key.
+
+![OpaqueUndocking true](non_opaque_undocking.gif)
+
+The drag preview widget can be configured by a number of global dock manager flags:
+
+- `DragPreviewIsDynamic`
+- `DragPreviewShowsContentPixmap`
+- `DragPreviewHasWindowFrame`
+
+Non-opaque undocking is enabled by default. If you would like to enable it
+explicitely, you can do this by setting the predefined configuration flags
+`CDockManager::DefaultNonOpaqueConfig`.
+
+```c++
+CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig);
+```
