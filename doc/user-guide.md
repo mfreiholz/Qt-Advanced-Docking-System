@@ -171,3 +171,5 @@ CDockManager::setConfigFlag(CDockManager::DragPreviewIsDynamic, true);
 CDockManager::setConfigFlag(CDockManager::DragPreviewShowsContentPixmap, false);
 CDockManager::setConfigFlag(CDockManager::DragPreviewHasWindowFrame, false);
 ```
+
+![DragPreviewIsDynamic true](dynamic_drag_preview.gif)
