@@ -12,6 +12,7 @@
   - [`AllTabsHaveCloseButton`](#alltabshaveclosebutton)
   - [`RetainTabSizeWhenCloseButtonHidden`](#retaintabsizewhenclosebuttonhidden)
   - [`OpaqueUndocking`](#opaqueundocking)
+  - [`DragPreviewIsDynamic`](#dragpreviewisdynamic)
 
 ## Configuration Flags
 
@@ -155,4 +156,18 @@ explicitely, you can do this by setting the predefined configuration flags
 
 ```c++
 CDockManager::setConfigFlags(CDockManager::DefaultNonOpaqueConfig);
+```
+
+### `DragPreviewIsDynamic`
+
+If non-opaque undocking is enabled, this flag defines the behavior of the drag 
+preview window. If this flag is enabled, then it will give the user the
+impression, that the floating drag preview is dynamically adjusted to the drop
+area. In order to give the perfect impression, you should disable the flags
+`DragPreviewShowsContentPixmap` and `DragPreviewHasWindowFrame`.
+
+```c++
+CDockManager::setConfigFlag(CDockManager::DragPreviewIsDynamic, true);
+CDockManager::setConfigFlag(CDockManager::DragPreviewShowsContentPixmap, false);
+CDockManager::setConfigFlag(CDockManager::DragPreviewHasWindowFrame, false);
 ```
