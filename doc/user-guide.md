@@ -13,6 +13,8 @@
   - [`RetainTabSizeWhenCloseButtonHidden`](#retaintabsizewhenclosebuttonhidden)
   - [`OpaqueUndocking`](#opaqueundocking)
   - [`DragPreviewIsDynamic`](#dragpreviewisdynamic)
+  - [`DragPreviewShowsContentPixmap`](#dragpreviewshowscontentpixmap)
+  - [`DragPreviewHasWindowFrame`](#dragpreviewhaswindowframe)
 
 ## Configuration Flags
 
@@ -173,3 +175,24 @@ CDockManager::setConfigFlag(CDockManager::DragPreviewHasWindowFrame, false);
 ```
 
 ![DragPreviewIsDynamic true](dynamic_drag_preview.gif)
+
+### `DragPreviewShowsContentPixmap`
+
+If non-opaque undocking is enabled, the created drag preview window shows a 
+copy of the content of the dock widget / dock are that is dragged, if this
+flag is enabled (default).
+
+![DragPreviewShowsContentPixmap true](cfg_flag_DragPreviewShowsContentPixmap_true.png)
+
+If this flag is disabled, the drag preview is only a transparent `QRubberBand`
+like window without any content.
+
+![DragPreviewShowsContentPixmap true](cfg_flag_DragPreviewShowsContentPixmap_false.png)
+
+### `DragPreviewHasWindowFrame`
+
+If non-opaque undocking is enabled, then this flag configures if the drag 
+preview is frameless (default) or looks like a real window. If it is enabled,
+then the drag preview is a transparent window with a system window frame.
+
+![DragPreviewHasWindowFrame true](cfg_flag_DragPreviewHasWindowFrame_true.png)

@@ -564,8 +564,6 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// CDockManager::setConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar, true);
 
 	// Now create the dock manager and its content
-	CDockManager::setConfigFlag(CDockManager::DragPreviewIsDynamic, true);
-	CDockManager::setConfigFlag(CDockManager::DragPreviewShowsContentPixmap, false);
 	d->DockManager = new CDockManager(this);
 
 	// uncomment the following line to have the old style where the dock
