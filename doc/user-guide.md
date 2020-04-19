@@ -15,6 +15,7 @@
   - [`DragPreviewIsDynamic`](#dragpreviewisdynamic)
   - [`DragPreviewShowsContentPixmap`](#dragpreviewshowscontentpixmap)
   - [`DragPreviewHasWindowFrame`](#dragpreviewhaswindowframe)
+  - [`AlwaysShowTabs`](#alwaysshowtabs)
 
 ## Configuration Flags
 
@@ -196,3 +197,12 @@ preview is frameless (default) or looks like a real window. If it is enabled,
 then the drag preview is a transparent window with a system window frame.
 
 ![DragPreviewHasWindowFrame true](cfg_flag_DragPreviewHasWindowFrame_true.png)
+
+### `AlwaysShowTabs`
+
+If this option is enabled, the tab of a dock widget is always displayed - even
+if it is the only visible dock widget in a floating widget. In the image below
+on the left side, the flag is disabled (default) and on the right side it is 
+enabled.
+
+![AlwaysShowTabs false true](cfg_flag_AlwaysShowTabs_false_true.png)
