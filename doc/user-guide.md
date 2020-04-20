@@ -16,6 +16,8 @@
   - [`DragPreviewShowsContentPixmap`](#dragpreviewshowscontentpixmap)
   - [`DragPreviewHasWindowFrame`](#dragpreviewhaswindowframe)
   - [`AlwaysShowTabs`](#alwaysshowtabs)
+  - [`DockAreaHasUndockButton`](#dockareahasundockbutton)
+  - [`DockAreaHasTabsMenuButton`](#dockareahastabsmenubutton)
 
 ## Configuration Flags
 
@@ -202,7 +204,26 @@ then the drag preview is a transparent window with a system window frame.
 
 If this option is enabled, the tab of a dock widget is always displayed - even
 if it is the only visible dock widget in a floating widget. In the image below
-on the left side, the flag is disabled (default) and on the right side it is 
+on the left side, the flag is disabled (default) and on the right side it is
 enabled.
 
 ![AlwaysShowTabs false true](cfg_flag_AlwaysShowTabs_false_true.png)
+
+### `DockAreaHasUndockButton`
+
+If the flag is set (default) each dock area has an undock button (right
+image). If the flag is cleared, a dock area has no undock button (left image)
+
+![DockAreaHasUndockButton false true](cfg_flag_DockAreaHasUndockButton_false_true.png)
+
+### `DockAreaHasTabsMenuButton`
+
+Tabs are a good way to quickly switch between dockwidgets in a dockarea.
+However, if the number of dockwidgets in a dockarea is too large, this may affect
+the usability of the tab bar. To keep track in this situation, you can use the
+tab menu. The menu allows you to quickly select the dockwidget you want to
+activate from a drop down menu. This flag shows / hides the tabs menu button
+in the dock area title bar. On the left side, the tabs menu button flag
+is cleared.
+
+![DockAreaHasTabsMenuButton false true](cfg_flag_DockAreaHasTabsMenuButton_false_true.png)
