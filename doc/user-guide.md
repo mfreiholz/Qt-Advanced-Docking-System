@@ -18,6 +18,7 @@
   - [`AlwaysShowTabs`](#alwaysshowtabs)
   - [`DockAreaHasUndockButton`](#dockareahasundockbutton)
   - [`DockAreaHasTabsMenuButton`](#dockareahastabsmenubutton)
+  - [`DockAreaHideDisabledButtons`](#dockareahidedisabledbuttons)
 
 ## Configuration Flags
 
@@ -227,3 +228,17 @@ in the dock area title bar. On the left side, the tabs menu button flag
 is cleared.
 
 ![DockAreaHasTabsMenuButton false true](cfg_flag_DockAreaHasTabsMenuButton_false_true.png)
+
+### `DockAreaHideDisabledButtons`
+
+If certain flags of a dock widget are disabled, like `DockWidgetClosable` or
+`DockWidgetFloatable`, then the corresponding dock area buttons like close
+button or detach button are disabled (greyed out). This is the default
+setting.
+
+![DockAreaHideDisabledButtons false](cfg_flag_DockAreaHideDisabledButtons_false.png)
+
+If the flag is set, disabled dock area buttons will not appear on the toolbar at
+all - they are hidden.
+
+![DockAreaHideDisabledButtons true](cfg_flag_DockAreaHideDisabledButtons_true.png)
