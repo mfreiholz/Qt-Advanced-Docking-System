@@ -566,10 +566,6 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
 
-	// uncomment the following line to have the old style where the dock
-	// area close button closes the active tab
-	// CDockManager::setConfigFlags({CDockManager::DockAreaHasCloseButton
-	//	| CDockManager::DockAreaCloseButtonClosesTab});
 	connect(d->PerspectiveComboBox, SIGNAL(activated(const QString&)),
 		d->DockManager, SLOT(openPerspective(const QString&)));
 
