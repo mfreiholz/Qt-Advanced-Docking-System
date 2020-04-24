@@ -19,6 +19,7 @@
   - [`DockAreaHasUndockButton`](#dockareahasundockbutton)
   - [`DockAreaHasTabsMenuButton`](#dockareahastabsmenubutton)
   - [`DockAreaHideDisabledButtons`](#dockareahidedisabledbuttons)
+  - [`DockAreaDynamicTabsMenuButtonVisibility`](#dockareadynamictabsmenubuttonvisibility)
 
 ## Configuration Flags
 
@@ -242,3 +243,15 @@ If the flag is set, disabled dock area buttons will not appear on the toolbar at
 all - they are hidden.
 
 ![DockAreaHideDisabledButtons true](cfg_flag_DockAreaHideDisabledButtons_true.png)
+
+### `DockAreaDynamicTabsMenuButtonVisibility`
+
+If this flag is cleared, the the tabs menu button is always visible. This is
+the default setting. If the flag is set, the tabs menu button will be shown
+only when it is required - that means, if the tabs are elided.
+
+![DockAreaDynamicTabsMenuButtonVisibility false](cfg_flag_DockAreaDynamicTabsMenuButtonVisibility_true_visible.png)
+
+If the tabs are not elided, the tabs menu button is hidden.
+
+![DockAreaDynamicTabsMenuButtonVisibility false](cfg_flag_DockAreaDynamicTabsMenuButtonVisibility_true_hidden.png)
