@@ -156,7 +156,7 @@ void FloatingDragPreviewPrivate::updateDropOverlays(const QPoint &GlobalPos)
 		// would be removed and inserted at the same position
 		if (VisibleDockAreas <= 1)
 		{
-			ContainerOverlay->hide();
+			ContainerOverlay->hideOverlay();
 		}
 
 		if (DockArea == ContentSourceArea && InvalidDockWidgetArea == ContainerDropArea)
