@@ -522,7 +522,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 {
 	using namespace ads;
 	d->ui.setupUi(this);
-
+	setWindowTitle(QApplication::instance()->applicationName());
 	d->createActions();
 
 	// uncomment the following line if the tab close button should be

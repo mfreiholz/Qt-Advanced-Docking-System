@@ -20,6 +20,7 @@
   - [`DockAreaHasTabsMenuButton`](#dockareahastabsmenubutton)
   - [`DockAreaHideDisabledButtons`](#dockareahidedisabledbuttons)
   - [`DockAreaDynamicTabsMenuButtonVisibility`](#dockareadynamictabsmenubuttonvisibility)
+  - [`FloatingContainerHasWidgetTitle`](#floatingcontainerhaswidgettitle)
 
 ## Configuration Flags
 
@@ -255,3 +256,12 @@ only when it is required - that means, if the tabs are elided.
 If the tabs are not elided, the tabs menu button is hidden.
 
 ![DockAreaDynamicTabsMenuButtonVisibility false](cfg_flag_DockAreaDynamicTabsMenuButtonVisibility_true_hidden.png)
+
+### `FloatingContainerHasWidgetTitle`
+
+If set (default), the Floating Widget window title reflects the title of the
+current dock widget.
+
+![FloatingContainerHasWidgetTitle true](cfg_flag_FloatingContainerHasWidgetTitle_true.png) 
+
+otherwise it displays application name as window title.
