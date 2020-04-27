@@ -299,19 +299,17 @@ void CFloatingDragPreview::finishDragging()
 	else
 	{
 		CDockWidget* DockWidget = qobject_cast<CDockWidget*>(d->Content);
+		CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(d->Content);
+
 		CFloatingDockContainer* FloatingWidget = nullptr;
 
 		if (DockWidget && DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable))
 		{
 			FloatingWidget = new CFloatingDockContainer(DockWidget);
 		}
-		else
+		else if (DockArea && DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
 		{
-			CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(d->Content);
-			if (DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
-			{
-				FloatingWidget = new CFloatingDockContainer(DockArea);
-			}
+			FloatingWidget = new CFloatingDockContainer(DockArea);
 		}
 
 		if (FloatingWidget)
