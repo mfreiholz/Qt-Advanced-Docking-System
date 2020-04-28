@@ -564,7 +564,6 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// CDockManager::setConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar, true);
 
 	// Now create the dock manager and its content
-	CDockManager::setConfigFlag(CDockManager::FloatingContainerHasWidgetIcon, true);
 	d->DockManager = new CDockManager(this);
 
 	connect(d->PerspectiveComboBox, SIGNAL(activated(const QString&)),
