@@ -290,7 +290,7 @@ or to close it via the close button.
 
 ![HideSingleCentralWidgetTitleBar true](cfg_flag_HideSingleCentralWidgetTitleBar_true.png)
 
-The Advanced Docking System is meant for applications without a static cnetral
+The Advanced Docking System is meant for applications without a static central
 widget and normally does not know anything about a central static widget.
 Therefore this flag is disabled by default and a central single dock widget
 still has a titlebar to drag it out of the main window.
