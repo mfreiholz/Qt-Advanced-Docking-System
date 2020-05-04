@@ -349,6 +349,10 @@ void CFloatingDragPreview::finishDragging()
 			d->DropContainer->dropWidget(d->Content, ContainerDropArea, nullptr);
 		}
 	}
+	else
+	{
+		d->createFloatingWidget();
+	}
 
 	this->close();
 	d->DockManager->containerOverlay()->hideOverlay();
