@@ -45,6 +45,8 @@
 #include <QSettings>
 #include <QMenu>
 #include <QApplication>
+#include <QGuiApplication>
+#include <QPointer>
 
 #include "FloatingDockContainer.h"
 #include "DockOverlay.h"
@@ -53,6 +55,7 @@
 #include "DockAreaWidget.h"
 #include "IconProvider.h"
 #include "DockingStateReader.h"
+#include "DockAreaTitleBar.h"
 
 
 /**
@@ -91,6 +94,7 @@ struct DockManagerPrivate
 	CDockManager::eViewMenuInsertionOrder MenuInsertionOrder = CDockManager::MenuAlphabeticallySorted;
 	bool RestoringState = false;
 	QVector<CFloatingDockContainer*> UninitializedFloatingWidgets;
+	QPointer<CDockWidget> FocusedDockWidget;
 
 	/**
 	 * Private data constructor
@@ -437,6 +441,8 @@ CDockManager::CDockManager(QWidget *parent) :
 	d->ContainerOverlay = new CDockOverlay(this, CDockOverlay::ModeContainerOverlay);
 	d->Containers.append(this);
 	d->loadStylesheet();
+	connect(QGuiApplication::instance(), SIGNAL(focusObjectChanged(QObject*)),
+		this, SLOT(onFocusObjectChanged(QObject*)));
 }
 
 //============================================================================
@@ -869,6 +875,74 @@ CIconProvider& CDockManager::iconProvider()
 {
 	static CIconProvider Instance;
 	return Instance;
+}
+
+
+//===========================================================================
+void  CDockManager::onFocusObjectChanged(QObject *focusObject)
+{
+	auto FocusWidget = qobject_cast<QWidget*>(focusObject);
+	if (!FocusWidget)
+	{
+		return;
+	}
+	auto DockWidget = internal::findParent<CDockWidget*>(FocusWidget);
+	if (!DockWidget)
+	{
+		return;
+	}
+
+	if (d->FocusedDockWidget.data() == DockWidget)
+	{
+		return;
+	}
+
+	QList<CDockWidget*> DockWidgets;
+	CDockAreaWidget* OldFocusedDockArea = nullptr;
+	CDockAreaWidget* NewFocusedDockArea = nullptr;
+	if (d->FocusedDockWidget)
+	{
+		d->FocusedDockWidget->setProperty("focused", false);
+		d->FocusedDockWidget->tabWidget()->setProperty("focused", false);
+		OldFocusedDockArea = d->FocusedDockWidget->dockAreaWidget();
+		if (OldFocusedDockArea)
+		{
+			OldFocusedDockArea->setProperty("focused", false);
+		}
+		DockWidgets.append(d->FocusedDockWidget);
+	}
+	d->FocusedDockWidget = DockWidget;
+	d->FocusedDockWidget->setProperty("focused", true);
+	d->FocusedDockWidget->tabWidget()->setProperty("focused", true);
+	NewFocusedDockArea = d->FocusedDockWidget->dockAreaWidget();
+	if (NewFocusedDockArea)
+	{
+		NewFocusedDockArea->setProperty("focused", true);
+	}
+	DockWidgets.append(d->FocusedDockWidget);
+
+	for (auto DockWidget : DockWidgets)
+	{
+		DockWidget->tabWidget()->updateStyle();
+		internal::repolishStyle(DockWidget);
+	}
+
+	if (OldFocusedDockArea == NewFocusedDockArea)
+	{
+		return;
+	}
+
+	if (OldFocusedDockArea)
+	{
+		internal::repolishStyle(OldFocusedDockArea);
+		internal::repolishStyle(OldFocusedDockArea->titleBar());
+	}
+
+	if (NewFocusedDockArea)
+	{
+		internal::repolishStyle(NewFocusedDockArea);
+		internal::repolishStyle(NewFocusedDockArea->titleBar());
+	}
 }
 
 

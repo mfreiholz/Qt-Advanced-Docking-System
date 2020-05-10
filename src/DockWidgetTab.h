@@ -39,6 +39,7 @@ namespace ads
 class CDockWidget;
 class CDockAreaWidget;
 struct DockWidgetTabPrivate;
+class CDockManager;
 
 /**
  * A dock widget tab that shows a title and an icon.
@@ -54,6 +55,7 @@ private:
 	DockWidgetTabPrivate* d; ///< private data (pimpl)
 	friend struct DockWidgetTabPrivate;
 	friend class CDockWidget;
+	friend class CDockManager;
 	void onDockWidgetFeaturesChanged();
 
 private slots:
@@ -69,6 +71,11 @@ protected:
 	 * Double clicking the tab widget makes the assigned dock widget floating
 	 */
 	virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
+
+	/**
+	 * Update stylesheet style if a property changes
+	 */
+	void updateStyle();
 
 public:
 	using Super = QFrame;

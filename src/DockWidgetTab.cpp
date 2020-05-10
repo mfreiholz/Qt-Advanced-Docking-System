@@ -160,6 +160,7 @@ struct DockWidgetTabPrivate
 		GlobalDragStartMousePosition = GlobalPos;
 		DragStartMousePosition = _this->mapFromGlobal(GlobalPos);
 	}
+
 };
 // struct DockWidgetTabPrivate
 
@@ -467,10 +468,7 @@ void CDockWidgetTab::setActiveTab(bool active)
 	}
 
 	d->IsActiveTab = active;
-	style()->unpolish(this);
-	style()->polish(this);
-	d->TitleLabel->style()->unpolish(d->TitleLabel);
-	d->TitleLabel->style()->polish(d->TitleLabel);
+	updateStyle();
 	update();
 	updateGeometry();
 
@@ -638,6 +636,16 @@ void CDockWidgetTab::onDockWidgetFeaturesChanged()
 void CDockWidgetTab::setElideMode(Qt::TextElideMode mode)
 {
 	d->TitleLabel->setElideMode(mode);
+}
+
+
+//============================================================================
+void CDockWidgetTab::updateStyle()
+{
+	this->style()->unpolish(this);
+	this->style()->polish(this);
+	d->TitleLabel->style()->unpolish(d->TitleLabel);
+	d->TitleLabel->style()->polish(d->TitleLabel);
 }
 
 

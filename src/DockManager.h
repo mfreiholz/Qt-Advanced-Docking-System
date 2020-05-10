@@ -84,6 +84,9 @@ private:
 	friend struct FloatingDragPreviewPrivate;
 	friend class CDockAreaTitleBar;
 
+private slots:
+	void onFocusObjectChanged(QObject *focusObject);
+
 protected:
 	/**
 	 * Registers the given floating widget in the internal list of
