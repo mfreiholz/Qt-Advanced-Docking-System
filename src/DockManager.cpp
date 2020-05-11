@@ -879,14 +879,29 @@ CIconProvider& CDockManager::iconProvider()
 
 
 //===========================================================================
-void  CDockManager::onFocusObjectChanged(QObject *focusObject)
+void CDockManager::onFocusObjectChanged(QObject *focusObject)
 {
 	auto FocusWidget = qobject_cast<QWidget*>(focusObject);
 	if (!FocusWidget)
 	{
 		return;
 	}
-	auto DockWidget = internal::findParent<CDockWidget*>(FocusWidget);
+
+	CDockWidget* DockWidget = nullptr;
+
+	std::cout << "CDockManager::onFocusObjectChanged " << focusObject->objectName().toStdString()
+		<< " meta: " << focusObject->metaObject()->className() << std::endl;
+
+	auto DockWidgetTab = qobject_cast<CDockWidgetTab*>(focusObject);
+	if (DockWidgetTab)
+	{
+		DockWidget = DockWidgetTab->dockWidget();
+	}
+	else
+	{
+		DockWidget = internal::findParent<CDockWidget*>(FocusWidget);
+	}
+
 	if (!DockWidget)
 	{
 		return;

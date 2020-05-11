@@ -285,6 +285,7 @@ CDockWidgetTab::CDockWidgetTab(CDockWidget* DockWidget, QWidget *parent) :
 	setAttribute(Qt::WA_NoMousePropagation, true);
 	d->DockWidget = DockWidget;
 	d->createLayout();
+	setFocusPolicy(Qt::ClickFocus);
 }
 
 //============================================================================
