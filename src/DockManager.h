@@ -85,8 +85,7 @@ private:
 	friend class CDockAreaTitleBar;
 
 private slots:
-	void onFocusObjectChanged(QObject *focusObject);
-	void onFocusedDockWidgetClosed();
+	void onFocusChanged(QWidget *old, QWidget *now);
 	void onFocusedDockAreaViewToggled(bool Open);
 
 protected:

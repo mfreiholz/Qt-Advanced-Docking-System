@@ -442,8 +442,8 @@ CDockManager::CDockManager(QWidget *parent) :
 	d->ContainerOverlay = new CDockOverlay(this, CDockOverlay::ModeContainerOverlay);
 	d->Containers.append(this);
 	d->loadStylesheet();
-	connect(QGuiApplication::instance(), SIGNAL(focusObjectChanged(QObject*)),
-		this, SLOT(onFocusObjectChanged(QObject*)));
+	connect(QApplication::instance(), SIGNAL(focusChanged(QWidget*, QWidget*)),
+		this, SLOT(onFocusChanged(QWidget*, QWidget*)));
 }
 
 //============================================================================
@@ -880,29 +880,42 @@ CIconProvider& CDockManager::iconProvider()
 
 
 //===========================================================================
-void CDockManager::onFocusObjectChanged(QObject *focusObject)
+void updateDockWidgetFocusStyle(CDockWidget* DockWidget, bool Focused)
 {
-	if (!focusObject)
-	{
-		return;
-	}
+	DockWidget->setProperty("focused", Focused);
+	DockWidget->tabWidget()->setProperty("focused", Focused);
+	DockWidget->tabWidget()->updateStyle();
+	internal::repolishStyle(DockWidget);
+}
 
-	auto FocusWidget = qobject_cast<QWidget*>(focusObject);
-	if (!FocusWidget)
+
+//===========================================================================
+void updateDockAreaFocusStyle(CDockAreaWidget* DockArea, bool Focused)
+{
+	DockArea->setProperty("focused", Focused);
+	internal::repolishStyle(DockArea);
+	internal::repolishStyle(DockArea->titleBar());
+}
+
+
+//===========================================================================
+void CDockManager::onFocusChanged(QWidget* focusedOld, QWidget* focusedNow)
+{
+	Q_UNUSED(focusedOld)
+	if (!focusedNow)
 	{
 		return;
 	}
 
 	CDockWidget* DockWidget = nullptr;
-
-	auto DockWidgetTab = qobject_cast<CDockWidgetTab*>(focusObject);
+	auto DockWidgetTab = qobject_cast<CDockWidgetTab*>(focusedNow);
 	if (DockWidgetTab)
 	{
 		DockWidget = DockWidgetTab->dockWidget();
 	}
 	else
 	{
-		DockWidget = internal::findParent<CDockWidget*>(FocusWidget);
+		DockWidget = internal::findParent<CDockWidget*>(focusedNow);
 	}
 
 	if (!DockWidget)
@@ -910,32 +923,14 @@ void CDockManager::onFocusObjectChanged(QObject *focusObject)
 		return;
 	}
 
-	QList<CDockWidget*> DockWidgets;
 	CDockAreaWidget* NewFocusedDockArea = nullptr;
 	if (d->FocusedDockWidget)
 	{
-
-		d->FocusedDockWidget->setProperty("focused", false);
-		d->FocusedDockWidget->tabWidget()->setProperty("focused", false);
-		DockWidgets.append(d->FocusedDockWidget);
+		updateDockWidgetFocusStyle(d->FocusedDockWidget, false);
 	}
 	d->FocusedDockWidget = DockWidget;
-	d->FocusedDockWidget->setProperty("focused", true);
-	d->FocusedDockWidget->tabWidget()->setProperty("focused", true);
-	//connect(d->FocusedDockWidget, SIGNAL(closed()), this, SLOT(onFocusedDockWidgetClosed()));
+	updateDockWidgetFocusStyle(d->FocusedDockWidget, true);
 	NewFocusedDockArea = d->FocusedDockWidget->dockAreaWidget();
-	if (NewFocusedDockArea)
-	{
-		NewFocusedDockArea->setProperty("focused", true);
-	}
-	DockWidgets.append(d->FocusedDockWidget);
-
-	for (auto DockWidget : DockWidgets)
-	{
-		DockWidget->tabWidget()->updateStyle();
-		internal::repolishStyle(DockWidget);
-	}
-
 	if (!NewFocusedDockArea || (d->FocusedArea == NewFocusedDockArea))
 	{
 		return;
@@ -944,23 +939,12 @@ void CDockManager::onFocusObjectChanged(QObject *focusObject)
 	if (d->FocusedArea)
 	{
 		disconnect(d->FocusedArea, SIGNAL(viewToggled(bool)), this, SLOT(onFocusedDockAreaViewToggled(bool)));
-		d->FocusedArea->setProperty("focused", false);
-		internal::repolishStyle(d->FocusedArea);
-		internal::repolishStyle(d->FocusedArea->titleBar());
+		updateDockAreaFocusStyle(d->FocusedArea, false);
 	}
 
-	NewFocusedDockArea->setProperty("focused", true);
-	internal::repolishStyle(NewFocusedDockArea);
-	internal::repolishStyle(NewFocusedDockArea->titleBar());
 	d->FocusedArea = NewFocusedDockArea;
+	updateDockAreaFocusStyle(d->FocusedArea, true);
 	connect(d->FocusedArea, SIGNAL(viewToggled(bool)), this, SLOT(onFocusedDockAreaViewToggled(bool)));
-}
-
-
-//===========================================================================
-void CDockManager::onFocusedDockWidgetClosed()
-{
-	std::cout << "CDockManager::onFocusedDockWidgetClosed()" << std::endl;
 }
 
 

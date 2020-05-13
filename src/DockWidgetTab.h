@@ -72,11 +72,6 @@ protected:
 	 */
 	virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
 
-	/**
-	 * Update stylesheet style if a property changes
-	 */
-	void updateStyle();
-
 public:
 	using Super = QFrame;
 	/**
@@ -159,6 +154,10 @@ public:
 	 */
 	void setElideMode(Qt::TextElideMode mode);
 
+	/**
+	 * Update stylesheet style if a property changes
+	 */
+	void updateStyle();
 
 public slots:
 	virtual void setVisible(bool visible) override;
