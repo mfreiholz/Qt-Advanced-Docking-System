@@ -50,6 +50,7 @@ set(ads_INSTALL_INCLUDE
     src/ads_globals.h
     src/DockAreaTabBar.h
     src/DockAreaTitleBar.h
+	src/DockAreaTitleBar_p.h
     src/DockAreaWidget.h
     src/DockContainerWidget.h
     src/DockManager.h
