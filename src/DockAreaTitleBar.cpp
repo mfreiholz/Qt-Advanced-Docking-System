@@ -39,6 +39,7 @@
 #include <QDebug>
 #include <QPointer>
 
+#include "DockAreaTitleBar_p.h"
 #include "ads_globals.h"
 #include "FloatingDockContainer.h"
 #include "FloatingDragPreview.h"
