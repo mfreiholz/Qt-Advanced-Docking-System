@@ -886,7 +886,6 @@ void CDockManager::onFocusObjectChanged(QObject *focusObject)
 	{
 		return;
 	}
-	std::cout << "\n\nCDockManager::onFocusObjectChanged " << focusObject->metaObject()->className() << std::endl;
 
 	auto FocusWidget = qobject_cast<QWidget*>(focusObject);
 	if (!FocusWidget)
@@ -900,18 +899,14 @@ void CDockManager::onFocusObjectChanged(QObject *focusObject)
 	if (DockWidgetTab)
 	{
 		DockWidget = DockWidgetTab->dockWidget();
-		std::cout << "TabText: " << DockWidgetTab->text().toStdString() << std::endl;
 	}
 	else
 	{
 		DockWidget = internal::findParent<CDockWidget*>(FocusWidget);
 	}
 
-	std::cout << "Focus Object " << focusObject->objectName().toStdString()
-		<< " meta: " << focusObject->metaObject()->className() << std::endl;
 	if (!DockWidget)
 	{
-		std::cout << "!DockWidget" << std::endl;
 		return;
 	}
 
@@ -919,16 +914,15 @@ void CDockManager::onFocusObjectChanged(QObject *focusObject)
 	CDockAreaWidget* NewFocusedDockArea = nullptr;
 	if (d->FocusedDockWidget)
 	{
-		std::cout << "focuse = false: " << d->FocusedDockWidget->objectName().toStdString() << std::endl;
+
 		d->FocusedDockWidget->setProperty("focused", false);
 		d->FocusedDockWidget->tabWidget()->setProperty("focused", false);
 		DockWidgets.append(d->FocusedDockWidget);
 	}
 	d->FocusedDockWidget = DockWidget;
-	std::cout << "d->FocusedDockWidget " << d->FocusedDockWidget->objectName().toStdString() << std::endl;
 	d->FocusedDockWidget->setProperty("focused", true);
 	d->FocusedDockWidget->tabWidget()->setProperty("focused", true);
-	connect(d->FocusedDockWidget, SIGNAL(closed()), this, SLOT(onFocusedDockWidgetClosed()));
+	//connect(d->FocusedDockWidget, SIGNAL(closed()), this, SLOT(onFocusedDockWidgetClosed()));
 	NewFocusedDockArea = d->FocusedDockWidget->dockAreaWidget();
 	if (NewFocusedDockArea)
 	{
@@ -944,19 +938,16 @@ void CDockManager::onFocusObjectChanged(QObject *focusObject)
 
 	if (!NewFocusedDockArea || (d->FocusedArea == NewFocusedDockArea))
 	{
-		std::cout << "d->FocusedArea == NewFocusedDockArea" << std::endl;
 		return;
 	}
 
 	if (d->FocusedArea)
 	{
-		std::cout << "Repolish OldFocusedDockArea" << std::endl;
 		d->FocusedArea->setProperty("focused", false);
 		internal::repolishStyle(d->FocusedArea);
 		internal::repolishStyle(d->FocusedArea->titleBar());
 	}
 
-	std::cout << "Repolish NewFocusedDockArea" << std::endl;
 	NewFocusedDockArea->setProperty("focused", true);
 	internal::repolishStyle(NewFocusedDockArea);
 	internal::repolishStyle(NewFocusedDockArea->titleBar());
