@@ -86,6 +86,7 @@ private:
 
 private slots:
 	void onFocusObjectChanged(QObject *focusObject);
+	void onFocusedDockWidgetClosed();
 
 protected:
 	/**

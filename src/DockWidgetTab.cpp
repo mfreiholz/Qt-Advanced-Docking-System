@@ -468,6 +468,11 @@ void CDockWidgetTab::setActiveTab(bool active)
 		return;
 	}
 
+	if (active && !hasFocus())
+	{
+		std::cout << "setFocus(Qt::OtherFocusReason);" << std::endl;
+		setFocus(Qt::OtherFocusReason);
+	}
 	d->IsActiveTab = active;
 	updateStyle();
 	update();

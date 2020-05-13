@@ -94,7 +94,8 @@ struct DockManagerPrivate
 	CDockManager::eViewMenuInsertionOrder MenuInsertionOrder = CDockManager::MenuAlphabeticallySorted;
 	bool RestoringState = false;
 	QVector<CFloatingDockContainer*> UninitializedFloatingWidgets;
-	QPointer<CDockWidget> FocusedDockWidget;
+	QPointer<CDockWidget> FocusedDockWidget = nullptr;
+	QPointer<CDockAreaWidget> FocusedArea = nullptr;
 
 	/**
 	 * Private data constructor
@@ -881,6 +882,12 @@ CIconProvider& CDockManager::iconProvider()
 //===========================================================================
 void CDockManager::onFocusObjectChanged(QObject *focusObject)
 {
+	if (!focusObject)
+	{
+		return;
+	}
+	std::cout << "\n\nCDockManager::onFocusObjectChanged " << focusObject->metaObject()->className() << std::endl;
+
 	auto FocusWidget = qobject_cast<QWidget*>(focusObject);
 	if (!FocusWidget)
 	{
@@ -889,46 +896,39 @@ void CDockManager::onFocusObjectChanged(QObject *focusObject)
 
 	CDockWidget* DockWidget = nullptr;
 
-	std::cout << "CDockManager::onFocusObjectChanged " << focusObject->objectName().toStdString()
-		<< " meta: " << focusObject->metaObject()->className() << std::endl;
-
 	auto DockWidgetTab = qobject_cast<CDockWidgetTab*>(focusObject);
 	if (DockWidgetTab)
 	{
 		DockWidget = DockWidgetTab->dockWidget();
+		std::cout << "TabText: " << DockWidgetTab->text().toStdString() << std::endl;
 	}
 	else
 	{
 		DockWidget = internal::findParent<CDockWidget*>(FocusWidget);
 	}
 
+	std::cout << "Focus Object " << focusObject->objectName().toStdString()
+		<< " meta: " << focusObject->metaObject()->className() << std::endl;
 	if (!DockWidget)
 	{
-		return;
-	}
-
-	if (d->FocusedDockWidget.data() == DockWidget)
-	{
+		std::cout << "!DockWidget" << std::endl;
 		return;
 	}
 
 	QList<CDockWidget*> DockWidgets;
-	CDockAreaWidget* OldFocusedDockArea = nullptr;
 	CDockAreaWidget* NewFocusedDockArea = nullptr;
 	if (d->FocusedDockWidget)
 	{
+		std::cout << "focuse = false: " << d->FocusedDockWidget->objectName().toStdString() << std::endl;
 		d->FocusedDockWidget->setProperty("focused", false);
 		d->FocusedDockWidget->tabWidget()->setProperty("focused", false);
-		OldFocusedDockArea = d->FocusedDockWidget->dockAreaWidget();
-		if (OldFocusedDockArea)
-		{
-			OldFocusedDockArea->setProperty("focused", false);
-		}
 		DockWidgets.append(d->FocusedDockWidget);
 	}
 	d->FocusedDockWidget = DockWidget;
+	std::cout << "d->FocusedDockWidget " << d->FocusedDockWidget->objectName().toStdString() << std::endl;
 	d->FocusedDockWidget->setProperty("focused", true);
 	d->FocusedDockWidget->tabWidget()->setProperty("focused", true);
+	connect(d->FocusedDockWidget, SIGNAL(closed()), this, SLOT(onFocusedDockWidgetClosed()));
 	NewFocusedDockArea = d->FocusedDockWidget->dockAreaWidget();
 	if (NewFocusedDockArea)
 	{
@@ -942,22 +942,31 @@ void CDockManager::onFocusObjectChanged(QObject *focusObject)
 		internal::repolishStyle(DockWidget);
 	}
 
-	if (OldFocusedDockArea == NewFocusedDockArea)
+	if (!NewFocusedDockArea || (d->FocusedArea == NewFocusedDockArea))
 	{
+		std::cout << "d->FocusedArea == NewFocusedDockArea" << std::endl;
 		return;
 	}
 
-	if (OldFocusedDockArea)
+	if (d->FocusedArea)
 	{
-		internal::repolishStyle(OldFocusedDockArea);
-		internal::repolishStyle(OldFocusedDockArea->titleBar());
+		std::cout << "Repolish OldFocusedDockArea" << std::endl;
+		d->FocusedArea->setProperty("focused", false);
+		internal::repolishStyle(d->FocusedArea);
+		internal::repolishStyle(d->FocusedArea->titleBar());
 	}
 
-	if (NewFocusedDockArea)
-	{
-		internal::repolishStyle(NewFocusedDockArea);
-		internal::repolishStyle(NewFocusedDockArea->titleBar());
-	}
+	std::cout << "Repolish NewFocusedDockArea" << std::endl;
+	NewFocusedDockArea->setProperty("focused", true);
+	internal::repolishStyle(NewFocusedDockArea);
+	internal::repolishStyle(NewFocusedDockArea->titleBar());
+	d->FocusedArea = NewFocusedDockArea;
+}
+
+//===========================================================================
+void CDockManager::onFocusedDockWidgetClosed()
+{
+	std::cout << "CDockManager::onFocusedDockWidgetClosed()" << std::endl;
 }
 
 
