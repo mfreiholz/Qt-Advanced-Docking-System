@@ -943,6 +943,7 @@ void CDockManager::onFocusObjectChanged(QObject *focusObject)
 
 	if (d->FocusedArea)
 	{
+		disconnect(d->FocusedArea, SIGNAL(viewToggled(bool)), this, SLOT(onFocusedDockAreaViewToggled(bool)));
 		d->FocusedArea->setProperty("focused", false);
 		internal::repolishStyle(d->FocusedArea);
 		internal::repolishStyle(d->FocusedArea->titleBar());
@@ -952,12 +953,33 @@ void CDockManager::onFocusObjectChanged(QObject *focusObject)
 	internal::repolishStyle(NewFocusedDockArea);
 	internal::repolishStyle(NewFocusedDockArea->titleBar());
 	d->FocusedArea = NewFocusedDockArea;
+	connect(d->FocusedArea, SIGNAL(viewToggled(bool)), this, SLOT(onFocusedDockAreaViewToggled(bool)));
 }
+
 
 //===========================================================================
 void CDockManager::onFocusedDockWidgetClosed()
 {
 	std::cout << "CDockManager::onFocusedDockWidgetClosed()" << std::endl;
+}
+
+
+//===========================================================================
+void CDockManager::onFocusedDockAreaViewToggled(bool Open)
+{
+	CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(sender());
+	if (!DockArea || Open)
+	{
+		return;
+	}
+	auto Container = DockArea->dockContainer();
+	auto OpenedDockAreas = Container->openedDockAreas();
+	if (OpenedDockAreas.isEmpty())
+	{
+		return;
+	}
+
+	OpenedDockAreas[0]->currentDockWidget()->tabWidget()->setFocus(Qt::OtherFocusReason);
 }
 
 
