@@ -155,6 +155,7 @@ signals:
 	 */
 	void tabBarClicked(int index);
 }; // class name
+
 }
  // namespace ads
 //-----------------------------------------------------------------------------
