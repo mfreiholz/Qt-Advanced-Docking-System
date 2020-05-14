@@ -54,6 +54,7 @@ of his docking system project.
   - [Qt Creator IDE](#qt-creator-ide)
   - [Qt Design Studio](#qt-design-studio)
   - [QmixElements](#qmixelements)
+  - [ezEditor](#ezeditor)
 
 ### Docking everywhere - no central widget
 
@@ -304,3 +305,11 @@ plugin-based and modular laboratory automation software for controlling CETONI d
 Advanced Docking System in the QmixElements sofware.
 
 ![QmixElements](doc/qmix_elements.png)
+
+### [ezEditor](https://github.com/ezEngine/ezEngine)
+
+The ezEditor is a full blown graphical editor used for editing scenes and
+importing and authoring assets for the [ezEngine](https://github.com/ezEngine/ezEngine) -
+an open source C++ game engine in active development.
+
+![ezEditor](doc/ezEngine_editor.png)
