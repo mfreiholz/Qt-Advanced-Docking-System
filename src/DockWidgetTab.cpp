@@ -463,15 +463,21 @@ void CDockWidgetTab::setActiveTab(bool active)
 	bool AllTabsHaveCloseButton = d->testConfigFlag(CDockManager::AllTabsHaveCloseButton);
 	bool TabHasCloseButton = (ActiveTabHasCloseButton && active) | AllTabsHaveCloseButton;
 	d->CloseButton->setVisible(DockWidgetClosable && TabHasCloseButton);
-	if (d->IsActiveTab == active)
-	{
-		return;
-	}
 
+	bool UpdateFocusStyle = false;
 	if (active && !hasFocus())
 	{
-		std::cout << "setFocus(Qt::OtherFocusReason);" << std::endl;
 		setFocus(Qt::OtherFocusReason);
+		UpdateFocusStyle = true;
+	}
+
+	if (d->IsActiveTab == active)
+	{
+		if (UpdateFocusStyle)
+		{
+			updateStyle();
+		}
+		return;
 	}
 	d->IsActiveTab = active;
 	updateStyle();
