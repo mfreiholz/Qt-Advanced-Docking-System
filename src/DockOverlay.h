@@ -26,9 +26,10 @@
 #include <QHash>
 #include <QRect>
 #include <QFrame>
-QT_FORWARD_DECLARE_CLASS(QGridLayout);
 
 #include "ads_globals.h"
+
+QT_FORWARD_DECLARE_CLASS(QGridLayout)
 
 namespace ads
 {
