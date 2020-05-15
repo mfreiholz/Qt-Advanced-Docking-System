@@ -301,7 +301,7 @@ still has a titlebar to drag it out of the main window.
 
 ## Styling
 
-The Advanced Docking System supports styling via [Qt Style Sheets](https://doc.qt.io/qt-5/stylesheet.html). All components like like splitters, tabs, buttons, titlebar and
+The Advanced Docking System supports styling via [Qt Style Sheets](https://doc.qt.io/qt-5/stylesheet.html). All components like splitters, tabs, buttons, titlebar and
 icons are styleable this way.
 
 ### Disabling the Internal Style Sheet
