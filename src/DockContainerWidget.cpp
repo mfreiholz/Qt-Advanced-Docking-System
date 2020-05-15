@@ -575,6 +575,11 @@ void DockContainerWidgetPrivate::moveIntoCenterOfSection(QWidget* Widget, CDockA
 	if (DroppedDockWidget)
 	{
 		CDockAreaWidget* OldDockArea = DroppedDockWidget->dockAreaWidget();
+		if (OldDockArea == TargetArea)
+		{
+			return;
+		}
+
 		if (OldDockArea)
 		{
 			OldDockArea->removeDockWidget(DroppedDockWidget);
