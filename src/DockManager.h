@@ -123,6 +123,12 @@ protected:
 	CDockOverlay* dockAreaOverlay() const;
 
 	/**
+	 * A container needs to call this function if a widget has been dropped
+	 * into it
+	 */
+	void emitWidgetDroppedSignals(QWidget* DroppedWidget);
+
+	/**
 	 * Show the floating widgets that has been created floating
 	 */
 	virtual void showEvent(QShowEvent *event) override;
@@ -483,6 +489,18 @@ signals:
      * docking system but it is not deleted yet.
      */
     void dockWidgetRemoved(CDockWidget* DockWidget);
+
+    /**
+     * This signal is emitted if a dock widget has been dropped into a new
+     * position
+     */
+    void dockWidgetDropped(CDockWidget* DockWidget);
+
+    /**
+     * This signal is emitted if a dock area has been dropped into a new
+     * position
+     */
+    void dockAreaDropped(CDockAreaWidget* DockArea);
 }; // class DockManager
 } // namespace ads
 //-----------------------------------------------------------------------------

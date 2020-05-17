@@ -1459,6 +1459,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 //============================================================================
 void CDockContainerWidget::dropWidget(QWidget* Widget, DockWidgetArea DropArea, CDockAreaWidget* TargetAreaWidget)
 {
+	std::cout << "dropWidget" << std::endl;
     CDockWidget* SingleDockWidget = topLevelDockWidget();
 	if (TargetAreaWidget)
 	{
@@ -1472,6 +1473,19 @@ void CDockContainerWidget::dropWidget(QWidget* Widget, DockWidgetArea DropArea, 
 	// If there was a top level widget before the drop, then it is not top
 	// level widget anymore
 	CDockWidget::emitTopLevelEventForWidget(SingleDockWidget, false);
+	CDockWidget* DockWidget = qobject_cast<CDockWidget*>(Widget);
+	if (!DockWidget)
+	{
+		CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(Widget);
+		auto OpenDockWidgets = DockArea->openedDockWidgets();
+		if (OpenDockWidgets.count() == 1)
+		{
+			DockWidget = OpenDockWidgets[0];
+		}
+	}
+
+	this->window()->activateWindow();
+	d->DockManager->emitWidgetDroppedSignals(Widget);
 }
 
 
