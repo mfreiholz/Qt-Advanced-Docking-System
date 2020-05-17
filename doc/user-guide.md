@@ -23,6 +23,8 @@
   - [`FloatingContainerHasWidgetTitle`](#floatingcontainerhaswidgettitle)
   - [`FloatingContainerHasWidgetIcon`](#floatingcontainerhaswidgeticon)
   - [`HideSingleCentralWidgetTitleBar`](#hidesinglecentralwidgettitlebar)
+- [Styling](#styling)
+  - [Disabling the Internal Style Sheet](#disabling-the-internal-style-sheet)
 
 ## Configuration Flags
 
@@ -297,3 +299,19 @@ still has a titlebar to drag it out of the main window.
 
 ![HideSingleCentralWidgetTitleBar false](cfg_flag_HideSingleCentralWidgetTitleBar_false.png)
 
+## Styling
+
+The Advanced Docking System supports styling via [Qt Style Sheets](https://doc.qt.io/qt-5/stylesheet.html). All components like splitters, tabs, buttons, titlebar and
+icons are styleable this way.
+
+### Disabling the Internal Style Sheet
+
+The dock manager uses an internal stylesheet to style its components. That
+means, the style that you see in the demo application comes from the
+internal stylesheets that you will find in `src/stylesheets` folder. If you want
+to disable this internal stylesheet because your application uses its own,
+just call the function for settings the stylesheet with an empty string.
+
+```c++
+DockManager->setStyleSheet("");
+```

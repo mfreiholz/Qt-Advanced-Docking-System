@@ -415,9 +415,10 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
 	}
 	else if (FloatingSplitter->orientation() == InsertParam.orientation())
 	{
+        int InsertIndex = InsertParam.append() ? Splitter->count() : 0;
 		while (FloatingSplitter->count())
 		{
-			insertWidgetIntoSplitter(Splitter, FloatingSplitter->widget(0), InsertParam.append());
+            Splitter->insertWidget(InsertIndex++, FloatingSplitter->widget(0));
 		}
 	}
 	else
@@ -575,6 +576,11 @@ void DockContainerWidgetPrivate::moveIntoCenterOfSection(QWidget* Widget, CDockA
 	if (DroppedDockWidget)
 	{
 		CDockAreaWidget* OldDockArea = DroppedDockWidget->dockAreaWidget();
+		if (OldDockArea == TargetArea)
+		{
+			return;
+		}
+
 		if (OldDockArea)
 		{
 			OldDockArea->removeDockWidget(DroppedDockWidget);
