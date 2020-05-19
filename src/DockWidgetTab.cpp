@@ -580,7 +580,7 @@ void CDockWidgetTab::mouseDoubleClickEvent(QMouseEvent *event)
 void CDockWidgetTab::setVisible(bool visible)
 {
 	// Just here for debugging to insert debug output
-	Super::setVisible(visible);
+    Super::setVisible(visible);
 }
 
 
