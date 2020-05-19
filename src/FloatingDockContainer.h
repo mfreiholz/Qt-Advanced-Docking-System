@@ -172,8 +172,7 @@ protected:
 	/**
 	 * Call this function to update the window title
 	 */
-	void updateWindowTitle();
-
+    void updateWindowTitle();
 
 protected: // reimplements QWidget
 	virtual void changeEvent(QEvent *event) override;

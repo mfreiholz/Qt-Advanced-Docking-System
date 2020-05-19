@@ -57,6 +57,10 @@
 #include "DockingStateReader.h"
 #include "DockAreaTitleBar.h"
 
+#ifdef Q_OS_LINUX
+#include "linux/FloatingWidgetTitleBar.h"
+#endif
+
 
 /**
  * Initializes the resources specified by the .qrc file with the specified base
@@ -96,6 +100,7 @@ struct DockManagerPrivate
 	QVector<CFloatingDockContainer*> UninitializedFloatingWidgets;
 	QPointer<CDockWidget> FocusedDockWidget = nullptr;
 	QPointer<CDockAreaWidget> FocusedArea = nullptr;
+    QPointer<CFloatingDockContainer> FloatingWidget = nullptr;
 
 	/**
 	 * Private data constructor
@@ -450,6 +455,19 @@ void updateDockAreaFocusStyle(CDockAreaWidget* DockArea, bool Focused)
 }
 
 
+//===========================================================================
+void updateFloatingWidgetFocusStyle(CFloatingDockContainer* FloatingWidget, bool Focused)
+{
+    auto TitleBar = qobject_cast<CFloatingWidgetTitleBar*>(FloatingWidget->titleBarWidget());
+    if (!TitleBar)
+    {
+        return;
+    }
+    TitleBar->setProperty("focused", Focused);
+    TitleBar->updateStyle();
+}
+
+
 //============================================================================
 void DockManagerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
 {
@@ -476,6 +494,24 @@ void DockManagerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
 	FocusedArea = NewFocusedDockArea;
 	updateDockAreaFocusStyle(FocusedArea, true);
 	QObject::connect(FocusedArea, SIGNAL(viewToggled(bool)), _this, SLOT(onFocusedDockAreaViewToggled(bool)));
+
+    // Linux specific focus stuff
+    auto NewFloatingWidget = FocusedDockWidget->dockContainer()->floatingWidget();
+    if (FloatingWidget == NewFloatingWidget)
+    {
+        return;
+    }
+
+    if (FloatingWidget)
+    {
+        updateFloatingWidgetFocusStyle(FloatingWidget, false);
+    }
+    FloatingWidget = NewFloatingWidget;
+
+    if (FloatingWidget)
+    {
+        updateFloatingWidgetFocusStyle(FloatingWidget, true);
+    }
 }
 
 
@@ -954,7 +990,7 @@ void CDockManager::onFocusChanged(QWidget* focusedOld, QWidget* focusedNow)
 		DockWidget = internal::findParent<CDockWidget*>(focusedNow);
 	}
 
-	if (!DockWidget || !DockWidget->tabWidget()->isVisible())
+    if (!DockWidget /*|| !DockWidget->tabWidget()->isVisible()*/)
 	{
 		return;
 	}
