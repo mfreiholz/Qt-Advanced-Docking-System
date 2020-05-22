@@ -458,6 +458,7 @@ void updateDockAreaFocusStyle(CDockAreaWidget* DockArea, bool Focused)
 //===========================================================================
 void updateFloatingWidgetFocusStyle(CFloatingDockContainer* FloatingWidget, bool Focused)
 {
+#ifdef Q_OS_LINUX
     auto TitleBar = qobject_cast<CFloatingWidgetTitleBar*>(FloatingWidget->titleBarWidget());
     if (!TitleBar)
     {
@@ -465,6 +466,10 @@ void updateFloatingWidgetFocusStyle(CFloatingDockContainer* FloatingWidget, bool
     }
     TitleBar->setProperty("focused", Focused);
     TitleBar->updateStyle();
+#else
+    Q_UNUSED(FloatingWidget)
+    Q_UNUSED(Focused)
+#endif
 }
 
 
@@ -495,7 +500,9 @@ void DockManagerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
 	updateDockAreaFocusStyle(FocusedArea, true);
 	QObject::connect(FocusedArea, SIGNAL(viewToggled(bool)), _this, SLOT(onFocusedDockAreaViewToggled(bool)));
 
-    // Linux specific focus stuff
+#ifdef Q_OS_LINUX
+	// This code is required for styling the floating widget titlebar for linux
+	// depending on the current focus state
     auto NewFloatingWidget = FocusedDockWidget->dockContainer()->floatingWidget();
     if (FloatingWidget == NewFloatingWidget)
     {
@@ -512,6 +519,7 @@ void DockManagerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
     {
         updateFloatingWidgetFocusStyle(FloatingWidget, true);
     }
+#endif
 }
 
 
@@ -990,10 +998,17 @@ void CDockManager::onFocusChanged(QWidget* focusedOld, QWidget* focusedNow)
 		DockWidget = internal::findParent<CDockWidget*>(focusedNow);
 	}
 
-    if (!DockWidget /*|| !DockWidget->tabWidget()->isVisible()*/)
+#ifdef Q_OS_LINUX
+    if (!DockWidget)
 	{
 		return;
 	}
+#else
+    if (!DockWidget || !DockWidget->tabWidget()->isVisible())
+	{
+		return;
+	}
+#endif
 
 	std::cout << "CDockManager::onFocusChanged " << DockWidget->tabWidget()->text().toStdString() << std::endl;
 	d->updateDockWidgetFocus(DockWidget);

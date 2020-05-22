@@ -1459,6 +1459,8 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 		// level widget anymore
 		CDockWidget::emitTopLevelEventForWidget(SingleDockWidget, false);
 	}
+
+	window()->activateWindow();
 }
 
 
@@ -1490,7 +1492,7 @@ void CDockContainerWidget::dropWidget(QWidget* Widget, DockWidgetArea DropArea, 
 		}
 	}
 
-	this->window()->activateWindow();
+	window()->activateWindow();
 	d->DockManager->emitWidgetDroppedSignals(Widget);
 }
 
