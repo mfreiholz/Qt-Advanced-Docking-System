@@ -685,7 +685,6 @@ bool CFloatingDockContainer::nativeEvent(const QByteArray &eventType, void *mess
 {
 	QWidget::nativeEvent(eventType, message, result);
 	MSG *msg = static_cast<MSG*>(message);
-	std::cout << windowsMessageString(msg->message) << std::endl;
 	switch (msg->message)
 	{
 		case WM_MOVING:
