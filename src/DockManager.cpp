@@ -984,6 +984,7 @@ CIconProvider& CDockManager::iconProvider()
 //===========================================================================
 void CDockManager::onFocusChanged(QWidget* focusedOld, QWidget* focusedNow)
 {
+	std::cout << "CDockManager::onFocusChanged" << std::endl;
 	Q_UNUSED(focusedOld)
 	if (!focusedNow)
 	{

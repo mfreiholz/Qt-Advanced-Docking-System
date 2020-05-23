@@ -57,6 +57,7 @@
 namespace ads
 {
 #ifdef Q_OS_WIN
+#if 0
 /**
  * Just for debuging to convert windows message identifiers to strings
  */
@@ -349,6 +350,7 @@ static const char* windowsMessageString(int MessageId)
 
 	return "unknown WM_ message";
 }
+#endif
 #endif
 
 
