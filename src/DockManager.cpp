@@ -500,10 +500,16 @@ void DockManagerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
 	updateDockAreaFocusStyle(FocusedArea, true);
 	QObject::connect(FocusedArea, SIGNAL(viewToggled(bool)), _this, SLOT(onFocusedDockAreaViewToggled(bool)));
 
+    auto NewFloatingWidget = FocusedDockWidget->dockContainer()->floatingWidget();
+    if (NewFloatingWidget)
+    {
+    	NewFloatingWidget->setProperty("FocusedDockWidget", QVariant::fromValue(DockWidget));
+    }
+
+
 #ifdef Q_OS_LINUX
 	// This code is required for styling the floating widget titlebar for linux
 	// depending on the current focus state
-    auto NewFloatingWidget = FocusedDockWidget->dockContainer()->floatingWidget();
     if (FloatingWidget == NewFloatingWidget)
     {
         return;
@@ -1058,6 +1064,28 @@ void CDockManager::emitWidgetDroppedSignals(QWidget* DroppedWidget)
 
 	DockWidget = DockArea->currentDockWidget();
 	CDockManager::setWidgetFocus(DockWidget->tabWidget());
+}
+
+
+//===========================================================================
+void CDockManager::endFloatingWidgetDrop(CFloatingDockContainer* FloatingWidget)
+{
+	if (!FloatingWidget)
+	{
+		return;
+	}
+
+	auto vDockWidget = FloatingWidget->property("FocusedDockWidget");
+	if (!vDockWidget.isValid())
+	{
+		return;
+	}
+	auto DockWidget = vDockWidget.value<CDockWidget*>();
+	if (DockWidget)
+	{
+		std::cout << "Dropped focus dock widget " << DockWidget->objectName().toStdString() << std::endl;
+		CDockManager::setWidgetFocus(DockWidget->tabWidget());
+	}
 }
 
 

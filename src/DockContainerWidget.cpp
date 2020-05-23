@@ -1461,6 +1461,12 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	}
 
 	window()->activateWindow();
+	if (SingleDroppedDockWidget)
+	{
+		std::cout << "SingleDockWidget dropped" << std::endl;
+		d->DockManager->emitWidgetDroppedSignals(SingleDroppedDockWidget);
+	}
+	d->DockManager->endFloatingWidgetDrop(FloatingWidget);
 }
 
 

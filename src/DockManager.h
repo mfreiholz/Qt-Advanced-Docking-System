@@ -129,6 +129,14 @@ protected:
 	void emitWidgetDroppedSignals(QWidget* DroppedWidget);
 
 	/**
+	 * This function is called, if a floating widget has been dropped into
+	 * an new position.
+	 * When this function is called, all dock widgets of the FloatingWidget
+	 * are already inserted into its new position
+	 */
+	void endFloatingWidgetDrop(CFloatingDockContainer* FloatingWidget);
+
+	/**
 	 * Show the floating widgets that has been created floating
 	 */
 	virtual void showEvent(QShowEvent *event) override;
