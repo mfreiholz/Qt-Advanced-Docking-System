@@ -540,8 +540,12 @@ CDockManager::CDockManager(QWidget *parent) :
 	d->ContainerOverlay = new CDockOverlay(this, CDockOverlay::ModeContainerOverlay);
 	d->Containers.append(this);
 	d->loadStylesheet();
-	connect(QApplication::instance(), SIGNAL(focusChanged(QWidget*, QWidget*)),
-		this, SLOT(onFocusChanged(QWidget*, QWidget*)));
+
+	if (CDockManager::configFlags().testFlag(CDockManager::FocusStyling))
+	{
+		connect(QApplication::instance(), SIGNAL(focusChanged(QWidget*, QWidget*)),
+			this, SLOT(onFocusChanged(QWidget*, QWidget*)));
+	}
 }
 
 //============================================================================
@@ -1030,7 +1034,7 @@ void CDockManager::onFocusedDockAreaViewToggled(bool Open)
 		return;
 	}
 
-	OpenedDockAreas[0]->currentDockWidget()->tabWidget()->setFocus(Qt::OtherFocusReason);
+	CDockManager::setWidgetFocus(OpenedDockAreas[0]->currentDockWidget()->tabWidget());
 }
 
 
@@ -1040,7 +1044,7 @@ void CDockManager::emitWidgetDroppedSignals(QWidget* DroppedWidget)
 	CDockWidget* DockWidget = qobject_cast<CDockWidget*>(DroppedWidget);
 	if (DockWidget)
 	{
-		DockWidget->tabWidget()->setFocus(Qt::OtherFocusReason);
+		CDockManager::setWidgetFocus(DockWidget->tabWidget());
 		emit dockWidgetDropped(DockWidget);
 		return;
 	}
@@ -1052,7 +1056,7 @@ void CDockManager::emitWidgetDroppedSignals(QWidget* DroppedWidget)
 	}
 
 	DockWidget = DockArea->currentDockWidget();
-	DockWidget->tabWidget()->setFocus(Qt::OtherFocusReason);
+	CDockManager::setWidgetFocus(DockWidget->tabWidget());
 }
 
 
