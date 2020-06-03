@@ -251,10 +251,15 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     }
 
     ADS_PRINT(s.attributes().value("UserVersion"));
-    v = s.attributes().value("UserVersion").toInt(&ok);
-    if (!ok || v != version)
+    // Older files do not support UserVersion but we still want to load them so
+    // we first test if the attribiute exists
+    if (!s.attributes().value("UserVersion").isEmpty())
     {
-    	return false;
+		v = s.attributes().value("UserVersion").toInt(&ok);
+		if (!ok || v != version)
+		{
+			return false;
+		}
     }
 
     s.setFileVersion(v);
