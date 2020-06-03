@@ -267,10 +267,15 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     }
 
     ADS_PRINT(s.attributes().value("UserVersion"));
-    v = s.attributes().value("UserVersion").toInt(&ok);
-    if (!ok || v != version)
+    // Older files do not support UserVersion so we skip this if the file does
+    // not have this attribute
+    if (!s.attributes().value("UserVersion").isEmpty())
     {
-    	return false;
+		v = s.attributes().value("UserVersion").toInt(&ok);
+		if (!ok || v != version)
+		{
+			return false;
+		}
     }
 
     s.setFileVersion(v);
@@ -498,6 +503,12 @@ void DockManagerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
 	{
 		updateDockWidgetFocusStyle(FocusedDockWidget, false);
 	}
+
+	if (DockWidget != FocusedDockWidget)
+	{
+		std::cout << "!!!!!!!!!!!! focusedDockWidgetChanged " << (FocusedDockWidget ? FocusedDockWidget->objectName().toStdString() : "-")
+			<< " -> " << (DockWidget ? DockWidget->objectName().toStdString() : "-") << std::endl;
+	}
 	FocusedDockWidget = DockWidget;
 	updateDockWidgetFocusStyle(FocusedDockWidget, true);
 	NewFocusedDockArea = FocusedDockWidget->dockAreaWidget();
@@ -567,7 +578,7 @@ CDockManager::CDockManager(QWidget *parent) :
 	if (CDockManager::configFlags().testFlag(CDockManager::FocusStyling))
 	{
 		connect(QApplication::instance(), SIGNAL(focusChanged(QWidget*, QWidget*)),
-			this, SLOT(onFocusChanged(QWidget*, QWidget*)));
+			this, SLOT(onApplicationFocusChanged(QWidget*, QWidget*)));
 	}
 }
 
@@ -1006,7 +1017,7 @@ CIconProvider& CDockManager::iconProvider()
 
 
 //===========================================================================
-void CDockManager::onFocusChanged(QWidget* focusedOld, QWidget* focusedNow)
+void CDockManager::onApplicationFocusChanged(QWidget* focusedOld, QWidget* focusedNow)
 {
 	std::cout << "CDockManager::onFocusChanged" << std::endl;
 	Q_UNUSED(focusedOld)
@@ -1033,9 +1044,11 @@ void CDockManager::onFocusChanged(QWidget* focusedOld, QWidget* focusedNow)
 		return;
 	}
 #else
-    if (!DockWidget || !DockWidget->tabWidget()->isVisible())
+    if (!DockWidget || DockWidget->tabWidget()->isHidden())
 	{
-		return;
+    	std::cout << "!DockWidget || !DockWidget->tabWidget()->isVisible() " << (DockWidget ? DockWidget->objectName().toStdString() : "0") << std::endl;
+		std::cout << "DockWidget->tabWidget()->isHidden() " << (DockWidget ? DockWidget->tabWidget()->isHidden() : false) << std::endl;
+    	return;
 	}
 #endif
 
@@ -1066,9 +1079,11 @@ void CDockManager::onFocusedDockAreaViewToggled(bool Open)
 //===========================================================================
 void CDockManager::emitWidgetDroppedSignals(QWidget* DroppedWidget)
 {
+	std::cout << "CDockManager::emitWidgetDroppedSignals" << std::endl;
 	CDockWidget* DockWidget = qobject_cast<CDockWidget*>(DroppedWidget);
 	if (DockWidget)
 	{
+		std::cout << "CDockManager::setWidgetFocus " << DockWidget->objectName().toStdString() << std::endl;
 		CDockManager::setWidgetFocus(DockWidget->tabWidget());
 		emit dockWidgetDropped(DockWidget);
 		return;

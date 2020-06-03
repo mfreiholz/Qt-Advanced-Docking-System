@@ -571,6 +571,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// dock widget.
 	// CDockManager::setConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar, true);
 
+	//CDockManager::setConfigFlag(CDockManager::AlwaysShowTabs, true);
 	CDockManager::setConfigFlag(CDockManager::FocusStyling, true);
 
 	// Now create the dock manager and its content
@@ -664,7 +665,7 @@ void CMainWindow::onViewVisibilityChanged(bool Visible)
         return;
     }
 
-    qDebug() << DockWidget->objectName() << " visibilityChanged(" << Visible << ")";
+    //qDebug() << DockWidget->objectName() << " visibilityChanged(" << Visible << ")";
 }
 
 
