@@ -293,6 +293,7 @@ QWidget* CDockWidget::takeWidget()
 		w = d->ScrollArea->takeWidget();
 		delete d->ScrollArea;
 		d->ScrollArea = nullptr;
+		d->Widget = nullptr;
 	}
 	else if (d->Widget)
 	{
