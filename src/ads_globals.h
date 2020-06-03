@@ -64,13 +64,6 @@ QT_FORWARD_DECLARE_CLASS(QSplitter)
 
 namespace ads
 {
-enum eStateFileVersion
-{
-	InitialVersion = 0,
-	Version1 = 1,
-	CurrentVersion = Version1
-};
-
 class CDockSplitter;
 
 enum DockWidgetArea

@@ -79,6 +79,16 @@ static void initResource()
 
 namespace ads
 {
+/**
+ * Internal file version in case the sturture changes interbally
+ */
+enum eStateFileVersion
+{
+	InitialVersion = 0,      //!< InitialVersion
+	Version1 = 1,            //!< Version1
+	CurrentVersion = Version1//!< CurrentVersion
+};
+
 static CDockManager::ConfigFlags StaticConfigFlags = CDockManager::DefaultNonOpaqueConfig;
 
 /**
@@ -252,6 +262,13 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     bool ok;
     int v = s.attributes().value("Version").toInt(&ok);
     if (!ok || v > CurrentVersion)
+    {
+    	return false;
+    }
+
+    ADS_PRINT(s.attributes().value("UserVersion"));
+    v = s.attributes().value("UserVersion").toInt(&ok);
+    if (!ok || v != version)
     {
     	return false;
     }
@@ -643,7 +660,8 @@ QByteArray CDockManager::saveState(int version) const
 	s.setAutoFormatting(ConfigFlags.testFlag(XmlAutoFormattingEnabled));
     s.writeStartDocument();
 		s.writeStartElement("QtAdvancedDockingSystem");
-		s.writeAttribute("Version", QString::number(version));
+		s.writeAttribute("Version", QString::number(CurrentVersion));
+		s.writeAttribute("UserVersion", QString::number(version));
 		s.writeAttribute("Containers", QString::number(d->Containers.count()));
 		for (auto Container : d->Containers)
 		{

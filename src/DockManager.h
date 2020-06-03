@@ -326,8 +326,12 @@ public:
 	 * If auto formatting is enabled, the output is intended and line wrapped.
 	 * The XmlMode XmlAutoFormattingDisabled is better if you would like to have
 	 * a more compact XML output - i.e. for storage in ini files.
+	 * The version number is stored as part of the data.
+	 * To restore the saved state, pass the return value and version number
+	 * to restoreState().
+	 * \see restoreState()
 	 */
-	QByteArray saveState(int version = Version1) const;
+	QByteArray saveState(int version = 0) const;
 
 	/**
 	 * Restores the state of this dockmanagers dockwidgets.
@@ -335,8 +339,9 @@ public:
 	 * not match, the dockmanager's state is left unchanged, and this function
 	 * returns false; otherwise, the state is restored, and this function
 	 * returns true.
+	 * \see saveState()
 	 */
-	bool restoreState(const QByteArray &state, int version = Version1);
+	bool restoreState(const QByteArray &state, int version = 0);
 
 	/**
 	 * Saves the current perspective to the internal list of perspectives.
