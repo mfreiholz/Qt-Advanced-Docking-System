@@ -60,7 +60,7 @@
  * name. Normally, when resources are built as part of the application, the
  * resources are loaded automatically at startup. The Q_INIT_RESOURCE() macro
  * is necessary on some platforms for resources stored in a static library.
- * Because GCC caues a linker error if we put Q_INIT_RESOURCE into the
+ * Because GCC causes a linker error if we put Q_INIT_RESOURCE into the
  * loadStyleSheet() function, we place it into a function outside of the ads
  * namespace
  */
@@ -73,7 +73,7 @@ static void initResource()
 namespace ads
 {
 /**
- * Internal file version in case the sturture changes interbally
+ * Internal file version in case the structure changes internally
  */
 enum eStateFileVersion
 {
@@ -252,7 +252,7 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
 
     ADS_PRINT(s.attributes().value("UserVersion"));
     // Older files do not support UserVersion but we still want to load them so
-    // we first test if the attribiute exists
+    // we first test if the attribute exists
     if (!s.attributes().value("UserVersion").isEmpty())
     {
 		v = s.attributes().value("UserVersion").toInt(&ok);
