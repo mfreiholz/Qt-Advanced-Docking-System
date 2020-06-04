@@ -1101,7 +1101,7 @@ void CDockManager::emitWidgetDroppedSignals(QWidget* DroppedWidget)
 
 
 //===========================================================================
-void CDockManager::endFloatingWidgetDrop(CFloatingDockContainer* FloatingWidget)
+void CDockManager::notifyFloatingWidgetDrop(CFloatingDockContainer* FloatingWidget)
 {
 	if (!FloatingWidget)
 	{
@@ -1119,6 +1119,21 @@ void CDockManager::endFloatingWidgetDrop(CFloatingDockContainer* FloatingWidget)
 		std::cout << "Dropped focus dock widget " << DockWidget->objectName().toStdString() << std::endl;
 		CDockManager::setWidgetFocus(DockWidget->tabWidget());
 	}
+}
+
+
+//===========================================================================
+void CDockManager::notifyDockWidgetRelocation(CDockWidget* DockWidget, CDockContainerWidget* ContainerOld)
+{
+
+}
+
+
+
+//===========================================================================
+void CDockManager::notifyDockAreaRelocation(CDockAreaWidget* DockArea, CDockContainerWidget* ContainerOld)
+{
+
 }
 
 

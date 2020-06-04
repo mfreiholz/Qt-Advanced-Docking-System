@@ -134,7 +134,19 @@ protected:
 	 * When this function is called, all dock widgets of the FloatingWidget
 	 * are already inserted into its new position
 	 */
-	void endFloatingWidgetDrop(CFloatingDockContainer* FloatingWidget);
+	void notifyFloatingWidgetDrop(CFloatingDockContainer* FloatingWidget);
+
+	/**
+	 * This function is called, if the given DockWidget has been relocated from
+	 * the old container ContainerOld to the new container DockWidget->dockContainer()
+	 */
+	void notifyDockWidgetRelocation(CDockWidget* DockWidget, CDockContainerWidget* ContainerOld);
+
+	/**
+	 * This function is called, if the given DockAreahas been relocated from
+	 * the old container ContainerOld to the new container DockArea->dockContainer()
+	 */
+	void notifyDockAreaRelocation(CDockAreaWidget* DockArea, CDockContainerWidget* ContainerOld);
 
 	/**
 	 * Show the floating widgets that has been created floating

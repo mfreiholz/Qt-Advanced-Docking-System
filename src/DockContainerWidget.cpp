@@ -1466,7 +1466,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 		std::cout << "SingleDockWidget dropped" << std::endl;
 		d->DockManager->emitWidgetDroppedSignals(SingleDroppedDockWidget);
 	}
-	d->DockManager->endFloatingWidgetDrop(FloatingWidget);
+	d->DockManager->notifyFloatingWidgetDrop(FloatingWidget);
 }
 
 
