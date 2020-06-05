@@ -530,6 +530,7 @@ void DockManagerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
     auto NewFloatingWidget = FocusedDockWidget->dockContainer()->floatingWidget();
     if (NewFloatingWidget)
     {
+    	std::cout << "NewFloatingWidget->setProperty(FocusedDockWidget)" << std::endl;
     	NewFloatingWidget->setProperty("FocusedDockWidget", QVariant::fromValue(DockWidget));
     }
 
@@ -1076,7 +1077,7 @@ void CDockManager::onFocusedDockAreaViewToggled(bool Open)
 
 
 //===========================================================================
-void CDockManager::notifyWidgetDrop(QWidget* DroppedWidget)
+void CDockManager::notifyWidgetOrAreaRelocation(QWidget* DroppedWidget)
 {
 	std::cout << "\n\nCDockManager::notifyWidgetDrop" << std::endl;
 	CDockWidget* DockWidget = qobject_cast<CDockWidget*>(DroppedWidget);
@@ -1084,7 +1085,6 @@ void CDockManager::notifyWidgetDrop(QWidget* DroppedWidget)
 	{
 		std::cout << "CDockManager::setWidgetFocus " << DockWidget->objectName().toStdString() << std::endl;
 		CDockManager::setWidgetFocus(DockWidget->tabWidget());
-		emit dockWidgetDropped(DockWidget);
 		return;
 	}
 

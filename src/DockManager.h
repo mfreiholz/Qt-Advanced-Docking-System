@@ -126,7 +126,7 @@ protected:
 	 * A container needs to call this function if a widget has been dropped
 	 * into it
 	 */
-	void notifyWidgetDrop(QWidget* DroppedWidget);
+	void notifyWidgetOrAreaRelocation(QWidget* RelocatedWidget);
 
 	/**
 	 * This function is called, if a floating widget has been dropped into
@@ -517,18 +517,6 @@ signals:
      * docking system but it is not deleted yet.
      */
     void dockWidgetRemoved(CDockWidget* DockWidget);
-
-    /**
-     * This signal is emitted if a dock widget has been dropped into a new
-     * position
-     */
-    void dockWidgetDropped(CDockWidget* DockWidget);
-
-    /**
-     * This signal is emitted if a dock area has been dropped into a new
-     * position
-     */
-    void dockAreaDropped(CDockAreaWidget* DockArea);
 }; // class DockManager
 } // namespace ads
 //-----------------------------------------------------------------------------

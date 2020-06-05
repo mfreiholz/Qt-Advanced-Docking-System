@@ -637,6 +637,8 @@ CFloatingDockContainer::CFloatingDockContainer(CDockAreaWidget *DockArea) :
     {
     	TopLevelDockWidget->emitTopLevelChanged(true);
     }
+
+    d->DockManager->notifyWidgetOrAreaRelocation(DockArea);
 }
 
 //============================================================================
@@ -652,6 +654,8 @@ CFloatingDockContainer::CFloatingDockContainer(CDockWidget *DockWidget) :
     {
     	TopLevelDockWidget->emitTopLevelChanged(true);
     }
+
+    d->DockManager->notifyWidgetOrAreaRelocation(DockWidget);
 }
 
 //============================================================================
