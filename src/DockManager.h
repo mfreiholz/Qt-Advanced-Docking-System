@@ -84,9 +84,6 @@ private:
 	friend struct FloatingDragPreviewPrivate;
 	friend class CDockAreaTitleBar;
 
-private slots:
-	void onApplicationFocusChanged(QWidget *old, QWidget *now);
-	void onFocusedDockAreaViewToggled(bool Open);
 
 protected:
 	/**
@@ -122,6 +119,7 @@ protected:
 	 */
 	CDockOverlay* dockAreaOverlay() const;
 
+
 	/**
 	 * A container needs to call this function if a widget has been dropped
 	 * into it
@@ -135,6 +133,7 @@ protected:
 	 * are already inserted into its new position
 	 */
 	void notifyFloatingWidgetDrop(CFloatingDockContainer* FloatingWidget);
+
 
 	/**
 	 * Show the floating widgets that has been created floating

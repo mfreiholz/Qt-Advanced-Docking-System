@@ -467,11 +467,7 @@ void CDockWidgetTab::setActiveTab(bool active)
 	bool TabHasCloseButton = (ActiveTabHasCloseButton && active) | AllTabsHaveCloseButton;
 	d->CloseButton->setVisible(DockWidgetClosable && TabHasCloseButton);
 
-	/*if (d->IsActiveTab == active)
-	{
-		return;
-	}*/
-
+	// Focus related stuff
 	if (CDockManager::configFlags().testFlag(CDockManager::FocusStyling) && !d->DockWidget->dockManager()->isRestoringState())
 	{
 		bool UpdateFocusStyle = false;
