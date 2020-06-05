@@ -1464,7 +1464,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	if (SingleDroppedDockWidget)
 	{
 		std::cout << "SingleDockWidget dropped" << std::endl;
-		d->DockManager->emitWidgetDroppedSignals(SingleDroppedDockWidget);
+		d->DockManager->notifyWidgetDrop(SingleDroppedDockWidget);
 	}
 	d->DockManager->notifyFloatingWidgetDrop(FloatingWidget);
 }
@@ -1499,7 +1499,7 @@ void CDockContainerWidget::dropWidget(QWidget* Widget, DockWidgetArea DropArea, 
 	}
 
 	window()->activateWindow();
-	d->DockManager->emitWidgetDroppedSignals(Widget);
+	d->DockManager->notifyWidgetDrop(Widget);
 }
 
 

@@ -472,7 +472,7 @@ void CDockWidgetTab::setActiveTab(bool active)
 		bool UpdateFocusStyle = false;
 		if (active && !hasFocus())
 		{
-			//setFocus(Qt::OtherFocusReason);
+			setFocus(Qt::OtherFocusReason);
 			UpdateFocusStyle = true;
 		}
 

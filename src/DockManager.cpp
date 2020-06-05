@@ -67,7 +67,7 @@
  * name. Normally, when resources are built as part of the application, the
  * resources are loaded automatically at startup. The Q_INIT_RESOURCE() macro
  * is necessary on some platforms for resources stored in a static library.
- * Because GCC caues a linker error if we put Q_INIT_RESOURCE into the
+ * Because GCC causes a linker error if we put Q_INIT_RESOURCE into the
  * loadStyleSheet() function, we place it into a function outside of the ads
  * namespace
  */
@@ -80,7 +80,7 @@ static void initResource()
 namespace ads
 {
 /**
- * Internal file version in case the sturture changes interbally
+ * Internal file version in case the structure changes internally
  */
 enum eStateFileVersion
 {
@@ -267,8 +267,8 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     }
 
     ADS_PRINT(s.attributes().value("UserVersion"));
-    // Older files do not support UserVersion so we skip this if the file does
-    // not have this attribute
+    // Older files do not support UserVersion but we still want to load them so
+    // we first test if the attribute exists
     if (!s.attributes().value("UserVersion").isEmpty())
     {
 		v = s.attributes().value("UserVersion").toInt(&ok);
@@ -512,21 +512,20 @@ void DockManagerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
 	FocusedDockWidget = DockWidget;
 	updateDockWidgetFocusStyle(FocusedDockWidget, true);
 	NewFocusedDockArea = FocusedDockWidget->dockAreaWidget();
-	if (!NewFocusedDockArea || (FocusedArea == NewFocusedDockArea))
+	if (NewFocusedDockArea && (FocusedArea != NewFocusedDockArea))
 	{
-		return;
+		if (FocusedArea)
+		{
+			std::cout << "FocusedArea" << std::endl;
+			QObject::disconnect(FocusedArea, SIGNAL(viewToggled(bool)), _this, SLOT(onFocusedDockAreaViewToggled(bool)));
+			updateDockAreaFocusStyle(FocusedArea, false);
+		}
+
+		FocusedArea = NewFocusedDockArea;
+		updateDockAreaFocusStyle(FocusedArea, true);
+		QObject::connect(FocusedArea, SIGNAL(viewToggled(bool)), _this, SLOT(onFocusedDockAreaViewToggled(bool)));
 	}
 
-	if (FocusedArea)
-	{
-		std::cout << "FocusedArea" << std::endl;
-		QObject::disconnect(FocusedArea, SIGNAL(viewToggled(bool)), _this, SLOT(onFocusedDockAreaViewToggled(bool)));
-		updateDockAreaFocusStyle(FocusedArea, false);
-	}
-
-	FocusedArea = NewFocusedDockArea;
-	updateDockAreaFocusStyle(FocusedArea, true);
-	QObject::connect(FocusedArea, SIGNAL(viewToggled(bool)), _this, SLOT(onFocusedDockAreaViewToggled(bool)));
 
     auto NewFloatingWidget = FocusedDockWidget->dockContainer()->floatingWidget();
     if (NewFloatingWidget)
@@ -1077,9 +1076,9 @@ void CDockManager::onFocusedDockAreaViewToggled(bool Open)
 
 
 //===========================================================================
-void CDockManager::emitWidgetDroppedSignals(QWidget* DroppedWidget)
+void CDockManager::notifyWidgetDrop(QWidget* DroppedWidget)
 {
-	std::cout << "CDockManager::emitWidgetDroppedSignals" << std::endl;
+	std::cout << "\n\nCDockManager::notifyWidgetDrop" << std::endl;
 	CDockWidget* DockWidget = qobject_cast<CDockWidget*>(DroppedWidget);
 	if (DockWidget)
 	{
@@ -1097,12 +1096,14 @@ void CDockManager::emitWidgetDroppedSignals(QWidget* DroppedWidget)
 
 	DockWidget = DockArea->currentDockWidget();
 	CDockManager::setWidgetFocus(DockWidget->tabWidget());
+	std::cout << "\n\n" << std::endl;
 }
 
 
 //===========================================================================
 void CDockManager::notifyFloatingWidgetDrop(CFloatingDockContainer* FloatingWidget)
 {
+	std::cout << "\n\nCDockManager::notifyFloatingWidgetDrop" << std::endl;
 	if (!FloatingWidget)
 	{
 		return;
@@ -1113,27 +1114,15 @@ void CDockManager::notifyFloatingWidgetDrop(CFloatingDockContainer* FloatingWidg
 	{
 		return;
 	}
+	std::cout << "vDockWidget.isValid()" << std::endl;
 	auto DockWidget = vDockWidget.value<CDockWidget*>();
 	if (DockWidget)
 	{
 		std::cout << "Dropped focus dock widget " << DockWidget->objectName().toStdString() << std::endl;
+		DockWidget->dockAreaWidget()->setCurrentDockWidget(DockWidget);
 		CDockManager::setWidgetFocus(DockWidget->tabWidget());
 	}
-}
-
-
-//===========================================================================
-void CDockManager::notifyDockWidgetRelocation(CDockWidget* DockWidget, CDockContainerWidget* ContainerOld)
-{
-
-}
-
-
-
-//===========================================================================
-void CDockManager::notifyDockAreaRelocation(CDockAreaWidget* DockArea, CDockContainerWidget* ContainerOld)
-{
-
+	std::cout << "\n\n" << std::endl;
 }
 
 
