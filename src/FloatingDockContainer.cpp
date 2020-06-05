@@ -804,10 +804,17 @@ void CFloatingDockContainer::hideEvent(QHideEvent *event)
 	d->Hiding = false;
 }
 
+
 //============================================================================
 void CFloatingDockContainer::showEvent(QShowEvent *event)
 {
 	Super::showEvent(event);
+#ifdef Q_OS_LINUX
+    if (CDockManager::testConfigFlag(CDockManager::FocusStyling))
+    {
+        this->window()->activateWindow();
+    }
+#endif
 }
 
 

@@ -1034,6 +1034,7 @@ void CDockManager::onApplicationFocusChanged(QWidget* focusedOld, QWidget* focus
 		return;
 	}
 	std::cout << "CDockManager::onFocusChanged" << std::endl;
+    std::cout << "focusedNow " << focusedNow << std::endl;
 	Q_UNUSED(focusedOld)
 	if (!focusedNow)
 	{
