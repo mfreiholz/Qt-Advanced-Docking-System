@@ -517,6 +517,13 @@ signals:
      * docking system but it is not deleted yet.
      */
     void dockWidgetRemoved(CDockWidget* DockWidget);
+
+    /**
+     * This signal is emitted if the focused dock widget changed.
+     * Both old and now can be nullptr.
+     * The focused dock widget is the one that is highlighted in the GUI
+     */
+    void focusedDockWidgetChanged(CDockWidget* old, CDockWidget* now);
 }; // class DockManager
 } // namespace ads
 //-----------------------------------------------------------------------------

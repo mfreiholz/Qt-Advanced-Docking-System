@@ -504,6 +504,7 @@ void DockManagerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
 		updateDockWidgetFocusStyle(FocusedDockWidget, false);
 	}
 
+	CDockWidget* old = FocusedDockWidget;
 	if (DockWidget != FocusedDockWidget)
 	{
 		std::cout << "!!!!!!!!!!!! focusedDockWidgetChanged " << (FocusedDockWidget ? FocusedDockWidget->objectName().toStdString() : "-")
@@ -554,6 +555,11 @@ void DockManagerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
         updateFloatingWidgetFocusStyle(FloatingWidget, true);
     }
 #endif
+
+    if (old != DockWidget)
+    {
+    	emit _this->focusedDockWidgetChanged(old, DockWidget);
+    }
 }
 
 
@@ -720,6 +726,10 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
 		show();
 	}
 
+	if (d->FocusedDockWidget)
+	{
+		updateDockWidgetFocusStyle(d->FocusedDockWidget, false);
+	}
 	return Result;
 }
 
@@ -1019,6 +1029,10 @@ CIconProvider& CDockManager::iconProvider()
 //===========================================================================
 void CDockManager::onApplicationFocusChanged(QWidget* focusedOld, QWidget* focusedNow)
 {
+	if (isRestoringState())
+	{
+		return;
+	}
 	std::cout << "CDockManager::onFocusChanged" << std::endl;
 	Q_UNUSED(focusedOld)
 	if (!focusedNow)
@@ -1060,6 +1074,11 @@ void CDockManager::onApplicationFocusChanged(QWidget* focusedOld, QWidget* focus
 //===========================================================================
 void CDockManager::onFocusedDockAreaViewToggled(bool Open)
 {
+	if (isRestoringState())
+	{
+		return;
+	}
+
 	CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(sender());
 	if (!DockArea || Open)
 	{
@@ -1079,6 +1098,10 @@ void CDockManager::onFocusedDockAreaViewToggled(bool Open)
 //===========================================================================
 void CDockManager::notifyWidgetOrAreaRelocation(QWidget* DroppedWidget)
 {
+	if (isRestoringState())
+	{
+		return;
+	}
 	std::cout << "\n\nCDockManager::notifyWidgetDrop" << std::endl;
 	CDockWidget* DockWidget = qobject_cast<CDockWidget*>(DroppedWidget);
 	if (DockWidget)
@@ -1104,7 +1127,7 @@ void CDockManager::notifyWidgetOrAreaRelocation(QWidget* DroppedWidget)
 void CDockManager::notifyFloatingWidgetDrop(CFloatingDockContainer* FloatingWidget)
 {
 	std::cout << "\n\nCDockManager::notifyFloatingWidgetDrop" << std::endl;
-	if (!FloatingWidget)
+	if (!FloatingWidget || isRestoringState())
 	{
 		return;
 	}
