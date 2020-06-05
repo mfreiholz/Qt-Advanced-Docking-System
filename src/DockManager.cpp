@@ -249,6 +249,7 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     {
     	return false;
     }
+    s.setFileVersion(v);
 
     ADS_PRINT(s.attributes().value("UserVersion"));
     // Older files do not support UserVersion but we still want to load them so
@@ -262,7 +263,6 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
 		}
     }
 
-    s.setFileVersion(v);
     bool Result = true;
 #ifdef ADS_DEBUG_PRINT
     int  DockContainers = s.attributes().value("Containers").toInt();
