@@ -202,7 +202,13 @@ void CDockFocusController::onApplicationFocusChanged(QWidget* focusedOld, QWidge
 	{
 		DockWidget = DockWidgetTab->dockWidget();
 	}
-	else
+
+	if (!DockWidget)
+	{
+		DockWidget = qobject_cast<CDockWidget*>(focusedNow);
+	}
+
+	if (!DockWidget)
 	{
 		DockWidget = internal::findParent<CDockWidget*>(focusedNow);
 	}
@@ -223,6 +229,13 @@ void CDockFocusController::onApplicationFocusChanged(QWidget* focusedOld, QWidge
 
 	std::cout << "CDockManager::onFocusChanged " << DockWidget->tabWidget()->text().toStdString() << std::endl;
 	d->updateDockWidgetFocus(DockWidget);
+}
+
+
+//===========================================================================
+void CDockFocusController::setDockWidgetFocused(CDockWidget* focusedNow)
+{
+	d->updateDockWidgetFocus(focusedNow);
 }
 
 

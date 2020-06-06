@@ -54,7 +54,7 @@ public:
 	template <class QWidgetPtr>
 	static void setWidgetFocus(QWidgetPtr widget)
 	{
-		if (!CDockManager::configFlags().testFlag(CDockManager::FocusStyling))
+		if (!CDockManager::configFlags().testFlag(CDockManager::FocusHighlighting))
 		{
 			return;
 		}
@@ -75,6 +75,12 @@ public:
 	 * are already inserted into its new position
 	 */
 	void notifyFloatingWidgetDrop(CFloatingDockContainer* FloatingWidget);
+
+public slots:
+	/**
+	 * Request a focus change to the given dock widget
+	 */
+	void setDockWidgetFocused(CDockWidget* focusedNow);
 }; // class DockFocusController
 }
  // namespace ads

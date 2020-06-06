@@ -467,7 +467,7 @@ CDockManager::CDockManager(QWidget *parent) :
 	d->Containers.append(this);
 	d->loadStylesheet();
 
-	if (CDockManager::configFlags().testFlag(CDockManager::FocusStyling))
+	if (CDockManager::configFlags().testFlag(CDockManager::FocusHighlighting))
 	{
 		d->FocusController = new CDockFocusController(this);
 	}
@@ -922,6 +922,16 @@ void CDockManager::notifyFloatingWidgetDrop(CFloatingDockContainer* FloatingWidg
 	if (d->FocusController)
 	{
 		d->FocusController->notifyFloatingWidgetDrop(FloatingWidget);
+	}
+}
+
+
+//===========================================================================
+void CDockManager::setDockWidgetFocused(CDockWidget* DockWidget)
+{
+	if (d->FocusController)
+	{
+		d->FocusController->setDockWidgetFocused(DockWidget);
 	}
 }
 

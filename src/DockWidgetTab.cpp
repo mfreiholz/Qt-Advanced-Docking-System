@@ -285,7 +285,7 @@ CDockWidgetTab::CDockWidgetTab(CDockWidget* DockWidget, QWidget *parent) :
 	setAttribute(Qt::WA_NoMousePropagation, true);
 	d->DockWidget = DockWidget;
 	d->createLayout();
-	if (CDockManager::configFlags().testFlag(CDockManager::FocusStyling))
+	if (CDockManager::configFlags().testFlag(CDockManager::FocusHighlighting))
 	{
 		setFocusPolicy(Qt::ClickFocus);
 	}
@@ -468,7 +468,7 @@ void CDockWidgetTab::setActiveTab(bool active)
 	d->CloseButton->setVisible(DockWidgetClosable && TabHasCloseButton);
 
 	// Focus related stuff
-	if (CDockManager::configFlags().testFlag(CDockManager::FocusStyling) && !d->DockWidget->dockManager()->isRestoringState())
+	if (CDockManager::configFlags().testFlag(CDockManager::FocusHighlighting) && !d->DockWidget->dockManager()->isRestoringState())
 	{
 		bool UpdateFocusStyle = false;
 		if (active && !hasFocus())
