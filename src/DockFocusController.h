@@ -28,7 +28,7 @@ class ADS_EXPORT CDockFocusController : public QObject
 	Q_OBJECT
 private:
 	DockFocusControllerPrivate* d; ///< private data (pimpl)
-	friend class DockFocusControllerPrivate;
+    friend struct DockFocusControllerPrivate;
 
 private slots:
 	void onApplicationFocusChanged(QWidget *old, QWidget *now);
