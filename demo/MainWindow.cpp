@@ -576,6 +576,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	//CDockManager::setConfigFlag(CDockManager::AlwaysShowTabs, true);
 	CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
+	CDockManager::setConfigFlag(CDockManager::AllTabsHaveCloseButton, true);
 
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);

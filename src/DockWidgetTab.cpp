@@ -666,10 +666,7 @@ void CDockWidgetTab::setElideMode(Qt::TextElideMode mode)
 //============================================================================
 void CDockWidgetTab::updateStyle()
 {
-	this->style()->unpolish(this);
-	this->style()->polish(this);
-	d->TitleLabel->style()->unpolish(d->TitleLabel);
-	d->TitleLabel->style()->polish(d->TitleLabel);
+	internal::repolishStyle(this, internal::RepolishDirectChildren);
 }
 
 
