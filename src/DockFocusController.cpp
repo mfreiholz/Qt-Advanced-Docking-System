@@ -24,6 +24,10 @@
 #include "DockManager.h"
 #include "DockAreaTitleBar.h"
 
+#ifdef Q_OS_LINUX
+#include "linux/FloatingWidgetTitleBar.h"
+#endif
+
 namespace ads
 {
 /**
@@ -34,6 +38,9 @@ struct DockFocusControllerPrivate
 	CDockFocusController *_this;
 	QPointer<CDockWidget> FocusedDockWidget = nullptr;
 	QPointer<CDockAreaWidget> FocusedArea = nullptr;
+#ifdef Q_OS_LINUX
+        QPointer<CFloatingDockContainer> FloatingWidget = nullptr;
+#endif
 	CDockManager* DockManager;
 
 	/**
