@@ -38,6 +38,7 @@ of his docking system project.
   - [Tab-menu for easy handling of many tabbed dock widgets](#tab-menu-for-easy-handling-of-many-tabbed-dock-widgets)
   - [Many different ways to detach dock widgets](#many-different-ways-to-detach-dock-widgets)
   - [Supports deletion of dynamically created dock widgets](#supports-deletion-of-dynamically-created-dock-widgets)
+  - [Python PyQt5 Bindings](#python-pyqt5-bindings)
 - [Tested Compatible Environments](#tested-compatible-environments)
   - [Windows](#windows)
   - [macOS](#macos)
@@ -135,6 +136,17 @@ You can detach dock widgets and also dock areas in the following ways:
 ### Supports deletion of dynamically created dock widgets
 
 Normally clicking the close button of a dock widget will just hide the widget and the user can show it again using the toggleView() action of the dock widget. This is meant for user interfaces with a static amount of widgets. But the advanced docking system also supports dynamic dock widgets that will get deleted on close. If you set the dock widget flag `DockWidgetDeleteOnClose` for a certain dock widget, then it will be deleted as soon as you close this dock widget. This enables the implementation of user interfaces with dynamically created editors, like in word processing applications or source code development tools.
+
+### Python PyQt5 Bindings
+
+![Python Logo](doc/python_logo.png)
+
+The Advanced Docking System comes with a complete Python integration based on
+PyQt5 bindings. The package is available via [conda-forge](https://github.com/conda-forge/pyqtads-feedstock). The python integration has been contributed to this project
+by the following people:
+
+- [n-elie](https://github.com/n-elie)
+- [Hugo Slepicka](https://github.com/hhslepicka)
 
 ## Tested Compatible Environments
 
