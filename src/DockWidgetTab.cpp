@@ -160,6 +160,7 @@ struct DockWidgetTabPrivate
 		GlobalDragStartMousePosition = GlobalPos;
 		DragStartMousePosition = _this->mapFromGlobal(GlobalPos);
 	}
+
 };
 // struct DockWidgetTabPrivate
 
@@ -284,6 +285,10 @@ CDockWidgetTab::CDockWidgetTab(CDockWidget* DockWidget, QWidget *parent) :
 	setAttribute(Qt::WA_NoMousePropagation, true);
 	d->DockWidget = DockWidget;
 	d->createLayout();
+	if (CDockManager::configFlags().testFlag(CDockManager::FocusHighlighting))
+	{
+		setFocusPolicy(Qt::ClickFocus);
+	}
 }
 
 //============================================================================
@@ -461,16 +466,33 @@ void CDockWidgetTab::setActiveTab(bool active)
 	bool AllTabsHaveCloseButton = d->testConfigFlag(CDockManager::AllTabsHaveCloseButton);
 	bool TabHasCloseButton = (ActiveTabHasCloseButton && active) | AllTabsHaveCloseButton;
 	d->CloseButton->setVisible(DockWidgetClosable && TabHasCloseButton);
-	if (d->IsActiveTab == active)
+
+	// Focus related stuff
+	if (CDockManager::configFlags().testFlag(CDockManager::FocusHighlighting) && !d->DockWidget->dockManager()->isRestoringState())
+	{
+		bool UpdateFocusStyle = false;
+		if (active && !hasFocus())
+		{
+			setFocus(Qt::OtherFocusReason);
+			UpdateFocusStyle = true;
+		}
+
+		if (d->IsActiveTab == active)
+		{
+			if (UpdateFocusStyle)
+			{
+				updateStyle();
+			}
+			return;
+		}
+	}
+	else if (d->IsActiveTab == active)
 	{
 		return;
 	}
 
 	d->IsActiveTab = active;
-	style()->unpolish(this);
-	style()->polish(this);
-	d->TitleLabel->style()->unpolish(d->TitleLabel);
-	d->TitleLabel->style()->polish(d->TitleLabel);
+	updateStyle();
 	update();
 	updateGeometry();
 
@@ -638,6 +660,13 @@ void CDockWidgetTab::onDockWidgetFeaturesChanged()
 void CDockWidgetTab::setElideMode(Qt::TextElideMode mode)
 {
 	d->TitleLabel->setElideMode(mode);
+}
+
+
+//============================================================================
+void CDockWidgetTab::updateStyle()
+{
+	internal::repolishStyle(this, internal::RepolishDirectChildren);
 }
 
 

@@ -53,6 +53,12 @@
 #include "DockAreaWidget.h"
 #include "IconProvider.h"
 #include "DockingStateReader.h"
+#include "DockAreaTitleBar.h"
+#include "DockFocusController.h"
+
+#ifdef Q_OS_LINUX
+#include "linux/FloatingWidgetTitleBar.h"
+#endif
 
 
 /**
@@ -101,6 +107,7 @@ struct DockManagerPrivate
 	CDockManager::eViewMenuInsertionOrder MenuInsertionOrder = CDockManager::MenuAlphabeticallySorted;
 	bool RestoringState = false;
 	QVector<CFloatingDockContainer*> UninitializedFloatingWidgets;
+	CDockFocusController* FocusController = nullptr;
 
 	/**
 	 * Private data constructor
@@ -459,6 +466,11 @@ CDockManager::CDockManager(QWidget *parent) :
 	d->ContainerOverlay = new CDockOverlay(this, CDockOverlay::ModeContainerOverlay);
 	d->Containers.append(this);
 	d->loadStylesheet();
+
+	if (CDockManager::configFlags().testFlag(CDockManager::FocusHighlighting))
+	{
+		d->FocusController = new CDockFocusController(this);
+	}
 }
 
 //============================================================================
@@ -593,12 +605,11 @@ bool CDockManager::restoreState(const QByteArray &state, int version)
 	emit restoringState();
 	bool Result = d->restoreState(state, version);
 	d->RestoringState = false;
-	emit stateRestored();
 	if (!IsHidden)
 	{
 		show();
 	}
-
+	emit stateRestored();
 	return Result;
 }
 
@@ -892,6 +903,36 @@ CIconProvider& CDockManager::iconProvider()
 {
 	static CIconProvider Instance;
 	return Instance;
+}
+
+
+//===========================================================================
+void CDockManager::notifyWidgetOrAreaRelocation(QWidget* DroppedWidget)
+{
+	if (d->FocusController)
+	{
+		d->FocusController->notifyWidgetOrAreaRelocation(DroppedWidget);
+	}
+}
+
+
+//===========================================================================
+void CDockManager::notifyFloatingWidgetDrop(CFloatingDockContainer* FloatingWidget)
+{
+	if (d->FocusController)
+	{
+		d->FocusController->notifyFloatingWidgetDrop(FloatingWidget);
+	}
+}
+
+
+//===========================================================================
+void CDockManager::setDockWidgetFocused(CDockWidget* DockWidget)
+{
+	if (d->FocusController)
+	{
+		d->FocusController->setDockWidgetFocused(DockWidget);
+	}
 }
 
 

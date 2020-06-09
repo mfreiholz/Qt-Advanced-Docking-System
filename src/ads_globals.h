@@ -244,6 +244,21 @@ void setToolTip(QObjectPtr obj, const QString &tip)
 void setButtonIcon(QAbstractButton* Button, QStyle::StandardPixmap StandarPixmap,
 	ads::eIcon CustomIconId);
 
+
+enum eRepolishChildOptions
+{
+	RepolishIgnoreChildren,
+	RepolishDirectChildren,
+	RepolishChildrenRecursively
+};
+
+/**
+ * Calls unpolish() / polish for the style of the given widget to update
+ * stylesheet if a property changes
+ */
+void repolishStyle(QWidget* w, eRepolishChildOptions Options = RepolishIgnoreChildren);
+
+
 } // namespace internal
 } // namespace ads
 

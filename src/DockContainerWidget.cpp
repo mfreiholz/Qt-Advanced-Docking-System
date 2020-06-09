@@ -1459,6 +1459,13 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 		// level widget anymore
 		CDockWidget::emitTopLevelEventForWidget(SingleDockWidget, false);
 	}
+
+	window()->activateWindow();
+	if (SingleDroppedDockWidget)
+	{
+		d->DockManager->notifyWidgetOrAreaRelocation(SingleDroppedDockWidget);
+	}
+	d->DockManager->notifyFloatingWidgetDrop(FloatingWidget);
 }
 
 
@@ -1478,6 +1485,19 @@ void CDockContainerWidget::dropWidget(QWidget* Widget, DockWidgetArea DropArea, 
 	// If there was a top level widget before the drop, then it is not top
 	// level widget anymore
 	CDockWidget::emitTopLevelEventForWidget(SingleDockWidget, false);
+	CDockWidget* DockWidget = qobject_cast<CDockWidget*>(Widget);
+	if (!DockWidget)
+	{
+		CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(Widget);
+		auto OpenDockWidgets = DockArea->openedDockWidgets();
+		if (OpenDockWidgets.count() == 1)
+		{
+			DockWidget = OpenDockWidgets[0];
+		}
+	}
+
+	window()->activateWindow();
+	d->DockManager->notifyWidgetOrAreaRelocation(Widget);
 }
 
 

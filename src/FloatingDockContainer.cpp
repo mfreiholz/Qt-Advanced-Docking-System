@@ -637,6 +637,8 @@ CFloatingDockContainer::CFloatingDockContainer(CDockAreaWidget *DockArea) :
     {
     	TopLevelDockWidget->emitTopLevelChanged(true);
     }
+
+    d->DockManager->notifyWidgetOrAreaRelocation(DockArea);
 }
 
 //============================================================================
@@ -652,6 +654,8 @@ CFloatingDockContainer::CFloatingDockContainer(CDockWidget *DockWidget) :
     {
     	TopLevelDockWidget->emitTopLevelChanged(true);
     }
+
+    d->DockManager->notifyWidgetOrAreaRelocation(DockWidget);
 }
 
 //============================================================================
@@ -800,10 +804,17 @@ void CFloatingDockContainer::hideEvent(QHideEvent *event)
 	d->Hiding = false;
 }
 
+
 //============================================================================
 void CFloatingDockContainer::showEvent(QShowEvent *event)
 {
 	Super::showEvent(event);
+#ifdef Q_OS_LINUX
+    if (CDockManager::testConfigFlag(CDockManager::FocusHighlighting))
+    {
+        this->window()->activateWindow();
+    }
+#endif
 }
 
 

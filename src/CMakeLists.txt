@@ -17,6 +17,7 @@ set(ads_SRCS
     DockWidget.cpp
     DockWidgetTab.cpp
     DockingStateReader.cpp
+    DockFocusController.cpp
     ElidingLabel.cpp
     FloatingDockContainer.cpp
     FloatingDragPreview.cpp
@@ -37,6 +38,7 @@ set(ads_INSTALL_INCLUDE
     DockWidget.h
     DockWidgetTab.h
     DockingStateReader.h
+    DockFocusController.h
     ElidingLabel.h
     FloatingDockContainer.h
     FloatingDragPreview.h

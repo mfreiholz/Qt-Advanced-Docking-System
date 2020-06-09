@@ -235,6 +235,11 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 	connect(d->ToggleViewAction, SIGNAL(triggered(bool)), this,
 		SLOT(toggleView(bool)));
 	setToolbarFloatingStyle(false);
+
+	if (CDockManager::configFlags().testFlag(CDockManager::FocusHighlighting))
+	{
+		setFocusPolicy(Qt::ClickFocus);
+	}
 }
 
 //============================================================================
