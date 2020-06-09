@@ -129,7 +129,7 @@ Normally clicking the close button of a dock widget will just hide the widget an
 
 ### Python PyQt5 Bindings
 
-<img src="doc/python_logo.png" height="100">
+<img src="doc/python_logo.png" height="140">
 
 The Advanced Docking System comes with a complete Python integration based on
 PyQt5 bindings. The package is available via [conda-forge](https://github.com/conda-forge/pyqtads-feedstock). The python integration has been contributed to this project
