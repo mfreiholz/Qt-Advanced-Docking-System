@@ -574,8 +574,9 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// dock widget.
 	// CDockManager::setConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar, true);
 
-	//CDockManager::setConfigFlag(CDockManager::AlwaysShowTabs, true);
-	CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
+	// uncomment the following line to enable focus highlighting of the dock
+	// widget that has the focus
+	// CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
 
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
