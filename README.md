@@ -7,21 +7,11 @@
 [What's new](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/latest) •
 [Documentation](doc/user-guide.md)
 
-Qt Advanced Docking System lets you create customizable layouts using a full 
-featured window docking system similar to what is found in many popular 
-integrated development environments (IDEs) such as Visual Studio. 
+Qt Advanced Docking System lets you create customizable layouts using a full
+featured window docking system similar to what is found in many popular
+integrated development environments (IDEs) such as Visual Studio.
 
 [![Video Advanced Docking](doc/advanced-docking_video.png)](https://www.youtube.com/watch?v=7pdNfafg3Qc)
-
-Everything is implemented with standard Qt functionality without any
-platform specific code. Basic usage of QWidgets and QLayouts and using basic 
-styles as much as possible.
-
-This work is based on and inspired by the 
-[Advanced Docking System for Qt](https://github.com/mfreiholz/Qt-Advanced-Docking-System) 
-from Manuel Freiholz. I did an almost complete rewrite of his code to improve
-code quality, readibility and to fix all issues from the issue tracker 
-of his docking system project.
 
 ## Features
 
@@ -139,7 +129,7 @@ Normally clicking the close button of a dock widget will just hide the widget an
 
 ### Python PyQt5 Bindings
 
-![Python Logo](doc/python_logo.png)
+<img src="doc/python_logo.png" height="100">
 
 The Advanced Docking System comes with a complete Python integration based on
 PyQt5 bindings. The package is available via [conda-forge](https://github.com/conda-forge/pyqtads-feedstock). The python integration has been contributed to this project
@@ -147,6 +137,8 @@ by the following people:
 
 - [n-elie](https://github.com/n-elie)
 - [Hugo Slepicka](https://github.com/hhslepicka)
+
+Latest working version: [3.4.2](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.4.2)
 
 ## Tested Compatible Environments
 
@@ -259,7 +251,13 @@ MainWindow::~MainWindow()
 ## Developers
 
 - Uwe Kindler, Project Maintainer
-- Manuel Freiholz 
+- Manuel Freiholz
+
+This work is based on and inspired by the 
+[Advanced Docking System for Qt](https://github.com/mfreiholz/Qt-Advanced-Docking-System)
+from Manuel Freiholz. I did an almost complete rewrite of his code to improve
+code quality, readibility and to fix all issues from the issue tracker
+of his docking system project.
 
 ## License information
 
