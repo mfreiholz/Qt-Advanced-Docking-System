@@ -13,10 +13,22 @@ integrated development environments (IDEs) such as Visual Studio.
 
 [![Video Advanced Docking](doc/advanced-docking_video.png)](https://www.youtube.com/watch?v=7pdNfafg3Qc)
 
+## New and Noteworthy
+
+The [release 3.5.0](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.5.0)
+adds the new [focus highlighting](doc/user-guide.md#focushighlighting) feature.
+This optional feature enables highlighting of the focused dock widget like you
+know it from Visual Studio.
+
+![FocusHighlighting](doc/cfg_flag_FocusHighlighting.gif)
+
+ [learn more...](doc/user-guide.md#focushighlighting)
+
 ## Features
 
 ### Overview
 
+- [New and Noteworthy](#new-and-noteworthy)
 - [Features](#features)
   - [Overview](#overview)
   - [Docking everywhere - no central widget](#docking-everywhere---no-central-widget)
