@@ -137,6 +137,7 @@ by the following people:
 
 - [n-elie](https://github.com/n-elie)
 - [Hugo Slepicka](https://github.com/hhslepicka)
+- [K Lauer](https://github.com/klauer)
 
 Latest working version: [3.4.2](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.4.2)
 
