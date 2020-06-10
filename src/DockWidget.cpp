@@ -134,6 +134,7 @@ void DockWidgetPrivate::showDockWidget()
 	{
 		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(_this);
 		FloatingWidget->resize(_this->size());
+		TabWidget->show();
 		FloatingWidget->show();
 	}
 	else
