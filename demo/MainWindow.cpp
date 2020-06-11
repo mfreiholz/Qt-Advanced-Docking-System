@@ -424,7 +424,7 @@ void MainWindowPrivate::createContent()
     DockWidget->connect(Action, SIGNAL(triggered()), SLOT(raise()));
 
 #ifdef Q_OS_WIN
-    if (!DockManager->configFlags().testFlag(ads::CDockManager::OpaqueUndocking))
+    if (!ads::CDockManager::testConfigFlag(ads::CDockManager::OpaqueUndocking))
     {
     	DockManager->addDockWidget(ads::CenterDockWidgetArea, createActiveXWidget(ViewMenu), RighDockArea);
     }

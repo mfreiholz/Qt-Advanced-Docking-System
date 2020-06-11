@@ -103,10 +103,11 @@ struct DockAreaTitleBarPrivate
 
 	/**
 	 * Returns true if the given config flag is set
+	 * Convenience function to ease config flag testing
 	 */
 	static bool testConfigFlag(CDockManager::eConfigFlag Flag)
 	{
-		return CDockManager::configFlags().testFlag(Flag);
+		return CDockManager::testConfigFlag(Flag);
 	}
 
 	/**
@@ -212,7 +213,7 @@ IFloatingWidget* DockAreaTitleBarPrivate::makeAreaFloating(const QPoint& Offset,
 {
 	QSize Size = DockArea->size();
 	this->DragState = DragState;
-	bool OpaqueUndocking = CDockManager::configFlags().testFlag(CDockManager::OpaqueUndocking) ||
+	bool OpaqueUndocking = CDockManager::testConfigFlag(CDockManager::OpaqueUndocking) ||
 		(DraggingFloatingWidget != DragState);
 	CFloatingDockContainer* FloatingDockContainer = nullptr;
 	IFloatingWidget* FloatingWidget;
@@ -466,7 +467,7 @@ void CDockAreaTitleBar::mousePressEvent(QMouseEvent* ev)
 		d->DragStartMousePos = ev->pos();
 		d->DragState = DraggingMousePressed;
 
-		if (CDockManager::configFlags().testFlag(CDockManager::FocusHighlighting))
+		if (CDockManager::testConfigFlag(CDockManager::FocusHighlighting))
 		{
 			d->TabBar->currentTab()->setFocus(Qt::OtherFocusReason);
 		}
@@ -600,9 +601,10 @@ int CDockAreaTitleBar::indexOf(QWidget *widget) const
 }
 
 //============================================================================
-CTitleBarButton::CTitleBarButton(bool visible /*= true*/, QWidget* parent /*= nullptr*/) : tTitleBarButton(parent),
-Visible(visible),
-HideWhenDisabled(DockAreaTitleBarPrivate::testConfigFlag(CDockManager::DockAreaHideDisabledButtons))
+CTitleBarButton::CTitleBarButton(bool visible, QWidget* parent)
+	: tTitleBarButton(parent),
+	  Visible(visible),
+	  HideWhenDisabled(CDockManager::testConfigFlag(CDockManager::DockAreaHideDisabledButtons))
 {
 
 }

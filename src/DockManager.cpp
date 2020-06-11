@@ -470,7 +470,7 @@ CDockManager::CDockManager(QWidget *parent) :
 	d->Containers.append(this);
 	d->loadStylesheet();
 
-	if (CDockManager::configFlags().testFlag(CDockManager::FocusHighlighting))
+	if (CDockManager::testConfigFlag(CDockManager::FocusHighlighting))
 	{
 		d->FocusController = new CDockFocusController(this);
 	}
