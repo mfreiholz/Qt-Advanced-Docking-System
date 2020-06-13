@@ -313,6 +313,21 @@ public:
 		onVisibleDockAreaCountChanged();
 		emit _this->dockAreaViewToggled(DockArea, Visible);
 	}
+
+	void onAdjustSplitterSizes(QSplitter* Splitter, qreal LastRatio = 1.0)
+	{
+		int AreaSize = (Splitter->orientation() == Qt::Horizontal) ? Splitter->width() : Splitter->height();
+		auto SplitterSizes = Splitter->sizes();
+
+		qreal TotRatio = SplitterSizes.size() - 1.0 + LastRatio;
+		for( int i=0; i<SplitterSizes.size()-1; i++)
+		{
+			SplitterSizes[i] = AreaSize / TotRatio;
+		}
+		SplitterSizes.back() = AreaSize * AreaSize / TotRatio;
+		Splitter->setSizes(SplitterSizes);
+	}
+
 }; // struct DockContainerWidgetPrivate
 
 
@@ -1144,16 +1159,21 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetAr
 	int index = TargetAreaSplitter ->indexOf(TargetDockArea);
 	if (TargetAreaSplitter->orientation() == InsertParam.orientation())
 	{
-        ADS_PRINT("TargetAreaSplitter->orientation() == InsertParam.orientation()");
+		ADS_PRINT("TargetAreaSplitter->orientation() == InsertParam.orientation()");
 		TargetAreaSplitter->insertWidget(index + InsertParam.insertOffset(), NewDockArea);
+		onAdjustSplitterSizes(TargetAreaSplitter);
 	}
 	else
 	{
-        ADS_PRINT("TargetAreaSplitter->orientation() != InsertParam.orientation()");
+		ADS_PRINT("TargetAreaSplitter->orientation() != InsertParam.orientation()");
+		auto TargetAreaSizes = TargetAreaSplitter->sizes();
 		QSplitter* NewSplitter = newSplitter(InsertParam.orientation());
 		NewSplitter->addWidget(TargetDockArea);
+
 		insertWidgetIntoSplitter(NewSplitter, NewDockArea, InsertParam.append());
 		TargetAreaSplitter->insertWidget(index, NewSplitter);
+		TargetAreaSplitter->setSizes(TargetAreaSizes);
+		onAdjustSplitterSizes(TargetAreaSplitter);
 	}
 
 	appendDockAreas({NewDockArea});
