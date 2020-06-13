@@ -324,7 +324,7 @@ public:
 		{
 			SplitterSizes[i] = AreaSize / TotRatio;
 		}
-		SplitterSizes.back() = AreaSize * AreaSize / TotRatio;
+		SplitterSizes.back() = AreaSize * LastRatio / TotRatio;
 		Splitter->setSizes(SplitterSizes);
 	}
 
@@ -1173,7 +1173,7 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetAr
 		insertWidgetIntoSplitter(NewSplitter, NewDockArea, InsertParam.append());
 		TargetAreaSplitter->insertWidget(index, NewSplitter);
 		TargetAreaSplitter->setSizes(TargetAreaSizes);
-		onAdjustSplitterSizes(TargetAreaSplitter);
+		onAdjustSplitterSizes(NewSplitter);
 	}
 
 	appendDockAreas({NewDockArea});

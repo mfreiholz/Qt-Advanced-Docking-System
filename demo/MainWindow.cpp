@@ -586,7 +586,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	d->createContent();
 	// Default window geometry - center on screen
-    resize(1280, 720);
+    resize(1200, 1000);
     setGeometry(QStyle::alignedRect(
         Qt::LeftToRight, Qt::AlignCenter, frameSize(),
         QGuiApplication::primaryScreen()->availableGeometry()
