@@ -73,6 +73,13 @@ QScrollArea#dockWidgetScrollArea
 }
 
 
+#dockAreaCloseButton
+{
+	qproperty-icon: url(:/ads/images/close-button.svg);
+	qproperty-iconSize: 16px;	
+}
+
+
 #tabCloseButton
 {
         margin-top: 2px;

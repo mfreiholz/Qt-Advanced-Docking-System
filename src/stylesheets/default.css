@@ -19,10 +19,6 @@ ads--CDockAreaWidget
     border: 1px solid white;
 }
 
-ads--CDockAreaWidget #tabsMenuButton::menu-indicator
-{
-    image: none;
-}
 
 
 ads--CDockWidgetTab
@@ -92,4 +88,16 @@ QScrollArea#dockWidgetScrollArea
 	background: rgba(0, 0, 0, 32);
 }
 
+
+#tabsMenuButton::menu-indicator
+{
+    image: none;
+}
+
+
+#dockAreaCloseButton
+{
+	qproperty-icon: url(:/ads/images/close-button.svg);
+	qproperty-iconSize: 16px;	
+}
 

@@ -94,4 +94,10 @@ QScrollArea#dockWidgetScrollArea
         background: rgba(0, 0, 0, 32);
 }
 
+#dockAreaCloseButton
+{
+	qproperty-icon: url(:/ads/images/close-button.svg);
+	qproperty-iconSize: 16px;	
+}
+
 

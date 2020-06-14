@@ -15,11 +15,6 @@ ads--CDockAreaWidget
     border: 1px solid white;
 }
 
-ads--CDockAreaWidget #tabsMenuButton::menu-indicator
-{
-    image: none;
-}
-
 
 ads--CDockWidgetTab
 {
@@ -67,6 +62,13 @@ QScrollArea#dockWidgetScrollArea
 }
 
 
+#tabsMenuButton::menu-indicator
+{
+    image: none;
+}
+
+
+
 #tabCloseButton
 {
 	margin-top: 2px;
@@ -87,6 +89,14 @@ QScrollArea#dockWidgetScrollArea
 {
 	background: rgba(0, 0, 0, 48);
 }
+
+
+#dockAreaCloseButton
+{
+	qproperty-icon: url(:/ads/images/close-button.svg);
+	qproperty-iconSize: 16px;	
+}
+
 
 
 ads--CDockSplitter::handle
@@ -143,4 +153,6 @@ ads--CDockAreaWidget[focused="true"] ads--CDockAreaTitleBar
 	border-bottom: 2px solid palette(highlight);
 	padding-bottom: 0px;
 }
+
+
 
