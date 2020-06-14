@@ -578,6 +578,10 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// widget that has the focus
 	// CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
 
+	// uncomment if you would like to enable an equal distribution of the
+	// available size of a splitter to all contained dock widgets
+	// CDockManager::setConfigFlag(CDockManager::EqualSplitOnInsertion, true);
+
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
 
@@ -586,7 +590,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	d->createContent();
 	// Default window geometry - center on screen
-    resize(1200, 1000);
+    resize(1280, 720);
     setGeometry(QStyle::alignedRect(
         Qt::LeftToRight, Qt::AlignCenter, frameSize(),
         QGuiApplication::primaryScreen()->availableGeometry()

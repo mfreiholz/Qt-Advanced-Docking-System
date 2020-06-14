@@ -147,12 +147,12 @@ public:
 	 * Adds dock widget to container and returns the dock area that contains
 	 * the inserted dock widget
 	 */
-	CDockAreaWidget* dockWidgetIntoContainer(DockWidgetArea area, CDockWidget* Dockwidget);
+	CDockAreaWidget* addDockWidgetToContainer(DockWidgetArea area, CDockWidget* Dockwidget);
 
 	/**
 	 * Adds dock widget to a existing DockWidgetArea
 	 */
-	CDockAreaWidget* dockWidgetIntoDockArea(DockWidgetArea area, CDockWidget* Dockwidget,
+	CDockAreaWidget* addDockWidgetToDockArea(DockWidgetArea area, CDockWidget* Dockwidget,
 		CDockAreaWidget* TargetDockArea);
 
 	/**
@@ -304,6 +304,24 @@ public:
 		return s;
 	}
 
+	/**
+	 * Ensures equal distribution of the sizes of a splitter if an dock widget
+	 * is inserted from code
+	 */
+	void adjustSplitterSizesOnInsertion(QSplitter* Splitter, qreal LastRatio = 1.0)
+	{
+		int AreaSize = (Splitter->orientation() == Qt::Horizontal) ? Splitter->width() : Splitter->height();
+		auto SplitterSizes = Splitter->sizes();
+
+		qreal TotRatio = SplitterSizes.size() - 1.0 + LastRatio;
+		for(int i = 0; i < SplitterSizes.size() -1; i++)
+		{
+			SplitterSizes[i] = AreaSize / TotRatio;
+		}
+		SplitterSizes.back() = AreaSize * LastRatio / TotRatio;
+		Splitter->setSizes(SplitterSizes);
+	}
+
 
 // private slots: ------------------------------------------------------------
 	void onDockAreaViewToggled(bool Visible)
@@ -313,21 +331,6 @@ public:
 		onVisibleDockAreaCountChanged();
 		emit _this->dockAreaViewToggled(DockArea, Visible);
 	}
-
-	void onAdjustSplitterSizes(QSplitter* Splitter, qreal LastRatio = 1.0)
-	{
-		int AreaSize = (Splitter->orientation() == Qt::Horizontal) ? Splitter->width() : Splitter->height();
-		auto SplitterSizes = Splitter->sizes();
-
-		qreal TotRatio = SplitterSizes.size() - 1.0 + LastRatio;
-		for( int i=0; i<SplitterSizes.size()-1; i++)
-		{
-			SplitterSizes[i] = AreaSize / TotRatio;
-		}
-		SplitterSizes.back() = AreaSize * LastRatio / TotRatio;
-		Splitter->setSizes(SplitterSizes);
-	}
-
 }; // struct DockContainerWidgetPrivate
 
 
@@ -1028,7 +1031,7 @@ bool DockContainerWidgetPrivate::restoreChildNodes(CDockingStateReader& s,
 
 
 //============================================================================
-CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoContainer(DockWidgetArea area,
+CDockAreaWidget* DockContainerWidgetPrivate::addDockWidgetToContainer(DockWidgetArea area,
 	CDockWidget* Dockwidget)
 {
 	CDockAreaWidget* NewDockArea = new CDockAreaWidget(DockManager, _this);
@@ -1141,7 +1144,7 @@ void DockContainerWidgetPrivate::dumpRecursive(int level, QWidget* widget)
 
 
 //============================================================================
-CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetArea area,
+CDockAreaWidget* DockContainerWidgetPrivate::addDockWidgetToDockArea(DockWidgetArea area,
 	CDockWidget* Dockwidget, CDockAreaWidget* TargetDockArea)
 {
 	if (CenterDockWidgetArea == area)
@@ -1161,7 +1164,12 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetAr
 	{
 		ADS_PRINT("TargetAreaSplitter->orientation() == InsertParam.orientation()");
 		TargetAreaSplitter->insertWidget(index + InsertParam.insertOffset(), NewDockArea);
-		onAdjustSplitterSizes(TargetAreaSplitter);
+		// do nothing, if flag is not enabled
+		if (CDockManager::testConfigFlag(CDockManager::EqualSplitOnInsertion))
+		{
+			adjustSplitterSizesOnInsertion(TargetAreaSplitter);
+		}
+
 	}
 	else
 	{
@@ -1172,8 +1180,11 @@ CDockAreaWidget* DockContainerWidgetPrivate::dockWidgetIntoDockArea(DockWidgetAr
 
 		insertWidgetIntoSplitter(NewSplitter, NewDockArea, InsertParam.append());
 		TargetAreaSplitter->insertWidget(index, NewSplitter);
-		TargetAreaSplitter->setSizes(TargetAreaSizes);
-		onAdjustSplitterSizes(NewSplitter);
+		if (CDockManager::testConfigFlag(CDockManager::EqualSplitOnInsertion))
+		{
+			TargetAreaSplitter->setSizes(TargetAreaSizes);
+			adjustSplitterSizesOnInsertion(NewSplitter);
+		}
 	}
 
 	appendDockAreas({NewDockArea});
@@ -1231,11 +1242,11 @@ CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockW
 	Dockwidget->setDockManager(d->DockManager);
 	if (DockAreaWidget)
 	{
-		return d->dockWidgetIntoDockArea(area, Dockwidget, DockAreaWidget);
+		return d->addDockWidgetToDockArea(area, Dockwidget, DockAreaWidget);
 	}
 	else
 	{
-		return d->dockWidgetIntoContainer(area, Dockwidget);
+		return d->addDockWidgetToContainer(area, Dockwidget);
 	}
 }
 
