@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
     QMainWindow w;
 
     ads::CDockManager::setConfigFlag(ads::CDockManager::FocusHighlighting, true);
+    ads::CDockManager::setConfigFlag(ads::CDockManager::AllTabsHaveCloseButton, true);
     auto dockManager = new ads::CDockManager(&w);
 
     QAction *action = new QAction("New Delete On Close", &w);

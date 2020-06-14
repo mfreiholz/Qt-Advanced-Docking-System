@@ -136,6 +136,10 @@ public:
 			m_CurrentWidget = nullptr;
 			m_CurrentIndex = -1;
 		}
+		else if (indexOf(Widget) < m_CurrentIndex)
+		{
+			--m_CurrentIndex;
+		}
 		m_Widgets.removeOne(Widget);
 	}
 
