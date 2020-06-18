@@ -75,6 +75,11 @@ QScrollArea#dockWidgetScrollArea {
 	background: rgba(0, 0, 0, 32);
 }
 
+#tabsMenuButton {
+        qproperty-icon: url(:/ads/images/tabs-menu-button.svg);
+        qproperty-iconSize: 16px;
+}
+
 #dockAreaCloseButton {
 	qproperty-icon: url(:/ads/images/close-button.svg),
 		url(:/ads/images/close-button-disabled.svg) disabled;
@@ -85,4 +90,20 @@ QScrollArea#dockWidgetScrollArea {
 	qproperty-icon: url(:/ads/images/detach-button.svg),
 		url(:/ads/images/detach-button-disabled.svg) disabled;
 	qproperty-iconSize: 16px;	
+}
+
+#floatingTitleCloseButton {
+   qproperty-icon: url(:/ads/images/close-button.svg);
+   qproperty-iconSize: 16px;
+   border: none;
+   margin: 3px;
+}
+
+#floatingTitleCloseButton:hover {
+    background: rgba(0, 0, 0, 24);
+    border: none;
+}
+
+#floatingTitleCloseButton:pressed {
+    background: rgba(0, 0, 0, 48);
 }

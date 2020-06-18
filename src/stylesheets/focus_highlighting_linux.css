@@ -88,6 +88,12 @@ QScrollArea#dockWidgetScrollArea {
 }
 
 
+#tabsMenuButton {
+        qproperty-icon: url(:/ads/images/tabs-menu-button.svg);
+        qproperty-iconSize: 16px;
+}
+
+
 /* Focus related styling */
 ads--CDockWidgetTab[focused="true"] {
 	background: palette(highlight);
@@ -122,12 +128,43 @@ ads--CDockAreaWidget[focused="true"] ads--CDockAreaTitleBar {
 	padding-bottom: 0px;
 }
 
-ads--CFloatingDockContainer[isActiveWindow="true"] ads--CFloatingWidgetTitleBar
-	{
+
+
+ads--CFloatingDockContainer[isActiveWindow="true"] ads--CFloatingWidgetTitleBar {
 	background: palette(highlight);
 }
 
-ads--CFloatingDockContainer[isActiveWindow="true"] ads--CFloatingWidgetTitleBar>QLabel
-	{
+ads--CFloatingDockContainer[isActiveWindow="true"] #floatingTitleLabel {
 	color: palette(light);
+}
+
+#floatingTitleCloseButton {
+   qproperty-icon: url(:/ads/images/close-button.svg);
+   qproperty-iconSize: 16px;
+   border: none;
+   margin: 3px;
+}
+
+#floatingTitleCloseButton:hover {
+    background: rgba(0, 0, 0, 24);
+    border: none;
+}
+
+#floatingTitleCloseButton:pressed {
+    background: rgba(0, 0, 0, 48);
+}
+
+
+ads--CFloatingDockContainer[isActiveWindow="true"] #floatingTitleCloseButton {
+    qproperty-icon: url(:/ads/images/close-button-focused.svg);
+    qproperty-iconSize: 16px;
+}
+
+ads--CFloatingDockContainer[isActiveWindow="true"] #floatingTitleCloseButton:hover  {
+    background: rgba(255, 255, 255, 48);
+}
+
+
+ads--CFloatingDockContainer[isActiveWindow="true"] #floatingTitleCloseButton:pressed {
+    background: rgba(255, 255, 255, 92);
 }
