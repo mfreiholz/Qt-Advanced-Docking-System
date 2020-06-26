@@ -371,7 +371,6 @@ struct MainWindowPrivate
 void MainWindowPrivate::createContent()
 {
 	// Test container docking
-	QMenu* ViewMenu = ui.menuView;
 	auto DockWidget = createCalendarDockWidget();
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
 	auto SpecialDockArea = DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
