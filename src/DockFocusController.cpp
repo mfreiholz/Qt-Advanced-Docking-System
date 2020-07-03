@@ -38,6 +38,7 @@ struct DockFocusControllerPrivate
 	CDockFocusController *_this;
 	QPointer<CDockWidget> FocusedDockWidget = nullptr;
 	QPointer<CDockAreaWidget> FocusedArea = nullptr;
+	CDockWidget* OldFocusedDockWidget = nullptr;
 #ifdef Q_OS_LINUX
         QPointer<CFloatingDockContainer> FloatingWidget = nullptr;
 #endif
@@ -159,12 +160,38 @@ void DockFocusControllerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
     }
 #endif
 
-    if (old != DockWidget)
+    if (old == DockWidget)
+    {
+    	return;
+    }
+
+    if (DockWidget->isVisible())
     {
     	emit DockManager->focusedDockWidgetChanged(old, DockWidget);
     }
+    else
+    {
+    	OldFocusedDockWidget = old;
+    	QObject::connect(DockWidget, SIGNAL(visibilityChanged(bool)), _this, SLOT(onDockWidgetVisibilityChanged(bool)));
+    }
 }
 
+
+
+//============================================================================
+void CDockFocusController::onDockWidgetVisibilityChanged(bool Visible)
+{
+    auto Sender = sender();
+    auto DockWidget = qobject_cast<ads::CDockWidget*>(Sender);
+    /*qDebug() << "sender: " << Sender->metaObject()->className();
+    qDebug() << "onDockWidgetVisibilityChanged " << Sender->objectName() << " Visible " << Visible;*/
+    disconnect(Sender, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisibilityChanged(bool)));
+    if (DockWidget && Visible)
+	{
+        //qDebug() << "emit d->DockManager->focusedDockWidgetChanged";
+        emit d->DockManager->focusedDockWidgetChanged(d->OldFocusedDockWidget, DockWidget);
+	}
+}
 
 
 //============================================================================
