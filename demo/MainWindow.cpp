@@ -381,7 +381,9 @@ void MainWindowPrivate::createContent()
 		//SpecialDockArea->setAllowedAreas({ads::LeftDockWidgetArea, ads::RightDockWidgetArea}); // just for testing
 	}
 
-	DockManager->addDockWidget(ads::LeftDockWidgetArea, createLongTextLabelDockWidget());
+	DockWidget = createLongTextLabelDockWidget();
+	DockWidget->setFeature(ads::CDockWidget::DockWidgetFocusable, false);
+	DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
 	auto FileSystemWidget = createFileSystemTreeDockWidget();
 	FileSystemWidget->setFeature(ads::CDockWidget::DockWidgetFloatable, false);
 	appendFeaturStringToWindowTitle(FileSystemWidget);
@@ -588,7 +590,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	// uncomment the following line to enable focus highlighting of the dock
 	// widget that has the focus
-	// CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
+	CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
 
 	// uncomment if you would like to enable an equal distribution of the
 	// available size of a splitter to all contained dock widgets
