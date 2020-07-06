@@ -160,11 +160,6 @@ void DockFocusControllerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
     }
 #endif
 
-    if (old == DockWidget)
-    {
-    	return;
-    }
-
     if (DockWidget->isVisible())
     {
     	emit DockManager->focusedDockWidgetChanged(old, DockWidget);
@@ -183,12 +178,9 @@ void CDockFocusController::onDockWidgetVisibilityChanged(bool Visible)
 {
     auto Sender = sender();
     auto DockWidget = qobject_cast<ads::CDockWidget*>(Sender);
-    /*qDebug() << "sender: " << Sender->metaObject()->className();
-    qDebug() << "onDockWidgetVisibilityChanged " << Sender->objectName() << " Visible " << Visible;*/
     disconnect(Sender, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisibilityChanged(bool)));
     if (DockWidget && Visible)
 	{
-        //qDebug() << "emit d->DockManager->focusedDockWidgetChanged";
         emit d->DockManager->focusedDockWidgetChanged(d->OldFocusedDockWidget, DockWidget);
 	}
 }
