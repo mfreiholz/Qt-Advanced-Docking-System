@@ -226,7 +226,9 @@ void CDockFocusController::onApplicationFocusChanged(QWidget* focusedOld, QWidge
 	}
 
 	// If the close button in another tab steals the focus from the current
-	// active dock widget content, then we giv it back immediately
+	// active dock widget content, i.e. if the user clicks its close button,
+	// then we immediately give the focus back to the previous focused widget
+	// focusedOld
 	if (CDockManager::testConfigFlag(CDockManager::AllTabsHaveCloseButton))
 	{
 		auto OtherDockWidgetTab = internal::findParent<CDockWidgetTab*>(focusedNow);
