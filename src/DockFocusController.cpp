@@ -15,6 +15,7 @@
 
 #include <QPointer>
 #include <QApplication>
+#include <QAbstractButton>
 
 #include "DockWidget.h"
 #include "DockAreaWidget.h"
@@ -217,15 +218,26 @@ void CDockFocusController::onApplicationFocusChanged(QWidget* focusedOld, QWidge
 		return;
 	}
 
-	//qDebug() << "\n----------------------------";
+    //qDebug() << "\n----------------------------";
     //qDebug() << "CDockFocusController::onApplicationFocusChanged " << " old: " << focusedOld << " new: " << focusedNow;
-	Q_UNUSED(focusedOld)
 	if (!focusedNow)
 	{
 		return;
 	}
 
-	CDockWidget* DockWidget = nullptr;
+	// If the close button in another tab steals the focus from the current
+	// active dock widget content, then we giv it back immediately
+	if (CDockManager::testConfigFlag(CDockManager::AllTabsHaveCloseButton))
+	{
+		auto OtherDockWidgetTab = internal::findParent<CDockWidgetTab*>(focusedNow);
+		if (OtherDockWidgetTab && focusedOld)
+		{
+			focusedOld->setFocus();
+			return;
+		}
+	}
+
+    CDockWidget* DockWidget = nullptr;
 	auto DockWidgetTab = qobject_cast<CDockWidgetTab*>(focusedNow);
 	if (DockWidgetTab)
 	{
