@@ -44,6 +44,7 @@ struct DockFocusControllerPrivate
      QPointer<CFloatingDockContainer> FloatingWidget = nullptr;
 #endif
 	CDockManager* DockManager;
+    bool ForceFocusChangedSignal = false;
 
 	/**
 	 * Private data constructor
@@ -161,11 +162,12 @@ void DockFocusControllerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
     }
 #endif
 
-    if (old == DockWidget)
+    if (old == DockWidget && !ForceFocusChangedSignal)
     {
     	return;
     }
 
+    ForceFocusChangedSignal = false;
     if (DockWidget->isVisible())
     {
     	emit DockManager->focusedDockWidgetChanged(old, DockWidget);
@@ -243,15 +245,18 @@ void CDockFocusController::onApplicationFocusChanged(QWidget* focusedOld, QWidge
 	auto DockWidgetTab = qobject_cast<CDockWidgetTab*>(focusedNow);
 	if (DockWidgetTab)
 	{
-		DockWidget = DockWidgetTab->dockWidget();
-		// If the DockWidgetTab "steals" the focus from a widget in the same
-		// DockWidget, then we immediately give the focus back to the previous
-		// focused widget focusedOld
-		if (DockWidget == d->FocusedDockWidget && focusedOld && focusedOld != focusedNow)
-		{
-			focusedOld->setFocus();
-			return;
-		}
+		DockWidget = DockWidgetTab->dockWidget();      
+        // If the DockWidgetTab "steals" the focus from a widget in the same
+        // DockWidget, then we immediately give the focus back to the previous
+        // focused widget focusedOld
+        if (focusedOld)
+        {
+            auto OldFocusedDockWidget = internal::findParent<CDockWidget*>(focusedOld);
+            if (OldFocusedDockWidget && OldFocusedDockWidget == DockWidget)
+            {
+                focusedOld->setFocus();
+            }
+        }
 	}
 
 	if (!DockWidget)
@@ -322,6 +327,7 @@ void CDockFocusController::notifyWidgetOrAreaRelocation(QWidget* DroppedWidget)
 	CDockWidget* DockWidget = qobject_cast<CDockWidget*>(DroppedWidget);
 	if (DockWidget)
 	{
+        d->ForceFocusChangedSignal = true;
 		CDockManager::setWidgetFocus(DockWidget->tabWidget());
 		return;
 	}
@@ -333,6 +339,7 @@ void CDockFocusController::notifyWidgetOrAreaRelocation(QWidget* DroppedWidget)
 	}
 
 	DockWidget = DockArea->currentDockWidget();
+    d->ForceFocusChangedSignal = true;
 	CDockManager::setWidgetFocus(DockWidget->tabWidget());
 }
 

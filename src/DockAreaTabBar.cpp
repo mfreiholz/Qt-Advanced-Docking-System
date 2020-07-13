@@ -138,6 +138,8 @@ CDockAreaTabBar::CDockAreaTabBar(CDockAreaWidget* parent) :
 	d->TabsLayout->addStretch(1);
 	d->TabsContainerWidget->setLayout(d->TabsLayout);
 	setWidget(d->TabsContainerWidget);
+
+    setFocusPolicy(Qt::NoFocus);
 }
 
 
