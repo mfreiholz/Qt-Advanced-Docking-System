@@ -325,22 +325,22 @@ void CDockFocusController::notifyWidgetOrAreaRelocation(QWidget* DroppedWidget)
 	}
 
 	CDockWidget* DockWidget = qobject_cast<CDockWidget*>(DroppedWidget);
-	if (DockWidget)
-	{
-        d->ForceFocusChangedSignal = true;
-		CDockManager::setWidgetFocus(DockWidget->tabWidget());
-		return;
-	}
+    if (!DockWidget)
+    {
+        CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(DroppedWidget);
+        if (DockArea)
+        {
+            DockWidget = DockArea->currentDockWidget();
+        }
+    }
 
-	CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(DroppedWidget);
-	if (!DockArea)
-	{
-		return;
-	}
+    if (!DockWidget)
+    {
+        return;
+    }
 
-	DockWidget = DockArea->currentDockWidget();
     d->ForceFocusChangedSignal = true;
-	CDockManager::setWidgetFocus(DockWidget->tabWidget());
+    CDockManager::setWidgetFocus(DockWidget->tabWidget());
 }
 
 
