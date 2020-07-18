@@ -399,6 +399,9 @@ void MainWindowPrivate::createContent()
 	// Test custom factory - we inject a help button into the title bar
 	ads::CDockComponentsFactory::setFactory(new CCustomComponentsFactory());
 	auto TopDockArea = DockManager->addDockWidget(ads::TopDockWidgetArea, FileSystemWidget);
+	// Uncomment the next line if you would like to test the
+	// setHideSingleWidgetTitleBar() functionality
+	// TopDockArea->setHideSingleWidgetTitleBar(true);
 	ads::CDockComponentsFactory::resetDefaultFactory();
 
 	// We create a calendar widget and clear all flags to prevent the dock area
