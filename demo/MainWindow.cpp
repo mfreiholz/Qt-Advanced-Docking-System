@@ -634,6 +634,9 @@ CMainWindow::~CMainWindow()
 void CMainWindow::closeEvent(QCloseEvent* event)
 {
 	d->saveState();
+    // Delete dock manager here to delete all floating widgets. This ensures
+    // that all top level windows of the dock manager are properly closed
+    d->DockManager->deleteLater();
 	QMainWindow::closeEvent(event);
 }
 
