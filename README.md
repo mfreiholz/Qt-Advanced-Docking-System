@@ -151,7 +151,7 @@ by the following people:
 - [Hugo Slepicka](https://github.com/hhslepicka)
 - [K Lauer](https://github.com/klauer)
 
-Latest working version: [3.5.1](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.5.1)
+Latest working version: [3.5.2](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.5.2)
 
 ## Tested Compatible Environments
 
