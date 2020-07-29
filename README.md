@@ -58,6 +58,7 @@ know it from Visual Studio.
   - [Qt Design Studio](#qt-design-studio)
   - [QmixElements](#qmixelements)
   - [ezEditor](#ezeditor)
+  - [D-Tect X](#d-tect-x)
 
 ### Docking everywhere - no central widget
 
@@ -336,3 +337,11 @@ importing and authoring assets for the [ezEngine](https://github.com/ezEngine/ez
 an open source C++ game engine in active development.
 
 ![ezEditor](doc/ezEngine_editor.png)
+
+### [D-Tect X](https://www.duerr-ndt.com/products/ndt-software/d-tect-xray-inspection-software.html)
+
+D-Tect X is a X-ray inspection software for industrial radiography. It is a state-of-the-art 64-bit application which supports GPU (Graphics Processing Unit) acceleration and takes full advantage of computers with multiple CPU cores. A large set of tools assist the user in image analysis and evaluation. Thanks to the Qt Advanced Docking System the flexible and intuitive user interface can be completely customized to  each user’s preference.
+
+[learn more...](https://www.duerr-ndt.com/products/ndt-software/d-tect-xray-inspection-software.html)
+
+![D-TectX](doc/d-tect-x.jpg)
