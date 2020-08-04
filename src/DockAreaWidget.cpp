@@ -885,17 +885,20 @@ void CDockAreaWidget::closeArea()
 	// If there is only one single dock widget and this widget has the
 	// DeleteOnClose feature, then we delete the dock widget now
 	auto OpenDockWidgets = openedDockWidgets();
-	if (OpenDockWidgets.count() == 1 && OpenDockWidgets[0]->features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
+    if (OpenDockWidgets.count() == 1 && OpenDockWidgets[0]->features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
 	{
 		OpenDockWidgets[0]->closeDockWidgetInternal();
 	}
-	else
+    else
 	{
-		for (auto DockWidget : openedDockWidgets())
-		{
-			DockWidget->toggleView(false);
-		}
-	}
+        for (auto DockWidget : openedDockWidgets())
+        {
+            if (DockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose) && DockWidget->features().testFlag(CDockWidget::DockWidgetForceCloseWithArea))
+                DockWidget->closeDockWidgetInternal();
+            else
+                DockWidget->toggleView(false);
+        }
+    }
 }
 
 
