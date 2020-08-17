@@ -235,6 +235,7 @@ public:
 
 
 using DockAreaLayout = CDockAreaLayout;
+static constexpr DockWidgetAreas DefaultAllowedAreas = AllDockAreas;
 
 
 /**
@@ -248,7 +249,7 @@ struct DockAreaWidgetPrivate
 	CDockAreaTitleBar*	TitleBar		= nullptr;
 	CDockManager*		DockManager		= nullptr;
 	bool UpdateTitleBarButtons = false;
-	DockWidgetAreas		AllowedAreas	= AllDockAreas;
+	DockWidgetAreas		AllowedAreas	= DefaultAllowedAreas;
 	bool HideSingleWidgetTitleBar		= false;
 	QSize MinSizeHint;
 
@@ -771,6 +772,13 @@ void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 	auto CurrentDockWidget = currentDockWidget();
 	QString Name = CurrentDockWidget ? CurrentDockWidget->objectName() : "";
 	s.writeAttribute("Current", Name);
+	auto AllowedAreas = allowedAreas();
+	// To keep the saved XML data small, we only save the allowed areas if
+	// the value is different from the default value
+	if (AllowedAreas != DefaultAllowedAreas)
+	{
+		s.writeAttribute("AllowedAreas", QString::number(AllowedAreas, 16));
+	}
     ADS_PRINT("CDockAreaWidget::saveState TabCount: " << d->ContentsLayout->count()
             << " Current: " << Name);
 	for (int i = 0; i < d->ContentsLayout->count(); ++i)

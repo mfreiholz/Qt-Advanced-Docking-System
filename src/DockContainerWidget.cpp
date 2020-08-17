@@ -942,6 +942,11 @@ bool DockContainerWidgetPrivate::restoreDockArea(CDockingStateReader& s,
 	if (!Testing)
 	{
 		DockArea = new CDockAreaWidget(DockManager, _this);
+		const auto AllowedAreasAttribute = s.attributes().value("AllowedAreas");
+		if (!AllowedAreasAttribute.isEmpty())
+		{
+			DockArea->setAllowedAreas((DockWidgetArea)AllowedAreasAttribute.toInt(nullptr, 16));
+		}
 	}
 
 	while (s.readNextStartElement())
