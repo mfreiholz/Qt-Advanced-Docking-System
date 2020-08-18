@@ -947,6 +947,12 @@ bool DockContainerWidgetPrivate::restoreDockArea(CDockingStateReader& s,
 		{
 			DockArea->setAllowedAreas((DockWidgetArea)AllowedAreasAttribute.toInt(nullptr, 16));
 		}
+
+		const auto FlagsAttribute = s.attributes().value("Flags");
+		if (!FlagsAttribute.isEmpty())
+		{
+			DockArea->setDockAreaFlags((CDockAreaWidget::DockAreaFlags)FlagsAttribute.toInt(nullptr, 16));
+		}
 	}
 
 	while (s.readNextStartElement())

@@ -250,8 +250,8 @@ struct DockAreaWidgetPrivate
 	CDockManager*		DockManager		= nullptr;
 	bool UpdateTitleBarButtons = false;
 	DockWidgetAreas		AllowedAreas	= DefaultAllowedAreas;
-	bool HideSingleWidgetTitleBar		= false;
 	QSize MinSizeHint;
+	CDockAreaWidget::DockAreaFlags Flags{CDockAreaWidget::DefaultFlags};
 
 	/**
 	 * Private data constructor
@@ -747,7 +747,7 @@ void CDockAreaWidget::updateTitleBarVisibility()
 	{
 		bool Hidden = Container->hasTopLevelDockWidget() && (Container->isFloating()
 			|| CDockManager::testConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar));
-		Hidden |= (d->HideSingleWidgetTitleBar && openDockWidgetsCount() == 1);
+		Hidden |= (d->Flags.testFlag(HideSingleWidgetTitleBar) && openDockWidgetsCount() == 1);
 		d->TitleBar->setVisible(!Hidden);
 	}
 }
@@ -772,12 +772,16 @@ void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 	auto CurrentDockWidget = currentDockWidget();
 	QString Name = CurrentDockWidget ? CurrentDockWidget->objectName() : "";
 	s.writeAttribute("Current", Name);
-	auto AllowedAreas = allowedAreas();
-	// To keep the saved XML data small, we only save the allowed areas if
-	// the value is different from the default value
-	if (AllowedAreas != DefaultAllowedAreas)
+	// To keep the saved XML data small, we only save the allowed areas and the
+	// dock area flags if the values are different from the default values
+	if (d->AllowedAreas != DefaultAllowedAreas)
 	{
-		s.writeAttribute("AllowedAreas", QString::number(AllowedAreas, 16));
+		s.writeAttribute("AllowedAreas", QString::number(d->AllowedAreas, 16));
+	}
+
+	if (d->Flags != DefaultFlags)
+	{
+		s.writeAttribute("Flags", QString::number(d->Flags, 16));
 	}
     ADS_PRINT("CDockAreaWidget::saveState TabCount: " << d->ContentsLayout->count()
             << " Current: " << Name);
@@ -872,11 +876,32 @@ DockWidgetAreas CDockAreaWidget::allowedAreas() const
 	return d->AllowedAreas;
 }
 
+
 //============================================================================
-void CDockAreaWidget::setHideSingleWidgetTitleBar(bool hide)
+CDockAreaWidget::DockAreaFlags CDockAreaWidget::dockAreaFlags() const
 {
-	d->HideSingleWidgetTitleBar = hide;
-	updateTitleBarVisibility();
+	return d->Flags;
+}
+
+
+//============================================================================
+void CDockAreaWidget::setDockAreaFlags(DockAreaFlags Flags)
+{
+	auto ChangedFlags = d->Flags ^ Flags;
+	d->Flags = Flags;
+	if (ChangedFlags.testFlag(HideSingleWidgetTitleBar))
+	{
+		updateTitleBarVisibility();
+	}
+}
+
+
+//============================================================================
+void CDockAreaWidget::setDockAreaFlag(eDockAreaFlag Flag, bool On)
+{
+	auto flags = dockAreaFlags();
+	internal::setFlag(flags, Flag, On);
+	setDockAreaFlags(flags);
 }
 
 
