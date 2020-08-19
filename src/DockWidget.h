@@ -197,7 +197,7 @@ public:
      * To ensure, that a dock widget does not block resizing, the dock widget
      * reimplements minimumSizeHint() function to return a very small minimum
      * size hint. If you would like to adhere the minimumSizeHint() from the
-     * content widget, the set the minimumSizeHintMode() to
+     * content widget, then set the minimumSizeHintMode() to
      * MinimumSizeHintFromContent.
      */
     enum eMinimumSizeHintMode
