@@ -149,10 +149,10 @@ public:
     {
         DockWidgetClosable = 0x01,///< dock widget has a close button
         DockWidgetMovable = 0x02,///< dock widget is movable and can be moved to a new position in the current dock container
-        DockWidgetFloatable = 0x04,
+        DockWidgetFloatable = 0x04,///< dock widget can be dragged into a floating window
         DockWidgetDeleteOnClose = 0x08, ///< deletes the dock widget when it is closed
-        CustomCloseHandling = 0x10,
-        DockWidgetFocusable = 0x20,
+        CustomCloseHandling = 0x10, ///< clicking the close button will not close the dock widget but emits the closeRequested() signal instead
+        DockWidgetFocusable = 0x20, ///< if this is enabled, a dock widget can get focus highlighting
         DefaultDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable | DockWidgetFocusable,
         AllDockWidgetFeatures = DefaultDockWidgetFeatures | DockWidgetDeleteOnClose | CustomCloseHandling,
         NoDockWidgetFeatures = 0x00
