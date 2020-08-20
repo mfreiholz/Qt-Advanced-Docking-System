@@ -153,7 +153,7 @@ public:
 	};
 	Q_DECLARE_FLAGS(DockAreaFlags, eDockAreaFlag)
 
-	/**
+    /**
 	 * Default Constructor
 	 */
 	CDockAreaWidget(CDockManager* DockManager, CDockContainerWidget* parent);
@@ -305,6 +305,11 @@ public:
 	 * clears the flag.
 	 */
 	void setDockAreaFlag(eDockAreaFlag Flag, bool On);
+
+    /**
+     * Returns true if the area contains the central widget of it's manager.
+     */
+    bool isCentralWidgetArea();
 
 public slots:
 	/**

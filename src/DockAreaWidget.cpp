@@ -440,6 +440,7 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 		DockWidget->toggleViewInternal(true);
 	}
 	d->updateTitleBarButtonStates();
+    updateTitleBarVisibility();
 }
 
 
@@ -943,6 +944,16 @@ void CDockAreaWidget::closeOtherAreas()
 CDockAreaTitleBar* CDockAreaWidget::titleBar() const
 {
 	return d->TitleBar;
+}
+
+
+//============================================================================
+bool CDockAreaWidget::isCentralWidgetArea()
+{
+    if(dockWidgetsCount()!=1)
+        return false;
+
+    return dockManager()->centralWidget()==dockWidgets()[0];
 }
 
 

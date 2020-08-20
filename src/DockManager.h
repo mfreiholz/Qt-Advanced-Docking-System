@@ -378,7 +378,19 @@ public:
 	 */
 	void loadPerspectives(QSettings& Settings);
 
-	/**
+    /**
+     * This function returns managers central widget or nullptr if no central widget is set.
+     */
+    CDockWidget* centralWidget();
+
+    /**
+     * Adds dockwidget into the central area and marks it as central widget.
+     * If central widget is set, it will be the only dock widget
+     * that will resize with the dock container.
+     */
+    CDockAreaWidget* setCentralWidget(CDockWidget* widget);
+
+    /**
 	 * Adds a toggle view action to the the internal view menu.
 	 * You can either manage the insertion of the toggle view actions in your
 	 * application or you can add the actions to the internal view menu and
