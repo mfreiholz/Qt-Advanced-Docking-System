@@ -87,6 +87,18 @@ public:
 	}
 
 	/**
+	 * Delete widgets without parents in this layout
+	 */
+	~CDockAreaLayout()
+	{
+		for(auto Widget : m_Widgets)
+		{
+			if(!Widget->parent())
+				delete Widget;
+		}
+	}
+
+	/**
 	 * Returns the number of widgets in this layout
 	 */
 	int count() const
@@ -467,6 +479,14 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
         ADS_PRINT("Dock Area empty");
 		DockContainer->removeDockArea(this);
 		this->deleteLater();
+		if(DockContainer->dockAreaCount() == 0)
+		{
+			if(CFloatingDockContainer*  FloatingDockContainer = DockContainer->floatingWidget())
+			{
+				FloatingDockContainer->hide();
+				FloatingDockContainer->deleteLater();
+			}
+		}
 	}
 	else if (DockWidget == CurrentDockWidget)
 	{
