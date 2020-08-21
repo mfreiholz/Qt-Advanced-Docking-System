@@ -407,6 +407,7 @@ bool DockManagerPrivate::restoreState(const QByteArray& State, int version)
     	return false;
     }
 
+    CentralWidget = nullptr;
     // Hide updates of floating widgets from use
     hideFloatingWidgets();
     markDockWidgetsDirty();
@@ -830,15 +831,25 @@ CDockWidget* CDockManager::centralWidget()
 }
 
 //============================================================================
-CDockAreaWidget* CDockManager::setCentralWidget(CDockWidget* widget)
+CDockAreaWidget* CDockManager::setCentralWidget(CDockWidget* widget, CDockWidget* oldCentralWidget, DockWidgetArea oldCentralWidgetArea)
 {
-    if(d->CentralWidget)
+    oldCentralWidget = d->CentralWidget;
+    if(oldCentralWidget)
     {
-        addDockWidget(RightDockWidgetArea, d->CentralWidget);
+        addDockWidget(oldCentralWidgetArea, oldCentralWidget);
     }
 
-    d->CentralWidget = widget;
-    return addDockWidget(CenterDockWidgetArea, widget);
+    if(widget)
+    {
+        widget->setFeature(CDockWidget::DockWidgetClosable, false);
+        widget->setFeature(CDockWidget::DockWidgetMovable, false);
+        widget->setFeature(CDockWidget::DockWidgetFloatable, false);
+        d->CentralWidget = widget;
+        CDockAreaWidget* CentralArea = addDockWidget(CenterDockWidgetArea, widget);
+        CentralArea->setDockAreaFlag(CDockAreaWidget::eDockAreaFlag::HideSingleWidgetTitleBar, true);
+        return CentralArea;
+    }
+    return nullptr;
 }
 
 //============================================================================

@@ -387,8 +387,10 @@ public:
      * Adds dockwidget into the central area and marks it as central widget.
      * If central widget is set, it will be the only dock widget
      * that will resize with the dock container.
+     * If a central widget does exist, it will be docked to oldCentralWidgetArea
+     * and returned in oldCentralWidget.
      */
-    CDockAreaWidget* setCentralWidget(CDockWidget* widget);
+    CDockAreaWidget* setCentralWidget(CDockWidget* widget, CDockWidget* oldCentralWidget = nullptr, DockWidgetArea oldCentralWidgetArea = DockWidgetArea::RightDockWidgetArea);
 
     /**
 	 * Adds a toggle view action to the the internal view menu.

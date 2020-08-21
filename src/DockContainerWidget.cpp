@@ -711,11 +711,14 @@ void DockContainerWidgetPrivate::moveToNewSection(QWidget* Widget, CDockAreaWidg
 //============================================================================
 void DockContainerWidgetPrivate::updateSplitterHandles( QSplitter* splitter )
 {
-    if( splitter )
+    if(DockManager->centralWidget())
     {
-        for( int index = 0; index < splitter->count(); index++ )
+        if( splitter )
         {
-            splitter->setStretchFactor(index, widgetResizesWithContainer(splitter->widget(index)) ? 1 : 0);
+            for( int index = 0; index < splitter->count(); index++ )
+            {
+                splitter->setStretchFactor(index, widgetResizesWithContainer(splitter->widget(index)) ? 1 : 0);
+            }
         }
     }
 }
@@ -1256,7 +1259,6 @@ CDockAreaWidget* DockContainerWidgetPrivate::addDockWidgetToDockArea(DockWidgetA
 		auto TargetAreaSizes = TargetAreaSplitter->sizes();
 		QSplitter* NewSplitter = newSplitter(InsertParam.orientation());
 		NewSplitter->addWidget(TargetDockArea);
-//        updateSplitterHandles(NewSplitter);
 
 		insertWidgetIntoSplitter(NewSplitter, NewDockArea, InsertParam.append());
         updateSplitterHandles(NewSplitter);

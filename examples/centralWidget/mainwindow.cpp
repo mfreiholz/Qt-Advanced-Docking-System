@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "digitalclock.h"
 
 #include <QWidgetAction>
 #include <QLabel>
@@ -96,12 +95,8 @@ CMainWindow::CMainWindow(QWidget *parent)
     QCalendarWidget* calendar = new QCalendarWidget();
     CDockWidget* CentralDockWidget = new CDockWidget("CentralWidget");
     CentralDockWidget->setWidget(calendar);
-    CentralDockWidget->setFeature(CDockWidget::DockWidgetClosable, false);
-    CentralDockWidget->setFeature(CDockWidget::DockWidgetMovable, false);
-    CentralDockWidget->setFeature(CDockWidget::DockWidgetFloatable, false);
     auto* CentralDockArea = DockManager->setCentralWidget(CentralDockWidget);
     CentralDockArea->setAllowedAreas(DockWidgetArea::OuterDockAreas);
-    CentralDockArea->setDockAreaFlag(CDockAreaWidget::eDockAreaFlag::HideSingleWidgetTitleBar, true);
 
     QTreeView* fileTree = new QTreeView();
     fileTree->setFrameShape(QFrame::NoFrame);
@@ -139,20 +134,18 @@ CMainWindow::CMainWindow(QWidget *parent)
     QRadioButton* radioDockTop = new QRadioButton("Top", timeLineWidget);
     QRadioButton* radioDockBottom = new QRadioButton("Bottom", timeLineWidget);
     radioDockTop->setChecked(true);
-    timelineLayout->addWidget(new QLabel("Fixed height Dock widget."));
+    timelineLayout->addWidget(new QLabel("Test Widget."));
     timelineLayout->addStretch(1);
     timelineLayout->addWidget(new QLabel("Apply predefined perspective: ", this));
     timelineLayout->addWidget(radioDockTop);
     timelineLayout->addWidget(radioDockBottom);
     TimelineDockWidget = new CDockWidget("Timeline");
     TimelineDockWidget->setWidget(timeLineWidget);
-//    TimelineDockWidget->setResizeMode(CDockWidget::eResizeMode::ResizeHorizontal);
     TimelineDockWidget->setFeature(CDockWidget::DockWidgetClosable, false);
     TimelineDockWidget->setFeature(CDockWidget::DockWidgetMovable, false);
     TimelineDockWidget->setFeature(CDockWidget::DockWidgetFloatable, false);
     TimelineDockWidget->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
     TimelineDockWidget->setMinimumSize(QSize(50, 50));
-    TimelineDockWidget->setFixedHeight(50);
     auto *TimelineDockArea = DockManager->addDockWidget(DockWidgetArea::TopDockWidgetArea, TimelineDockWidget);
     TimelineDockArea->setDockAreaFlag(CDockAreaWidget::eDockAreaFlag::HideSingleWidgetTitleBar, true);
     TimelineDockArea->setAllowedAreas(DockWidgetArea::OuterDockAreas);
@@ -177,7 +170,6 @@ CMainWindow::CMainWindow(QWidget *parent)
     QWidget* statusWidget = new QWidget();
     QHBoxLayout* statusLayout = new QHBoxLayout(statusWidget);
     statusLayout->setSpacing(10);
-    CDigitalClock* clock = new CDigitalClock(statusWidget);
     statusLayout->addWidget(new QLabel("Status Bar"));
     QPushButton* OpenPerspectiveButton = new QPushButton("Open Perspective", statusWidget);
     connect(OpenPerspectiveButton, &QPushButton::clicked, [this](){
@@ -215,19 +207,16 @@ CMainWindow::CMainWindow(QWidget *parent)
     statusLayout->addWidget(OpenPerspectiveButton);
     statusLayout->addWidget(SavePerspectiveButton);
     statusLayout->addStretch(1);
-    statusLayout->addWidget(clock);
     CDockWidget* StatusDockWidget = new CDockWidget("Status");
     StatusDockWidget->setWidget(statusWidget);
-//    StatusDockWidget->setResizeMode(CDockWidget::eResizeMode::ResizeHorizontal);
     StatusDockWidget->setFeature(CDockWidget::DockWidgetClosable, false);
     StatusDockWidget->setFeature(CDockWidget::DockWidgetMovable, false);
     StatusDockWidget->setFeature(CDockWidget::DockWidgetFloatable, false);
     StatusDockWidget->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
     StatusDockWidget->setMinimumSize(QSize(50, 50));
-    StatusDockWidget->setFixedHeight(50);
     StatusDockArea = DockManager->addDockWidget(DockWidgetArea::BottomDockWidgetArea, StatusDockWidget);
     StatusDockArea->setAllowedAreas(DockWidgetArea::OuterDockAreas);
-    StatusDockArea->setDockAreaFlag(CDockAreaWidget::eDockAreaFlag::HideSingleWidgetTitleBar, true);
+    StatusDockArea->setDockAreaFlag(ads::CDockAreaWidget::eDockAreaFlag::HideSingleWidgetTitleBar, true);
 }
 
 CMainWindow::~CMainWindow()
