@@ -87,18 +87,6 @@ public:
 	}
 
 	/**
-	 * Delete widgets without parents in this layout
-	 */
-	~CDockAreaLayout()
-	{
-		for(auto Widget : m_Widgets)
-		{
-			if(!Widget->parent())
-				delete Widget;
-		}
-	}
-
-	/**
 	 * Returns the number of widgets in this layout
 	 */
 	int count() const
@@ -112,7 +100,6 @@ public:
 	 */
 	void insertWidget(int index, QWidget* Widget)
 	{
-		Widget->setParent(nullptr);
 		if (index < 0)
 		{
 			index = m_Widgets.count();
@@ -143,6 +130,8 @@ public:
 			{
 				LayoutItem->widget()->setParent(nullptr);
 			}
+			delete LayoutItem;
+
 			m_CurrentWidget = nullptr;
 			m_CurrentIndex = -1;
 		}
@@ -182,11 +171,7 @@ public:
 			parent->setUpdatesEnabled(false);
 		}
 
-		auto LayoutItem = m_ParentLayout->takeAt(1);
-		if (LayoutItem)
-		{
-			LayoutItem->widget()->setParent(nullptr);
-		}
+		delete m_ParentLayout->takeAt(1);
 
 		m_ParentLayout->addWidget(next);
 		if (prev)
@@ -247,7 +232,7 @@ public:
 
 
 using DockAreaLayout = CDockAreaLayout;
-static constexpr DockWidgetAreas DefaultAllowedAreas = AllDockAreas;
+static const DockWidgetAreas DefaultAllowedAreas = AllDockAreas;
 
 
 /**
