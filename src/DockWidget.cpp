@@ -463,6 +463,12 @@ void CDockWidget::setMinimumSizeHintMode(eMinimumSizeHintMode Mode)
 }
 
 
+bool CDockWidget::isCentralWidget()
+{
+    return dockManager()->centralWidget() == this;
+}
+
+
 //============================================================================
 void CDockWidget::toggleView(bool Open)
 {

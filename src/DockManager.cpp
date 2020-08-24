@@ -108,6 +108,7 @@ struct DockManagerPrivate
 	bool RestoringState = false;
 	QVector<CFloatingDockContainer*> UninitializedFloatingWidgets;
 	CDockFocusController* FocusController = nullptr;
+    CDockWidget* CentralWidget = nullptr;
 
 	/**
 	 * Private data constructor
@@ -406,6 +407,7 @@ bool DockManagerPrivate::restoreState(const QByteArray& State, int version)
     	return false;
     }
 
+    CentralWidget = nullptr;
     // Hide updates of floating widgets from use
     hideFloatingWidgets();
     markDockWidgetsDirty();
@@ -827,6 +829,33 @@ void CDockManager::loadPerspectives(QSettings& Settings)
 	}
 
 	Settings.endArray();
+}
+
+CDockWidget* CDockManager::centralWidget()
+{
+    return d->CentralWidget;
+}
+
+//============================================================================
+CDockAreaWidget* CDockManager::setCentralWidget(CDockWidget* widget, CDockWidget* oldCentralWidget, DockWidgetArea oldCentralWidgetArea)
+{
+    oldCentralWidget = d->CentralWidget;
+    if(oldCentralWidget)
+    {
+        addDockWidget(oldCentralWidgetArea, oldCentralWidget);
+    }
+
+    if(widget)
+    {
+        widget->setFeature(CDockWidget::DockWidgetClosable, false);
+        widget->setFeature(CDockWidget::DockWidgetMovable, false);
+        widget->setFeature(CDockWidget::DockWidgetFloatable, false);
+        d->CentralWidget = widget;
+        CDockAreaWidget* CentralArea = addDockWidget(CenterDockWidgetArea, widget);
+        CentralArea->setDockAreaFlag(CDockAreaWidget::eDockAreaFlag::HideSingleWidgetTitleBar, true);
+        return CentralArea;
+    }
+    return nullptr;
 }
 
 //============================================================================
