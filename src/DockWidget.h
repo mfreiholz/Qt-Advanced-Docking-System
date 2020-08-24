@@ -361,6 +361,11 @@ public:
     void setMinimumSizeHintMode(eMinimumSizeHintMode Mode);
 
     /**
+     * Returns true if the dock widget is set as central widget of it's dock manager
+     */
+    bool isCentralWidget() const;
+
+    /**
      * Sets the dock widget icon that is shown in tabs and in toggle view
      * actions
      */

@@ -464,6 +464,13 @@ void CDockWidget::setMinimumSizeHintMode(eMinimumSizeHintMode Mode)
 
 
 //============================================================================
+bool CDockWidget::isCentralWidget() const
+{
+    return dockManager()->centralWidget() == this;
+}
+
+
+//============================================================================
 void CDockWidget::toggleView(bool Open)
 {
 	// If the toggle view action mode is ActionModeShow, then Open is always
