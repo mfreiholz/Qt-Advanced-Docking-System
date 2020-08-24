@@ -156,8 +156,8 @@ protected:
     QList<CDockWidget*> dockWidgets() const;
 
     /**
-     * This finction forces the dock container widget to update handles of splitters
-     * based on resize modes of dock widgets aontained in the container.
+     * This function forces the dock container widget to update handles of splitters
+     * based on resize modes of dock widgets contained in the container.
      */
     void updateSplitterHandles(QSplitter* splitter);
 

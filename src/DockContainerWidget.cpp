@@ -323,14 +323,15 @@ public:
 	}
 
     /**
-     * This finction forces the dock container widget to update handles of splitters
-     * based on resize modes of dock widgets aontained in the container.
+     * This function forces the dock container widget to update handles of splitters
+     * based if a central widget exists.
      */
     void updateSplitterHandles(QSplitter* splitter);
 
     /**
-     * This function returns true if the area is not allowed to resize in the direstion
-     * of the splitter. Otherwise returns true.
+     * If no central widget exists, the widgets resize with the container.
+     * If a central widget exists, the widgets surrounding the central widget
+     * do not resize its height or width.
      */
     bool widgetResizesWithContainer(QWidget* widget);
 
@@ -711,15 +712,14 @@ void DockContainerWidgetPrivate::moveToNewSection(QWidget* Widget, CDockAreaWidg
 //============================================================================
 void DockContainerWidgetPrivate::updateSplitterHandles( QSplitter* splitter )
 {
-    if(DockManager->centralWidget())
+	if (!DockManager->centralWidget() || !splitter)
+	{
+		return;
+	}
+
+	for (int i = 0; i < splitter->count(); ++i)
     {
-        if( splitter )
-        {
-            for( int index = 0; index < splitter->count(); index++ )
-            {
-                splitter->setStretchFactor(index, widgetResizesWithContainer(splitter->widget(index)) ? 1 : 0);
-            }
-        }
+		splitter->setStretchFactor(i, widgetResizesWithContainer(splitter->widget(i)) ? 1 : 0);
     }
 }
 
@@ -727,19 +727,21 @@ void DockContainerWidgetPrivate::updateSplitterHandles( QSplitter* splitter )
 //============================================================================
 bool DockContainerWidgetPrivate::widgetResizesWithContainer(QWidget* widget)
 {
-    if(!DockManager->centralWidget())
+    if (!DockManager->centralWidget())
+    {
         return true;
+    }
 
-    CDockAreaWidget* Area = dynamic_cast< CDockAreaWidget* >( widget );
+    auto Area = qobject_cast<CDockAreaWidget*>(widget);
     if(Area)
     {
         return Area->isCentralWidgetArea();
     }
 
-    CDockSplitter* innerSplitter = dynamic_cast< CDockSplitter* >( widget );
-    if(innerSplitter)
+    auto innerSplitter = qobject_cast<CDockSplitter*>(widget);
+    if (innerSplitter)
     {
-        return innerSplitter->resizeWithContainer();
+        return innerSplitter->isResizingWithContainer();
     }
 
     return false;

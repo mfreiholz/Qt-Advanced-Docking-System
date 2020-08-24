@@ -310,7 +310,7 @@ public:
     /**
      * Returns true if the area contains the central widget of it's manager.
      */
-    bool isCentralWidgetArea();
+    bool isCentralWidgetArea() const;
 
 public slots:
 	/**

@@ -831,31 +831,38 @@ void CDockManager::loadPerspectives(QSettings& Settings)
 	Settings.endArray();
 }
 
-CDockWidget* CDockManager::centralWidget()
+
+//============================================================================
+CDockWidget* CDockManager::centralWidget() const
 {
     return d->CentralWidget;
 }
 
-//============================================================================
-CDockAreaWidget* CDockManager::setCentralWidget(CDockWidget* widget, CDockWidget* oldCentralWidget, DockWidgetArea oldCentralWidgetArea)
-{
-    oldCentralWidget = d->CentralWidget;
-    if(oldCentralWidget)
-    {
-        addDockWidget(oldCentralWidgetArea, oldCentralWidget);
-    }
 
-    if(widget)
-    {
-        widget->setFeature(CDockWidget::DockWidgetClosable, false);
-        widget->setFeature(CDockWidget::DockWidgetMovable, false);
-        widget->setFeature(CDockWidget::DockWidgetFloatable, false);
-        d->CentralWidget = widget;
-        CDockAreaWidget* CentralArea = addDockWidget(CenterDockWidgetArea, widget);
-        CentralArea->setDockAreaFlag(CDockAreaWidget::eDockAreaFlag::HideSingleWidgetTitleBar, true);
-        return CentralArea;
-    }
-    return nullptr;
+//============================================================================
+CDockAreaWidget* CDockManager::setCentralWidget(CDockWidget* widget)
+{
+	if (!widget)
+	{
+		d->CentralWidget = nullptr;
+		return nullptr;
+	}
+
+	// Setting a new central widget is now allowed if there is alread a central
+	// widget
+	if (d->CentralWidget)
+	{
+		return nullptr;
+	}
+
+
+	widget->setFeature(CDockWidget::DockWidgetClosable, false);
+	widget->setFeature(CDockWidget::DockWidgetMovable, false);
+	widget->setFeature(CDockWidget::DockWidgetFloatable, false);
+	d->CentralWidget = widget;
+	CDockAreaWidget* CentralArea = addDockWidget(CenterDockWidgetArea, widget);
+	CentralArea->setDockAreaFlag(CDockAreaWidget::eDockAreaFlag::HideSingleWidgetTitleBar, true);
+	return CentralArea;
 }
 
 //============================================================================

@@ -463,7 +463,8 @@ void CDockWidget::setMinimumSizeHintMode(eMinimumSizeHintMode Mode)
 }
 
 
-bool CDockWidget::isCentralWidget()
+//============================================================================
+bool CDockWidget::isCentralWidget() const
 {
     return dockManager()->centralWidget() == this;
 }

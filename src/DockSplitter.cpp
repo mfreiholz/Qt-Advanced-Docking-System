@@ -103,16 +103,16 @@ QWidget* CDockSplitter::lastWidget() const
 }
 
 //============================================================================
-bool CDockSplitter::resizeWithContainer()
+bool CDockSplitter::isResizingWithContainer() const
 {
-    QList<CDockAreaWidget *> areas = findChildren<CDockAreaWidget *>();
-
-    for(int i=0; i<areas.size(); i++)
+    for (auto area : findChildren<CDockAreaWidget*>())
     {
-        CDockAreaWidget* area = areas.at(i);
         if(area->isCentralWidgetArea())
+        {
             return true;
+        }
     }
+
     return false;
 }
 

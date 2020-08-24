@@ -381,16 +381,23 @@ public:
     /**
      * This function returns managers central widget or nullptr if no central widget is set.
      */
-    CDockWidget* centralWidget();
+    CDockWidget* centralWidget() const;
 
     /**
-     * Adds dockwidget into the central area and marks it as central widget.
+     * Adds dockwidget widget into the central area and marks it as central widget.
      * If central widget is set, it will be the only dock widget
-     * that will resize with the dock container.
-     * If a central widget does exist, it will be docked to oldCentralWidgetArea
-     * and returned in oldCentralWidget.
+     * that will resize with the dock container. A central widget if not
+     * movable, floatable or closable and the titlebar of the central
+     * dock area is not visible.
+     * If the given widget could be set as central widget, the function returns
+     * the created cok area. If the widget could not be set, because there
+     * is already a central widget, this function returns a nullptr.
+     * To clear the central widget, pass a nullptr to the function.
+     * \retval != 0 The dock area that contains the central widget
+     * \retval nullptr Indicates that the given widget can not be set as central
+     *         widget because there is already a central widget.
      */
-    CDockAreaWidget* setCentralWidget(CDockWidget* widget, CDockWidget* oldCentralWidget = nullptr, DockWidgetArea oldCentralWidgetArea = DockWidgetArea::RightDockWidgetArea);
+    CDockAreaWidget* setCentralWidget(CDockWidget* widget);
 
     /**
 	 * Adds a toggle view action to the the internal view menu.

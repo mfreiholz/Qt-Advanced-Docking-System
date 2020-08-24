@@ -75,7 +75,7 @@ public:
     /**
      * Returns true if the splitter contains central widget of dock manager.
      */
-    bool resizeWithContainer();
+    bool isResizingWithContainer() const;
 }; // class CDockSplitter
 
 } // namespace ads
