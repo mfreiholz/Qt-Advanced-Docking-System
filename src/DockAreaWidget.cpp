@@ -962,7 +962,9 @@ QSize CDockAreaWidget::minimumSizeHint() const
 void CDockAreaWidget::onDockWidgetFeaturesChanged()
 {
 	if (d->TitleBar)
+	{
 		d->updateTitleBarButtonStates();
+	}
 }
 
 
