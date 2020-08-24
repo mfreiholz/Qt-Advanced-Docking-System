@@ -296,11 +296,11 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     {
 		// Delete remaining empty floating widgets
 		int FloatingWidgetIndex = DockContainerCount - 1;
-		int DeleteCount = FloatingWidgets.count() - FloatingWidgetIndex;
-		for (int i = 0; i < DeleteCount; ++i)
+		for (int i = FloatingWidgetIndex; i < FloatingWidgets.count(); ++i)
 		{
-			FloatingWidgets[FloatingWidgetIndex + i]->deleteLater();
-			_this->removeDockContainer(FloatingWidgets[FloatingWidgetIndex + i]->dockContainer());
+			auto* floatingWidget = FloatingWidgets[i];
+			_this->removeDockContainer(floatingWidget->dockContainer());
+			floatingWidget->deleteLater();
 		}
     }
 
