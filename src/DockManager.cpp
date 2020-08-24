@@ -484,12 +484,6 @@ CDockManager::~CDockManager()
 	{
 		delete FloatingWidget;
 	}
-	auto DockWidgetsMap = d->DockWidgetsMap;
-	for(auto DockWidget : d->DockWidgetsMap)
-	{
-		if(!DockWidget->parent())
-			delete DockWidget;
-	}
 	delete d;
 }
 
@@ -659,14 +653,7 @@ void CDockManager::showEvent(QShowEvent *event)
 
 	for (auto FloatingWidget : d->UninitializedFloatingWidgets)
 	{
-		for(CDockWidget* DockWidget : FloatingWidget->dockWidgets())
-		{
-			if(!DockWidget->isClosed())
-			{
-				FloatingWidget->show();
-				break;
-			}
-		}
+		FloatingWidget->show();
 	}
 	d->UninitializedFloatingWidgets.clear();
 }
