@@ -100,6 +100,7 @@ public:
 	 */
 	void insertWidget(int index, QWidget* Widget)
 	{
+		Widget->setParent(nullptr);
 		if (index < 0)
 		{
 			index = m_Widgets.count();
