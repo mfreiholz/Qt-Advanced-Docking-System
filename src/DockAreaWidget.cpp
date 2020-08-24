@@ -131,8 +131,6 @@ public:
 			{
 				LayoutItem->widget()->setParent(nullptr);
 			}
-			delete LayoutItem;
-
 			m_CurrentWidget = nullptr;
 			m_CurrentIndex = -1;
 		}
@@ -172,7 +170,12 @@ public:
 			parent->setUpdatesEnabled(false);
 		}
 
-		delete m_ParentLayout->takeAt(1);
+		auto LayoutItem = m_ParentLayout->takeAt(1);
+		if (LayoutItem)
+		{
+			LayoutItem->widget()->setParent(nullptr);
+		}
+		delete LayoutItem;
 
 		m_ParentLayout->addWidget(next);
 		if (prev)
