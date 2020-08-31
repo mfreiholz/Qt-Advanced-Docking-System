@@ -627,7 +627,7 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager *DockManager) :
 	{
 		native_window = true;
 	}
-	else if (DockManager->testConfigFlag(CDockManager::FloatingContainerForceCustomTitleBar))
+	else if (DockManager->testConfigFlag(CDockManager::FloatingContainerForceQWidgetTitleBar))
 	{
 		native_window = false;
 	}

@@ -185,7 +185,7 @@ public:
 		FloatingContainerForceNativeTitleBar = 0x800000, //!< Linux only ! Forces all FloatingContainer to use the native title bar. This might break docking for FloatinContainer on some Window Managers (like Kwin/KDE).
 														 //!< If neither this nor FloatingContainerForceCustomTitleBar is set (the default) native titlebars are used except on known bad systems.
 														 //! Users can overwrite this by setting the environment variable ADS_UseNativeTitle to "1" or "0".
-		FloatingContainerForceCustomTitleBar = 0x1000000,//!< Linux only ! Forces all FloatingContainer to use a custom title bar.
+        FloatingContainerForceQWidgetTitleBar = 0x1000000,//!< Linux only ! Forces all FloatingContainer to use a QWidget based title bar.
 														 //!< If neither this nor FloatingContainerForceNativeTitleBar is set (the default) native titlebars are used except on known bad systems.
 														 //! Users can overwrite this by setting the environment variable ADS_UseNativeTitle to "1" or "0".
 
