@@ -60,6 +60,9 @@ struct FloatingWidgetTitleBarPrivate
     tMaximizeButton* MaximizeButton = nullptr;
 	CFloatingDockContainer *FloatingWidget = nullptr;
 	eDragState DragState = DraggingInactive;
+    QIcon MaximizeIcon;
+    QIcon NormalIcon;
+    bool Maximized = false;
 
 	FloatingWidgetTitleBarPrivate(CFloatingWidgetTitleBar *_public) :
 		_this(_public)
@@ -133,6 +136,15 @@ CFloatingWidgetTitleBar::CFloatingWidgetTitleBar(CFloatingDockContainer *parent)
 {
 	d->FloatingWidget = parent;
 	d->createLayout();
+
+    auto normalPixmap = this->style()->standardPixmap(QStyle::SP_TitleBarNormalButton, 0, d->MaximizeButton);
+    d->NormalIcon.addPixmap(normalPixmap, QIcon::Normal);
+    d->NormalIcon.addPixmap(internal::createTransparentPixmap(normalPixmap, 0.25), QIcon::Disabled);
+
+    auto maxPixmap = this->style()->standardPixmap(QStyle::SP_TitleBarMaxButton, 0, d->MaximizeButton);
+    d->MaximizeIcon.addPixmap(maxPixmap, QIcon::Normal);
+    d->MaximizeIcon.addPixmap(internal::createTransparentPixmap(maxPixmap, 0.25), QIcon::Disabled);
+    setMaximizedIcon(d->Maximized);
 }
 
 //============================================================================
@@ -230,22 +242,52 @@ void CFloatingWidgetTitleBar::mouseDoubleClickEvent(QMouseEvent *event)
 //============================================================================
 void CFloatingWidgetTitleBar::setMaximizedIcon(bool maximized)
 {
+    d->Maximized = maximized;
     if (maximized)
     {
-        QIcon normalIcon;
-        auto normalPixmap = this->style()->standardPixmap(QStyle::SP_TitleBarNormalButton, 0, d->MaximizeButton);
-        normalIcon.addPixmap(normalPixmap, QIcon::Normal);
-        normalIcon.addPixmap(internal::createTransparentPixmap(normalPixmap, 0.25), QIcon::Disabled);
-        d->MaximizeButton->setIcon(normalIcon);
+        d->MaximizeButton->setIcon(d->NormalIcon);
     }
     else
     {
-        QIcon MaxIcon;
-        auto maxPixmap = this->style()->standardPixmap(QStyle::SP_TitleBarMaxButton, 0, d->MaximizeButton);
-        MaxIcon.addPixmap(maxPixmap, QIcon::Normal);
-        MaxIcon.addPixmap(internal::createTransparentPixmap(maxPixmap, 0.25), QIcon::Disabled);
-        d->MaximizeButton->setIcon(MaxIcon);
+        d->MaximizeButton->setIcon(d->MaximizeIcon);
     }
 }
+
+
+//============================================================================
+void CFloatingWidgetTitleBar::setMaximizeIcon(const QIcon& Icon)
+{
+    d->MaximizeIcon = Icon;
+    if (d->Maximized)
+    {
+        setMaximizedIcon(d->Maximized);
+    }
+}
+
+
+//============================================================================
+void CFloatingWidgetTitleBar::setNormalIcon(const QIcon& Icon)
+{
+    d->NormalIcon = Icon;
+    if (!d->Maximized)
+    {
+        setMaximizedIcon(d->Maximized);
+    }
+}
+
+
+//============================================================================
+QIcon CFloatingWidgetTitleBar::maximizeIcon() const
+{
+    return d->MaximizeIcon;
+}
+
+
+//============================================================================
+QIcon CFloatingWidgetTitleBar::normalIcon() const
+{
+    return d->NormalIcon;
+}
+
 
 } // namespace ads

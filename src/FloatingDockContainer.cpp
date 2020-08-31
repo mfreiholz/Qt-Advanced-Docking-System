@@ -635,7 +635,7 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager *DockManager) :
 	{
 		// KDE doesn't seem to fire MoveEvents while moving windows, so for now no native titlebar for everything using KWin.
 		QString window_manager = internal::windowManager().toUpper().split(" ")[0];
-		bool native_window = window_manager != "KWIN";
+                native_window = window_manager != "KWIN";
 	}
 
 	if (native_window)
