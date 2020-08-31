@@ -154,6 +154,7 @@ void CFloatingWidgetTitleBar::mousePressEvent(QMouseEvent *ev)
 	Super::mousePressEvent(ev);
 }
 
+
 //============================================================================
 void CFloatingWidgetTitleBar::mouseReleaseEvent(QMouseEvent *ev)
 {
@@ -164,6 +165,7 @@ void CFloatingWidgetTitleBar::mouseReleaseEvent(QMouseEvent *ev)
     }
 	Super::mouseReleaseEvent(ev);
 }
+
 
 //============================================================================
 void CFloatingWidgetTitleBar::mouseMoveEvent(QMouseEvent *ev)
@@ -178,12 +180,10 @@ void CFloatingWidgetTitleBar::mouseMoveEvent(QMouseEvent *ev)
 	// move floating window
 	if (DraggingFloatingWidget == d->DragState)
 	{
-#ifdef Q_OS_LINUX
 		if(d->FloatingWidget->isMaximized())
 		{
 			d->FloatingWidget->showNormal(true);
 		}
-#endif
 		d->FloatingWidget->moveFloating();
 		Super::mouseMoveEvent(ev);
 		return;
@@ -211,6 +211,8 @@ void CFloatingWidgetTitleBar::updateStyle()
     internal::repolishStyle(this, internal::RepolishDirectChildren);
 }
 
+
+//============================================================================
 void CFloatingWidgetTitleBar::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if (event->buttons() & Qt::LeftButton)
@@ -224,6 +226,8 @@ void CFloatingWidgetTitleBar::mouseDoubleClickEvent(QMouseEvent *event)
     }
 }
 
+
+//============================================================================
 void CFloatingWidgetTitleBar::setMaximizedIcon(bool maximized)
 {
     if (maximized)

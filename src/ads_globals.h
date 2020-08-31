@@ -135,30 +135,30 @@ static const char* const ClosedProperty = "close";
 static const char* const DirtyProperty = "dirty";
 
 #ifdef Q_OS_LINUX
-	// Utils to directly communicate with the X server
-	/**
-	 * Get atom from cache or request it from the XServer.
-	 */
-	xcb_atom_t xcb_get_atom(const char *name);
+// Utils to directly communicate with the X server
+/**
+ * Get atom from cache or request it from the XServer.
+ */
+xcb_atom_t xcb_get_atom(const char *name);
 
-	/**
-	 * Add a property to a window. Only works on "hidden" windows.
-	 */
-	void xcb_add_prop(bool state, WId window, const char *type, const char *prop);
-	/**
-	 * Updates up to two window properties. Can be set on a visible window.
-	 */
-	void xcb_update_prop(bool set, WId window, const char *type, const char *prop, const char *prop2 = nullptr);
-	/**
-	 * Only for debugging purposes.
-	 */
-	bool xcb_dump_props(WId window, const char *type);
-	/**
-	 * Gets the active window manager from the X11 Server.
-	 * Requires a EWMH conform window manager (Allmost all common used ones are).
-	 * Returns "UNKNOWN" otherwise.
-	 */
-	QString windowManager();
+/**
+ * Add a property to a window. Only works on "hidden" windows.
+ */
+void xcb_add_prop(bool state, WId window, const char *type, const char *prop);
+/**
+ * Updates up to two window properties. Can be set on a visible window.
+ */
+void xcb_update_prop(bool set, WId window, const char *type, const char *prop, const char *prop2 = nullptr);
+/**
+ * Only for debugging purposes.
+ */
+bool xcb_dump_props(WId window, const char *type);
+/**
+ * Gets the active window manager from the X11 Server.
+ * Requires a EWMH conform window manager (Allmost all common used ones are).
+ * Returns "UNKNOWN" otherwise.
+ */
+QString windowManager();
 #endif
 
 /**

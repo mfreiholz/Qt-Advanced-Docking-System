@@ -493,45 +493,62 @@ CDockManager::~CDockManager()
 
 //============================================================================
 #ifdef Q_OS_LINUX
-bool CDockManager::eventFilter(QObject *obj, QEvent *e){
+bool CDockManager::eventFilter(QObject *obj, QEvent *e)
+{
 	// Emulate Qt:Tool behaviour.
 	// Required because on some WMs Tool windows can't be maximized.
 
 	// Window always on top of the MainWindow.
-	if(e->type() == QEvent::WindowActivate){
-		for(auto _window : floatingWidgets()){
-			if(!_window->isVisible() || window()->isMinimized()){
+	if (e->type() == QEvent::WindowActivate)
+	{
+		for (auto _window : floatingWidgets())
+		{
+			if (!_window->isVisible() || window()->isMinimized())
+			{
 				continue;
 			}
 			// setWindowFlags(Qt::WindowStaysOnTopHint) will hide the window and thus requires a show call.
 			// This then leads to flickering and a nasty endless loop (also buggy behaviour on Ubuntu).
 			// So we just do it ourself.
-			internal::xcb_update_prop(true, _window->window()->winId(), "_NET_WM_STATE", "_NET_WM_STATE_ABOVE", "_NET_WM_STATE_STAYS_ON_TOP");
+			internal::xcb_update_prop(true, _window->window()->winId(),
+				"_NET_WM_STATE", "_NET_WM_STATE_ABOVE", "_NET_WM_STATE_STAYS_ON_TOP");
 		}
 	}
-	else if(e->type() == QEvent::WindowDeactivate){
-		for(auto _window : floatingWidgets()){
-			if(!_window->isVisible() || window()->isMinimized()){
+	else if (e->type() == QEvent::WindowDeactivate)
+	{
+		for (auto _window : floatingWidgets())
+		{
+			if (!_window->isVisible() || window()->isMinimized())
+			{
 				continue;
 			}
-			internal::xcb_update_prop(false, _window->window()->winId(), "_NET_WM_STATE", "_NET_WM_STATE_ABOVE", "_NET_WM_STATE_STAYS_ON_TOP");
+			internal::xcb_update_prop(false, _window->window()->winId(),
+				"_NET_WM_STATE", "_NET_WM_STATE_ABOVE", "_NET_WM_STATE_STAYS_ON_TOP");
 			_window->raise();
 		}
 	}
 
 	// Sync minimize with MainWindow
-	if(e->type() == QEvent::WindowStateChange){
-		for(auto _window : floatingWidgets()){
-			if(! _window->isVisible()){
+	if (e->type() == QEvent::WindowStateChange)
+	{
+		for (auto _window : floatingWidgets())
+		{
+			if (! _window->isVisible())
+			{
 				continue;
 			}
-			if(window()->isMinimized()){
+
+			if (window()->isMinimized())
+			{
 				_window->showMinimized();
-			} else {
+			}
+			else
+			{
 				_window->setWindowState(_window->windowState() & (~Qt::WindowMinimized));
 			}
 		}
-		if(!window()->isMinimized()){
+		if (!window()->isMinimized())
+		{
 			QApplication::setActiveWindow(window());
 		}
 	}

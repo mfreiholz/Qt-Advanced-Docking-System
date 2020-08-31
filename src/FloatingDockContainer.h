@@ -284,6 +284,10 @@ public:
 	 */
 	void show();
 
+	/**
+	 * Returns true if the floating widget has a native titlebar or false if
+	 * the floating widget has a QWidget based title bar
+	 */
 	bool hasNativeTitleBar();
 #endif
 

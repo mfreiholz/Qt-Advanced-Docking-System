@@ -411,7 +411,8 @@ struct FloatingDockContainerPrivate
 	void setWindowTitle(const QString &Text)
 	{
 #ifdef Q_OS_LINUX
-		if(TitleBar){
+		if (TitleBar)
+		{
 			TitleBar->setTitle(Text);
 		}
 #endif
@@ -610,24 +611,40 @@ CFloatingDockContainer::CFloatingDockContainer(CDockManager *DockManager) :
 	QDockWidget::setFloating(true);
 	QDockWidget::setFeatures(QDockWidget::AllDockWidgetFeatures);
 
-	// KDE doesn't seem to fire MoveEvents while moving windows, so for now no native titlebar for everything using KWin.
-	QString window_manager = internal::windowManager().toUpper().split(" ")[0];
-	bool native_window = window_manager != "KWIN";
+	bool native_window = true;
+
 	// FloatingContainerForce*TitleBar is overwritten by the "ADS_UseNativeTitle" environment variable if set.
 	auto env = qgetenv("ADS_UseNativeTitle").toUpper();
-	if (env == "1"){
+	if (env == "1")
+	{
 		native_window = true;
-	} else if (env == "0"){
-		native_window = false;
-	} else if ( DockManager->testConfigFlag( CDockManager::FloatingContainerForceNativeTitleBar )){
-		native_window = true;
-	} else if ( DockManager->testConfigFlag( CDockManager::FloatingContainerForceCustomTitleBar )){
+	}
+	else if (env == "0")
+	{
 		native_window = false;
 	}
-	if(native_window){
+	else if (DockManager->testConfigFlag(CDockManager::FloatingContainerForceNativeTitleBar))
+	{
+		native_window = true;
+	}
+	else if (DockManager->testConfigFlag(CDockManager::FloatingContainerForceCustomTitleBar))
+	{
+		native_window = false;
+	}
+	else
+	{
+		// KDE doesn't seem to fire MoveEvents while moving windows, so for now no native titlebar for everything using KWin.
+		QString window_manager = internal::windowManager().toUpper().split(" ")[0];
+		bool native_window = window_manager != "KWIN";
+	}
+
+	if (native_window)
+	{
 		setTitleBarWidget(new QWidget());
 		setWindowFlags(Qt::Window | Qt::WindowMaximizeButtonHint | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint);
-	} else {
+	}
+	else
+	{
 		d->TitleBar = new CFloatingWidgetTitleBar(this);
 		setTitleBarWidget(d->TitleBar);
 		setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint | Qt::FramelessWindowHint);
@@ -705,7 +722,8 @@ void CFloatingDockContainer::changeEvent(QEvent *event)
 		d->zOrderIndex = ++zOrderCounter;
 
 #ifdef Q_OS_LINUX
-		if(d->DraggingState == DraggingFloatingWidget){
+		if (d->DraggingState == DraggingFloatingWidget)
+		{
 			d->titleMouseReleaseEvent();
 			d->DraggingState = DraggingInactive;
 		}
@@ -848,20 +866,13 @@ void CFloatingDockContainer::showEvent(QShowEvent *event)
 void CFloatingDockContainer::startFloating(const QPoint &DragStartMousePos,
     const QSize &Size, eDragState DragState, QWidget *MouseEventHandler)
 {
-#ifndef Q_OS_LINUX
-	Q_UNUSED(MouseEventHandler)
-#endif
 #ifdef Q_OS_LINUX
-    if (!isMaximized()) {
+    if (!isMaximized())
+    {
 		resize(Size);
 		d->DragStartMousePosition = DragStartMousePos;
     }
-#else
-	resize(Size);
-	d->DragStartMousePosition = DragStartMousePos;
-#endif
 	d->setState(DragState);
-#ifdef Q_OS_LINUX
 	if (DraggingFloatingWidget == DragState)
 	{
 		d->MouseEventHandler = MouseEventHandler;
@@ -870,15 +881,20 @@ void CFloatingDockContainer::startFloating(const QPoint &DragStartMousePos,
 			d->MouseEventHandler->grabMouse();
 		}
 	}
-#endif
-#ifdef Q_OS_LINUX
-	if (!isMaximized()) {
+
+	if (!isMaximized())
+	{
 		moveFloating();
 	}
-#else
-	moveFloating();
-#endif
 	show();
+#else
+    Q_UNUSED(MouseEventHandler)
+	resize(Size);
+	d->DragStartMousePosition = DragStartMousePos;
+	d->setState(DragState);
+	moveFloating();
+	show();
+#endif
 }
 
 //============================================================================
@@ -988,7 +1004,8 @@ bool CFloatingDockContainer::restoreState(CDockingStateReader &Stream,
 	}
 	onDockAreasAddedOrRemoved();
 #ifdef Q_OS_LINUX
-	if(d->TitleBar){
+	if(d->TitleBar)
+	{
 		d->TitleBar->setMaximizedIcon(windowState() == Qt::WindowMaximized);
 	}
 #endif
@@ -1134,15 +1151,21 @@ void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 
 
 #ifdef Q_OS_LINUX
+//============================================================================
 void CFloatingDockContainer::onMaximizeRequest()
 {
-	if(windowState() == Qt::WindowMaximized){
+	if (windowState() == Qt::WindowMaximized)
+	{
 		showNormal();
-	}else{
+	}
+	else
+	{
 		showMaximized();
 	}
 }
 
+
+//============================================================================
 void CFloatingDockContainer::showNormal(bool fixGeometry)
 {
 	if (windowState() == Qt::WindowMaximized)
@@ -1154,45 +1177,65 @@ void CFloatingDockContainer::showNormal(bool fixGeometry)
 			setGeometry(oldNormal);
 		}
 	}
-	if(d->TitleBar){
+	if(d->TitleBar)
+	{
 		d->TitleBar->setMaximizedIcon(false);
 	}
 }
 
+
+//============================================================================
 void CFloatingDockContainer::showMaximized()
 {
 	Super::showMaximized();
-	if(d->TitleBar){
+	if (d->TitleBar)
+	{
 		d->TitleBar->setMaximizedIcon(true);
 	}
 }
 
+
+//============================================================================
 bool CFloatingDockContainer::isMaximized() const
 {
 	return windowState() == Qt::WindowMaximized;
 }
 
-void CFloatingDockContainer::show(){
+
+//============================================================================
+void CFloatingDockContainer::show()
+{
 	// Prevent this window from showing in the taskbar and pager (alt+tab)
 	internal::xcb_add_prop(true, winId(), "_NET_WM_STATE", "_NET_WM_STATE_SKIP_TASKBAR");
 	internal::xcb_add_prop(true, winId(), "_NET_WM_STATE", "_NET_WM_STATE_SKIP_PAGER");
 	Super::show();
 }
-void CFloatingDockContainer::resizeEvent(QResizeEvent *event){
+
+
+//============================================================================
+void CFloatingDockContainer::resizeEvent(QResizeEvent *event)
+{
 	d->IsResizing = true;
 	Super::resizeEvent(event);
 }
 
-void CFloatingDockContainer::moveEvent(QMoveEvent *event){
+
+//============================================================================
+void CFloatingDockContainer::moveEvent(QMoveEvent *event)
+{
 	Super::moveEvent(event);
-	if(!d->IsResizing && event->spontaneous()){
+	if (!d->IsResizing && event->spontaneous())
+	{
 		d->DraggingState = DraggingFloatingWidget;
 		d->updateDropOverlays(QCursor::pos());
 	}
 	d->IsResizing = false;
 }
 
-bool CFloatingDockContainer::hasNativeTitleBar(){
+
+//============================================================================
+bool CFloatingDockContainer::hasNativeTitleBar()
+{
 	return d->TitleBar == nullptr;
 }
 #endif
