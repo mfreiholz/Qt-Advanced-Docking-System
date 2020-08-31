@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(QtAdvancedDockingSystem LANGUAGES CXX VERSION ${VERSION_SHORT})
-find_package(Qt5 5.5 COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt5 5.5 COMPONENTS Core Gui Widgets X11Extras REQUIRED)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 if(BUILD_STATIC)
     set(CMAKE_STATIC_LIBRARY_SUFFIX "_static${CMAKE_STATIC_LIBRARY_SUFFIX}")
