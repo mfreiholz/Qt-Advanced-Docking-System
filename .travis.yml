@@ -21,6 +21,7 @@ matrix:
         - qt55base
         - qt55tools
         - qt55x11extras
+        - libqt5x11extras5-dev
         - gcc-9
         - g++-9
     script:
@@ -50,6 +51,7 @@ matrix:
         - qt514base
         - qt514tools
         - qt514x11extras
+        - libqt5x11extras5-dev
         - gcc-9
         - g++-9
         - libc6-i386
@@ -83,6 +85,7 @@ matrix:
         - qt514base
         - qt514tools
         - qt514x11extras
+        - libqt5x11extras5-dev
         - gcc-9
         - g++-9
         - libc6-i386
@@ -116,6 +119,7 @@ matrix:
         - qt514base
         - qt514tools
         - qt514x11extras
+        - libqt5x11extras5-dev
         - gcc-9
         - g++-9
         - libc6-i386
@@ -155,6 +159,7 @@ matrix:
         - qt514base
         - qt514tools
         - qt514x11extras
+        - libqt5x11extras5-dev
         - gcc-9
         - g++-9
         - libc6-i386
