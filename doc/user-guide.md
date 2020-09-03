@@ -24,6 +24,10 @@
   - [`FloatingContainerHasWidgetIcon`](#floatingcontainerhaswidgeticon)
   - [`HideSingleCentralWidgetTitleBar`](#hidesinglecentralwidgettitlebar)
   - [`FocusHighlighting`](#focushighlighting)
+  - [`EqualSplitOnInsertion`](#equalsplitoninsertion)
+  - [`FloatingContainerForceNativeTitleBar` (Linux only)](#floatingcontainerforcenativetitlebar-linux-only)
+  - [`FloatingContainerForceQWidgetTitleBar` (Linux only)](#floatingcontainerforceqwidgettitlebar-linux-only)
+- [Central Widget](#central-widget)
 - [Styling](#styling)
   - [Disabling the Internal Style Sheet](#disabling-the-internal-style-sheet)
 
@@ -407,6 +411,81 @@ bool CMainWindow::eventFilter(QObject *watched, QEvent *event)
     }
     return false;
 }
+```
+
+### `EqualSplitOnInsertion`
+
+This flag configures how the space is distributed if a new dock widget is
+inserted into an existing dock area. The flag is disabled by default. If 3 
+dock widgets are inserted with the following code
+
+```c++
+d->DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidget, EditorArea);
+```
+
+then this is the result, if the flag is disabled:
+
+![EqualSplitOnInsertion false](cfg_flag_EqualSplitOnInsertion_false.png)
+
+If the flag is enabled, then the space is equally distributed to all widgets 
+in a  splitter:
+
+![EqualSplitOnInsertion true](cfg_flag_EqualSplitOnInsertion_true.png)
+
+
+### `FloatingContainerForceNativeTitleBar` (Linux only)
+
+Since release 3.6 the library supports native titlebars and window decorations
+for floating widgets on Linux (thanks to a user contribution).
+Native titlebars and window decorations are supported by most Linux window
+managers, such as Compiz or Xfwm. Some window managers like KWin do not properly
+support this feature. Native floating widgets look better because of the native
+styling and the support all window manager features like snapping to window
+borders or maximizing. The library tries to detect the window manager and 
+activates native window decorations if possible:
+
+![FloatingContainerForceNativeTitleBar true](cfg_flag_FloatingContainerForceNativeTitleBar_true.png)
+
+If you would like to overwrite this autodetection, then you can  activate this
+flag to force native window titlebars. You can overwrite autodetection and this
+flag, if you set the environment variable `ADS_UseNativeTitle` to 0 or 1.
+
+### `FloatingContainerForceQWidgetTitleBar` (Linux only)
+
+If your window manager (i.e. KWin) does not properly support native floating
+windows, the docking library falls back to QWidget based titlebars for 
+floating widgets.
+
+![FloatingContainerForceNativeTitleBar false](cfg_flag_FloatingContainerForceNativeTitleBar_false.png)
+
+If you would like to overwrite autodetection, thne you can activate this flag 
+to force QWidget based titlebars. You can overwrite autodetection and this
+flag, if you set the environment variable `ADS_UseNativeTitle` to 0 or 1.
+
+## Central Widget
+
+The Advanced Docking System has been developed to overcome the limitations of
+the native Qt docking system with its central widget concept. This was the
+reason that until version 3.6 of the library, there was no support for such
+thing like a central widget. Thanks to the contribution of a user the library
+now supports a central widget.
+
+In the Advanced Docking System a central widget is a docking widget that is
+neither closable nor movable or floatable. A central widget has no title bar
+and so it is not possible for the user to hide, close or drag the central
+widget. Tf there is a central widget, then also the distribution of the sizes
+for the dock widgets around the central widget is different. If there is no
+central widget and the main windo is resized, then the available space is
+distributed to all dock widgets. If a central widget exists, then only the
+central widget is resized when resizing the main window. The dock widgets around
+the central widget keep their sizes. The following animation shows this:
+
+![Central Widget](central_widget.gif)
+
+To set a centra widget, you just need to call the 
+
+```c++
+auto* CentralDockArea = DockManager->setCentralWidget(CentralDockWidget);
 ```
 
 ## Styling
