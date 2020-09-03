@@ -38,7 +38,6 @@ CMainWindow::CMainWindow(QWidget *parent)
     // Set central widget
     QPlainTextEdit* w = new QPlainTextEdit();
 	w->setPlaceholderText("This is the central editor. Enter your text here.");
-	//w->setStyleSheet("border: none");
     CDockWidget* CentralDockWidget = new CDockWidget("CentralWidget");
     CentralDockWidget->setWidget(w);
     auto* CentralDockArea = DockManager->setCentralWidget(CentralDockWidget);
