@@ -435,14 +435,14 @@ in a  splitter:
 
 ### `FloatingContainerForceNativeTitleBar` (Linux only)
 
-Since release 3.6 the library supports native titlebars and window decorations
+Since release 3.6 the library supports native title bars and window decorations
 for floating widgets on Linux (thanks to a user contribution).
-Native titlebars and window decorations are supported by most Linux window
+Native title bars and window decorations are supported by most Linux window
 managers, such as Compiz or Xfwm. Some window managers like KWin do not properly
 support this feature. Native floating widgets look better because of the native
 styling and the support all window manager features like snapping to window
-borders or maximizing. The library tries to detect the window manager and 
-activates native window decorations if possible:
+borders or maximizing. The library tries to detect the window manager during
+runtime and activates native window decorations if possible:
 
 ![FloatingContainerForceNativeTitleBar true](cfg_flag_FloatingContainerForceNativeTitleBar_true.png)
 
@@ -453,13 +453,13 @@ flag, if you set the environment variable `ADS_UseNativeTitle` to 0 or 1.
 ### `FloatingContainerForceQWidgetTitleBar` (Linux only)
 
 If your window manager (i.e. KWin) does not properly support native floating
-windows, the docking library falls back to QWidget based titlebars for 
-floating widgets.
+windows, the docking library falls back to QWidget based floating widget
+title bars.
 
 ![FloatingContainerForceNativeTitleBar false](cfg_flag_FloatingContainerForceNativeTitleBar_false.png)
 
-If you would like to overwrite autodetection, thne you can activate this flag 
-to force QWidget based titlebars. You can overwrite autodetection and this
+If you would like to overwrite autodetection, then you can activate this flag
+to force QWidget based title bars. You can overwrite autodetection and this
 flag, if you set the environment variable `ADS_UseNativeTitle` to 0 or 1.
 
 ## Central Widget
@@ -473,20 +473,23 @@ now supports a central widget.
 In the Advanced Docking System a central widget is a docking widget that is
 neither closable nor movable or floatable. A central widget has no title bar
 and so it is not possible for the user to hide, close or drag the central
-widget. Tf there is a central widget, then also the distribution of the sizes
+widget. If there is a central widget, then also the distribution of the sizes
 for the dock widgets around the central widget is different. If there is no
-central widget and the main windo is resized, then the available space is
+central widget and the main window is resized, then the available space is
 distributed to all dock widgets. If a central widget exists, then only the
 central widget is resized when resizing the main window. The dock widgets around
 the central widget keep their sizes. The following animation shows this:
 
 ![Central Widget](central_widget.gif)
 
-To set a centra widget, you just need to call the 
+To set a centra widget, you just need to pass your central dock widget
+to the dock manager `setCentralWidget` function:
 
 ```c++
 auto* CentralDockArea = DockManager->setCentralWidget(CentralDockWidget);
 ```
+
+See the `centralwidget` example to learn how it works.
 
 ## Styling
 
