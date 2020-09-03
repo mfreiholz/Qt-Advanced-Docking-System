@@ -15,6 +15,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QMessageBox>
+#include <QPlainTextEdit>
 
 #include "DockAreaWidget.h"
 #include "DockAreaTitleBar.h"
@@ -31,12 +32,15 @@ CMainWindow::CMainWindow(QWidget *parent)
     ui->setupUi(this);
     CDockManager::setConfigFlag(CDockManager::OpaqueSplitterResize, true);
     CDockManager::setConfigFlag(CDockManager::XmlCompressionEnabled, false);
+    CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
     DockManager = new CDockManager(this);
 
     // Set central widget
-    QCalendarWidget* calendar = new QCalendarWidget();
+    QPlainTextEdit* w = new QPlainTextEdit();
+	w->setPlaceholderText("This is the central editor. Enter your text here.");
+	//w->setStyleSheet("border: none");
     CDockWidget* CentralDockWidget = new CDockWidget("CentralWidget");
-    CentralDockWidget->setWidget(calendar);
+    CentralDockWidget->setWidget(w);
     auto* CentralDockArea = DockManager->setCentralWidget(CentralDockWidget);
     CentralDockArea->setAllowedAreas(DockWidgetArea::OuterDockAreas);
 
