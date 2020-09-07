@@ -474,15 +474,17 @@ In the Advanced Docking System a central widget is a docking widget that is
 neither closable nor movable or floatable. A central widget has no title bar
 and so it is not possible for the user to hide, close or drag the central
 widget. If there is a central widget, then also the distribution of the sizes
-for the dock widgets around the central widget is different. If there is no
-central widget and the main window is resized, then the available space is
-distributed to all dock widgets. If a central widget exists, then only the
-central widget is resized when resizing the main window. The dock widgets around
-the central widget keep their sizes. The following animation shows this:
+for the dock widgets around the central widget is different:
+
+- **no central widget (default)** - on resizing the available space is
+distributed to all dock widgets - the size of all dock widgets
+shrinks or grows
+- **with central widget** - on resizing only the central widget is resized - the
+dock widgets around the central widget keep their size (see the animation below)
 
 ![Central Widget](central_widget.gif)
 
-To set a centra widget, you just need to pass your central dock widget
+To set a central widget, you just need to pass your central dock widget
 to the dock manager `setCentralWidget` function:
 
 ```c++
