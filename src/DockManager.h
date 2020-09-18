@@ -553,6 +553,12 @@ signals:
     void dockAreaCreated(ads::CDockAreaWidget* DockArea);
 
     /**
+     * This signal is emitted if a dock widget has been added to this
+     * dock manager instance.
+     */
+    void dockWidgetAdded(ads::CDockWidget* DockWidget);
+
+    /**
      * This signal is emitted just before the given dock widget is removed
      * from the dock manager
      */

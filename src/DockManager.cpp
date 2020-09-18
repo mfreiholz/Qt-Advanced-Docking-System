@@ -706,6 +706,7 @@ CFloatingDockContainer* CDockManager::addDockWidgetFloating(CDockWidget* Dockwid
 	{
 		d->UninitializedFloatingWidgets.append(FloatingWidget);
 	}
+	emit dockWidgetAdded(Dockwidget);
 	return FloatingWidget;
 }
 
@@ -732,7 +733,9 @@ CDockAreaWidget* CDockManager::addDockWidget(DockWidgetArea area,
 	CDockWidget* Dockwidget, CDockAreaWidget* DockAreaWidget)
 {
 	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
-	return CDockContainerWidget::addDockWidget(area, Dockwidget, DockAreaWidget);
+	auto AreaOfAddedDockWidget = CDockContainerWidget::addDockWidget(area, Dockwidget, DockAreaWidget);
+	emit dockWidgetAdded(Dockwidget);
+	return AreaOfAddedDockWidget;
 }
 
 
