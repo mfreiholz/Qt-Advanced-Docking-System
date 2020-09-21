@@ -493,6 +493,13 @@ auto* CentralDockArea = DockManager->setCentralWidget(CentralDockWidget);
 
 See the `centralwidget` example to learn how it works.
 
+<div style="background: #fff6e8; border: 1px solid #ffa51a; padding: 6px;"> 
+The central widget needs to be the first dock widget that is added to the
+dock manager. The function does not work and returns a nullptr if there
+are already other dock widgets registered. So setCentralWidget should be
+the first function when adding dock widgets.
+</div>
+
 ## Styling
 
 The Advanced Docking System supports styling via [Qt Style Sheets](https://doc.qt.io/qt-5/stylesheet.html). All components like splitters, tabs, buttons, titlebar and
