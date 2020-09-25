@@ -280,22 +280,25 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
 #endif
     ADS_PRINT(DockContainers);
 
-    const auto CentralWidgetAttribute = s.attributes().value("CentralWidget");
-    // If we have a central widget but a state without central widget, then
-    // something is wrong.
-	if (CentralWidget && CentralWidgetAttribute.isEmpty())
-	{
-		qWarning() << "Dock manager has central widget but saved state does not have central widget.";
-		return false;
-	}
+    if (CentralWidget)
+    {
+		const auto CentralWidgetAttribute = s.attributes().value("CentralWidget");
+		// If we have a central widget but a state without central widget, then
+		// something is wrong.
+		if (CentralWidgetAttribute.isEmpty())
+		{
+			qWarning() << "Dock manager has central widget but saved state does not have central widget.";
+			return false;
+		}
 
-	// If the object name of the central widget does not match the name of the
-	// saved central widget, the something is wrong
-	if (CentralWidget->objectName() != CentralWidgetAttribute.toString())
-	{
-		qWarning() << "Object name of central widget does not match name of central widget in saved state.";
-		return false;
-	}
+		// If the object name of the central widget does not match the name of the
+		// saved central widget, the something is wrong
+		if (CentralWidget->objectName() != CentralWidgetAttribute.toString())
+		{
+			qWarning() << "Object name of central widget does not match name of central widget in saved state.";
+			return false;
+		}
+    }
 
     int DockContainerCount = 0;
     while (s.readNextStartElement())
