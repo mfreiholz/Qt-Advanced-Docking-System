@@ -135,6 +135,7 @@ protected:
 	ads::CDockOverlay* dockAreaOverlay() const;
     void notifyWidgetOrAreaRelocation(QWidget* RelocatedWidget);
     void notifyFloatingWidgetDrop(ads::CFloatingDockContainer* FloatingWidget);
+    ads::CDockWidget* focusedDockWidget() const;
 
     virtual void showEvent(QShowEvent *event);
 
@@ -170,6 +171,8 @@ public:
 		HideSingleCentralWidgetTitleBar,
         FocusHighlighting,
         EqualSplitOnInsertion,
+        FloatingContainerForceNativeTitleBar,
+        FloatingContainerForceQWidgetTitleBar,
         DefaultDockAreaButtons,
 		DefaultBaseConfig,
         DefaultOpaqueConfig,
@@ -206,6 +209,8 @@ public:
 	QStringList perspectiveNames() const;
 	void savePerspectives(QSettings& Settings) const;
 	void loadPerspectives(QSettings& Settings);
+    CDockWidget* centralWidget() const;
+    CDockAreaWidget* setCentralWidget(CDockWidget* widget /Transfer/);
 	QAction* addToggleViewActionToMenu(QAction* ToggleViewAction /Transfer/,
 		const QString& Group = QString(), const QIcon& GroupIcon = QIcon());
 	QMenu* viewMenu() const;
@@ -226,6 +231,7 @@ signals:
     void perspectiveOpened(const QString& PerspectiveName);
 	void floatingWidgetCreated(ads::CFloatingDockContainer*);
     void dockAreaCreated(ads::CDockAreaWidget*);
+    void dockWidgetAdded(ads::CDockWidget* DockWidget);
     void dockWidgetAboutToBeRemoved(ads::CDockWidget*);
     void dockWidgetRemoved(ads::CDockWidget*);
     void focusedDockWidgetChanged(ads::CDockWidget*, ads::CDockWidget*);
