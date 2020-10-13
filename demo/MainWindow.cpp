@@ -712,6 +712,7 @@ void CMainWindow::createEditor()
 	bool Floating = vFloating.isValid() ? vFloating.toBool() : true;
 	auto DockWidget = d->createEditorWidget();
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetDeleteOnClose, true);
+	DockWidget->setFeature(ads::CDockWidget::DockWidgetForceCloseWithArea, true);
     connect(DockWidget, SIGNAL(closeRequested()), SLOT(onEditorCloseRequested()));
 
     if (Floating)
