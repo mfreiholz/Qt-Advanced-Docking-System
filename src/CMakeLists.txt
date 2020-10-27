@@ -62,7 +62,7 @@ endif()
 target_link_libraries(qtadvanceddocking PUBLIC Qt5::Core Qt5::Gui Qt5::Widgets)
 if(UNIX AND NOT APPLE)
     target_link_libraries(qtadvanceddocking PUBLIC Qt5::X11Extras)
-	target_link_libraries("${MODULE}" xcb)
+	target_link_libraries(qtadvanceddocking xcb)
 endif()
 set_target_properties(qtadvanceddocking PROPERTIES 
     AUTOMOC ON
