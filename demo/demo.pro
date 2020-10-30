@@ -34,6 +34,7 @@ RESOURCES += demo.qrc
 
 LIBS += -L$${ADS_OUT_ROOT}/lib
 
+
 # Dependency: AdvancedDockingSystem (shared)
 CONFIG(debug, debug|release){
     win32 {
@@ -48,6 +49,11 @@ CONFIG(debug, debug|release){
 }
 else{
     LIBS += -lqtadvanceddocking
+}
+
+unix:!macx {
+    LIBS += -lxcb
+    QT += x11extras
 }
 
 INCLUDEPATH += ../src
