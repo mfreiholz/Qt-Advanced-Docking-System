@@ -51,7 +51,6 @@
 #include "DockManager.h"
 #include "IconProvider.h"
 
-#include <iostream>
 
 namespace ads
 {
@@ -77,6 +76,7 @@ struct DockWidgetTabPrivate
 	QAbstractButton* CloseButton = nullptr;
 	QSpacerItem* IconTextSpacer;
 	QPoint TabDragStartPosition;
+	QSize IconSize;
 
 	/**
 	 * Private data constructor
@@ -184,6 +184,27 @@ struct DockWidgetTabPrivate
 	{
 		GlobalDragStartMousePosition = GlobalPos;
 		DragStartMousePosition = _this->mapFromGlobal(GlobalPos);
+	}
+
+	/**
+	 * Update the icon in case the icon size changed
+	 */
+	void updateIcon()
+	{
+		if (!IconLabel || Icon.isNull())
+		{
+			return;
+		}
+
+		if (IconSize.isValid())
+		{
+			IconLabel->setPixmap(Icon.pixmap(IconSize));
+		}
+		else
+		{
+			IconLabel->setPixmap(Icon.pixmap(_this->style()->pixelMetric(QStyle::PM_SmallIconSize, nullptr, _this)));
+		}
+		IconLabel->setVisible(true);
 	}
 
 };
@@ -570,11 +591,7 @@ void CDockWidgetTab::setIcon(const QIcon& Icon)
 	}
 
 	d->Icon = Icon;
-	if (d->IconLabel)
-	{
-		d->IconLabel->setPixmap(Icon.pixmap(style()->pixelMetric(QStyle::PM_SmallIconSize, nullptr, this)));
-		d->IconLabel->setVisible(true);
-	}
+	d->updateIcon();
 }
 
 
@@ -685,6 +702,21 @@ void CDockWidgetTab::setElideMode(Qt::TextElideMode mode)
 void CDockWidgetTab::updateStyle()
 {
 	internal::repolishStyle(this, internal::RepolishDirectChildren);
+}
+
+
+//============================================================================
+QSize CDockWidgetTab::iconSize() const
+{
+	return d->IconSize;
+}
+
+
+//============================================================================
+void CDockWidgetTab::setIconSize(const QSize& Size)
+{
+	d->IconSize = Size;
+	d->updateIcon();
 }
 
 
