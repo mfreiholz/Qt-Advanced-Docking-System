@@ -58,6 +58,7 @@
 #include <QMessageBox>
 #include <QMenu>
 #include <QToolButton>
+#include <QPointer>
 
 
 #ifdef Q_OS_WIN
@@ -166,7 +167,8 @@ struct MainWindowPrivate
 	QComboBox* PerspectiveComboBox = nullptr;
 	ads::CDockManager* DockManager = nullptr;
 	ads::CDockWidget* WindowTitleTestDockWidget = nullptr;
-	ads::CDockWidget* LastDockedEditor = nullptr;
+	QPointer<ads::CDockWidget> LastDockedEditor;
+	QPointer<ads::CDockWidget> LastCreatedFloatingEditor;
 
 	MainWindowPrivate(CMainWindow* _public) : _this(_public) {}
 
@@ -719,18 +721,30 @@ void CMainWindow::createEditor()
     {
 		auto FloatingWidget = d->DockManager->addDockWidgetFloating(DockWidget);
 		FloatingWidget->move(QPoint(20, 20));
+		d->LastCreatedFloatingEditor = DockWidget;
+		d->LastDockedEditor.clear();
     }
     else
     {
     	ads::CDockAreaWidget* EditorArea = d->LastDockedEditor ? d->LastDockedEditor->dockAreaWidget() : nullptr;
     	if (EditorArea)
     	{
+    		std::cout << "DockAreaCount before: " << EditorArea->dockContainer()->dockAreaCount() << std::endl;
     		d->DockManager->setConfigFlag(ads::CDockManager::EqualSplitOnInsertion, true);
     		d->DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidget, EditorArea);
+    		std::cout << "DockAreaCount after: " << DockWidget->dockContainer()->dockAreaCount() << std::endl;
     	}
     	else
     	{
-    		d->DockManager->addDockWidget(ads::TopDockWidgetArea, DockWidget);
+    		if (d->LastCreatedFloatingEditor)
+    		{
+    			std::cout << "LastCreated" << std::endl;
+    			d->DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidget, d->LastCreatedFloatingEditor->dockAreaWidget());
+    		}
+    		else
+    		{
+    			d->DockManager->addDockWidget(ads::TopDockWidgetArea, DockWidget);
+    		}
     	}
     	d->LastDockedEditor = DockWidget;
     }

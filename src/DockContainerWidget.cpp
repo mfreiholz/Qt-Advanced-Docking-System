@@ -1253,7 +1253,6 @@ CDockAreaWidget* DockContainerWidgetPrivate::addDockWidgetToDockArea(DockWidgetA
 		{
 			adjustSplitterSizesOnInsertion(TargetAreaSplitter);
 		}
-
 	}
 	else
 	{
@@ -1273,8 +1272,7 @@ CDockAreaWidget* DockContainerWidgetPrivate::addDockWidgetToDockArea(DockWidgetA
 		}
 	}
 
-	appendDockAreas({NewDockArea});
-	emitDockAreasAdded();
+	addDockAreasToList({NewDockArea});
 	return NewDockArea;
 }
 

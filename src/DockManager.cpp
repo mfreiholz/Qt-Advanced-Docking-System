@@ -759,7 +759,8 @@ CDockAreaWidget* CDockManager::addDockWidget(DockWidgetArea area,
 	CDockWidget* Dockwidget, CDockAreaWidget* DockAreaWidget)
 {
 	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
-	auto AreaOfAddedDockWidget = CDockContainerWidget::addDockWidget(area, Dockwidget, DockAreaWidget);
+	auto Container = DockAreaWidget ? DockAreaWidget->dockContainer(): this;
+	auto AreaOfAddedDockWidget = Container->addDockWidget(area, Dockwidget, DockAreaWidget);
 	emit dockWidgetAdded(Dockwidget);
 	return AreaOfAddedDockWidget;
 }
