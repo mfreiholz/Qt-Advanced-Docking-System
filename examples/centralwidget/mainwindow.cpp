@@ -133,3 +133,14 @@ void CMainWindow::savePerspective()
 	PerspectiveComboBox->setCurrentText(PerspectiveName);
 }
 
+
+//============================================================================
+void CMainWindow::closeEvent(QCloseEvent* event)
+{
+    // Delete dock manager here to delete all floating widgets. This ensures
+    // that all top level windows of the dock manager are properly closed
+    DockManager->deleteLater();
+	QMainWindow::closeEvent(event);
+}
+
+
