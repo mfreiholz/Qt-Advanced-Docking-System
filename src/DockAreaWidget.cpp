@@ -324,7 +324,6 @@ struct DockAreaWidgetPrivate
 		}
 	}
 };
-// struct DockAreaWidgetPrivate
 
 
 //============================================================================
@@ -974,7 +973,19 @@ bool CDockAreaWidget::isCentralWidgetArea() const
 //============================================================================
 QSize CDockAreaWidget::minimumSizeHint() const
 {
-	return d->MinSizeHint.isValid() ? d->MinSizeHint : Super::minimumSizeHint();
+	if (!d->MinSizeHint.isValid())
+	{
+		return Super::minimumSizeHint();
+	}
+
+	if (d->TitleBar->isVisible())
+	{
+		return d->MinSizeHint + QSize(0, d->TitleBar->minimumSizeHint().height());
+	}
+	else
+	{
+		return d->MinSizeHint;
+	}
 }
 
 
