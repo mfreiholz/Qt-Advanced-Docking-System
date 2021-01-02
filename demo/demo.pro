@@ -4,6 +4,8 @@ TARGET = AdvancedDockingSystemDemo
 DESTDIR = $${ADS_OUT_ROOT}/lib
 QT += core gui widgets
 
+include(../ads.pri)
+
 lessThan(QT_MAJOR_VERSION, 6) {
     win32 {
         QT += axcontainer
@@ -36,27 +38,6 @@ RESOURCES += demo.qrc
 
 LIBS += -L$${ADS_OUT_ROOT}/lib
 
-
-# Dependency: AdvancedDockingSystem (shared)
-CONFIG(debug, debug|release){
-    win32 {
-        LIBS += -lqtadvanceddockingd
-    }
-    else:mac {
-        LIBS += -lqtadvanceddocking_debug
-    }
-    else {
-        LIBS += -lqtadvanceddocking
-    }
-}
-else{
-    LIBS += -lqtadvanceddocking
-}
-
-unix:!macx {
-    LIBS += -lxcb
-    QT += x11extras
-}
 
 INCLUDEPATH += ../src
 DEPENDPATH += ../src
