@@ -259,7 +259,7 @@ void DockWidgetTabPrivate::createLayout()
 void DockWidgetTabPrivate::moveTab(QMouseEvent* ev)
 {
     ev->accept();
-    QPoint Distance = ev->globalPos() - GlobalDragStartMousePosition;
+    QPoint Distance = internal::globalPositionOf(ev) - GlobalDragStartMousePosition;
     Distance.setY(0);
     auto TargetPos = Distance + TabDragStartPosition;
     TargetPos.rx() = qMax(TargetPos.x(), 0);
@@ -351,7 +351,7 @@ void CDockWidgetTab::mousePressEvent(QMouseEvent* ev)
 	if (ev->button() == Qt::LeftButton)
 	{
 		ev->accept();
-        d->saveDragStartMousePosition(ev->globalPos());
+        d->saveDragStartMousePosition(internal::globalPositionOf(ev));
         d->DragState = DraggingMousePressed;
         emit clicked();
 		return;
@@ -377,7 +377,7 @@ void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 			// End of tab moving, emit signal
 			if (d->DockArea)
 			{
-				emit moved(ev->globalPos());
+                emit moved(internal::globalPositionOf(ev));
 			}
 			break;
 
@@ -422,7 +422,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     auto MappedPos = mapToParent(ev->pos());
     bool MouseOutsideBar = (MappedPos.x() < 0) || (MappedPos.x() > parentWidget()->rect().right());
     // Maybe a fixed drag distance is better here ?
-    int DragDistanceY = qAbs(d->GlobalDragStartMousePosition.y() - ev->globalPos().y());
+    int DragDistanceY = qAbs(d->GlobalDragStartMousePosition.y() - internal::globalPositionOf(ev).y());
     if (DragDistanceY >= CDockManager::startDragDistance() || MouseOutsideBar)
 	{
 		// If this is the last dock area in a dock container with only
@@ -454,7 +454,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     	return;
 	}
     else if (d->DockArea->openDockWidgetsCount() > 1
-     && (ev->globalPos() - d->GlobalDragStartMousePosition).manhattanLength() >= QApplication::startDragDistance()) // Wait a few pixels before start moving
+     && (internal::globalPositionOf(ev) - d->GlobalDragStartMousePosition).manhattanLength() >= QApplication::startDragDistance()) // Wait a few pixels before start moving
 	{
     	// If we start dragging the tab, we save its inital position to
     	// restore it later
@@ -618,7 +618,7 @@ void CDockWidgetTab::mouseDoubleClickEvent(QMouseEvent *event)
 	if ((!d->DockArea->dockContainer()->isFloating() || d->DockArea->dockWidgetsCount() > 1)
 		&& d->DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable))
 	{
-		d->saveDragStartMousePosition(event->globalPos());
+        d->saveDragStartMousePosition(internal::globalPositionOf(event));
 		d->startFloating(DraggingInactive);
 	}
 

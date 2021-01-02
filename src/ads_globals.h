@@ -36,6 +36,7 @@
 #include <QWidget>
 #include <QDebug>
 #include <QStyle>
+#include <QMouseEvent>
 
 #ifdef Q_OS_LINUX
 #include <xcb/xcb.h>
@@ -256,6 +257,19 @@ void setToolTip(QObjectPtr obj, const QString &tip)
 #else
 	Q_UNUSED(obj);
 	Q_UNUSED(tip);
+#endif
+}
+
+
+/**
+ * Helper function for access to mouse event global position in Qt5 and
+ */
+inline QPoint globalPositionOf(QMouseEvent* ev)
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    return ev->globalPosition().toPoint();
+#else
+    return ev->globalPos();
 #endif
 }
 
