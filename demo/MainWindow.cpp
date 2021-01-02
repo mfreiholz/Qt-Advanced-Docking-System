@@ -58,11 +58,14 @@
 #include <QMessageBox>
 #include <QMenu>
 #include <QToolButton>
+#include <QToolBar>
 #include <QPointer>
 
 
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QAxWidget>
+#endif
 #endif
 
 #include <QMap>
@@ -355,6 +358,7 @@ struct MainWindowPrivate
 
 
 #ifdef Q_OS_WIN
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 	/**
 	 * Creates an ActiveX widget on windows
 	 */
@@ -367,6 +371,7 @@ struct MainWindowPrivate
 	   ui.menuView->addAction(DockWidget->toggleViewAction());
 	   return DockWidget;
 	}
+#endif
 #endif
 
 };
@@ -446,10 +451,12 @@ void MainWindowPrivate::createContent()
     DockWidget->connect(Action, SIGNAL(triggered()), SLOT(raise()));
 
 #ifdef Q_OS_WIN
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     if (!ads::CDockManager::testConfigFlag(ads::CDockManager::OpaqueUndocking))
     {
     	DockManager->addDockWidget(ads::CenterDockWidgetArea, createActiveXWidget(), RighDockArea);
     }
+#endif
 #endif
 
 	for (auto DockWidget : DockManager->dockWidgetsMap())

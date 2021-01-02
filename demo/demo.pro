@@ -4,8 +4,10 @@ TARGET = AdvancedDockingSystemDemo
 DESTDIR = $${ADS_OUT_ROOT}/lib
 QT += core gui widgets
 
-win32 {
-QT += axcontainer
+lessThan(QT_MAJOR_VERSION, 6) {
+    win32 {
+        QT += axcontainer
+    }
 }
 
 CONFIG += c++14

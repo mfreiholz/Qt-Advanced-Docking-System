@@ -179,7 +179,7 @@ void hideEmptyParentSplitters(CDockSplitter* FirstParentSplitter);
 class CDockInsertParam : public QPair<Qt::Orientation, bool>
 {
 public:
-	using QPair::QPair;
+    using QPair<Qt::Orientation, bool>::QPair;
 	Qt::Orientation orientation() const {return this->first;}
 	bool append() const {return this->second;}
 	int insertOffset() const {return append() ? 1 : 0;}

@@ -250,7 +250,7 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     }
     CDockingStateReader s(state);
     s.readNextStartElement();
-    if (s.name() != "QtAdvancedDockingSystem")
+    if (s.name() != QLatin1String("QtAdvancedDockingSystem"))
     {
     	return false;
     }
@@ -304,7 +304,7 @@ bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int versi
     int DockContainerCount = 0;
     while (s.readNextStartElement())
     {
-    	if (s.name() == "Container")
+        if (s.name() == QLatin1String("Container"))
     	{
     		Result = restoreContainer(DockContainerCount, s, Testing);
 			if (!Result)
