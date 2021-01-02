@@ -617,8 +617,13 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
 
+ #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 	connect(d->PerspectiveComboBox, SIGNAL(activated(const QString&)),
 		d->DockManager, SLOT(openPerspective(const QString&)));
+ #else
+    connect(d->PerspectiveComboBox, SIGNAL(textActivated(const QString&)),
+        d->DockManager, SLOT(openPerspective(const QString&)));
+ #endif
 
 	d->createContent();
 	// Default window geometry - center on screen
