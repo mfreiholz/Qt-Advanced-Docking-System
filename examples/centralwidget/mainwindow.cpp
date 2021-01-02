@@ -103,7 +103,6 @@ CMainWindow::~CMainWindow()
 void CMainWindow::createPerspectiveUi()
 {
 	SavePerspectiveAction = new QAction("Create Perspective", this);
-	SavePerspectiveAction->setIcon(svgIcon(":/adsdemo/images/picture_in_picture.svg"));
 	connect(SavePerspectiveAction, SIGNAL(triggered()), SLOT(savePerspective()));
 	PerspectiveListAction = new QWidgetAction(this);
 	PerspectiveComboBox = new QComboBox(this);
