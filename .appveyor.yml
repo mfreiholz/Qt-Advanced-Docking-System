@@ -11,15 +11,6 @@ environment:
     LatestQtVersion: 5.13
   matrix:
 
-
-  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-    QT: C:\Qt\6.0.0\msvc2019_64
-    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build
-    targetPlatform: amd64
-    use_mingw: "false"
-    use_static: "false"
-    use_cmake: "false"
-
 # 32 bit builds
 # MinGW builds
 # Dynamic Library builds
@@ -125,7 +116,7 @@ environment:
     use_static: "true"
     use_cmake: "true"
 # end Static Library builds
-# end MSVC 2015 builds
+# end MSVC 2017 builds
 # end 64 bit builds
 
 
