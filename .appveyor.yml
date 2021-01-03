@@ -11,42 +11,16 @@ environment:
     LatestQtVersion: 5.13
   matrix:
 
-# 32 bit builds
-# MSVC 2017 builds
-# Dynamic Library builds
-    # LTS version of Qt, dll, 32bit, MSVC 2017, qmake
-  - QT: C:\Qt\%LatestQtVersion%\msvc2017
-    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
-    targetPlatform: x86
-    use_mingw: "false"
-    use_static: "false"
-    use_cmake: "false"
-    # LTS version of Qt, dll, 32bit, MSVC 2017, cmake
-  - QT: C:\Qt\%LatestQtVersion%\msvc2017
-    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
-    targetPlatform: x86
-    use_mingw: "false"
-    use_static: "false"
-    use_cmake: "true"
-# end Dynamic Library builds
-# Static Library builds
-    # LTS version of Qt, static, 32bit, MSVC 2017, qmake
-  - QT: C:\Qt\%LatestQtVersion%\msvc2017
-    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
-    targetPlatform: x86
-    use_mingw: "false"
-    use_static: "true"
-    use_cmake: "false"
-    # LTS version of Qt, static, 32bit, MSVC 2017, cmake
-  - QT: C:\Qt\%LatestQtVersion%\msvc2017
-    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
-    targetPlatform: x86
-    use_mingw: "false"
-    use_static: "true"
-    use_cmake: "true"
-# end Static Library builds
-# end MSVC 2017 builds
 
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    QT: C:\Qt\6.0.0\msvc2019_64
+    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build
+    targetPlatform: amd64
+    use_mingw: "false"
+    use_static: "false"
+    use_cmake: "false"
+
+# 32 bit builds
 # MinGW builds
 # Dynamic Library builds
     # LTS version of Qt, dll, 32bit, MinGW, qmake
@@ -81,6 +55,40 @@ environment:
     use_cmake: "true"
 # end Static Library builds
 # end MinGW builds
+# MSVC 2017 builds
+# Dynamic Library builds
+    # LTS version of Qt, dll, 32bit, MSVC 2017, qmake
+  - QT: C:\Qt\%LatestQtVersion%\msvc2017
+    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
+    targetPlatform: x86
+    use_mingw: "false"
+    use_static: "false"
+    use_cmake: "false"
+    # LTS version of Qt, dll, 32bit, MSVC 2017, cmake
+  - QT: C:\Qt\%LatestQtVersion%\msvc2017
+    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
+    targetPlatform: x86
+    use_mingw: "false"
+    use_static: "false"
+    use_cmake: "true"
+# end Dynamic Library builds
+# Static Library builds
+    # LTS version of Qt, static, 32bit, MSVC 2017, qmake
+  - QT: C:\Qt\%LatestQtVersion%\msvc2017
+    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
+    targetPlatform: x86
+    use_mingw: "false"
+    use_static: "true"
+    use_cmake: "false"
+    # LTS version of Qt, static, 32bit, MSVC 2017, cmake
+  - QT: C:\Qt\%LatestQtVersion%\msvc2017
+    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
+    targetPlatform: x86
+    use_mingw: "false"
+    use_static: "true"
+    use_cmake: "true"
+# end Static Library builds
+# end MSVC 2017 builds
 # end 32 bit builds
 
 # 64 bit builds
@@ -118,15 +126,8 @@ environment:
     use_cmake: "true"
 # end Static Library builds
 # end MSVC 2015 builds
-# MinGW builds
-  - QT: C:\Qt\6.0.0\mingw81_64
-    COMPILER: C:\Qt\Tools\mingw81_64
-    targetPlatform: amd64
-    use_mingw: "true"
-    use_static: "false"
-    use_cmake: "false"
-# end MinGW builds
 # end 64 bit builds
+
 
 matrix:
   fast_finish: true
@@ -139,9 +140,10 @@ before_build:
 - if %use_static%==true (set USESTATIC=ON) else (set USESTATIC=OFF)
 - if %use_mingw%==true (set CMAKEGENERATOR="MinGW Makefiles") else (set CMAKEGENERATOR="NMake Makefiles")
 - if %use_mingw%==true (set MAKEENGINE=mingw32-make) else (set MAKEENGINE=nmake)
-- if %use_mingw%==true set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+- if %use_mingw%==true set PATH=%PATH%:C:\Program Files\Git\usr\bin;=%
 
 build_script:
+- echo %PATH%
 - if %use_cmake%==true mkdir build 
 - if %use_cmake%==true cd build
 - if %use_cmake%==true cmake --version
