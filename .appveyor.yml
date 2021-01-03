@@ -10,19 +10,52 @@ environment:
     # Appveyor doesn't have Qt 12 yet
     LatestQtVersion: 5.13
   matrix:
-
 # 32 bit builds
+# MSVC 2015 builds
+# Dynamic Library builds
+    # LTS version of Qt, dll, 32bit, MSVC 2015, qmake
+  - QT5: C:\Qt\%LatestQtVersion%\msvc2017
+    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
+    targetPlatform: x86
+    use_mingw: "false"
+    use_static: "false"
+    use_cmake: "false"
+    # LTS version of Qt, dll, 32bit, MSVC 2015, cmake
+  - QT5: C:\Qt\%LatestQtVersion%\msvc2017
+    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
+    targetPlatform: x86
+    use_mingw: "false"
+    use_static: "false"
+    use_cmake: "true"
+# end Dynamic Library builds
+# Static Library builds
+    # LTS version of Qt, static, 32bit, MSVC 2015, qmake
+  - QT5: C:\Qt\%LatestQtVersion%\msvc2017
+    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
+    targetPlatform: x86
+    use_mingw: "false"
+    use_static: "true"
+    use_cmake: "false"
+    # LTS version of Qt, static, 32bit, MSVC 2015, cmake
+  - QT5: C:\Qt\%LatestQtVersion%\msvc2017
+    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
+    targetPlatform: x86
+    use_mingw: "false"
+    use_static: "true"
+    use_cmake: "true"
+# end Static Library builds
+# end MSVC 2015 builds
 # MinGW builds
 # Dynamic Library builds
     # LTS version of Qt, dll, 32bit, MinGW, qmake
-  - QT: C:\Qt\%LatestQtVersion%\mingw73_32
+  - QT5: C:\Qt\%LatestQtVersion%\mingw73_32
     COMPILER: C:\Qt\Tools\mingw730_32
     targetPlatform: x86
     use_mingw: "true"
     use_static: "false"
     use_cmake: "false"
     # LTS version of Qt, dll, 32bit, MinGW, cmake
-  - QT: C:\Qt\%LatestQtVersion%\mingw73_32
+  - QT5: C:\Qt\%LatestQtVersion%\mingw73_32
     COMPILER: C:\Qt\Tools\mingw730_32
     targetPlatform: x86
     use_mingw: "true"
@@ -31,14 +64,14 @@ environment:
 # end Dynamic Library builds
 # Static Library builds
     # LTS version of Qt, static, 32bit, MinGW, qmake
-  - QT: C:\Qt\%LatestQtVersion%\mingw73_32
+  - QT5: C:\Qt\%LatestQtVersion%\mingw73_32
     COMPILER: C:\Qt\Tools\mingw730_32
     targetPlatform: x86
     use_mingw: "true"
     use_static: "true"
     use_cmake: "false"
     # LTS version of Qt, static, 32bit, MinGW, cmake
-  - QT: C:\Qt\%LatestQtVersion%\mingw73_32
+  - QT5: C:\Qt\%LatestQtVersion%\mingw73_32
     COMPILER: C:\Qt\Tools\mingw730_32
     targetPlatform: x86
     use_mingw: "true"
@@ -46,54 +79,19 @@ environment:
     use_cmake: "true"
 # end Static Library builds
 # end MinGW builds
-# MSVC 2017 builds
-# Dynamic Library builds
-    # LTS version of Qt, dll, 32bit, MSVC 2017, qmake
-  - QT: C:\Qt\%LatestQtVersion%\msvc2017
-    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
-    targetPlatform: x86
-    use_mingw: "false"
-    use_static: "false"
-    use_cmake: "false"
-    # LTS version of Qt, dll, 32bit, MSVC 2017, cmake
-  - QT: C:\Qt\%LatestQtVersion%\msvc2017
-    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
-    targetPlatform: x86
-    use_mingw: "false"
-    use_static: "false"
-    use_cmake: "true"
-# end Dynamic Library builds
-# Static Library builds
-    # LTS version of Qt, static, 32bit, MSVC 2017, qmake
-  - QT: C:\Qt\%LatestQtVersion%\msvc2017
-    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
-    targetPlatform: x86
-    use_mingw: "false"
-    use_static: "true"
-    use_cmake: "false"
-    # LTS version of Qt, static, 32bit, MSVC 2017, cmake
-  - QT: C:\Qt\%LatestQtVersion%\msvc2017
-    COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
-    targetPlatform: x86
-    use_mingw: "false"
-    use_static: "true"
-    use_cmake: "true"
-# end Static Library builds
-# end MSVC 2017 builds
 # end 32 bit builds
-
 # 64 bit builds
-# MSVC 2017 builds
+# MSVC 2015 builds
 # Dynamic Library builds
-    # LTS version of Qt, dll, 64bit, MSVC 2017, qmake
-  - QT: C:\Qt\%LatestQtVersion%\msvc2017_64
+    # LTS version of Qt, dll, 64bit, MSVC 2015, qmake
+  - QT5: C:\Qt\%LatestQtVersion%\msvc2017_64
     COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
     targetPlatform: amd64
     use_mingw: "false"
     use_static: "false"
     use_cmake: "false"
-    # LTS version of Qt, dll, 64bit, MSVC 2017, cmake
-  - QT: C:\Qt\%LatestQtVersion%\msvc2017_64
+    # LTS version of Qt, dll, 64bit, MSVC 2015, cmake
+  - QT5: C:\Qt\%LatestQtVersion%\msvc2017_64
     COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
     targetPlatform: amd64
     use_mingw: "false"
@@ -101,40 +99,38 @@ environment:
     use_cmake: "true"
 # end Dynamic Library builds
 # Static Library builds
-    # LTS version of Qt, static, 64bit, MSVC 2017, qmake
-  - QT: C:\Qt\%LatestQtVersion%\msvc2017_64
+    # LTS version of Qt, static, 64bit, MSVC 2015, qmake
+  - QT5: C:\Qt\%LatestQtVersion%\msvc2017_64
     COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
     targetPlatform: amd64
     use_mingw: "false"
     use_static: "true"
     use_cmake: "false"
-    # LTS version of Qt, static, 64bit, MSVC 2017, cmake
-  - QT: C:\Qt\%LatestQtVersion%\msvc2017_64
+    # LTS version of Qt, static, 64bit, MSVC 2015, cmake
+  - QT5: C:\Qt\%LatestQtVersion%\msvc2017_64
     COMPILER: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
     targetPlatform: amd64
     use_mingw: "false"
     use_static: "true"
     use_cmake: "true"
 # end Static Library builds
-# end MSVC 2017 builds
+# end MSVC 2015 builds
 # end 64 bit builds
-
 
 matrix:
   fast_finish: true
 
 before_build:
 - set originalWD=%CD%
-- call "%QT%\bin\qtenv2.bat"
+- call "%QT5%\bin\qtenv2.bat"
 - cd /D %originalWD%
 - if %use_mingw%==false call "%COMPILER%\vcvarsall.bat" %targetPlatform%
 - if %use_static%==true (set USESTATIC=ON) else (set USESTATIC=OFF)
 - if %use_mingw%==true (set CMAKEGENERATOR="MinGW Makefiles") else (set CMAKEGENERATOR="NMake Makefiles")
 - if %use_mingw%==true (set MAKEENGINE=mingw32-make) else (set MAKEENGINE=nmake)
-- if %use_mingw%==true set PATH=%PATH%:C:\Program Files\Git\usr\bin;=%
+- if %use_mingw%==true set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
 
 build_script:
-- echo %PATH%
 - if %use_cmake%==true mkdir build 
 - if %use_cmake%==true cd build
 - if %use_cmake%==true cmake --version
