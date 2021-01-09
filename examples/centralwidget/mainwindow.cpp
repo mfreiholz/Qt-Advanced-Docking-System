@@ -49,12 +49,13 @@ CMainWindow::CMainWindow(QWidget *parent)
     DockManager = new CDockManager(this);
 
     // Set central widget
-    QPlainTextEdit* w = new QPlainTextEdit();
-	w->setPlaceholderText("This is the central editor. Enter your text here.");
+    //QPlainTextEdit* w = new QPlainTextEdit();
+	//w->setPlaceholderText("This is the central editor. Enter your text here.");
     CDockWidget* CentralDockWidget = new CDockWidget("CentralWidget");
-    CentralDockWidget->setWidget(w);
+    //CentralDockWidget->setWidget(w);
     auto* CentralDockArea = DockManager->setCentralWidget(CentralDockWidget);
-    CentralDockArea->setAllowedAreas(DockWidgetArea::OuterDockAreas);
+    CentralDockWidget->setFeature(ads::CDockWidget::NoTab, true);
+    //CentralDockArea->setAllowedAreas(DockWidgetArea::OuterDockAreas);
 
     // create other dock widgets
     QTreeView* fileTree = new QTreeView();

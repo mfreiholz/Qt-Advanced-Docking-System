@@ -629,7 +629,7 @@ void CDockWidgetTab::mouseDoubleClickEvent(QMouseEvent *event)
 //============================================================================
 void CDockWidgetTab::setVisible(bool visible)
 {
-	// Just here for debugging to insert debug output
+	visible &= !d->DockWidget->features().testFlag(CDockWidget::NoTab);
     Super::setVisible(visible);
 }
 
