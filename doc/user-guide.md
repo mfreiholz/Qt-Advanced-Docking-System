@@ -515,7 +515,7 @@ This permanently hides the tab widget of this area and removes it from the tab
 menu. For this special dock widget you should also disable all other features
 (movable, closable and floatable) to prevent closing and moving of this widget.
 If you use the `CDockManager::setCentralWidget` function like in the example
-code below, the you do not need to disable these features because this is done
+code below, then you don't need to disable these features because this is done
 in the `setCentralWidget` function.
 
 ```c++
