@@ -15,10 +15,13 @@ integrated development environments (IDEs) such as Visual Studio.
 
 ## New and Noteworthy
 
-The [release 3.7.0](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.7.0)
-adds support for Qt6.
+The [release 3.7](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.7.0)
+adds the following features:
 
-The [release 3.6.0](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.6.0)
+- support for **Qt6.**
+- support for [empty dock area](doc/user-guide.md#empty-dock-area)
+
+The [release 3.6](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.6.0)
 adds some nice new features:
 
 - support for [central widget](doc/user-guide.md#central-widget) concept
@@ -32,7 +35,7 @@ adds some nice new features:
 Both features are contributions from ADS users. Read the [documentation](doc/user-guide.md)
 to learn more about both new features.
 
-The [release 3.5.0](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.5.0)
+The [release 3.5](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.5.0)
 adds the new [focus highlighting](doc/user-guide.md#focushighlighting) feature.
 This optional feature enables highlighting of the focused dock widget like you
 know it from Visual Studio.
