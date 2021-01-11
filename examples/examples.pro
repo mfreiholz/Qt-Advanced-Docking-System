@@ -4,4 +4,5 @@ SUBDIRS = \
     centralwidget \
 	simple \
 	sidebar \
-	deleteonclose
+	deleteonclose \
+	emptydockarea
