@@ -43,8 +43,8 @@ CMainWindow::CMainWindow(QWidget *parent)
     label->setAlignment(Qt::AlignCenter);
     CDockWidget* CentralDockWidget = new CDockWidget("CentralWidget");
     CentralDockWidget->setWidget(label);
-    auto* CentralDockArea = DockManager->setCentralWidget(CentralDockWidget);
     CentralDockWidget->setFeature(ads::CDockWidget::NoTab, true);
+    auto* CentralDockArea = DockManager->setCentralWidget(CentralDockWidget);
 
     // create other dock widgets
     QTableWidget* table = new QTableWidget();
@@ -55,7 +55,8 @@ CMainWindow::CMainWindow(QWidget *parent)
     TableDockWidget->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
     TableDockWidget->resize(250, 150);
     TableDockWidget->setMinimumSize(200,150);
-    auto TableArea = DockManager->addDockWidget(DockWidgetArea::LeftDockWidgetArea, TableDockWidget);
+    DockManager->addDockWidgetTabToArea(TableDockWidget, CentralDockArea);
+    //auto TableArea = DockManager->addDockWidget(DockWidgetArea::LeftDockWidgetArea, TableDockWidget);
     ui->menuView->addAction(TableDockWidget->toggleViewAction());
 
     table = new QTableWidget();
@@ -66,7 +67,8 @@ CMainWindow::CMainWindow(QWidget *parent)
     TableDockWidget->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
     TableDockWidget->resize(250, 150);
     TableDockWidget->setMinimumSize(200,150);
-    DockManager->addDockWidget(DockWidgetArea::BottomDockWidgetArea, TableDockWidget, TableArea);
+    auto TableArea = DockManager->addDockWidget(DockWidgetArea::LeftDockWidgetArea, TableDockWidget);
+    //DockManager->addDockWidget(DockWidgetArea::BottomDockWidgetArea, TableDockWidget, TableArea);
     ui->menuView->addAction(TableDockWidget->toggleViewAction());
 
     QTableWidget* propertiesTable = new QTableWidget();
