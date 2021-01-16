@@ -524,8 +524,8 @@ label->setText("This is a DockArea which is always visible, even if it does not 
 label->setAlignment(Qt::AlignCenter);
 CDockWidget* CentralDockWidget = new CDockWidget("CentralWidget");
 CentralDockWidget->setWidget(label);
+CentralDockWidget->setFeature(ads::CDockWidget::NoTab, true);// set the flag before adding the widget to dock manager
 auto* CentralDockArea = DockManager->setCentralWidget(CentralDockWidget);
-CentralDockWidget->setFeature(ads::CDockWidget::NoTab, true);
 ```
 
 ## Custom Close Handling
