@@ -9,6 +9,7 @@
 #include <QCursor>
 #include <QStyle>
 #include <QSplitter>
+#include <QLabel>
 
 #ifdef ADS_ANIMATIONS_ENABLED
 #include <QPropertyAnimation>
@@ -62,6 +63,15 @@ void SectionTitleWidget::setActiveTab(bool active)
             titleWidget->style()->unpolish(titleWidget);
             titleWidget->style()->polish(titleWidget);
             titleWidget->update();
+            
+            // also find QLabel below that and unpolish them (special titleWidget)
+            QWidget* labelChild = titleWidget->findChild<QLabel*>();
+            if(labelChild)
+            {
+                labelChild->style()->unpolish(labelChild);
+                labelChild->style()->polish(labelChild);
+                labelChild->update();
+            }
         }
 
 		emit activeTabChanged();
