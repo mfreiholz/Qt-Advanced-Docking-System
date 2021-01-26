@@ -56,6 +56,13 @@ void SectionTitleWidget::setActiveTab(bool active)
 		style()->unpolish(this);
 		style()->polish(this);
 		update();
+        
+        if(auto titleWidget = _content->titleWidget())
+        {
+            titleWidget->style()->unpolish(titleWidget);
+            titleWidget->style()->polish(titleWidget);
+            titleWidget->update();
+        }
 
 		emit activeTabChanged();
 	}
