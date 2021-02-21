@@ -33,17 +33,17 @@ FloatingWidget::FloatingWidget(ContainerWidget* container, SectionContent::RefPt
 
 	if (sc->flags().testFlag(SectionContent::Closeable))
 	{
-		QPushButton* closeButton = new QPushButton();
+		/*QPushButton* closeButton = new QPushButton();
 		closeButton->setObjectName("closeButton");
 		closeButton->setFlat(true);
 		closeButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarCloseButton));
 		closeButton->setToolTip(tr("Close"));
 		closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-		_titleLayout->addWidget(closeButton);
+		_titleLayout->addWidget(closeButton);*/
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-		QObject::connect(closeButton, &QPushButton::clicked, this, &FloatingWidget::onCloseButtonClicked);
+		//QObject::connect(closeButton, &QPushButton::clicked, this, &FloatingWidget::onCloseButtonClicked);
 #else
-		QObject::connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
+		//QObject::connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
 #endif
 	}
 
