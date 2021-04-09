@@ -5,6 +5,8 @@
 #include <QInputDialog>
 #include <QMenu>
 
+#include <assert.h>
+
 /////////////////////////////////////
 // DockManagerWithInnerTabs
 /////////////////////////////////////
