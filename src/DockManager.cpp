@@ -912,6 +912,8 @@ void CDockManager::loadPerspectives(QSettings& Settings)
 	}
 
 	Settings.endArray();
+	Q_EMIT perspectiveListChanged();
+	Q_EMIT perspectiveListLoaded();
 }
 
 

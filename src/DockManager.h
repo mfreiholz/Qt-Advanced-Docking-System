@@ -521,9 +521,16 @@ public Q_SLOTS:
 
 Q_SIGNALS:
 	/**
-	 * This signal is emitted if the list of perspectives changed
+	 * This signal is emitted if the list of perspectives changed.
+	 * The list of perspectives changes if perspectives are added, removed
+	 * or if the perspective list has been loaded
 	 */
 	void perspectiveListChanged();
+
+	/**
+	 * This signal is emitted if the perspective list has been loaded
+	 */
+	void perspectiveListLoaded();
 
 	/**
 	 * This signal is emitted if perspectives have been removed

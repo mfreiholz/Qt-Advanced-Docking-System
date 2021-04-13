@@ -68,7 +68,7 @@ CMainWindow::CMainWindow(QWidget *parent)
     TableDockWidget->resize(250, 150);
     TableDockWidget->setMinimumSize(200,150);
     auto TableArea = DockManager->addDockWidget(DockWidgetArea::LeftDockWidgetArea, TableDockWidget);
-    //DockManager->addDockWidget(DockWidgetArea::BottomDockWidgetArea, TableDockWidget, TableArea);
+    DockManager->addDockWidget(DockWidgetArea::BottomDockWidgetArea, TableDockWidget, TableArea);
     ui->menuView->addAction(TableDockWidget->toggleViewAction());
 
     QTableWidget* propertiesTable = new QTableWidget();
