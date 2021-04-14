@@ -2,7 +2,7 @@ ADS_OUT_ROOT = $${OUT_PWD}/../..
 
 QT += core gui widgets
 
-TARGET = DockDepth1
+TARGET = DockInDock
 DESTDIR = $${ADS_OUT_ROOT}/lib
 TEMPLATE = app
 CONFIG += c++14
@@ -14,13 +14,19 @@ adsBuildStatic {
 DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
-        innertabs.cpp \
+        dockindock.cpp \
+        dockindockmanager.cpp \
+        perspectiveactions.cpp \
+        perspectives.cpp \
         main.cpp \
-        MainWindow.cpp
+        mainframe.cpp
 
 HEADERS += \
-        innertabs.h \
-        MainWindow.h       
+        dockindock.h \
+        dockindockmanager.h \
+        perspectiveactions.h \
+        perspectives.h \
+        mainframe.h      
 
 LIBS += -L$${ADS_OUT_ROOT}/lib
 include(../../ads.pri)

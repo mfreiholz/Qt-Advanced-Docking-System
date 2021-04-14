@@ -6,4 +6,4 @@ SUBDIRS = \
 	sidebar \
 	deleteonclose \
 	emptydockarea \
-	dockdepth1
+	dockindock
