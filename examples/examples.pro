@@ -5,4 +5,5 @@ SUBDIRS = \
 	simple \
 	sidebar \
 	deleteonclose \
-	emptydockarea
+	emptydockarea \
+	dockindock
