@@ -15,31 +15,6 @@ using namespace QtAdsUtl;
 /////////////////////////////////////
 // DockInDockManager
 /////////////////////////////////////
-void deleteAllChildrenToPreventLeak( ads::CDockContainerWidget* areaWidget )
-{
-    // fix leaks: https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/issues/307
-    
-    std::vector<ads::CDockAreaWidget*> areas;
-    for ( int i = 0; i != areaWidget->dockAreaCount(); ++i )
-    {
-        areas.push_back( areaWidget->dockArea(i) );
-    }
-
-    std::vector<std::string> deleted;
-    for ( auto area : areas )
-    {
-        for ( auto widget : area->dockWidgets() )
-        {
-            ads::CDockContainerWidget* subArea = dynamic_cast<ads::CDockContainerWidget*>( widget->widget() );
-            if ( subArea )
-                deleteAllChildrenToPreventLeak( subArea );
-            delete widget;
-        }
-        
-        delete area;
-    }
-}
-
 DockInDockManager::DockInDockManager( DockInDockWidget& parent ) :
     baseClass( &parent ),
     m_parent( parent )
@@ -49,7 +24,7 @@ DockInDockManager::DockInDockManager( DockInDockWidget& parent ) :
 
 DockInDockManager::~DockInDockManager()
 {
-    deleteAllChildrenToPreventLeak( this );
+
 }
 
 void DockInDockManager::fillViewMenu( QMenu* menu, const std::vector<DockInDockManager*>& moveTo )
