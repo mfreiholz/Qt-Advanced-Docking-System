@@ -81,6 +81,7 @@ know it from Visual Studio.
   - [ezEditor](#ezeditor)
   - [D-Tect X](#d-tect-x)
   - [HiveWE](#hivewe)
+  - [Ramses Composer](#ramses-composer)
 
 ### Docking everywhere - no central widget
 
@@ -391,3 +392,18 @@ of the open editor windows.
 [learn more...](https://github.com/stijnherfst/HiveWE)
 
 ![HiveWE](doc/showcase_hivewe.png)
+
+### [Ramses Composer](https://github.com/GENIVI/ramses-composer)
+
+Ramses Composer is the authoring tool for the open source [RAMSES](https://github.com/GENIVI/ramses)
+rendering ecosystem.
+
+Ramses is a low-level rendering engine which is optimized for embedded hardware
+mobile devices, automotive ECUs, IoT electronics. Ramses was initially developed
+at the BMW Group and open-sourced in 2018 as part of a collaboration initiative
+with the Genivi Alliance. It is an important part of the BMW infotainment cluster
+and digital portfolio.
+
+[learn more...](https://github.com/GENIVI/ramses-composer)
+
+![RamsesComposer](doc/showcase_ramses_composer.png)
