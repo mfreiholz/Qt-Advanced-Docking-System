@@ -231,6 +231,7 @@ void CDockFocusController::onApplicationFocusChanged(QWidget* focusedOld, QWidge
 		return;
 	}
 
+	/*
 	// If the close button in another tab steals the focus from the current
 	// active dock widget content, i.e. if the user clicks its close button,
 	// then we immediately give the focus back to the previous focused widget
@@ -243,17 +244,18 @@ void CDockFocusController::onApplicationFocusChanged(QWidget* focusedOld, QWidge
 			auto OldFocusedDockWidget = internal::findParent<CDockWidget*>(focusedOld);
 			if (OldFocusedDockWidget)
 			{
-				focusedOld->setFocus();
+				//focusedOld->setFocus();
 			}
 			return;
 		}
-	}
+	}*/
 
     CDockWidget* DockWidget = nullptr;
-	auto DockWidgetTab = qobject_cast<CDockWidgetTab*>(focusedNow);
+	/*auto DockWidgetTab = qobject_cast<CDockWidgetTab*>(focusedNow);
 	if (DockWidgetTab)
 	{
-		DockWidget = DockWidgetTab->dockWidget();      
+		DockWidget = DockWidgetTab->dockWidget();
+
         // If the DockWidgetTab "steals" the focus from a widget in the same
         // DockWidget, then we immediately give the focus back to the previous
         // focused widget focusedOld
@@ -262,10 +264,10 @@ void CDockFocusController::onApplicationFocusChanged(QWidget* focusedOld, QWidge
             auto OldFocusedDockWidget = internal::findParent<CDockWidget*>(focusedOld);
             if (OldFocusedDockWidget && OldFocusedDockWidget == DockWidget)
             {
-                focusedOld->setFocus();
+                //focusedOld->setFocus();
             }
         }
-	}
+	}*/
 
 	if (!DockWidget)
 	{
@@ -290,6 +292,18 @@ void CDockFocusController::onApplicationFocusChanged(QWidget* focusedOld, QWidge
 #endif
 
 	d->updateDockWidgetFocus(DockWidget);
+}
+
+
+//===========================================================================
+void CDockFocusController::setDockWidgetTabFocused(CDockWidgetTab* Tab)
+{
+	std::cout << "setDockWidgetTabFocused " << Tab->text().toStdString() << std::endl;
+	auto DockWidget = Tab->dockWidget();
+	if (DockWidget)
+	{
+		d->updateDockWidgetFocus(DockWidget);
+	}
 }
 
 

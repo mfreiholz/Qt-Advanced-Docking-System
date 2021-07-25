@@ -1140,6 +1140,13 @@ void CDockManager::setSplitterSizes(CDockAreaWidget *ContainedArea, const QList<
     }
 }
 
+
+//===========================================================================
+CDockFocusController* CDockManager::dockFocusController() const
+{
+	return d->FocusController;
+}
+
 } // namespace ads
 
 //---------------------------------------------------------------------------

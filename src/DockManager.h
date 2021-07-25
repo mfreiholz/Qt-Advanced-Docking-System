@@ -53,6 +53,7 @@ struct DockWidgetTabPrivate;
 struct DockAreaWidgetPrivate;
 class CIconProvider;
 class CDockComponentsFactory;
+class CDockFocusController;
 
 /**
  * The central dock manager that maintains the complete docking system.
@@ -134,11 +135,17 @@ protected:
 	 */
 	void notifyFloatingWidgetDrop(CFloatingDockContainer* FloatingWidget);
 
-
 	/**
 	 * Show the floating widgets that has been created floating
 	 */
 	virtual void showEvent(QShowEvent *event) override;
+
+	/**
+	 * Acces for the internal dock focus controller.
+	 * This function only returns a valid object, if the FocusHighlighting
+	 * flag is set.
+	 */
+	CDockFocusController* dockFocusController() const;
 
 public:
 	using Super = CDockContainerWidget;

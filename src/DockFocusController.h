@@ -49,21 +49,6 @@ public:
 	virtual ~CDockFocusController();
 
 	/**
-	 * Helper function to set focus depending on the configuration of the
-	 * FocusStyling flag
-	 */
-	template <class QWidgetPtr>
-	static void setWidgetFocus(QWidgetPtr widget)
-	{
-		if (!CDockManager::testConfigFlag(CDockManager::FocusHighlighting))
-		{
-			return;
-		}
-
-		widget->setFocus(Qt::OtherFocusReason);
-	}
-
-	/**
 	 * A container needs to call this function if a widget has been dropped
 	 * into it
 	 */
@@ -82,6 +67,12 @@ public:
 	 * not dock widget is painted focused.
 	 */
 	CDockWidget* focusedDockWidget() const;
+
+	/**
+	 * Request focus highlighting for the given dock widget assigned to the tab
+	 * given in Tab parameter
+	 */
+	void setDockWidgetTabFocused(CDockWidgetTab* Tab);
 
 public Q_SLOTS:
 	/**

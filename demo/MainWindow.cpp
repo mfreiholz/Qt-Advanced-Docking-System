@@ -609,6 +609,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// uncomment the following line to enable focus highlighting of the dock
 	// widget that has the focus
 	CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
+	CDockManager::setConfigFlag(CDockManager::AllTabsHaveCloseButton, true);
 
 	// uncomment if you would like to enable an equal distribution of the
 	// available size of a splitter to all contained dock widgets
