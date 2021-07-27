@@ -32,6 +32,7 @@ private:
 
 private Q_SLOTS:
 	void onApplicationFocusChanged(QWidget *old, QWidget *now);
+	void onFocusWindowChanged(QWindow *focusWindow);
 	void onFocusedDockAreaViewToggled(bool Open);
 	void onStateRestored();
 	void onDockWidgetVisibilityChanged(bool Visible);
