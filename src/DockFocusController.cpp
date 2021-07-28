@@ -251,6 +251,8 @@ void CDockFocusController::onFocusWindowChanged(QWindow *focusWindow)
 //===========================================================================
 void CDockFocusController::onApplicationFocusChanged(QWidget* focusedOld, QWidget* focusedNow)
 {
+	Q_UNUSED(focusedOld);
+
 	if (d->DockManager->isRestoringState())
 	{
 		return;
@@ -372,13 +374,6 @@ void CDockFocusController::notifyFloatingWidgetDrop(CFloatingDockContainer* Floa
 	auto DockWidget = vDockWidget.value<CDockWidget*>();
 	if (DockWidget)
 	{
-		/*auto Window = DockWidget->dockContainer()->window()->windowHandle();
-		DockWidget->dockContainer()->window()->clearFocus();
-		if (Window)
-		{
-			Window->setProperty("FocusedDockWidget", QVariant::fromValue<CDockWidget*>(DockWidget));
-		}*/
-		d->FocusedDockWidget = nullptr;
 		DockWidget->dockAreaWidget()->setCurrentDockWidget(DockWidget);
 		CDockManager::setWidgetFocus(DockWidget);
 	}
