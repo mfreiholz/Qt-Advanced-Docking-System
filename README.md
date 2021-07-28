@@ -220,7 +220,13 @@ Screenshot Ubuntu:
 
 ## Build
 
-Open the `ads.pro` with QtCreator and start the build, that's it.
+The Linux build requires private header files. Make sure that they are installed:
+
+```bash
+sudo apt install qtbase5-private-dev
+```
+
+Open the `ads.pro` file with QtCreator and start the build, that's it.
 You can run the demo project and test it yourself.
 
 ## Getting started / Example
