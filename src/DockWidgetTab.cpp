@@ -50,6 +50,7 @@
 #include "DockOverlay.h"
 #include "DockManager.h"
 #include "IconProvider.h"
+#include "DockFocusController.h"
 
 
 namespace ads
@@ -207,6 +208,14 @@ struct DockWidgetTabPrivate
 		IconLabel->setVisible(true);
 	}
 
+	/**
+	 * Convenience function for access to the dock manager dock focus controller
+	 */
+	CDockFocusController* focusController() const
+	{
+		return DockWidget->dockManager()->dockFocusController();
+	}
+
 };
 // struct DockWidgetTabPrivate
 
@@ -234,6 +243,7 @@ void DockWidgetTabPrivate::createLayout()
 	CloseButton->setObjectName("tabCloseButton");
 	internal::setButtonIcon(CloseButton, QStyle::SP_TitleBarCloseButton, TabCloseIcon);
     CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    CloseButton->setFocusPolicy(Qt::NoFocus);
     updateCloseButtonSizePolicy();
 	internal::setToolTip(CloseButton, QObject::tr("Close Tab"));
 	_this->connect(CloseButton, SIGNAL(clicked()), SIGNAL(closeRequested()));
@@ -331,10 +341,11 @@ CDockWidgetTab::CDockWidgetTab(CDockWidget* DockWidget, QWidget *parent) :
 	setAttribute(Qt::WA_NoMousePropagation, true);
 	d->DockWidget = DockWidget;
 	d->createLayout();
-	if (CDockManager::testConfigFlag(CDockManager::FocusHighlighting))
+	setFocusPolicy(Qt::NoFocus);
+	/*if (CDockManager::testConfigFlag(CDockManager::FocusHighlighting))
 	{
 		setFocusPolicy(Qt::ClickFocus);
-	}
+	}*/
 }
 
 //============================================================================
@@ -353,6 +364,10 @@ void CDockWidgetTab::mousePressEvent(QMouseEvent* ev)
 		ev->accept();
         d->saveDragStartMousePosition(internal::globalPositionOf(ev));
         d->DragState = DraggingMousePressed;
+        if (CDockManager::testConfigFlag(CDockManager::FocusHighlighting))
+        {
+        	d->focusController()->setDockWidgetTabFocused(this);
+        }
         Q_EMIT clicked();
 		return;
 	}
@@ -515,7 +530,8 @@ void CDockWidgetTab::setActiveTab(bool active)
 		bool UpdateFocusStyle = false;
 		if (active && !hasFocus())
 		{
-			setFocus(Qt::OtherFocusReason);
+			//setFocus(Qt::OtherFocusReason);
+			d->focusController()->setDockWidgetTabFocused(this);
 			UpdateFocusStyle = true;
 		}
 
