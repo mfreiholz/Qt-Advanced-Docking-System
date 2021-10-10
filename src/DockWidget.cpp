@@ -66,6 +66,12 @@ namespace ads
  */
 struct DockWidgetPrivate
 {
+	struct WidgetFactory 
+	{
+		CDockWidget::FactoryFunc createWidget;
+		CDockWidget::eInsertMode insertMode;
+	};	
+	
 	CDockWidget* _this = nullptr;
 	QBoxLayout* Layout = nullptr;
 	QWidget* Widget = nullptr;
@@ -84,7 +90,8 @@ struct DockWidgetPrivate
 	bool IsFloatingTopLevel = false;
 	QList<QAction*> TitleBarActions;
 	CDockWidget::eMinimumSizeHintMode MinimumSizeHintMode = CDockWidget::MinimumSizeHintFromDockWidget;
-
+	WidgetFactory* Factory = nullptr;
+	
 	/**
 	 * Private data constructor
 	 */
@@ -116,6 +123,12 @@ struct DockWidgetPrivate
 	 * Setup the main scroll area
 	 */
 	void setupScrollArea();
+	
+	/**
+	 * Sets the widget factory that will be used to recreate and set the contents widget.
+	 */
+	void setWidgetFactory(CDockWidget::FactoryFunc createWidget, CDockWidget::eInsertMode insertMode);
+	bool createWidgetFromFactory();
 };
 // struct DockWidgetPrivate
 
@@ -130,6 +143,14 @@ DockWidgetPrivate::DockWidgetPrivate(CDockWidget* _public) :
 //============================================================================
 void DockWidgetPrivate::showDockWidget()
 {
+	if (!Widget) {
+		if(!createWidgetFromFactory()) {
+			Q_ASSERT(!Features.testFlag(CDockWidget::RecreateContentsWidgetOnCloseAndOpen) 
+					 && "RecreateContentsWidgetOnCloseAndOpen flag was set, but the widget factory is missing or it doesn't return a valid QWidget.");
+			return;	
+		}
+	}
+	
 	if (!DockArea)
 	{
 		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(_this);
@@ -167,6 +188,12 @@ void DockWidgetPrivate::hideDockWidget()
 {
 	TabWidget->hide();
 	updateParentDockArea();
+	
+	if (Features.testFlag(CDockWidget::RecreateContentsWidgetOnCloseAndOpen))
+	{
+		Widget->deleteLater();
+		Widget = nullptr;
+	}
 }
 
 
@@ -217,6 +244,38 @@ void DockWidgetPrivate::setupScrollArea()
 	ScrollArea->setObjectName("dockWidgetScrollArea");
 	ScrollArea->setWidgetResizable(true);
 	Layout->addWidget(ScrollArea);
+}
+
+void DockWidgetPrivate::setWidgetFactory(CDockWidget::FactoryFunc createWidget, CDockWidget::eInsertMode insertMode)
+{
+	if (Factory)
+	{
+		delete Factory;
+	}
+	
+	Factory = new WidgetFactory { createWidget, insertMode };
+}
+
+bool DockWidgetPrivate::createWidgetFromFactory()
+{
+	if (!Features.testFlag(CDockWidget::RecreateContentsWidgetOnCloseAndOpen)) 
+	{
+		return false;
+	}
+	
+	if (!Factory)
+	{
+		return false;
+	}
+	
+	QWidget* w = Factory->createWidget(_this);
+	if (!w)
+	{
+		return false;
+	}
+	
+	_this->setWidget(w, Factory->insertMode);
+	return true;
 }
 
 
@@ -288,6 +347,11 @@ void CDockWidget::setWidget(QWidget* widget, eInsertMode InsertMode)
 
 	d->Widget = widget;
 	d->Widget->setProperty("dockWidgetContent", true);
+}
+
+//============================================================================
+void CDockWidget::setWidgetFactory(FactoryFunc createWidget, eInsertMode insertMode) {
+	d->setWidgetFactory(createWidget, insertMode);
 }
 
 
