@@ -116,7 +116,13 @@ void DockFocusControllerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
 		return;
 	}
 
-	auto Window = DockWidget->dockContainer()->window()->windowHandle();
+	QWindow* Window = nullptr;
+	auto DockContainer = DockWidget->dockContainer();
+	if (DockContainer)
+	{
+		Window = DockContainer->window()->windowHandle();
+	}
+
 	if (Window)
 	{
 		Window->setProperty("FocusedDockWidget", QVariant::fromValue<CDockWidget*>(DockWidget));
@@ -145,7 +151,14 @@ void DockFocusControllerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
 	}
 
 
-    auto NewFloatingWidget = FocusedDockWidget->dockContainer()->floatingWidget();
+
+    CFloatingDockContainer* NewFloatingWidget = nullptr;
+    DockContainer = FocusedDockWidget->dockContainer();
+    if (DockContainer)
+    {
+    	NewFloatingWidget = DockContainer->floatingWidget();
+    }
+
     if (NewFloatingWidget)
     {
     	NewFloatingWidget->setProperty("FocusedDockWidget", QVariant::fromValue(DockWidget));
