@@ -155,7 +155,7 @@ public:
         DockWidgetFocusable = 0x020, ///< if this is enabled, a dock widget can get focus highlighting
         DockWidgetForceCloseWithArea = 0x040, ///< dock widget will be closed when the dock area hosting it is closed
         NoTab = 0x080, ///< dock widget tab will never be shown if this flag is set
-        RecreateContentsWidgetOnCloseAndOpen = 0x100, ///< deletes only the contained widget on close, keeping the dock widget intact and in place. Attempts to rebuild the contents widget on show if there is a widget factory set.
+        DeleteContentOnClose = 0x100, ///< deletes only the contained widget on close, keeping the dock widget intact and in place. Attempts to rebuild the contents widget on show if there is a widget factory set.
         DefaultDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable | DockWidgetFocusable,
         AllDockWidgetFeatures = DefaultDockWidgetFeatures | DockWidgetDeleteOnClose | CustomCloseHandling,
         DockWidgetAlwaysCloseAndDelete = DockWidgetForceCloseWithArea | DockWidgetDeleteOnClose,
@@ -272,12 +272,13 @@ public:
     void setWidget(QWidget* widget, eInsertMode InsertMode = AutoScrollArea);
 	
 	/**
-	 * Only used when the flag RecreateContentsWidgetOnCloseAndOpen is set.
-	 * Using the flag and setting a widget factory allows to free the resources of
-	 * the widget of your application while retaining the position the next time you want to
-	 * show your widget, unlike the flag DockWidgetDeleteOnClose which deletes the dock widget itself.
-	 * Since we keep the dock widget, all regular features of ADS should work as normal, including
-	 * saving and restoring the state of the docking system and using perspectives.
+	 * Only used when the feature flag DeleteContentOnClose is set.
+	 * Using the flag and setting a widget factory allows to free the resources
+	 * of the widget of your application while retaining the position the next
+	 * time you want to show your widget, unlike the flag DockWidgetDeleteOnClose
+	 * which deletes the dock widget itself. Since we keep the dock widget, all
+	 * regular features of ADS should work as normal, including saving and
+	 * restoring the state of the docking system and using perspectives.
 	 */
 	using FactoryFunc = std::function<QWidget*(QWidget*)>;
 	void setWidgetFactory(FactoryFunc createWidget, eInsertMode InsertMode = AutoScrollArea);

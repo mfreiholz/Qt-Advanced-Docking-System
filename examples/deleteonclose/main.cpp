@@ -41,12 +41,12 @@ int main(int argc, char *argv[])
         now->widget()->setFocus();
     });
 
-    QAction *action = new QAction("New Delete Dock Widget On Close", &w);
+    QAction *action = new QAction("New [DockWidgetDeleteOnClose]", &w);
     w.menuBar()->addAction(action);
 
     int i = 0;
     QObject::connect(action, &QAction::triggered, [&]() {
-        auto dw = new ads::CDockWidget(QStringLiteral("test doc %1").arg(i++), &w);
+        auto dw = new ads::CDockWidget(QStringLiteral("test %1 [DockWidgetDeleteOnClose]").arg(i++), &w);
         auto editor = new QTextEdit(QStringLiteral("lorem ipsum..."), dw);
         dw->setWidget(editor);
         dw->setFeature(ads::CDockWidget::DockWidgetDeleteOnClose, true);
@@ -54,18 +54,19 @@ int main(int argc, char *argv[])
         qDebug() << "doc dock widget created!" << dw << area;
     });
 	
-	auto dw = new ads::CDockWidget(QStringLiteral("test doc %1").arg(i++), &w);
+	auto dw = new ads::CDockWidget(QStringLiteral("test %1 [DeleteContentOnClose]").arg(i++), &w);
 	auto editor = new QTextEdit(QStringLiteral("recreated lorem ipsum......"), dw);
 	dw->setWidget(editor);
-	dw->setFeature(ads::CDockWidget::RecreateContentsWidgetOnCloseAndOpen, true);
-	dw->setWidgetFactory([](QWidget* dw){
+	dw->setFeature(ads::CDockWidget::DeleteContentOnClose, true);
+	dw->setWidgetFactory([](QWidget* dw)
+	{
 		static int timesRecreated = 0;
 		return new QTextEdit(QStringLiteral("recreated lorem ipsum... times %1").arg(++timesRecreated), dw);
 	});
 	auto area = dockManager->addDockWidgetTab(ads::CenterDockWidgetArea, dw);
-	qDebug() << "RecreateContentsWidgetOnCloseAndOpen dock widget created!" << dw << area;
+	qDebug() << "DeleteContentOnClose dock widget created!" << dw << area;
 	
-	action = new QAction("Toggle Recreate Contents Widget On Close and Open", &w);
+	action = new QAction("Toggle [DeleteContentOnClose]", &w);
     w.menuBar()->addAction(action);
 	
 	QObject::connect(action, &QAction::triggered, [dw]() {

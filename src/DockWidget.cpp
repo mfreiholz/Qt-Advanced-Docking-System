@@ -125,9 +125,9 @@ struct DockWidgetPrivate
 	void setupScrollArea();
 	
 	/**
-	 * Sets the widget factory that will be used to recreate and set the contents widget.
+	 * Creates the content widget with the registered widget factory and
+	 * returns true on success.
 	 */
-	void setWidgetFactory(CDockWidget::FactoryFunc createWidget, CDockWidget::eInsertMode insertMode);
 	bool createWidgetFromFactory();
 };
 // struct DockWidgetPrivate
@@ -143,10 +143,13 @@ DockWidgetPrivate::DockWidgetPrivate(CDockWidget* _public) :
 //============================================================================
 void DockWidgetPrivate::showDockWidget()
 {
-	if (!Widget) {
-		if(!createWidgetFromFactory()) {
-			Q_ASSERT(!Features.testFlag(CDockWidget::RecreateContentsWidgetOnCloseAndOpen) 
-					 && "RecreateContentsWidgetOnCloseAndOpen flag was set, but the widget factory is missing or it doesn't return a valid QWidget.");
+	if (!Widget)
+	{
+		if (!createWidgetFromFactory())
+		{
+			Q_ASSERT(!Features.testFlag(CDockWidget::DeleteContentOnClose)
+					 && "DeleteContentOnClose flag was set, but the widget "
+						"factory is missing or it doesn't return a valid QWidget.");
 			return;	
 		}
 	}
@@ -189,7 +192,7 @@ void DockWidgetPrivate::hideDockWidget()
 	TabWidget->hide();
 	updateParentDockArea();
 	
-	if (Features.testFlag(CDockWidget::RecreateContentsWidgetOnCloseAndOpen))
+	if (Features.testFlag(CDockWidget::DeleteContentOnClose))
 	{
 		Widget->deleteLater();
 		Widget = nullptr;
@@ -246,19 +249,11 @@ void DockWidgetPrivate::setupScrollArea()
 	Layout->addWidget(ScrollArea);
 }
 
-void DockWidgetPrivate::setWidgetFactory(CDockWidget::FactoryFunc createWidget, CDockWidget::eInsertMode insertMode)
-{
-	if (Factory)
-	{
-		delete Factory;
-	}
-	
-	Factory = new WidgetFactory { createWidget, insertMode };
-}
 
+//============================================================================
 bool DockWidgetPrivate::createWidgetFromFactory()
 {
-	if (!Features.testFlag(CDockWidget::RecreateContentsWidgetOnCloseAndOpen)) 
+	if (!Features.testFlag(CDockWidget::DeleteContentOnClose)) 
 	{
 		return false;
 	}
@@ -350,8 +345,14 @@ void CDockWidget::setWidget(QWidget* widget, eInsertMode InsertMode)
 }
 
 //============================================================================
-void CDockWidget::setWidgetFactory(FactoryFunc createWidget, eInsertMode insertMode) {
-	d->setWidgetFactory(createWidget, insertMode);
+void CDockWidget::setWidgetFactory(FactoryFunc createWidget, eInsertMode insertMode)
+{
+	if (d->Factory)
+	{
+		delete d->Factory;
+	}
+
+	d->Factory = new DockWidgetPrivate::WidgetFactory { createWidget, insertMode };
 }
 
 
