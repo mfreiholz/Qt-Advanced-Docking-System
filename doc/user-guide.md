@@ -536,7 +536,7 @@ A dock widget tab will never be shown if this flag is set.
 
 Deletes only the contained widget on close, keeping the dock widget intact and
 in place. Attempts to rebuild the contents widget on show if there is a widget
-factory set. See issue #365 for more details.
+factory set. See [issue #365](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/pull/365) for more details.
 
 ## Central Widget
 
