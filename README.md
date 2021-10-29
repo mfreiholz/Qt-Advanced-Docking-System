@@ -89,6 +89,7 @@ know it from Visual Studio.
   - [D-Tect X](#d-tect-x)
   - [HiveWE](#hivewe)
   - [Ramses Composer](#ramses-composer)
+  - [Plot Juggler](#plot-juggler)
 
 ### Docking everywhere - no central widget
 
@@ -420,3 +421,23 @@ and digital portfolio.
 [learn more...](https://github.com/GENIVI/ramses-composer)
 
 ![RamsesComposer](doc/showcase_ramses_composer.png)
+
+### [Plot Juggler](https://github.com/facontidavide/PlotJuggler)
+
+PlotJuggler is a fast, powerful and intuitive tool to visualize time series.
+It makes it easy to visualize data but also to analyze it. You can manipulate
+your time series using a simple and extendable Transform Editor. Some of the
+highlights are:
+
+- Simple Drag & Drop user interface.
+- Load data from file.
+- Connect to live streaming of data.
+- Save the visualization layout and configurations to re-use them later.
+- Fast OpenGL visualization.
+- Can handle thousands of timeseries and millions of data points.
+- Transform your data using a simple editor: derivative, moving average, integral, etc…
+- PlotJuggler can be easily extended using plugins.
+
+[read more...](https://github.com/facontidavide/PlotJuggler)
+
+[![Plot Juggler](doc/showcase_plot_juggler.png)](https://vimeo.com/480588113#t=46s)
