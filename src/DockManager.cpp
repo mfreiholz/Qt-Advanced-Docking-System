@@ -762,7 +762,12 @@ void CDockManager::showEvent(QShowEvent *event)
 
 	for (auto FloatingWidget : d->UninitializedFloatingWidgets)
 	{
-		FloatingWidget->show();
+		// Check, if someone closed a floating dock widget before the dock
+		// manager is shown
+		if (FloatingWidget->dockContainer()->hasOpenDockAreas())
+		{
+			FloatingWidget->show();
+		}
 	}
 	d->UninitializedFloatingWidgets.clear();
 }

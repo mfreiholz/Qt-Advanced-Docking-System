@@ -1626,6 +1626,21 @@ QList<CDockAreaWidget*> CDockContainerWidget::openedDockAreas() const
 
 
 //============================================================================
+bool CDockContainerWidget::hasOpenDockAreas() const
+{
+	for (auto DockArea : d->DockAreas)
+	{
+		if (!DockArea->isHidden())
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
+//============================================================================
 void CDockContainerWidget::saveState(QXmlStreamWriter& s) const
 {
     ADS_PRINT("CDockContainerWidget::saveState isFloating "
