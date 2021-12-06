@@ -15,6 +15,13 @@ integrated development environments (IDEs) such as Visual Studio.
 
 ## New and Noteworthy
 
+The [release 3.8](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.8.0)
+adds the following features:
+
+- option to close tabs with the middle mouse button
+- `DeleteContentOnClose` flag for dynamic deletion and creation of dock widget
+  content
+
 The [release 3.7](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.7.0)
 adds the following features:
 
@@ -81,6 +88,8 @@ know it from Visual Studio.
   - [ezEditor](#ezeditor)
   - [D-Tect X](#d-tect-x)
   - [HiveWE](#hivewe)
+  - [Ramses Composer](#ramses-composer)
+  - [Plot Juggler](#plot-juggler)
 
 ### Docking everywhere - no central widget
 
@@ -219,7 +228,13 @@ Screenshot Ubuntu:
 
 ## Build
 
-Open the `ads.pro` with QtCreator and start the build, that's it.
+The Linux build requires private header files. Make sure that they are installed:
+
+```bash
+sudo apt install qtbase5-private-dev
+```
+
+Open the `ads.pro` file with QtCreator and start the build, that's it.
 You can run the demo project and test it yourself.
 
 ## Getting started / Example
@@ -391,3 +406,38 @@ of the open editor windows.
 [learn more...](https://github.com/stijnherfst/HiveWE)
 
 ![HiveWE](doc/showcase_hivewe.png)
+
+### [Ramses Composer](https://github.com/GENIVI/ramses-composer)
+
+Ramses Composer is the authoring tool for the open source [RAMSES](https://github.com/GENIVI/ramses)
+rendering ecosystem.
+
+Ramses is a low-level rendering engine which is optimized for embedded hardware
+mobile devices, automotive ECUs, IoT electronics. Ramses was initially developed
+at the BMW Group and open-sourced in 2018 as part of a collaboration initiative
+with the Genivi Alliance. It is an important part of the BMW infotainment cluster
+and digital portfolio.
+
+[learn more...](https://github.com/GENIVI/ramses-composer)
+
+![RamsesComposer](doc/showcase_ramses_composer.png)
+
+### [Plot Juggler](https://github.com/facontidavide/PlotJuggler)
+
+PlotJuggler is a fast, powerful and intuitive tool to visualize time series.
+It makes it easy to visualize data but also to analyze it. You can manipulate
+your time series using a simple and extendable Transform Editor. Some of the
+highlights are:
+
+- Simple Drag & Drop user interface.
+- Load data from file.
+- Connect to live streaming of data.
+- Save the visualization layout and configurations to re-use them later.
+- Fast OpenGL visualization.
+- Can handle thousands of timeseries and millions of data points.
+- Transform your data using a simple editor: derivative, moving average, integral, etc…
+- PlotJuggler can be easily extended using plugins.
+
+[read more...](https://github.com/facontidavide/PlotJuggler)
+
+[![Plot Juggler](doc/showcase_plot_juggler.png)](https://vimeo.com/480588113#t=46s)

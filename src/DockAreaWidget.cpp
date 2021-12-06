@@ -1030,6 +1030,21 @@ void CDockAreaWidget::onDockWidgetFeaturesChanged()
 }
 
 
+#ifdef Q_OS_WIN
+//============================================================================
+bool CDockAreaWidget::event(QEvent *e)
+{
+    switch (e->type())
+    {
+    case QEvent::PlatformSurface: return true;
+    default:
+        break;
+    }
+
+    return Super::event(e);
+}
+#endif
+
 } // namespace ads
 
 //---------------------------------------------------------------------------

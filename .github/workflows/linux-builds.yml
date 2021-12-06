@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, ubuntu-18.04, ubuntu-16.04]
+        os: [ubuntu-latest, ubuntu-20.04, ubuntu-18.04]
 
     runs-on: ${{ matrix.os }}
     
@@ -16,7 +16,7 @@ jobs:
       run: |
         sudo apt-get update --fix-missing
         sudo apt-get install qt5-default
-        sudo apt-get install libqt5x11extras5-dev
+        sudo apt-get install qtbase5-private-dev
     - name: qmake
       run: qmake
     - name: make
