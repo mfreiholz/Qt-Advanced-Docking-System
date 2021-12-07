@@ -28,7 +28,7 @@ adds the following features:
 - support for **Qt6.**
 - support for [empty dock area](doc/user-guide.md#empty-dock-area)
 
-The [release 3.6](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.6.4)
+The [release 3.6](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.6.3)
 adds some nice new features:
 
 - support for [central widget](doc/user-guide.md#central-widget) concept
