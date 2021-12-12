@@ -759,7 +759,6 @@ void CDockManager::showEvent(QShowEvent *event)
 
 	// Fix Issue #380
 	restoreHiddenFloatingWidgets();
-
 	if (d->UninitializedFloatingWidgets.empty())
 	{
 		return;
@@ -777,8 +776,15 @@ void CDockManager::showEvent(QShowEvent *event)
 	d->UninitializedFloatingWidgets.clear();
 }
 
+
+//============================================================================
 void CDockManager::restoreHiddenFloatingWidgets()
 {
+	if (d->HiddenFloatingWidgets.isEmpty())
+	{
+		return;
+	}
+
 	// Restore floating widgets that were hidden upon hideManagerAndFloatingWidgets
 	for (auto FloatingWidget : d->HiddenFloatingWidgets)
 	{
@@ -788,17 +794,19 @@ void CDockManager::restoreHiddenFloatingWidgets()
 		// Could make sense to move this to CFloatingDockContainer::showEvent(QShowEvent *event)
 		// if experiencing CFloatingDockContainer being shown empty in other situations, but let's keep
 		// it here for now to make sure changes to fix Issue #380 does not impact existing behaviours
-		for ( auto dockWidget : FloatingWidget->dockWidgets() )
+		for (auto dockWidget : FloatingWidget->dockWidgets())
 		{
-			if ( dockWidget->toggleViewAction()->isChecked() )
+			if (dockWidget->toggleViewAction()->isChecked())
 			{
 				dockWidget->toggleView(true);
 				hasDockWidgetVisible = true;
 			}
 		}
 
-		if ( hasDockWidgetVisible )
+		if (hasDockWidgetVisible)
+		{
 			FloatingWidget->show();
+		}
 	}
 
 	d->HiddenFloatingWidgets.clear();
