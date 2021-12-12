@@ -147,6 +147,11 @@ protected:
 	 */
 	CDockFocusController* dockFocusController() const;
 
+    /**
+     * Restore floating widgets hidden by an earlier call to hideManagerAndFloatingWidgets.
+     */
+    void restoreHiddenFloatingWidgets();
+
 public:
 	using Super = CDockContainerWidget;
 
@@ -526,6 +531,12 @@ public Q_SLOTS:
 	 * is enabled
 	 */
 	void setDockWidgetFocused(CDockWidget* DockWidget);
+
+    /**
+     * hide CDockManager and all floating widgets (See Issue #380). Calling regular QWidget::hide()
+     * hides the CDockManager but not the floating widgets;
+     */
+    void hideManagerAndFloatingWidgets();
 
 Q_SIGNALS:
 	/**
