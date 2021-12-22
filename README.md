@@ -90,6 +90,7 @@ know it from Visual Studio.
   - [HiveWE](#hivewe)
   - [Ramses Composer](#ramses-composer)
   - [Plot Juggler](#plot-juggler)
+  - [Notepad Next](#notepad-next)
 
 ### Docking everywhere - no central widget
 
@@ -441,3 +442,12 @@ highlights are:
 [read more...](https://github.com/facontidavide/PlotJuggler)
 
 [![Plot Juggler](doc/showcase_plot_juggler.png)](https://vimeo.com/480588113#t=46s)
+
+### [Notepad Next](https://github.com/dail8859/NotepadNext)
+
+Notepad Next is a cross-platform reimplementation of Notepad++ that uses the 
+Advanced Docking System to arrange the open source files on the screen.
+
+[learn more...](https://github.com/dail8859/NotepadNext)
+
+![NotepadNext](doc/showcase_notepad_next.png)
