@@ -372,13 +372,13 @@ Taken from the [Qt Blog](https://www.qt.io/blog/qt-design-studio-1.5-beta-releas
 
 [![Qt Design Studio](doc/showcase_qt_design_studio_video.png)](https://youtu.be/za9KBWcFXEw?t=84)
 
-### [QmixElements](https://www.cetoni.com/products/qmixelements/)
+### [CETONI Elements](https://www.cetoni.com/products/qmixelements/)
 
-The QmixElements software from [CETONI](https://www.cetoni.com) is a comprehensive, 
+The CETONI Elements software from [CETONI](https://www.cetoni.com) is a comprehensive, 
 plugin-based and modular laboratory automation software for controlling CETONI devices using a joint graphical user interface. The software features a powerful script system to automate processes. This [blog post](https://www.cetoni.com/blog/qmixelements-advanced-docking-system/) gives a nice overview about the use of the Qt
-Advanced Docking System in the QmixElements sofware.
+Advanced Docking System in the CETONI Elements sofware.
 
-![QmixElements](doc/showcase_qmix_elements.png)
+![CETONI_Elements](doc/showcase_qmix_elements.png)
 
 ### [ezEditor](https://github.com/ezEngine/ezEngine)
 
