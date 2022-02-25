@@ -716,6 +716,10 @@ bool CDockWidgetTab::event(QEvent *e)
 		}
 	}
 #endif
+	if (e->type() == QEvent::StyleChange)
+	{
+		d->updateIcon();
+	}
 	return Super::event(e);
 }
 
