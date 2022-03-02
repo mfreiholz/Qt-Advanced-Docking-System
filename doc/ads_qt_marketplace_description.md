@@ -12,20 +12,6 @@ styles as much as possible.
 
 ## Features
 
-### Overview
-
-- [Features](#features)
-  - [Overview](#overview)
-  - [Docking everywhere - no central widget](#docking-everywhere---no-central-widget)
-  - [Docking inside floating windows](#docking-inside-floating-windows)
-  - [Grouped dragging](#grouped-dragging)
-  - [Perspectives for fast switching of the complete main window layout](#perspectives-for-fast-switching-of-the-complete-main-window-layout)
-  - [Opaque and non-opaque splitter resizing](#opaque-and-non-opaque-splitter-resizing)
-  - [Opaque and non-opaque undocking](#opaque-and-non-opaque-undocking)
-  - [Tab-menu for easy handling of many tabbed dock widgets](#tab-menu-for-easy-handling-of-many-tabbed-dock-widgets)
-  - [Many different ways to detach dock widgets](#many-different-ways-to-detach-dock-widgets)
-  - [Supports deletion of dynamically created dock widgets](#supports-deletion-of-dynamically-created-dock-widgets)
-
 ### Docking everywhere - no central widget
 
 There is no central widget like in the Qt docking system. You can dock on every
