@@ -1,10 +1,12 @@
-# Advanced Docking System for Qt
+![logo](doc/ads_logo.svg)
+
+------------------
 
 [![Build status](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/workflows/linux-builds/badge.svg)](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/actions?query=workflow%3Alinux-builds)
 [![Build status](https://ci.appveyor.com/api/projects/status/qcfb3cy932jw9mpy/branch/master?svg=true)](https://ci.appveyor.com/project/githubuser0xFFFF/qt-advanced-docking-system/branch/master)
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](gnu-lgpl-v2.1.md)
 
-[What's new](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/latest) •
+[What's new](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/latest)
 [Documentation](doc/user-guide.md)
 
 Qt Advanced Docking System lets you create customizable layouts using a full
@@ -15,7 +17,7 @@ integrated development environments (IDEs) such as Visual Studio.
 
 ## New and Noteworthy
 
-The [release 3.8](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.8.1)
+The [release 3.8](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/latest)
 adds the following features:
 
 - option to close tabs with the middle mouse button
@@ -84,7 +86,7 @@ know it from Visual Studio.
 - [Showcase](#showcase)
   - [Qt Creator IDE](#qt-creator-ide)
   - [Qt Design Studio](#qt-design-studio)
-  - [QmixElements](#qmixelements)
+  - [CETONI Elements](#cetoni-elements)
   - [ezEditor](#ezeditor)
   - [D-Tect X](#d-tect-x)
   - [HiveWE](#hivewe)
@@ -374,9 +376,8 @@ Taken from the [Qt Blog](https://www.qt.io/blog/qt-design-studio-1.5-beta-releas
 
 ### [CETONI Elements](https://www.cetoni.com/products/qmixelements/)
 
-The CETONI Elements software from [CETONI](https://www.cetoni.com) is a comprehensive, 
-plugin-based and modular laboratory automation software for controlling CETONI devices using a joint graphical user interface. The software features a powerful script system to automate processes. This [blog post](https://www.cetoni.com/blog/qmixelements-advanced-docking-system/) gives a nice overview about the use of the Qt
-Advanced Docking System in the CETONI Elements sofware.
+The CETONI Elements software from [CETONI](https://www.cetoni.com) is a comprehensive,
+plugin-based and modular laboratory automation software for controlling CETONI devices using a joint graphical user interface. The software features a powerful script system to automate processes. The software uses the advanced docking system to give the user the freedom to arrange all the views and windows that are provided by the various plugins.
 
 ![CETONI_Elements](doc/showcase_qmix_elements.png)
 
