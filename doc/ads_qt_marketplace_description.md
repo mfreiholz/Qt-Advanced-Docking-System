@@ -92,3 +92,10 @@ You can detach dock widgets and also dock areas in the following ways:
 ### Supports deletion of dynamically created dock widgets
 
 Normally clicking the close button of a dock widget will just hide the widget and the user can show it again using the toggleView() action of the dock widget. This is meant for user interfaces with a static amount of widgets. But the advanced docking system also supports dynamic dock widgets that will get deleted on close. If you set the dock widget flag `DockWidgetDeleteOnClose` for a certain dock widget, then it will be deleted as soon as you close this dock widget. This enables the implementation of user interfaces with dynamically created editors, like in word processing applications or source code development tools.
+
+### Python PyQt5 Bindings
+
+![Python Logo](https://raw.githubusercontent.com/githubuser0xFFFF/Qt-Advanced-Docking-System/master/doc/python_logo.png)
+
+The Advanced Docking System comes with a complete Python integration based on
+PyQt5 bindings. The package is available via [conda-forge](https://github.com/conda-forge/pyqtads-feedstock).
