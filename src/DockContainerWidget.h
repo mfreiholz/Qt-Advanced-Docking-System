@@ -217,6 +217,11 @@ public:
 	QList<CDockAreaWidget*> openedDockAreas() const;
 
 	/**
+	 * Returns a list for all open dock widgets in all open dock areas
+	 */
+	QList<CDockWidget*> openedDockWidgets() const;
+
+	/**
 	 * This function returns true, if the container has open dock areas.
 	 * This functions is a little bit faster than calling openedDockAreas().isEmpty()
 	 * because it returns as soon as it finds an open dock area
