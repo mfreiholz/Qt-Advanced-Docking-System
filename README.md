@@ -95,6 +95,7 @@ know it from Visual Studio.
   - [Ramses Composer](#ramses-composer)
   - [Plot Juggler](#plot-juggler)
   - [Notepad Next](#notepad-next)
+  - [MetGem](#metgem)
 
 ### Docking everywhere - no central widget
 
@@ -452,6 +453,17 @@ highlights are:
 Notepad Next is a cross-platform reimplementation of Notepad++ that uses the 
 Advanced Docking System to arrange the open source files on the screen.
 
-[learn more...](https://github.com/dail8859/NotepadNext)
+[read more...](https://github.com/dail8859/NotepadNext)
 
 ![NotepadNext](doc/showcase_notepad_next.png)
+
+### [MetGem](https://metgem.github.io/)
+
+MetGem is an open-source software for tandem mass-spectrometry data visualization.
+It's key features are standalone molecular networking and t-SNE based projections.
+MetGem uses the Qt-Advanced-Docking-System to manage docks and to create independent
+molecular network views.
+
+[read more...](https://metgem.github.io/)
+
+![MetGem](doc/showcase_metgem.png)
