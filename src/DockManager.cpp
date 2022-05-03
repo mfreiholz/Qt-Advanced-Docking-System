@@ -858,10 +858,6 @@ CDockAreaWidget* CDockManager::addDockWidgetTab(DockWidgetArea area,
 	{
 		return addDockWidget(ads::CenterDockWidgetArea, Dockwidget, AreaWidget);
 	}
-	else if (!openedDockAreas().isEmpty())
-	{
-		return addDockWidget(area, Dockwidget, openedDockAreas().last());
-	}
 	else
 	{
 		return addDockWidget(area, Dockwidget, nullptr);
