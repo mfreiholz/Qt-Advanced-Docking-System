@@ -51,6 +51,7 @@ class CFloatingDragPreview;
 struct FloatingDragPreviewPrivate;
 class CDockingStateReader;
 
+
 /**
  * Container that manages a number of dock areas with single dock widgets
  * or tabyfied dock widgets in each area.
