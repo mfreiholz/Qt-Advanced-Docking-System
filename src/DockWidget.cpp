@@ -555,6 +555,7 @@ void CDockWidget::toggleView(bool Open)
 	{
 		Open = true;
 	}
+
 	// If the dock widget state is different, then we really need to toggle
 	// the state. If we are in the right state, then we simply make this
 	// dock widget the current dock widget
@@ -564,7 +565,7 @@ void CDockWidget::toggleView(bool Open)
 	}
 	else if (Open && d->DockArea)
 	{
-		d->DockArea->setCurrentDockWidget(this);
+		raise();
 	}
 }
 
