@@ -192,6 +192,12 @@ by the following people:
 
 Latest working version: [3.5.2](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.5.2)
 
+A Python integration is also availables via PyPi. You can install the
+[PyQtAds](https://pypi.org/project/PyQtAds/) package via pip. This feature has been
+contributed to this project by:
+
+- [Mira Weller](https://github.com/luelista)
+
 ## Tested Compatible Environments
 
 ### Supported Qt Versions
