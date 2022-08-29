@@ -67,6 +67,9 @@ add_library(ads::qtadvanceddocking ALIAS qtadvanceddocking)
 target_link_libraries(qtadvanceddocking PUBLIC Qt${QT_VERSION_MAJOR}::Core 
                                                Qt${QT_VERSION_MAJOR}::Gui 
                                                Qt${QT_VERSION_MAJOR}::Widgets)
+if (UNIX AND NOT APPLE)
+  target_link_libraries(qtadvanceddocking PUBLIC xcb)
+endif()
 set_target_properties(qtadvanceddocking PROPERTIES
     AUTOMOC ON
     AUTORCC ON
