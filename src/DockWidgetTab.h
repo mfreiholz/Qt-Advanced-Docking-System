@@ -58,6 +58,7 @@ private:
 	friend struct DockWidgetTabPrivate;
 	friend class CDockWidget;
 	friend class CDockManager;
+	friend class COverlayDockContainer;
 	void onDockWidgetFeaturesChanged();
 
 private Q_SLOTS:

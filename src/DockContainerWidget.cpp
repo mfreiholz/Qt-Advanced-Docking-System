@@ -38,6 +38,7 @@
 #include <QDebug>
 #include <QXmlStreamWriter>
 #include <QAbstractButton>
+#include <QLabel>
 
 #include "DockManager.h"
 #include "DockAreaWidget.h"
@@ -47,6 +48,11 @@
 #include "DockOverlay.h"
 #include "ads_globals.h"
 #include "DockSplitter.h"
+#include "SideTabBar.h"
+#include "OverlayDockContainer.h"
+#include "DockWidgetTab.h"
+#include "DockWidgetSideTab.h"
+#include "DockAreaTitleBar.h"
 
 #include <functional>
 #include <iostream>
@@ -131,6 +137,7 @@ public:
 	QPointer<CDockManager> DockManager;
 	unsigned int zOrderIndex = 0;
 	QList<CDockAreaWidget*> DockAreas;
+	QMap<SideTabBarArea, CSideTabBar*> SideTabBarWidgets;
 	QGridLayout* Layout = nullptr;
 	QSplitter* RootSplitter = nullptr;
 	bool isFloating = false;
@@ -212,6 +219,11 @@ public:
 	void saveChildNodesState(QXmlStreamWriter& Stream, QWidget* Widget);
 
 	/**
+	 * Save state of overlay widgets
+	 */
+    void saveOverlayWidgetsState(QXmlStreamWriter& Stream);
+
+    /**
 	 * Restore state of child nodes.
 	 * \param[in] Stream The data stream that contains the serialized state
 	 * \param[out] CreatedWidget The widget created from parsed data or 0 if
@@ -235,6 +247,19 @@ public:
 	 */
 	bool restoreDockArea(CDockingStateReader& Stream, QWidget*& CreatedWidget,
 		bool Testing);
+
+	/**
+	 * Restores the overlay dock area.
+     * Assumes that there are no overlay dock areas, and then restores all the dock areas that
+     * exist in the XML
+	 */
+    bool restoreOverlayDockArea(CDockingStateReader& s, SideTabBarArea area, bool Testing);
+
+	/**
+	 * Restores either a dock area or an overlay dock area depending on the value in the XML
+	 */
+    bool restoreDockOrOverlayDockArea(CDockingStateReader& Stream, QWidget*& CreatedWidget,
+        bool Testing);
 
 	/**
 	 * Helper function for recursive dumping of layout
@@ -404,11 +429,13 @@ void DockContainerWidgetPrivate::onVisibleDockAreaCountChanged()
 		this->TopLevelDockArea = TopLevelDockArea;
 		TopLevelDockArea->titleBarButton(TitleBarButtonUndock)->setVisible(false || !_this->isFloating());
 		TopLevelDockArea->titleBarButton(TitleBarButtonClose)->setVisible(false || !_this->isFloating());
+		TopLevelDockArea->titleBarButton(TitleBarButtonAutoHide)->setVisible(false || !_this->isFloating());
 	}
 	else if (this->TopLevelDockArea)
 	{
 		this->TopLevelDockArea->titleBarButton(TitleBarButtonUndock)->setVisible(true);
 		this->TopLevelDockArea->titleBarButton(TitleBarButtonClose)->setVisible(true);
+		this->TopLevelDockArea->titleBarButton(TitleBarButtonAutoHide)->setVisible(true);
 		this->TopLevelDockArea = nullptr;
 	}
 }
@@ -807,6 +834,7 @@ void DockContainerWidgetPrivate::addDockAreasToList(const QList<CDockAreaWidget*
 	{
 		DockArea->titleBarButton(TitleBarButtonUndock)->setVisible(true);
 		DockArea->titleBarButton(TitleBarButtonClose)->setVisible(true);
+		DockArea->titleBarButton(TitleBarButtonAutoHide)->setVisible(true);
 	}
 
 	// We need to ensure, that the dock area title bar is visible. The title bar
@@ -871,6 +899,19 @@ void DockContainerWidgetPrivate::saveChildNodesState(QXmlStreamWriter& s, QWidge
 			DockArea->saveState(s);
 		}
 	}
+}
+
+void DockContainerWidgetPrivate::saveOverlayWidgetsState(QXmlStreamWriter& Stream)
+{
+    for (const auto dockAreaWidget : _this->findChildren<CDockAreaWidget*>())
+    {
+        if (!dockAreaWidget->isOverlayed())
+        {
+            continue;
+        }
+
+        dockAreaWidget->saveState(Stream);
+    }
 }
 
 
@@ -989,6 +1030,126 @@ bool DockContainerWidgetPrivate::restoreSplitter(CDockingStateReader& s,
 	return true;
 }
 
+//============================================================================
+bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, SideTabBarArea area, bool Testing)
+{
+	bool Ok;
+#ifdef ADS_DEBUG_PRINT
+	int Tabs = s.attributes().value("Tabs").toInt(&Ok);
+	if (!Ok)
+	{
+		return false;
+	}
+#endif
+
+	QString CurrentDockWidget = s.attributes().value("Current").toString();
+    ADS_PRINT("Restore NodeDockArea Tabs: " << Tabs << " Current: "
+            << CurrentDockWidget);
+
+	if (area == Left && !CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
+	{
+		return false;
+	}
+
+	if (area == Right && !CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
+	{
+		return false;
+	}
+
+	CDockAreaWidget* DockArea = nullptr;
+	if (!Testing)
+	{
+        const auto dockContainer = new COverlayDockContainer(DockManager, area, _this);
+		if (!dockContainer->restoreState(s, Testing))
+		{
+			return false;
+		}
+
+        dockContainer->hide();
+        DockArea = dockContainer->dockAreaWidget();
+		const auto titleBar = DockArea->titleBar();
+		QSignalBlocker blocker(titleBar);
+		titleBar->button(TitleBarButtonAutoHide)->setChecked(true);
+	}
+
+	while (s.readNextStartElement())
+	{
+        if (s.name() != QLatin1String("Widget"))
+		{
+			continue;
+		}
+
+		auto ObjectName = s.attributes().value("Name");
+		if (ObjectName.isEmpty())
+		{
+			return false;
+		}
+
+		s.skipCurrentElement();
+		CDockWidget* DockWidget = DockManager->findDockWidget(ObjectName.toString());
+		if (!DockWidget || Testing)
+		{
+			continue;
+		}
+
+        ADS_PRINT("Dock Widget found - parent " << DockWidget->parent());
+		// We hide the DockArea here to prevent the short display (the flashing)
+		// of the dock areas during application startup
+		DockArea->hide();
+		DockWidget->setToggleViewActionChecked(false);
+		DockWidget->setClosedState(true);
+		DockWidget->setProperty(internal::ClosedProperty, true);
+		DockWidget->setProperty(internal::DirtyProperty, false);
+        _this->sideTabBar(area)->insertSideTab(0, DockWidget->sideTabWidget());
+        DockWidget->sideTabWidget()->show();
+        DockWidget->toggleView(false);
+        DockArea->overlayDockContainer()->addDockWidget(DockWidget);
+	}
+
+	if (Testing)
+	{
+		return true;
+	}
+
+	if (!DockArea->dockWidgetsCount())
+	{
+		delete DockArea;
+		DockArea = nullptr;
+	}
+	else
+	{
+		DockArea->setProperty("currentDockWidget", CurrentDockWidget);
+		appendDockAreas({DockArea});
+	}
+
+	return true;
+}
+
+
+//============================================================================
+bool DockContainerWidgetPrivate::restoreDockOrOverlayDockArea(CDockingStateReader& Stream, QWidget*& CreatedWidget,
+    bool Testing)
+{
+	bool Ok;
+	const auto sideTabAreaValue = Stream.attributes().value("SideTabBarArea");
+	if (!sideTabAreaValue.isNull())
+	{
+        auto sideTabBarArea = static_cast<SideTabBarArea>(sideTabAreaValue.toInt(&Ok));
+        if (!Ok)
+        {
+            return false;
+        }
+        if (sideTabBarArea != SideTabBarArea::None)
+        {
+            return restoreOverlayDockArea(Stream, sideTabBarArea, Testing);
+        }
+	}
+
+    // If there's no SideTabBarArea value in the XML, or the value of SideTabBarArea is none, restore the dock area
+    return restoreDockArea(Stream, CreatedWidget, Testing);
+
+}
+
 
 //============================================================================
 bool DockContainerWidgetPrivate::restoreDockArea(CDockingStateReader& s,
@@ -1054,7 +1215,7 @@ bool DockContainerWidgetPrivate::restoreDockArea(CDockingStateReader& s,
 		// We hide the DockArea here to prevent the short display (the flashing)
 		// of the dock areas during application startup
 		DockArea->hide();
-		DockArea->addDockWidget(DockWidget);
+        DockArea->addDockWidget(DockWidget);
 		DockWidget->setToggleViewActionChecked(!Closed);
 		DockWidget->setClosedState(Closed);
 		DockWidget->setProperty(internal::ClosedProperty, Closed);
@@ -1096,7 +1257,7 @@ bool DockContainerWidgetPrivate::restoreChildNodes(CDockingStateReader& s,
 		}
         else if (s.name() == QLatin1String("Area"))
 		{
-			Result = restoreDockArea(s, CreatedWidget, Testing);
+			Result = restoreDockOrOverlayDockArea(s, CreatedWidget, Testing);
             ADS_PRINT("DockAreaWidget");
 		}
 		else
@@ -1288,6 +1449,7 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 	d->Layout = new QGridLayout();
 	d->Layout->setContentsMargins(0, 0, 0, 0);
 	d->Layout->setSpacing(0);
+	d->Layout->setColumnStretch(1, 1);
 	setLayout(d->Layout);
 
 	// The function d->newSplitter() accesses the config flags from dock
@@ -1299,6 +1461,7 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 	{
 		d->DockManager->registerDockContainer(this);
 		createRootSplitter();
+		createSideTabBarWidgets();
 	}
 }
 
@@ -1332,6 +1495,45 @@ CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockW
 	{
 		return d->addDockWidgetToContainer(area, Dockwidget);
 	}
+}
+
+void CDockContainerWidget::createDockWidgetOverlayContainer(SideTabBarArea area, CDockWidget* DockWidget)
+{
+	if (d->DockManager != DockWidget->dockManager())
+	{
+        DockWidget->setDockManager(d->DockManager); // Overlay Dock Container needs a valid dock manager
+	}
+	const auto dockContainer = new COverlayDockContainer(DockWidget, area);
+	dockContainer->hide();
+}
+
+//============================================================================
+SideTabBarArea CDockContainerWidget::getDockAreaPosition(CDockAreaWidget* DockAreaWidget)
+{
+	const auto dockWidgetCenter = DockAreaWidget->mapToGlobal(DockAreaWidget->frameGeometry().center());
+	const auto splitterCenter = rootSplitter()->mapToGlobal(rootSplitter()->frameGeometry().center());
+	const auto calculatedPosition = dockWidgetCenter.x() <= splitterCenter.x() ? Left : Right;
+	if (calculatedPosition == Right)
+	{
+        if (CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
+        {
+            return Right;
+        }
+
+		return Left;
+	}
+
+    if (calculatedPosition == Left)
+	{
+		if (CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
+		{
+            return Left;
+		}
+		return Right;
+	}
+
+	return Left;
+
 }
 
 //============================================================================
@@ -1406,6 +1608,22 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 	auto p = std::find(std::begin(d->LastAddedAreaCache), std::end(d->LastAddedAreaCache), area);
 	if (p != std::end(d->LastAddedAreaCache)) {
 		*p = nullptr;
+	}
+
+	if (area->isOverlayed())
+	{
+		// Removing an area from an overlay widget implies deleting the whole overlay widget
+		// So cleanup will be done when the overlay widget is deleted
+		// Note: there is no parent splitter
+        CDockWidget* TopLevelWidget = topLevelDockWidget();
+
+        // Updated the title bar visibility of the dock widget if there is only
+        // one single visible dock widget
+        CDockWidget::emitTopLevelEventForWidget(TopLevelWidget, true);
+        dumpLayout();
+        d->emitDockAreasRemoved();
+        area->setOverlayDockContainer(nullptr);
+		return;
 	}
 
 	// If splitter has more than 1 widgets, we are finished and can leave
@@ -1675,6 +1893,7 @@ void CDockContainerWidget::saveState(QXmlStreamWriter& s) const
 #endif
 	}
 	d->saveChildNodesState(s, d->RootSplitter);
+	d->saveOverlayWidgetsState(s);
 	s.writeEndElement();
 }
 
@@ -1759,7 +1978,24 @@ void CDockContainerWidget::createRootSplitter()
 		return;
 	}
 	d->RootSplitter = d->newSplitter(Qt::Horizontal);
-	d->Layout->addWidget(d->RootSplitter);
+	d->Layout->addWidget(d->RootSplitter, 0, 1); // Add it to the center - the 0 and 2 indexes are used for the SideTabBar widgets
+}
+
+
+//============================================================================
+void CDockContainerWidget::createSideTabBarWidgets()
+{
+	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
+	{
+        d->SideTabBarWidgets[SideTabBarArea::Left] = new CSideTabBar(this);
+        d->Layout->addWidget(d->SideTabBarWidgets[SideTabBarArea::Left], 0, 0);
+	}
+
+	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
+	{
+        d->SideTabBarWidgets[SideTabBarArea::Right] = new CSideTabBar(this);
+        d->Layout->addWidget(d->SideTabBarWidgets[SideTabBarArea::Right], 0, 2);
+	}
 }
 
 
@@ -1894,7 +2130,11 @@ void CDockContainerWidget::closeOtherAreas(CDockAreaWidget* KeepOpenArea)
 	}
 }
 
-
+//============================================================================
+CSideTabBar* CDockContainerWidget::sideTabBar(SideTabBarArea area) const
+{
+	return d->SideTabBarWidgets[area];
+}
 } // namespace ads
 
 //---------------------------------------------------------------------------

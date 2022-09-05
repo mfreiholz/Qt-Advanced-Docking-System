@@ -50,6 +50,8 @@
 #include <QScreen>
 #include <QWindow>
 
+#include "SideTabBar.h"
+#include "DockWidgetSideTab.h"
 #include "DockContainerWidget.h"
 #include "DockAreaWidget.h"
 #include "DockManager.h"
@@ -57,6 +59,7 @@
 #include "DockSplitter.h"
 #include "DockComponentsFactory.h"
 #include "ads_globals.h"
+#include "OverlayDockContainer.h"
 
 
 namespace ads
@@ -76,6 +79,7 @@ struct DockWidgetPrivate
 	QBoxLayout* Layout = nullptr;
 	QWidget* Widget = nullptr;
 	CDockWidgetTab* TabWidget = nullptr;
+	CDockWidgetSideTab* SideTabWidget = nullptr;
 	CDockWidget::DockWidgetFeatures Features = CDockWidget::DefaultDockWidgetFeatures;
 	CDockManager* DockManager = nullptr;
 	CDockAreaWidget* DockArea = nullptr;
@@ -182,6 +186,11 @@ void DockWidgetPrivate::showDockWidget()
 					CFloatingDockContainer*>(Container);
 			FloatingWidget->show();
 		}
+
+		if (DockArea->isOverlayed())
+		{
+			DockArea->overlayDockContainer()->show();
+		}
 	}
 }
 
@@ -196,6 +205,11 @@ void DockWidgetPrivate::hideDockWidget()
 	{
 		Widget->deleteLater();
 		Widget = nullptr;
+	}
+
+	if (DockArea->isOverlayed())
+	{
+		DockArea->overlayDockContainer()->hide();
 	}
 }
 
@@ -287,7 +301,11 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 	setObjectName(title);
 
 	d->TabWidget = componentsFactory()->createDockWidgetTab(this);
-    d->ToggleViewAction = new QAction(title, this);
+	d->SideTabWidget = componentsFactory()->createDockWidgetSideTab(this);
+
+	connect(d->SideTabWidget, &CDockWidgetSideTab::clicked, this, &CDockWidget::onDockWidgetSideTabClicked);
+
+	d->ToggleViewAction = new QAction(title, this);
 	d->ToggleViewAction->setCheckable(true);
 	connect(d->ToggleViewAction, SIGNAL(triggered(bool)), this,
 		SLOT(toggleView(bool)));
@@ -302,7 +320,7 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 //============================================================================
 CDockWidget::~CDockWidget()
 {
-    ADS_PRINT("~CDockWidget()");
+	ADS_PRINT("~CDockWidget()");
 	delete d;
 }
 
@@ -379,7 +397,7 @@ QWidget* CDockWidget::takeWidget()
 	{
 		w->setParent(nullptr);
 	}
-    return w;
+	return w;
 }
 
 
@@ -394,6 +412,16 @@ QWidget* CDockWidget::widget() const
 CDockWidgetTab* CDockWidget::tabWidget() const
 {
 	return d->TabWidget;
+}
+
+COverlayDockContainer* CDockWidget::overlayDockContainer() const
+{
+	if (!d->DockArea)
+	{
+		return nullptr;
+	}
+
+	return d->DockArea->overlayDockContainer();
 }
 
 
@@ -416,8 +444,8 @@ void CDockWidget::setFeatures(DockWidgetFeatures features)
 void CDockWidget::setFeature(DockWidgetFeature flag, bool on)
 {
 	auto Features = features();
-    internal::setFlag(Features, flag, on);
-    setFeatures(Features);
+	internal::setFlag(Features, flag, on);
+	setFeatures(Features);
 }
 
 
@@ -468,6 +496,12 @@ CFloatingDockContainer* CDockWidget::floatingDockContainer() const
 CDockAreaWidget* CDockWidget::dockAreaWidget() const
 {
 	return d->DockArea;
+}
+
+//============================================================================
+CDockWidgetSideTab* CDockWidget::sideTabWidget() const
+{
+	return d->SideTabWidget;
 }
 
 
@@ -541,7 +575,7 @@ void CDockWidget::setMinimumSizeHintMode(eMinimumSizeHintMode Mode)
 //============================================================================
 bool CDockWidget::isCentralWidget() const
 {
-    return dockManager()->centralWidget() == this;
+	return dockManager()->centralWidget() == this;
 }
 
 
@@ -662,7 +696,7 @@ bool CDockWidget::event(QEvent *e)
 
 	case QEvent::Show:
 		Q_EMIT visibilityChanged(geometry().right() >= 0 && geometry().bottom() >= 0);
-        break;
+		break;
 
 	case QEvent::WindowTitleChange :
 		{
@@ -938,7 +972,7 @@ bool CDockWidget::closeDockWidgetInternal(bool ForceClose)
 	}
 
 	if (features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
-    {
+	{
 		// If the dock widget is floating, then we check if we also need to
 		// delete the floating widget
 		if (isFloating())
@@ -956,11 +990,11 @@ bool CDockWidget::closeDockWidgetInternal(bool ForceClose)
 		}
 		deleteDockWidget();
 		Q_EMIT closed();
-    }
-    else
-    {
-    	toggleView(false);
-    }
+	}
+	else
+	{
+		toggleView(false);
+	}
 
 	return true;
 }
@@ -1007,6 +1041,27 @@ void CDockWidget::showNormal()
 	}
 }
 
+//============================================================================
+void CDockWidget::onDockWidgetSideTabClicked()
+{
+	const auto overlayContainer = overlayDockContainer();
+	if (!overlayContainer)
+	{
+		return;
+	}
+
+	overlayContainer->raise();
+	const auto show = !overlayContainer->isVisible();
+	overlayContainer->setVisible(show);
+	toggleView(show);
+	if (overlayContainer->isVisible())
+	{
+		// d->DockManager->setDockWidgetFocused(this) does not
+		// de focus the old widget, leading to the overlay still being visible
+		// even after clicking outside the overlay.
+		setFocus(Qt::ActiveWindowFocusReason);
+	}
+}
 
 //============================================================================
 bool CDockWidget::isFullScreen() const

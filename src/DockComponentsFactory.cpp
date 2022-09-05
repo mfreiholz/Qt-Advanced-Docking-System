@@ -17,6 +17,7 @@
 #include "DockAreaTitleBar.h"
 #include "DockWidget.h"
 #include "DockAreaWidget.h"
+#include "DockWidgetSideTab.h"
 
 namespace ads
 {
@@ -27,6 +28,12 @@ static std::unique_ptr<CDockComponentsFactory> DefaultFactory(new CDockComponent
 CDockWidgetTab* CDockComponentsFactory::createDockWidgetTab(CDockWidget* DockWidget) const
 {
 	return new CDockWidgetTab(DockWidget);
+}
+
+//============================================================================
+CDockWidgetSideTab* CDockComponentsFactory::createDockWidgetSideTab(CDockWidget *DockWidget) const
+{
+	return new CDockWidgetSideTab(DockWidget);
 }
 
 

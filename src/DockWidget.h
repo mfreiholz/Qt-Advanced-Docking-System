@@ -46,6 +46,8 @@ class CDockContainerWidget;
 class CDockAreaWidget;
 class DockContainerWidgetPrivate;
 class CFloatingDockContainer;
+class CDockWidgetSideTab;
+class COverlayDockContainer;
 
 /**
  * The QDockWidget class provides a widget that can be docked inside a
@@ -75,6 +77,7 @@ protected:
     friend class CDockWidgetTab;
     friend struct DockWidgetTabPrivate;
     friend struct DockAreaTitleBarPrivate;
+    friend class COverlayDockContainer;
 
     /**
      * Assigns the dock manager that manages this dock widget
@@ -301,6 +304,12 @@ public:
     CDockWidgetTab* tabWidget() const;
 
     /**
+     * Returns the overlay dock container of this dock widget 
+     * or 0 if there is none
+     */
+    COverlayDockContainer* overlayDockContainer() const;
+
+    /**
      * Sets, whether the dock widget is movable, closable, and floatable.
      */
     void setFeatures(DockWidgetFeatures features);
@@ -342,6 +351,11 @@ public:
      * if this dock widget has not been docked yet
      */
     CDockAreaWidget* dockAreaWidget() const;
+
+    /**
+     * Returns the side tab widget for this dock
+     */
+    CDockWidgetSideTab* sideTabWidget() const;
 
     /**
      * This property holds whether the dock widget is floating.
@@ -563,6 +577,10 @@ public Q_SLOTS:
      */
     void showNormal();
 
+    /**
+     * Shows the dock overlay container when the side tab is clicked
+     */
+    void onDockWidgetSideTabClicked();
 
 Q_SIGNALS:
     /**

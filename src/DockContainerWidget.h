@@ -50,6 +50,7 @@ struct FloatingDockContainerPrivate;
 class CFloatingDragPreview;
 struct FloatingDragPreviewPrivate;
 class CDockingStateReader;
+class CSideTabBar;
 
 
 /**
@@ -74,6 +75,7 @@ private:
 	friend class CDockWidget;
 	friend class CFloatingDragPreview;
 	friend struct FloatingDragPreviewPrivate;
+	friend class COverlayDockContainer;
 
 protected:
 	/**
@@ -90,6 +92,11 @@ protected:
 	 * Helper function for creation of the root splitter
 	 */
 	void createRootSplitter();
+
+	/**
+	 * Helper function for creation of the side tab bar widgets
+	 */
+	void createSideTabBarWidgets();
 
 	/**
 	 * Drop floating widget into the container
@@ -163,6 +170,7 @@ protected:
     void updateSplitterHandles(QSplitter* splitter);
 
 public:
+
 	/**
 	 * Default Constructor
 	 */
@@ -182,6 +190,16 @@ public:
 	 */
 	CDockAreaWidget* addDockWidget(DockWidgetArea area, CDockWidget* Dockwidget,
 		CDockAreaWidget* DockAreaWidget = nullptr);
+
+	/**
+	 * Creates and adds a dockwidget overlay container into the given area.
+	 */
+	void createDockWidgetOverlayContainer(SideTabBarArea area, CDockWidget* DockWidget);
+
+	/**
+	 * Get's the overlay dock side tab bar area based on the dock area widget position
+	 */
+	SideTabBarArea getDockAreaPosition(CDockAreaWidget* DockAreaWidget);
 
 	/**
 	 * Removes dockwidget
@@ -277,6 +295,11 @@ public:
 	 * Call this function to close all dock areas except the KeepOpenArea
 	 */
 	void closeOtherAreas(CDockAreaWidget* KeepOpenArea);
+
+	/**
+	 * Returns the side tab widget for the given area
+	 */
+	CSideTabBar* sideTabBar(SideTabBarArea area) const;
 
 Q_SIGNALS:
 	/**

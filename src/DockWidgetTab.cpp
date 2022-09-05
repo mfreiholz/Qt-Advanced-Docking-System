@@ -51,6 +51,7 @@
 #include "DockManager.h"
 #include "IconProvider.h"
 #include "DockFocusController.h"
+#include "OverlayDockContainer.h"
 
 
 namespace ads
@@ -751,7 +752,6 @@ QSize CDockWidgetTab::iconSize() const
 {
 	return d->IconSize;
 }
-
 
 //============================================================================
 void CDockWidgetTab::setIconSize(const QSize& Size)

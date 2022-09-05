@@ -60,9 +60,10 @@ private Q_SLOTS:
 	void onUndockButtonClicked();
 	void onTabsMenuActionTriggered(QAction* Action);
 	void onCurrentTabChanged(int Index);
+	void onAutoHideButtonClicked(bool Checked);
 
 protected:
-		/**
+    /**
 	 * Stores mouse position to detect dragging
 	 */
 	virtual void mousePressEvent(QMouseEvent* ev) override;

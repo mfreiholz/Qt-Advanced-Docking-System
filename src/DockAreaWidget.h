@@ -65,6 +65,7 @@ private:
 	friend class CDockWidget;
 	friend struct DockManagerPrivate;
 	friend class CDockManager;
+	friend class COverlayDockContainer;
 	void onDockWidgetFeaturesChanged();
 
 private Q_SLOTS:
@@ -185,6 +186,23 @@ public:
 	 * if there is no
 	 */
 	CDockContainerWidget* dockContainer() const;
+
+	/**
+	 * Returns the overlay dock container widget this dock area widget belongs to or 0
+	 * if there is no
+	 */
+	COverlayDockContainer* overlayDockContainer() const; 
+
+	/**
+	 * Returns true if the dock area exists in an overlay dock container
+	 */
+	bool isOverlayed() const;
+
+
+	/**
+	 * Sets the current overlay dock container
+	 */
+	void setOverlayDockContainer(COverlayDockContainer* OverlayDockContainer);
 
     /**
      * Returns the largest minimumSizeHint() of the dock widgets in this
@@ -337,6 +355,16 @@ public Q_SLOTS:
 	void closeArea();
 
 	/**
+	 * Toggles the Auto hides behaviour of the dock area and all dock widgets in this area
+	 */
+	void toggleAutoHideArea();
+
+	/**
+	 * Auto hides the dock area and all dock widgets in this area
+	 */
+    void onAutoHideToggleRequested(CDockWidget* DockWidget, bool Enable, SideTabBarArea area);
+
+    /**
 	 * This function closes all other areas except of this area
 	 */
 	void closeOtherAreas();

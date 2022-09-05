@@ -54,6 +54,9 @@
 #include "DockAreaTitleBar.h"
 #include "DockComponentsFactory.h"
 #include "DockWidgetTab.h"
+#include "SideTabBar.h"
+#include "DockWidgetSideTab.h"
+#include "OverlayDockContainer.h"
 
 
 namespace ads
@@ -249,6 +252,7 @@ struct DockAreaWidgetPrivate
 	DockAreaLayout*		ContentsLayout	= nullptr;
 	CDockAreaTitleBar*	TitleBar		= nullptr;
 	CDockManager*		DockManager		= nullptr;
+	COverlayDockContainer* OverlayDockContainer = nullptr;
 	bool UpdateTitleBarButtons = false;
 	DockWidgetAreas		AllowedAreas	= DefaultAllowedAreas;
 	QSize MinSizeHint;
@@ -358,6 +362,7 @@ void DockAreaWidgetPrivate::updateTitleBarButtonStates()
 		_this->features().testFlag(CDockWidget::DockWidgetClosable));
 	TitleBar->button(TitleBarButtonUndock)->setEnabled(
 		_this->features().testFlag(CDockWidget::DockWidgetFloatable));
+	TitleBar->button(TitleBarButtonUndock)->setVisible(!_this->isOverlayed());
 	TitleBar->updateDockWidgetActionsButtons();
 	UpdateTitleBarButtons = false;
 }
@@ -402,6 +407,24 @@ CDockManager* CDockAreaWidget::dockManager() const
 CDockContainerWidget* CDockAreaWidget::dockContainer() const
 {
 	return internal::findParent<CDockContainerWidget*>(this);
+}
+
+//============================================================================
+COverlayDockContainer* CDockAreaWidget::overlayDockContainer() const
+{
+	return d->OverlayDockContainer;
+}
+
+//============================================================================
+bool CDockAreaWidget::isOverlayed() const
+{
+	return d->OverlayDockContainer != nullptr;
+}
+
+//============================================================================
+void CDockAreaWidget::setOverlayDockContainer(COverlayDockContainer* OverlayDockContainer)
+{
+	d->OverlayDockContainer = OverlayDockContainer;
 }
 
 
@@ -529,6 +552,10 @@ void CDockAreaWidget::hideAreaWithNoVisibleContent()
 	else if (Container->openedDockAreas().isEmpty() && FloatingWidget)
 	{
 		FloatingWidget->hide();
+	}
+	if (isOverlayed())
+	{
+		overlayDockContainer()->hide();
 	}
 }
 
@@ -757,7 +784,8 @@ void CDockAreaWidget::updateTitleBarVisibility()
 		bool Hidden = Container->hasTopLevelDockWidget() && (Container->isFloating()
 			|| CDockManager::testConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar));
 		Hidden |= (d->Flags.testFlag(HideSingleWidgetTitleBar) && openDockWidgetsCount() == 1);
-		d->TitleBar->setVisible(!Hidden);
+		d->TitleBar->setVisible(isOverlayed() ? true : !Hidden); // Titlebar must always be visible when overlayed so it can be dragged
+        d->TitleBar->tabBar()->setVisible(isOverlayed() ? false : !Hidden);  // Never show tab bar when overlayed
 	}
 }
 
@@ -783,6 +811,11 @@ void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 	s.writeAttribute("Current", Name);
 	// To keep the saved XML data small, we only save the allowed areas and the
 	// dock area flags if the values are different from the default values
+	if (isOverlayed())
+	{
+		overlayDockContainer()->saveState(s);
+	}
+
 	if (d->AllowedAreas != DefaultAllowedAreas)
 	{
 		s.writeAttribute("AllowedAreas", QString::number(d->AllowedAreas, 16));
@@ -957,8 +990,9 @@ void CDockAreaWidget::closeArea()
 {
 	// If there is only one single dock widget and this widget has the
 	// DeleteOnClose feature, then we delete the dock widget now
+	// Note: Auto hide and overlays do not support dock widget delete on close
 	auto OpenDockWidgets = openedDockWidgets();
-    if (OpenDockWidgets.count() == 1 && OpenDockWidgets[0]->features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
+    if (OpenDockWidgets.count() == 1 && OpenDockWidgets[0]->features().testFlag(CDockWidget::DockWidgetDeleteOnClose) && !isOverlayed())
 	{
 		OpenDockWidgets[0]->closeDockWidgetInternal();
 	}
@@ -966,7 +1000,7 @@ void CDockAreaWidget::closeArea()
 	{
         for (auto DockWidget : openedDockWidgets())
         {
-            if (DockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose) && DockWidget->features().testFlag(CDockWidget::DockWidgetForceCloseWithArea))
+            if (DockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose) && DockWidget->features().testFlag(CDockWidget::DockWidgetForceCloseWithArea) && !isOverlayed())
                 DockWidget->closeDockWidgetInternal();
             else
                 DockWidget->toggleView(false);
@@ -974,6 +1008,31 @@ void CDockAreaWidget::closeArea()
     }
 }
 
+//============================================================================
+void CDockAreaWidget::toggleAutoHideArea()
+{
+	const auto area = dockContainer()->getDockAreaPosition(this);
+	for (const auto DockWidget : openedDockWidgets())
+	{
+		onAutoHideToggleRequested(DockWidget, !isOverlayed(), area);
+	}
+}
+
+//============================================================================
+void CDockAreaWidget::onAutoHideToggleRequested(CDockWidget* DockWidget, bool Enable, SideTabBarArea area) 
+{
+    if (Enable)
+    {
+        dockContainer()->sideTabBar(area)->insertSideTab(0, DockWidget->sideTabWidget());
+        DockWidget->sideTabWidget()->show();
+        dockContainer()->createDockWidgetOverlayContainer(area, DockWidget);
+        toggleView(false);
+    }
+    else
+	{
+        overlayDockContainer()->moveContentsToParent();
+	}
+}
 
 //============================================================================
 void CDockAreaWidget::closeOtherAreas()

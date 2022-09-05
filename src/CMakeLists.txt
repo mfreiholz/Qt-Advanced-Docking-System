@@ -27,6 +27,9 @@ set(ads_SRCS
     FloatingDragPreview.cpp
     IconProvider.cpp
     DockComponentsFactory.cpp
+    SideTabBar.cpp
+    DockWidgetSideTab.cpp
+    OverlayDockContainer.cpp
     ads.qrc
 )
 set(ads_HEADERS
@@ -48,6 +51,9 @@ set(ads_HEADERS
     FloatingDragPreview.h
     IconProvider.h
     DockComponentsFactory.h
+    SideTabBar.h
+    DockWidgetSideTab.h
+    OverlayDockContainer.h
 )
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 if (UNIX AND NOT APPLE)

@@ -29,6 +29,7 @@
 //============================================================================
 #include "ElidingLabel.h"
 #include <QMouseEvent>
+#include <QPainter>
 
 
 namespace ads
@@ -224,6 +225,34 @@ void CElidingLabel::setText(const QString &text)
 QString CElidingLabel::text() const
 {
 	return d->Text;
+}
+
+//============================================================================
+CVerticalElidingLabel::CVerticalElidingLabel(QWidget* parent, Qt::WindowFlags f) :
+	CElidingLabel(parent, f)
+{
+}
+
+//============================================================================
+void CVerticalElidingLabel::paintEvent(QPaintEvent* event)
+{
+	QPainter painter(this);
+	painter.rotate(90);
+	painter.drawText(0,0, text());
+}
+
+//============================================================================
+QSize CVerticalElidingLabel::sizeHint() const
+{
+	QSize s = CElidingLabel::minimumSizeHint();
+	return QSize(s.height(), s.width());
+}
+
+//============================================================================
+QSize CVerticalElidingLabel::minimumSizeHint() const
+{
+	QSize s = CElidingLabel::sizeHint();
+	return QSize(s.height(), s.width());
 }
 } // namespace QtLabb
 

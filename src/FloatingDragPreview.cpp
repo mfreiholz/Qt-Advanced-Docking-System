@@ -21,6 +21,7 @@
 #include "DockManager.h"
 #include "DockContainerWidget.h"
 #include "DockOverlay.h"
+#include "OverlayDockContainer.h"
 
 namespace ads
 {
@@ -319,6 +320,9 @@ void CFloatingDragPreview::startFloating(const QPoint &DragStartMousePos,
 void CFloatingDragPreview::finishDragging()
 {
 	ADS_PRINT("CFloatingDragPreview::finishDragging");
+
+	cleanupOverlayContainerWidget();
+
 	auto DockDropArea = d->DockManager->dockAreaOverlay()->visibleDropAreaUnderCursor();
 	auto ContainerDropArea = d->DockManager->containerOverlay()->visibleDropAreaUnderCursor();
 	if (!d->DropContainer)
@@ -350,6 +354,22 @@ void CFloatingDragPreview::finishDragging()
 	this->close();
 	d->DockManager->containerOverlay()->hideOverlay();
 	d->DockManager->dockAreaOverlay()->hideOverlay();
+}
+
+
+//============================================================================
+void CFloatingDragPreview::cleanupOverlayContainerWidget()
+{
+	auto DroppedDockWidget = qobject_cast<CDockWidget*>(d->Content);
+	auto DroppedArea = qobject_cast<CDockAreaWidget*>(d->Content);
+	if (DroppedDockWidget && DroppedDockWidget->overlayDockContainer())
+	{
+		DroppedDockWidget->overlayDockContainer()->cleanupAndDelete();
+	}
+	if (DroppedArea && DroppedArea->overlayDockContainer())
+	{
+		DroppedArea->overlayDockContainer()->cleanupAndDelete();
+	}
 }
 
 

@@ -92,6 +92,11 @@ public: // implements IFloatingWidget -----------------------------------------
 	 */
 	virtual void finishDragging() override;
 
+	/**
+	 * Cleanup overlay container if the dragged widget has one
+	 */
+	void cleanupOverlayContainerWidget();
+
 Q_SIGNALS:
 	/**
 	 * This signal is emitted, if dragging has been canceled by escape key

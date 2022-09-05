@@ -2,7 +2,7 @@
  * Default style sheet on Windows Platforms with focus highlighting flag enabled
  */
 ads--CDockContainerWidget {
-	background: palette(dark);
+	background: palette(window);
 }
 ads--CDockContainerWidget > QSplitter{
         padding: 1 0 1 0;
@@ -20,6 +20,14 @@ ads--CDockWidgetTab {
 	border-width: 0 1px 0 0;
 	padding: 0 0px;
 	qproperty-iconSize: 16px 16px;/* this is optional in case you would like to change icon size*/
+}
+
+ads--CDockWidgetSideTab {
+	background: palette(window);
+	border-color: palette(light);
+	border-style: solid;
+	border-width: 1px 1px 1px 1px;
+	padding: 0 0px;
 }
 
 ads--CDockWidgetTab[activeTab="true"] {
@@ -97,6 +105,10 @@ ads--CDockSplitter::handle {
 /* Focus related styling */
 ads--CDockWidgetTab[focused="true"] {
 	background: palette(highlight);
+	border-color: palette(highlight);
+}
+
+ads--CDockWidgetSideTab[focused="true"] {
 	border-color: palette(highlight);
 }
 

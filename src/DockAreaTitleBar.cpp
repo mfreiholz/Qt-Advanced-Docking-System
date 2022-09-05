@@ -52,6 +52,7 @@
 #include "IconProvider.h"
 #include "DockComponentsFactory.h"
 #include "DockFocusController.h"
+#include "OverlayDockContainer.h"
 
 #include <iostream>
 
@@ -65,6 +66,7 @@ struct DockAreaTitleBarPrivate
 {
 	CDockAreaTitleBar* _this;
 	QPointer<tTitleBarButton> TabsMenuButton;
+	QPointer<tTitleBarButton> AutoHideButton;
 	QPointer<tTitleBarButton> UndockButton;
 	QPointer<tTitleBarButton> CloseButton;
 	QBoxLayout* Layout;
@@ -162,6 +164,19 @@ void DockAreaTitleBarPrivate::createButtons()
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
 		SLOT(onTabsMenuActionTriggered(QAction*)));
 
+	// AutoHide Button
+	const auto autoHideEnabled = testConfigFlag(CDockManager::DockContainerHasRightSideBar) || testConfigFlag(CDockManager::DockContainerHasLeftSideBar);
+	AutoHideButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasAutoHideButton) && autoHideEnabled);
+	AutoHideButton->setObjectName("autoHideButton");
+	AutoHideButton->setAutoRaise(true);
+	AutoHideButton->setCheckable(true);
+	AutoHideButton->setChecked(false);
+	internal::setToolTip(AutoHideButton, QObject::tr("Toggle Auto Hide Group"));
+	internal::setButtonIcon(AutoHideButton, QStyle::SP_DialogOkButton, ads::DockAreaUndockIcon);
+	AutoHideButton->setSizePolicy(ButtonSizePolicy);
+	Layout->addWidget(AutoHideButton, 0);
+	_this->connect(AutoHideButton, SIGNAL(toggled(bool)),  SLOT(onAutoHideButtonClicked(bool)));
+
 	// Undock button
 	UndockButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasUndockButton));
 	UndockButton->setObjectName("detachGroupButton");
@@ -249,6 +264,10 @@ IFloatingWidget* DockAreaTitleBarPrivate::makeAreaFloating(const QPoint& Offset,
 //============================================================================
 void DockAreaTitleBarPrivate::startFloating(const QPoint& Offset)
 {
+	if (DockArea->overlayDockContainer() != nullptr)
+	{
+		DockArea->overlayDockContainer()->hide();
+	}
 	FloatingWidget = makeAreaFloating(Offset, DraggingFloatingWidget);
 }
 
@@ -438,6 +457,14 @@ void CDockAreaTitleBar::onCurrentTabChanged(int Index)
 	updateDockWidgetActionsButtons();
 }
 
+void CDockAreaTitleBar::onAutoHideButtonClicked(bool Checked)
+{
+	if (Checked != d->DockArea->isOverlayed())
+	{
+        d->DockArea->toggleAutoHideArea();
+	}
+}
+
 
 //============================================================================
 QAbstractButton* CDockAreaTitleBar::button(TitleBarButton which) const
@@ -447,6 +474,7 @@ QAbstractButton* CDockAreaTitleBar::button(TitleBarButton which) const
 	case TitleBarButtonTabsMenu: return d->TabsMenuButton;
 	case TitleBarButtonUndock: return d->UndockButton;
 	case TitleBarButtonClose: return d->CloseButton;
+	case TitleBarButtonAutoHide: return d->AutoHideButton;
 	default:
 		return nullptr;
 	}
@@ -523,7 +551,8 @@ void CDockAreaTitleBar::mouseMoveEvent(QMouseEvent* ev)
 	// sense to move it to a new floating widget and leave this one
 	// empty
 	if (d->DockArea->dockContainer()->isFloating()
-	 && d->DockArea->dockContainer()->visibleDockAreaCount() == 1)
+	 && d->DockArea->dockContainer()->visibleDockAreaCount() == 1 
+     && !d->DockArea->isOverlayed())
 	{
 		return;
 	}

@@ -84,6 +84,7 @@ private:
 	friend class CFloatingDragPreview;
 	friend struct FloatingDragPreviewPrivate;
 	friend class CDockAreaTitleBar;
+	friend class COverlayDockContainer;
 
 
 protected:
@@ -94,10 +95,22 @@ protected:
 	void registerFloatingWidget(CFloatingDockContainer* FloatingWidget);
 
 	/**
+	 * Registers the given floating widget in the internal list of
+	 * overlay widgets
+	 */
+    void registerOverlayWidget(COverlayDockContainer* OverlayWidget);
+
+	/**
 	 * Remove the given floating widget from the list of registered floating
 	 * widgets
 	 */
 	void removeFloatingWidget(CFloatingDockContainer* FloatingWidget);
+
+    /**
+	 * Remove the given overlay widget from the list of registered overlay
+	 * widgets
+	 */
+    void removeOverlayWidget(COverlayDockContainer* OverlayWidget);
 
 	/**
 	 * Registers the given dock container widget
@@ -202,14 +215,24 @@ public:
 														 //! Users can overwrite this by setting the environment variable ADS_UseNativeTitle to "1" or "0".
 		MiddleMouseButtonClosesTab = 0x2000000, //! If the flag is set, the user can use the mouse middle button to close the tab under the mouse
 
+		DockAreaHasAutoHideButton = 0x4000000,     //!< If the flag is set each dock area has a auto hide menu button
+		DockContainerHasLeftSideBar = 0x8000000,     //!< If the flag is set each container will have a left side bar
+		DockContainerHasRightSideBar = 0x10000000,     //!< If the flag is set each container will have a right side bar
+
+
         DefaultDockAreaButtons = DockAreaHasCloseButton
 							   | DockAreaHasUndockButton
-		                       | DockAreaHasTabsMenuButton,///< default configuration of dock area title bar buttons
+		                       | DockAreaHasTabsMenuButton
+	                           | DockAreaHasAutoHideButton,///< default configuration of dock area title bar buttons
+
+		DefaultDockContainerSideBars = DockContainerHasLeftSideBar 
+	                                 | DockContainerHasRightSideBar, ///< the default configuration for left and right side bars
 
 		DefaultBaseConfig = DefaultDockAreaButtons
 		                  | ActiveTabHasCloseButton
 		                  | XmlCompressionEnabled
-		                  | FloatingContainerHasWidgetTitle,///< default base configuration settings
+		                  | FloatingContainerHasWidgetTitle
+	                      | DefaultDockContainerSideBars, ///< default base configuration settings
 
         DefaultOpaqueConfig = DefaultBaseConfig
 		                    | OpaqueSplitterResize
@@ -601,6 +624,11 @@ Q_SIGNALS:
 	 * the newly created window.
 	 */
 	void floatingWidgetCreated(ads::CFloatingDockContainer* FloatingWidget);
+
+	/**
+	 * This signal is emitted, if a new overlay widget has been created.
+	 */
+	void overlayWidgetCreated(ads::COverlayDockContainer* OverlayWidget);
 
     /**
      * This signal is emitted, if a new DockArea has been created.

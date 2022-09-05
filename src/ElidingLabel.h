@@ -102,6 +102,18 @@ Q_SIGNALS:
 	void elidedChanged(bool elided);
 }; //class CElidingLabel
 
+
+class CVerticalElidingLabel : public CElidingLabel
+{
+protected:
+	void paintEvent(QPaintEvent* event) override;
+	QSize sizeHint() const override;
+	QSize minimumSizeHint() const override;
+
+public:
+	CVerticalElidingLabel(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags ());
+}; // class CVerticalElidingLabel
+
 } // namespace QtLabb
 
 //---------------------------------------------------------------------------
