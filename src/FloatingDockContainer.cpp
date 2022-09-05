@@ -515,6 +515,13 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint &GlobalPos)
 		return;
 	}
 
+#ifdef Q_OS_LINUX
+    if (qApp->activeModalWidget())
+    {
+        return;
+    }
+#endif
+
 	auto Containers = DockManager->dockContainers();
 	CDockContainerWidget *TopContainer = nullptr;
 	for (auto ContainerWidget : Containers)
