@@ -153,6 +153,11 @@ protected:
 protected Q_SLOTS:
 	void toggleView(bool Open);
 
+	/**
+	 * Auto hides the dock area and all dock widgets in this area
+	 */
+    void onAutoHideToggleRequested(CDockWidget* DockWidget, bool Enable, SideTabBarArea area);
+
 public:
 	using Super = QFrame;
 
@@ -357,12 +362,7 @@ public Q_SLOTS:
 	/**
 	 * Toggles the Auto hides behaviour of the dock area and all dock widgets in this area
 	 */
-	void toggleAutoHideArea();
-
-	/**
-	 * Auto hides the dock area and all dock widgets in this area
-	 */
-    void onAutoHideToggleRequested(CDockWidget* DockWidget, bool Enable, SideTabBarArea area);
+	void toggleAutoHideArea(bool Enable);
 
     /**
 	 * This function closes all other areas except of this area

@@ -457,12 +457,11 @@ void CDockAreaTitleBar::onCurrentTabChanged(int Index)
 	updateDockWidgetActionsButtons();
 }
 
+
+//============================================================================
 void CDockAreaTitleBar::onAutoHideButtonClicked(bool Checked)
 {
-	if (Checked != d->DockArea->isOverlayed())
-	{
-        d->DockArea->toggleAutoHideArea();
-	}
+    d->DockArea->toggleAutoHideArea(Checked);
 }
 
 
