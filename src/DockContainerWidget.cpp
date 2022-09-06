@@ -1046,12 +1046,7 @@ bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, 
     ADS_PRINT("Restore NodeDockArea Tabs: " << Tabs << " Current: "
             << CurrentDockWidget);
 
-	if (area == Left && !CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
-	{
-		return false;
-	}
-
-	if (area == Right && !CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
+	if (!COverlayDockContainer::areaExistsInConfig(area))
 	{
 		return false;
 	}
@@ -1497,14 +1492,26 @@ CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockW
 	}
 }
 
-void CDockContainerWidget::createDockWidgetOverlayContainer(SideTabBarArea area, CDockWidget* DockWidget)
+
+//============================================================================
+COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer(SideTabBarArea area, CDockWidget* DockWidget)
 {
 	if (d->DockManager != DockWidget->dockManager())
 	{
         DockWidget->setDockManager(d->DockManager); // Overlay Dock Container needs a valid dock manager
 	}
+	if (!COverlayDockContainer::areaExistsInConfig(area))
+	{
+		assert(false, "Requested area does not exist in config");
+		return nullptr;
+	}
+
+    sideTabBar(area)->insertSideTab(0, DockWidget->sideTabWidget());
+    DockWidget->sideTabWidget()->show();
+
 	const auto dockContainer = new COverlayDockContainer(DockWidget, area);
 	dockContainer->hide();
+	return dockContainer;
 }
 
 //============================================================================

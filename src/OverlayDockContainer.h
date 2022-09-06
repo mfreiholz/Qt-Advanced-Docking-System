@@ -122,6 +122,11 @@ public:
 	 * Restores the size of the splitter
 	 */
 	bool restoreState(CDockingStateReader& Stream, bool Testing);
+
+	/*
+	 * Convenience function fr determining if area exists in config
+	 */
+	static bool areaExistsInConfig(SideTabBarArea area);
 };
 }
 

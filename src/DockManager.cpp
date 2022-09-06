@@ -865,7 +865,7 @@ CDockAreaWidget* CDockManager::addDockWidget(DockWidgetArea area,
 	CDockWidget* Dockwidget, CDockAreaWidget* DockAreaWidget)
 {
 	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
-	auto Container = DockAreaWidget ? DockAreaWidget->dockContainer(): this;
+	auto Container = DockAreaWidget ? DockAreaWidget->dockContainer() : this;
 	auto AreaOfAddedDockWidget = Container->addDockWidget(area, Dockwidget, DockAreaWidget);
 	Q_EMIT dockWidgetAdded(Dockwidget);
 	return AreaOfAddedDockWidget;
@@ -879,6 +879,24 @@ CDockAreaWidget* CDockManager::addDockWidgetToContainer(DockWidgetArea area,
 	auto AreaOfAddedDockWidget = DockContainerWidget->addDockWidget(area, Dockwidget);
 	Q_EMIT dockWidgetAdded(Dockwidget);
 	return AreaOfAddedDockWidget;
+}
+
+//============================================================================
+COverlayDockContainer* CDockManager::addOverlayDockWidget(SideTabBarArea area, CDockWidget* Dockwidget)
+{
+	return addOverlayDockWidgetToContainer(area, Dockwidget, this);
+}
+
+//============================================================================
+COverlayDockContainer* CDockManager::addOverlayDockWidgetToContainer(SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget)
+{
+	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
+	auto container = DockContainerWidget->createAndInitializeDockWidgetOverlayContainer(area, Dockwidget);
+	container->dockAreaWidget()->toggleView(false);
+	Dockwidget->toggleView(false);
+
+	Q_EMIT dockWidgetAdded(Dockwidget);
+	return container;
 }
 
 

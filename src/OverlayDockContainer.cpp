@@ -105,11 +105,6 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, SideTabB
         d->Splitter->addWidget(d->DockArea);
 	}
 
-	// Allows an equal distribution between the empty widget and the splitter
-	const auto frameGeometry = d->DockManager->frameGeometry();
-	const auto leftSize = area == SideTabBarArea::Left ? frameGeometry.width() / 3 : frameGeometry.width();
-	const auto rightSize = area == SideTabBarArea::Left ? frameGeometry.width() : frameGeometry.width() / 3;
-	d->Splitter->setSizes(QList<int>({ leftSize, rightSize }));
 	l->setContentsMargins(QMargins());
 	l->setSpacing(0);
 	l->addWidget(d->Splitter);
@@ -277,6 +272,20 @@ bool COverlayDockContainer::restoreState(CDockingStateReader& s, bool Testing)
 	if (!Testing)
 	{
 		d->Splitter->setSizes(Sizes);
+	}
+
+	return true;
+}
+
+bool COverlayDockContainer::areaExistsInConfig(SideTabBarArea area)
+{
+	if (area == Left && !CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
+	{
+		return false;
+	}
+	if (area == Right && !CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
+	{
+		return false;
 	}
 
 	return true;
