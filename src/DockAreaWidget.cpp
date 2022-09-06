@@ -1028,8 +1028,6 @@ void CDockAreaWidget::onAutoHideToggleRequested(CDockWidget* DockWidget, bool En
 {
     if (Enable)
     {
-        dockContainer()->sideTabBar(area)->insertSideTab(0, DockWidget->sideTabWidget());
-        DockWidget->sideTabWidget()->show();
         dockContainer()->createAndInitializeDockWidgetOverlayContainer(area, DockWidget);
         toggleView(false);
     }

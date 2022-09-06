@@ -70,7 +70,7 @@ public:
     /**
 	 * Create overlay widget with the given dock widget
 	 */
-	COverlayDockContainer(CDockWidget* DockWidget, SideTabBarArea area);
+	COverlayDockContainer(CDockWidget* DockWidget, SideTabBarArea area, CDockContainerWidget* parent);
 
 	/**
 	 * Virtual Destructor

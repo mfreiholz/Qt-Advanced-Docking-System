@@ -137,6 +137,7 @@ public:
 	QPointer<CDockManager> DockManager;
 	unsigned int zOrderIndex = 0;
 	QList<CDockAreaWidget*> DockAreas;
+	QList<COverlayDockContainer*> OverlayWidgets;
 	QMap<SideTabBarArea, CSideTabBar*> SideTabBarWidgets;
 	QGridLayout* Layout = nullptr;
 	QSplitter* RootSplitter = nullptr;
@@ -1467,6 +1468,13 @@ CDockContainerWidget::~CDockContainerWidget()
 	{
 		d->DockManager->removeDockContainer(this);
 	}
+
+	auto OverlayWidgets = d->OverlayWidgets;
+	for (auto OverlayWidget : OverlayWidgets)
+	{
+		delete OverlayWidget;
+	}
+
 	delete d;
 }
 
@@ -1509,7 +1517,7 @@ COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverla
     sideTabBar(area)->insertSideTab(0, DockWidget->sideTabWidget());
     DockWidget->sideTabWidget()->show();
 
-	const auto dockContainer = new COverlayDockContainer(DockWidget, area);
+	const auto dockContainer = new COverlayDockContainer(DockWidget, area, this);
 	dockContainer->hide();
 	return dockContainer;
 }
@@ -1581,6 +1589,23 @@ bool CDockContainerWidget::event(QEvent *e)
 	}
 
 	return Result;
+}
+
+
+//============================================================================
+void CDockContainerWidget::deleteOverlayWidgets()
+{
+    for (auto OverlayWidget : d->OverlayWidgets)
+    {
+        OverlayWidget->cleanupAndDelete();
+    }
+    d->OverlayWidgets.clear();
+}
+
+//============================================================================
+QList<COverlayDockContainer*> CDockContainerWidget::overlayWidgets() const
+{
+	return d->OverlayWidgets;
 }
 
 
@@ -1757,6 +1782,14 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	auto dropArea = InvalidDockWidgetArea;
 	auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
 	bool Dropped = false;
+
+	// Handle any overlay widgets
+    // todo: cleanup - move into own func?
+	auto overlayWidgets = FloatingWidget->dockContainer()->overlayWidgets();
+	for (const auto overlayWidget : overlayWidgets)
+	{
+		createAndInitializeDockWidgetOverlayContainer(overlayWidget->sideTabBarArea(), overlayWidget->dockWidget());
+	}
 
 	if (DockArea)
 	{
@@ -2084,13 +2117,25 @@ QList<CDockWidget*> CDockContainerWidget::dockWidgets() const
 	return Result;
 }
 
-
 //============================================================================
 void CDockContainerWidget::updateSplitterHandles(QSplitter* splitter)
 {
     d->updateSplitterHandles(splitter);
 }
 
+//============================================================================
+void CDockContainerWidget::registerOverlayWidget(COverlayDockContainer* OverlayWidget)
+{
+	d->OverlayWidgets.append(OverlayWidget);
+	Q_EMIT overlayWidgetCreated(OverlayWidget);
+    ADS_PRINT("d->OverlayWidgets.count() " << d->OverlayWidgets.count());
+}
+
+//============================================================================
+void CDockContainerWidget::removeOverlayWidget(COverlayDockContainer* OverlayWidget)
+{
+	d->OverlayWidgets.removeAll(OverlayWidget);
+}
 
 //============================================================================
 CDockWidget::DockWidgetFeatures CDockContainerWidget::features() const

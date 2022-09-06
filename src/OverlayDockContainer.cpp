@@ -113,7 +113,7 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, SideTabB
 	updateMask();
 	updateSize();
 
-	DockManager->registerOverlayWidget(this);
+	parent->registerOverlayWidget(this);
 
 	d->DockArea->installEventFilter(this);
 	parent->installEventFilter(this);
@@ -140,8 +140,8 @@ void COverlayDockContainer::updateSize()
 }
 
 //============================================================================
-COverlayDockContainer::COverlayDockContainer(CDockWidget* DockWidget, SideTabBarArea area) : 
-	COverlayDockContainer(DockWidget->dockManager(), area, DockWidget->dockContainer() != nullptr ? DockWidget->dockContainer() : DockWidget->dockManager())
+COverlayDockContainer::COverlayDockContainer(CDockWidget* DockWidget, SideTabBarArea area, CDockContainerWidget* parent) : 
+	COverlayDockContainer(DockWidget->dockManager(), area, parent)
 {
 	addDockWidget(DockWidget);
 }
@@ -156,7 +156,7 @@ COverlayDockContainer::~COverlayDockContainer()
 
 	if (d->DockManager)
 	{
-		d->DockManager->removeOverlayWidget(this);
+		parentContainer()->removeOverlayWidget(this);
 	}
 
 	delete d;

@@ -83,6 +83,17 @@ protected:
 	 */
 	virtual bool event(QEvent *e) override;
 
+	/*
+	 * Delete function for resetting the overlay widget list
+	 * Used during restore
+	 */
+	void deleteOverlayWidgets();
+
+	/**
+	 * Access function for overlay widgets
+	 */
+	QList<COverlayDockContainer*> overlayWidgets() const;
+
 	/**
 	 * Access function for the internal root splitter
 	 */
@@ -176,6 +187,19 @@ protected:
      * based on resize modes of dock widgets contained in the container.
      */
     void updateSplitterHandles(QSplitter* splitter);
+
+	/**
+	 * Registers the given floating widget in the internal list of
+	 * overlay widgets
+	 */
+    void registerOverlayWidget(COverlayDockContainer* OverlayWidget);
+
+    /**
+	 * Remove the given overlay widget from the list of registered overlay
+	 * widgets
+	 */
+    void removeOverlayWidget(COverlayDockContainer* OverlayWidget);
+
 
 public:
 
@@ -311,6 +335,11 @@ Q_SIGNALS:
 	 * If multiple dock areas are inserted, this signal is emitted only once
 	 */
 	void dockAreasAdded();
+
+	/**
+	 * This signal is emitted, if a new overlay widget has been created.
+	 */
+	void overlayWidgetCreated(ads::COverlayDockContainer* OverlayWidget);
 
 	/**
 	 * This signal is emitted if one or multiple dock areas has been removed

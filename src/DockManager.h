@@ -95,22 +95,10 @@ protected:
 	void registerFloatingWidget(CFloatingDockContainer* FloatingWidget);
 
 	/**
-	 * Registers the given floating widget in the internal list of
-	 * overlay widgets
-	 */
-    void registerOverlayWidget(COverlayDockContainer* OverlayWidget);
-
-	/**
 	 * Remove the given floating widget from the list of registered floating
 	 * widgets
 	 */
 	void removeFloatingWidget(CFloatingDockContainer* FloatingWidget);
-
-    /**
-	 * Remove the given overlay widget from the list of registered overlay
-	 * widgets
-	 */
-    void removeOverlayWidget(COverlayDockContainer* OverlayWidget);
 
 	/**
 	 * Registers the given dock container widget
@@ -638,11 +626,6 @@ Q_SIGNALS:
 	 * the newly created window.
 	 */
 	void floatingWidgetCreated(ads::CFloatingDockContainer* FloatingWidget);
-
-	/**
-	 * This signal is emitted, if a new overlay widget has been created.
-	 */
-	void overlayWidgetCreated(ads::COverlayDockContainer* OverlayWidget);
 
     /**
      * This signal is emitted, if a new DockArea has been created.

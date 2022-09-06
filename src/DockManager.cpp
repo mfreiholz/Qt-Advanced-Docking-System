@@ -100,7 +100,6 @@ struct DockManagerPrivate
 	CDockManager* _this;
 	QList<CFloatingDockContainer*> FloatingWidgets;
 	QList<CFloatingDockContainer*> HiddenFloatingWidgets;
-	QList<COverlayDockContainer*> OverlayWidgets;
 	QList<CDockContainerWidget*> Containers;
 	CDockOverlay* ContainerOverlay;
 	CDockOverlay* DockAreaOverlay;
@@ -146,15 +145,6 @@ struct DockManagerPrivate
 		{
 			FloatingWidget->hide();
 		}
-	}
-
-	void deleteOverlayWidgets()
-	{
-	    for (auto OverlayWidget : OverlayWidgets)
-	    {
-			OverlayWidget->cleanupAndDelete();
-	    }
-		OverlayWidgets.clear();
 	}
 
 	void markDockWidgetsDirty()
@@ -441,7 +431,7 @@ bool DockManagerPrivate::restoreState(const QByteArray& State, int version)
 
     // Hide updates of floating widgets from use
     hideFloatingWidgets();
-	deleteOverlayWidgets();
+	_this->deleteOverlayWidgets();
     markDockWidgetsDirty();
 
     if (!restoreStateFromXml(state, version))
@@ -539,12 +529,6 @@ CDockManager::~CDockManager()
 		delete FloatingWidget;
 	}
 
-	auto OverlayWidgets = d->OverlayWidgets;
-	for (auto OverlayWidget : OverlayWidgets)
-	{
-		delete OverlayWidget;
-	}
-
 	delete d;
 }
 
@@ -636,25 +620,11 @@ void CDockManager::registerFloatingWidget(CFloatingDockContainer* FloatingWidget
     ADS_PRINT("d->FloatingWidgets.count() " << d->FloatingWidgets.count());
 }
 
-//============================================================================
-void CDockManager::registerOverlayWidget(COverlayDockContainer* OverlayWidget)
-{
-	d->OverlayWidgets.append(OverlayWidget);
-	Q_EMIT overlayWidgetCreated(OverlayWidget);
-    ADS_PRINT("d->OverlayWidgets.count() " << d->OverlayWidgets.count());
-}
-
 
 //============================================================================
 void CDockManager::removeFloatingWidget(CFloatingDockContainer* FloatingWidget)
 {
 	d->FloatingWidgets.removeAll(FloatingWidget);
-}
-
-//============================================================================
-void CDockManager::removeOverlayWidget(COverlayDockContainer* OverlayWidget)
-{
-	d->OverlayWidgets.removeAll(OverlayWidget);
 }
 
 //============================================================================
