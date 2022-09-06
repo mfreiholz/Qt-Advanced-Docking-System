@@ -800,6 +800,15 @@ void CDockAreaWidget::markTitleBarMenuOutdated()
 }
 
 
+//============================================================================
+void CDockAreaWidget::updateAutoHidebuttonCheckState()
+{
+	auto autoHideButton = titleBarButton(TitleBarButtonAutoHide);
+	autoHideButton->blockSignals(true);
+	autoHideButton->setChecked(isOverlayed());
+	autoHideButton->blockSignals(false);
+}
+
 
 //============================================================================
 void CDockAreaWidget::saveState(QXmlStreamWriter& s) const

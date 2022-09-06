@@ -150,6 +150,11 @@ protected:
 	 */
 	void markTitleBarMenuOutdated();
 
+	/*
+	 * Update the auto hide button checked state based on if it's overlayed or not
+	 */
+	void updateAutoHidebuttonCheckState();
+
 protected Q_SLOTS:
 	void toggleView(bool Open);
 

@@ -1063,9 +1063,7 @@ bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, 
 
         dockContainer->hide();
         DockArea = dockContainer->dockAreaWidget();
-		const auto titleBar = DockArea->titleBar();
-		QSignalBlocker blocker(titleBar);
-		titleBar->button(TitleBarButtonAutoHide)->setChecked(true);
+		DockArea->updateAutoHidebuttonCheckState();
 	}
 
 	while (s.readNextStartElement())
@@ -1655,6 +1653,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
         dumpLayout();
         d->emitDockAreasRemoved();
         area->setOverlayDockContainer(nullptr);
+		area->updateAutoHidebuttonCheckState();
 		return;
 	}
 
@@ -1783,8 +1782,6 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
 	bool Dropped = false;
 
-	// Handle any overlay widgets
-    // todo: cleanup - move into own func?
 	auto overlayWidgets = FloatingWidget->dockContainer()->overlayWidgets();
 	for (const auto overlayWidget : overlayWidgets)
 	{
