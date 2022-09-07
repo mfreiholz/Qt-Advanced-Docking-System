@@ -164,6 +164,16 @@ void DockAreaTitleBarPrivate::createButtons()
 	_this->connect(TabsMenuButton->menu(), SIGNAL(triggered(QAction*)),
 		SLOT(onTabsMenuActionTriggered(QAction*)));
 
+	// Undock button
+	UndockButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasUndockButton));
+	UndockButton->setObjectName("detachGroupButton");
+	UndockButton->setAutoRaise(true);
+	internal::setToolTip(UndockButton, QObject::tr("Detach Group"));
+	internal::setButtonIcon(UndockButton, QStyle::SP_TitleBarNormalButton, ads::DockAreaUndockIcon);
+	UndockButton->setSizePolicy(ButtonSizePolicy);
+	Layout->addWidget(UndockButton, 0);
+	_this->connect(UndockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
+
 	// AutoHide Button
 	const auto autoHideEnabled = testConfigFlag(CDockManager::DockContainerHasRightSideBar) || testConfigFlag(CDockManager::DockContainerHasLeftSideBar);
 	AutoHideButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasAutoHideButton) && autoHideEnabled);
@@ -176,16 +186,6 @@ void DockAreaTitleBarPrivate::createButtons()
 	AutoHideButton->setSizePolicy(ButtonSizePolicy);
 	Layout->addWidget(AutoHideButton, 0);
 	_this->connect(AutoHideButton, SIGNAL(toggled(bool)),  SLOT(onAutoHideButtonClicked(bool)));
-
-	// Undock button
-	UndockButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasUndockButton));
-	UndockButton->setObjectName("detachGroupButton");
-	UndockButton->setAutoRaise(true);
-	internal::setToolTip(UndockButton, QObject::tr("Detach Group"));
-	internal::setButtonIcon(UndockButton, QStyle::SP_TitleBarNormalButton, ads::DockAreaUndockIcon);
-	UndockButton->setSizePolicy(ButtonSizePolicy);
-	Layout->addWidget(UndockButton, 0);
-	_this->connect(UndockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
 
 	// Close button
 	CloseButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasCloseButton));
