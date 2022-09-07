@@ -273,7 +273,7 @@ void CDockFocusController::onFocusWindowChanged(QWindow *focusWindow)
 //===========================================================================
 void CDockFocusController::onApplicationFocusChanged(QWidget* focusedOld, QWidget* focusedNow)
 {
-	Q_UNUSED(focusedOld);
+    Q_UNUSED(focusedOld);
 
 	if (d->DockManager->isRestoringState())
 	{

@@ -515,6 +515,15 @@ void FloatingDockContainerPrivate::updateDropOverlays(const QPoint &GlobalPos)
 		return;
 	}
 
+#ifdef Q_OS_LINUX
+	// Prevent display of drop overlays and docking as long as a model dialog
+	// is active
+    if (qApp->activeModalWidget())
+    {
+        return;
+    }
+#endif
+
 	auto Containers = DockManager->dockContainers();
 	CDockContainerWidget *TopContainer = nullptr;
 	for (auto ContainerWidget : Containers)
@@ -807,16 +816,26 @@ void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 		return;
 	}
 
+	bool HasOpenDockWidgets = false;
 	for (auto DockWidget : d->DockContainer->openedDockWidgets())
 	{
-		if (DockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose))
+		if (DockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose) || DockWidget->features().testFlag(CDockWidget::CustomCloseHandling))
 		{
-			DockWidget->closeDockWidgetInternal();
+			bool Closed = DockWidget->closeDockWidgetInternal();
+			if (!Closed)
+			{
+				HasOpenDockWidgets = true;
+			}
 		}
 		else
 		{
 			DockWidget->toggleView(false);
 		}
+	}
+
+	if (HasOpenDockWidgets)
+	{
+		return;
 	}
 
 	// In Qt version after 5.9.2 there seems to be a bug that causes the
