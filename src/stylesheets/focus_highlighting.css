@@ -83,6 +83,11 @@ QScrollArea#dockWidgetScrollArea {
 	background: rgba(0, 0, 0, 48);
 }
 
+#dockAreaAutoHideButton {
+	qproperty-icon: url(:/ads/images/pin-button.svg);
+	qproperty-iconSize: 16px;
+}
+
 #dockAreaCloseButton {
 	qproperty-icon: url(:/ads/images/close-button.svg),
 		url(:/ads/images/close-button-disabled.svg) disabled;

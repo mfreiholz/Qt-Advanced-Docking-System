@@ -72,6 +72,11 @@ QScrollArea#dockWidgetScrollArea {
         qproperty-iconSize: 16px;
 }
 
+#dockAreaAutoHideButton {
+	qproperty-icon: url(:/ads/images/pin-button.svg);
+	qproperty-iconSize: 16px;
+}
+
 #tabCloseButton {
         margin-top: 2px;
         background: none;

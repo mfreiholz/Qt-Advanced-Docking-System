@@ -167,12 +167,12 @@ void DockAreaTitleBarPrivate::createButtons()
 	// AutoHide Button
 	const auto autoHideEnabled = testConfigFlag(CDockManager::DockContainerHasRightSideBar) || testConfigFlag(CDockManager::DockContainerHasLeftSideBar);
 	AutoHideButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasAutoHideButton) && autoHideEnabled);
-	AutoHideButton->setObjectName("autoHideButton");
+	AutoHideButton->setObjectName("dockAreaAutoHideButton");
 	AutoHideButton->setAutoRaise(true);
 	AutoHideButton->setCheckable(true);
 	AutoHideButton->setChecked(false);
 	internal::setToolTip(AutoHideButton, QObject::tr("Toggle Auto Hide Group"));
-	internal::setButtonIcon(AutoHideButton, QStyle::SP_DialogOkButton, ads::DockAreaUndockIcon);
+	internal::setButtonIcon(AutoHideButton, QStyle::SP_DialogOkButton, ads::AutoHideIcon);
 	AutoHideButton->setSizePolicy(ButtonSizePolicy);
 	Layout->addWidget(AutoHideButton, 0);
 	_this->connect(AutoHideButton, SIGNAL(toggled(bool)),  SLOT(onAutoHideButtonClicked(bool)));
