@@ -189,7 +189,7 @@ void DockFocusControllerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
 	}
 #endif
 
-	if (old && old->overlayDockContainer() && old != DockWidget)
+	if (old && old->overlayDockContainer() && old->overlayDockContainer()->isVisible() && old != FocusedDockWidget)
 	{
 		old->toggleView(false);
 	}
