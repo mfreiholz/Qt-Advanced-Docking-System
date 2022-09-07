@@ -47,7 +47,10 @@ HEADERS += \
     ElidingLabel.h \
     IconProvider.h \
     DockComponentsFactory.h  \
-    DockFocusController.h
+    DockFocusController.h \
+    OverlayDockContainer.h \
+    SideTabBar.h \
+    DockWidgetSideTab.h
 
 
 SOURCES += \
@@ -67,7 +70,10 @@ SOURCES += \
     ElidingLabel.cpp \
     IconProvider.cpp \
     DockComponentsFactory.cpp \
-    DockFocusController.cpp
+    DockFocusController.cpp \
+    OverlayDockContainer.cpp \
+    SideTabBar.cpp \
+    DockWidgetSideTab.cpp
 
 
 unix:!macx {

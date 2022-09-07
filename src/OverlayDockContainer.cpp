@@ -41,6 +41,7 @@
 #include <QBoxLayout>
 #include <QPainter>
 #include <QSplitter>
+#include <QPointer>
 
 namespace ads
 {

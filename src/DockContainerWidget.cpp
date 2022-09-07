@@ -1508,7 +1508,8 @@ COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverla
 	}
 	if (!COverlayDockContainer::areaExistsInConfig(area))
 	{
-		assert(false, "Requested area does not exist in config");
+		Q_ASSERT_X(false, "CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer",
+			"Requested area does not exist in config");
 		return nullptr;
 	}
 

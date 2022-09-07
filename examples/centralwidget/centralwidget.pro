@@ -2,7 +2,7 @@ ADS_OUT_ROOT = $${OUT_PWD}/../..
 
 QT       += core gui widgets
 
-TARGET = AutoHideExample
+TARGET = CentralWidgetExample
 DESTDIR = $${ADS_OUT_ROOT}/lib
 TEMPLATE = app
 CONFIG += c++14
@@ -23,6 +23,9 @@ SOURCES += \
 
 HEADERS += \
     mainwindow.h
+
+FORMS += \
+    mainwindow.ui
 
 LIBS += -L$${ADS_OUT_ROOT}/lib
 include(../../ads.pri)
