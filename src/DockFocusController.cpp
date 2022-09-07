@@ -191,7 +191,7 @@ void DockFocusControllerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
 
 	if (old && old->overlayDockContainer() && old != DockWidget)
 	{
-		old->overlayDockContainer()->hide();
+		old->toggleView(false);
 	}
 
     if (old == DockWidget && !ForceFocusChangedSignal)
