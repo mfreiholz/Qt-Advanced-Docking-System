@@ -362,7 +362,9 @@ void DockAreaWidgetPrivate::updateTitleBarButtonStates()
 		_this->features().testFlag(CDockWidget::DockWidgetClosable));
 	TitleBar->button(TitleBarButtonUndock)->setEnabled(
 		_this->features().testFlag(CDockWidget::DockWidgetFloatable));
+	// Undock and tabs should never show when overlayed
 	TitleBar->button(TitleBarButtonUndock)->setVisible(!_this->isOverlayed());
+	TitleBar->button(TitleBarButtonTabsMenu)->setVisible(!_this->isOverlayed());
 	TitleBar->updateDockWidgetActionsButtons();
 	UpdateTitleBarButtons = false;
 }
