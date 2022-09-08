@@ -10,7 +10,7 @@ ads--CDockContainerWidget > QSplitter{
 
 ads--CDockAreaWidget {
 	background: palette(window);
-	border: 1px solid white;
+	border: 1px solid white
 }
 
 ads--CDockWidgetTab {
@@ -24,10 +24,16 @@ ads--CDockWidgetTab {
 
 ads--CDockWidgetSideTab {
 	background: palette(window);
-	border-color: white;
-	border-style: solid;
-	border-width: 1px 0px 1px 0px;
-	padding: 0 0px;
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="Left"] {
+	border-left: 3px solid grey;
+	border-bottom: 1px solid white;
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="Right"] {
+	border-right: 3px solid grey;
+	border-bottom: 1px solid white;
 }
 
 ads--CDockWidgetTab[activeTab="true"] {
@@ -113,16 +119,12 @@ ads--CDockWidgetTab[focused="true"] {
 	border-color: palette(highlight);
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="Left"][focused="true"] {
-	border-width: 0px 0px 0px 3px;
-}
-
 ads--CDockWidgetSideTab[sideTabBarArea="Right"][focused="true"] {
-	border-width: 0px 3px 0px 0px;
+	border-right: 3px solid palette(highlight);
 }
 
-ads--CDockWidgetSideTab[focused="true"] {
-	border-color: palette(highlight);
+ads--CDockWidgetSideTab[sideTabBarArea="Left"][focused="true"] {
+	border-left: 3px solid palette(highlight);
 }
 
 ads--CDockWidgetTab[focused="true"]>#tabCloseButton {
