@@ -206,15 +206,16 @@ public:
 		DockAreaHasAutoHideButton = 0x4000000,     //!< If the flag is set each dock area has a auto hide menu button
 		DockContainerHasLeftSideBar = 0x8000000,     //!< If the flag is set each container will have a left side bar
 		DockContainerHasRightSideBar = 0x10000000,     //!< If the flag is set each container will have a right side bar
-
+		DockAreaOverlayHasTitle = 0x20000000, //!< If the flag is set overlay dock area title bar will show the window title
 
         DefaultDockAreaButtons = DockAreaHasCloseButton
 							   | DockAreaHasUndockButton
 		                       | DockAreaHasTabsMenuButton, ///< default configuration of dock area title bar buttons
 
-		DefaultDockContainerConfig = DockContainerHasLeftSideBar 
-	                                 | DockContainerHasRightSideBar
-	                                 | DockAreaHasAutoHideButton, ///< the default configuration for left and right side bars
+		DefaultAutoHideConfig = DockContainerHasLeftSideBar 
+                              | DockContainerHasRightSideBar
+                              | DockAreaHasAutoHideButton
+                              | DockAreaOverlayHasTitle, ///< the default configuration for left and right side bars
 
 		DefaultBaseConfig = DefaultDockAreaButtons
 		                  | ActiveTabHasCloseButton

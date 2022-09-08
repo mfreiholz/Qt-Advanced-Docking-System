@@ -815,7 +815,7 @@ void CDockAreaWidget::updateTitleBarVisibility()
 		d->TitleBar->setVisible(isOverlayed() ? true : !Hidden); // Titlebar must always be visible when overlayed so it can be dragged
 		auto tabBar = d->TitleBar->tabBar();
         tabBar->setVisible(isOverlayed() ? false : !Hidden);  // Never show tab bar when overlayed
-        d->TitleBar->overlayTitleLabel()->setVisible(isOverlayed());  // Always show when overlayed, never otherwise
+        d->TitleBar->overlayTitleLabel()->setVisible(CDockManager::testConfigFlag(CDockManager::DockAreaOverlayHasTitle) && isOverlayed());  // Always show when overlayed, never otherwise
         updateTitleBarButtonVisibility(Container->topLevelDockArea() == this);
 	}
 }
