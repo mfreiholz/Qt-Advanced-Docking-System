@@ -156,6 +156,11 @@ protected:
 	 */
 	void updateAutoHidebuttonCheckState();
 
+	/*
+	 * Update the title bar button visibility based on if it's top level or not
+	 */
+	void updateTitleBarButtonVisibility(bool IsTopLevel) const;
+
 protected Q_SLOTS:
 	void toggleView(bool Open);
 

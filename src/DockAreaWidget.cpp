@@ -311,6 +311,11 @@ struct DockAreaWidgetPrivate
 	void updateTitleBarButtonStates();
 
 	/**
+	 * Udpates the enable state of the close and detach button
+	 */
+	void updateTitleBarButtonVisibility(bool isTopLevel);
+
+	/**
 	 * Scans all contained dock widgets for the max. minimum size hint
 	 */
 	void updateMinimumSizeHint()
@@ -358,11 +363,35 @@ void DockAreaWidgetPrivate::updateTitleBarButtonStates()
 		_this->features().testFlag(CDockWidget::DockWidgetClosable));
 	TitleBar->button(TitleBarButtonUndock)->setEnabled(
 		_this->features().testFlag(CDockWidget::DockWidgetFloatable));
-	// Undock and tabs should never show when overlayed
-	TitleBar->button(TitleBarButtonUndock)->setVisible(!_this->isOverlayed());
-	TitleBar->button(TitleBarButtonTabsMenu)->setVisible(!_this->isOverlayed());
 	TitleBar->updateDockWidgetActionsButtons();
 	UpdateTitleBarButtons = false;
+}
+
+
+//============================================================================
+void DockAreaWidgetPrivate::updateTitleBarButtonVisibility(bool IsTopLevel)
+{
+	auto *const container = _this->dockContainer();
+	if (!container)
+	{
+		return;
+	}
+
+	if (IsTopLevel)
+	{
+		TitleBar->button(TitleBarButtonClose)->setVisible(!container->isFloating());
+		TitleBar->button(TitleBarButtonAutoHide)->setVisible(!container->isFloating());
+        // Undock and tabs should never show when overlayed
+		TitleBar->button(TitleBarButtonUndock)->setVisible(!container->isFloating() && !_this->isOverlayed());
+        TitleBar->button(TitleBarButtonTabsMenu)->setVisible(!_this->isOverlayed());
+	}
+	else
+	{
+		TitleBar->button(TitleBarButtonClose)->setVisible(true);
+		TitleBar->button(TitleBarButtonAutoHide)->setVisible(true);
+		TitleBar->button(TitleBarButtonUndock)->setVisible(!_this->isOverlayed());
+        TitleBar->button(TitleBarButtonTabsMenu)->setVisible(!_this->isOverlayed());
+	}
 }
 
 
@@ -787,6 +816,7 @@ void CDockAreaWidget::updateTitleBarVisibility()
 		auto tabBar = d->TitleBar->tabBar();
         tabBar->setVisible(isOverlayed() ? false : !Hidden);  // Never show tab bar when overlayed
         d->TitleBar->overlayTitleLabel()->setVisible(isOverlayed());  // Always show when overlayed, never otherwise
+        updateTitleBarButtonVisibility(Container->topLevelDockArea() == this);
 	}
 }
 
@@ -808,6 +838,11 @@ void CDockAreaWidget::updateAutoHidebuttonCheckState()
 	autoHideButton->blockSignals(true);
 	autoHideButton->setChecked(isOverlayed());
 	autoHideButton->blockSignals(false);
+}
+
+void CDockAreaWidget::updateTitleBarButtonVisibility(bool IsTopLevel) const
+{
+	d->updateTitleBarButtonVisibility(IsTopLevel);
 }
 
 
