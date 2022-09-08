@@ -224,6 +224,7 @@ void COverlayDockContainer::moveContentsToParent()
 	cleanupAndDelete();
 }
 
+
 //============================================================================
 void COverlayDockContainer::cleanupAndDelete()
 {
@@ -238,6 +239,8 @@ void COverlayDockContainer::cleanupAndDelete()
 	deleteLater();
 }
 
+
+//============================================================================
 void COverlayDockContainer::saveState(QXmlStreamWriter& s)
 {
     s.writeAttribute("SideTabBarArea", QString::number(sideTabBarArea())); 
@@ -250,6 +253,8 @@ void COverlayDockContainer::saveState(QXmlStreamWriter& s)
     s.writeAttribute("Sizes", Sizes.join(" "));
 }
 
+
+//============================================================================
 bool COverlayDockContainer::restoreState(CDockingStateReader& s, bool Testing)
 {
 	auto sSizes = s.attributes().value("Sizes").trimmed().toString();
@@ -276,6 +281,8 @@ bool COverlayDockContainer::restoreState(CDockingStateReader& s, bool Testing)
 	return true;
 }
 
+
+//============================================================================
 bool COverlayDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarArea area)
 {
 	if (area == CDockWidgetSideTab::Left && !CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
@@ -290,6 +297,7 @@ bool COverlayDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarAre
 	return true;
 }
 
+
 //============================================================================
 bool COverlayDockContainer::eventFilter(QObject* watched, QEvent* event)
 {
@@ -301,11 +309,13 @@ bool COverlayDockContainer::eventFilter(QObject* watched, QEvent* event)
 	return QWidget::eventFilter(watched, event);
 }
 
+
 //============================================================================
 void COverlayDockContainer::mousePressEvent(QMouseEvent* event)
 {
     QWidget::mousePressEvent(event);
 }
+
 
 //============================================================================
 void COverlayDockContainer::resizeEvent(QResizeEvent* event)
