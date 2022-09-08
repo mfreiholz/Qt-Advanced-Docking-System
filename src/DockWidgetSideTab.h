@@ -75,10 +75,8 @@ public:
      */
     enum SideTabBarArea
     {
-        None,
         Left,
-        Right,
-        Bottom
+        Right
     };
 
 	Q_ENUM(SideTabBarArea)

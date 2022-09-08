@@ -1134,10 +1134,8 @@ bool DockContainerWidgetPrivate::restoreDockOrOverlayDockArea(CDockingStateReade
         {
             return false;
         }
-        if (sideTabBarArea != CDockWidgetSideTab::None)
-        {
-            return restoreOverlayDockArea(Stream, sideTabBarArea, Testing);
-        }
+
+        return restoreOverlayDockArea(Stream, sideTabBarArea, Testing);
 	}
 
     // If there's no SideTabBarArea value in the XML, or the value of SideTabBarArea is none, restore the dock area
