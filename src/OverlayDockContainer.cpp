@@ -240,7 +240,7 @@ void COverlayDockContainer::cleanupAndDelete()
 
 void COverlayDockContainer::saveState(QXmlStreamWriter& s)
 {
-    s.writeAttribute("CDockWidgetSideTab::SideTabBarArea", QString::number(sideTabBarArea())); 
+    s.writeAttribute("SideTabBarArea", QString::number(sideTabBarArea())); 
 	QStringList Sizes;
     for (auto Size : d->Splitter->sizes())
     {
