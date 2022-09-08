@@ -24,17 +24,10 @@ ads--CDockWidgetTab {
 
 ads--CDockWidgetSideTab {
 	background: palette(window);
-	border-color: palette(light);
+	border-color: white;
 	border-style: solid;
+	border-width: 1px 0px 1px 0px;
 	padding: 0 0px;
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="Left"] {
-	border-width: 0px 0px 0px 3px;
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="Right"] {
-	border-width: 0px 3px 0px 0px;
 }
 
 ads--CDockWidgetTab[activeTab="true"] {
@@ -118,6 +111,14 @@ ads--CDockSplitter::handle {
 ads--CDockWidgetTab[focused="true"] {
 	background: palette(highlight);
 	border-color: palette(highlight);
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="Left"][focused="true"] {
+	border-width: 0px 0px 0px 3px;
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="Right"][focused="true"] {
+	border-width: 0px 3px 0px 0px;
 }
 
 ads--CDockWidgetSideTab[focused="true"] {
