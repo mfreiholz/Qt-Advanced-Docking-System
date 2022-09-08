@@ -1095,9 +1095,10 @@ bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, 
 		DockWidget->setProperty(internal::ClosedProperty, true);
 		DockWidget->setProperty(internal::DirtyProperty, false);
         _this->sideTabBar(area)->insertSideTab(0, DockWidget->sideTabWidget());
-        DockWidget->sideTabWidget()->show();
         DockWidget->toggleView(false);
         DockArea->overlayDockContainer()->addDockWidget(DockWidget);
+        DockWidget->sideTabWidget()->show();
+        DockWidget->sideTabWidget()->updateStyle(); // Needed as the side tab widget get it's left/right property from the overlay dock container which was just added
 	}
 
 	if (Testing)
