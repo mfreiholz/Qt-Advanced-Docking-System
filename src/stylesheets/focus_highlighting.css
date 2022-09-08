@@ -26,8 +26,15 @@ ads--CDockWidgetSideTab {
 	background: palette(window);
 	border-color: palette(light);
 	border-style: solid;
-	border-width: 1px 1px 1px 1px;
 	padding: 0 0px;
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="Left"] {
+	border-width: 0px 0px 0px 3px;
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="Right"] {
+	border-width: 0px 3px 0px 0px;
 }
 
 ads--CDockWidgetTab[activeTab="true"] {

@@ -107,17 +107,6 @@ enum eDragState
 };
 
 /**
- * Dock widget side tab bar locations
- */
-enum SideTabBarArea
-{
-	None,
-    Left,
-    Right,
-	Bottom
-};
-
-/**
  * The different icons used in the UI
  */
 enum eIcon

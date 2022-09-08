@@ -34,6 +34,7 @@
 
 #include "ads_globals.h"
 #include "DockWidget.h"
+#include "DockWidgetSideTab.h"
 
 QT_FORWARD_DECLARE_CLASS(QXmlStreamWriter)
 QT_FORWARD_DECLARE_CLASS(QAbstractButton)
@@ -161,7 +162,7 @@ protected Q_SLOTS:
 	/**
 	 * Auto hides the dock area and all dock widgets in this area
 	 */
-    void onAutoHideToggleRequested(CDockWidget* DockWidget, bool Enable, SideTabBarArea area);
+    void onAutoHideToggleRequested(CDockWidget* DockWidget, bool Enable, CDockWidgetSideTab::SideTabBarArea area);
 
 public:
 	using Super = QFrame;

@@ -212,14 +212,14 @@ public:
 							   | DockAreaHasUndockButton
 		                       | DockAreaHasTabsMenuButton, ///< default configuration of dock area title bar buttons
 
-		DefaultDockContainerSideBars = DockContainerHasLeftSideBar 
-	                                 | DockContainerHasRightSideBar, ///< the default configuration for left and right side bars
+		DefaultDockContainerConfig = DockContainerHasLeftSideBar 
+	                                 | DockContainerHasRightSideBar
+	                                 | DockAreaHasAutoHideButton, ///< the default configuration for left and right side bars
 
 		DefaultBaseConfig = DefaultDockAreaButtons
 		                  | ActiveTabHasCloseButton
 		                  | XmlCompressionEnabled
-		                  | FloatingContainerHasWidgetTitle
-	                      | DefaultDockContainerSideBars, ///< default base configuration settings
+		                  | FloatingContainerHasWidgetTitle, ///< default base configuration settings
 
         DefaultOpaqueConfig = DefaultBaseConfig
 		                    | OpaqueSplitterResize
@@ -307,14 +307,14 @@ public:
 	 * An overlay widget is used for auto hide functionality
 	 * \return Returns the COverlayDockContainer that contains the new DockWidget
 	 */
-	COverlayDockContainer* addOverlayDockWidget(SideTabBarArea area, CDockWidget* Dockwidget);
+	COverlayDockContainer* addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget);
 
 	/**
-	 * Adds dock widget overlayed into the given container based on the SideTabBarArea.
+	 * Adds dock widget overlayed into the given container based on the CDockWidgetSideTab::SideTabBarArea.
 	 * An overlay widget is used for auto hide functionality
 	 * \return Returns the COverlayDockContainer that contains the new DockWidget
 	 */
-	COverlayDockContainer* addOverlayDockWidgetToContainer(SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget);
+	COverlayDockContainer* addOverlayDockWidgetToContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget);
 
 	/**
 	 * This function will add the given Dockwidget to the given dock area as

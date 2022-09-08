@@ -31,6 +31,8 @@
 //============================================================================
 #include "ads_globals.h"
 
+#include "DockWidgetSideTab.h"
+
 #include <QFrame>
 
 class QXmlStreamWriter;
@@ -48,11 +50,10 @@ class CDockingStateReader;
 class ADS_EXPORT COverlayDockContainer : public QFrame
 {
     Q_OBJECT
+
 private:
     OverlayDockContainerPrivate* d; ///< private data (pimpl)
     friend struct OverlayDockContainerPrivate;
-
-	CDockContainerWidget* parentContainer() const;
 
 protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
@@ -61,16 +62,18 @@ protected:
     void updateMask();
 	void updateSize();
 
+	CDockContainerWidget* parentContainer() const;
+
 public:
 	/**
 	 * Create overlay widget with a dock manager
 	 */
-    COverlayDockContainer(CDockManager* DockManager, SideTabBarArea area, CDockContainerWidget* parent);
+    COverlayDockContainer(CDockManager* DockManager, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent);
 
     /**
 	 * Create overlay widget with the given dock widget
 	 */
-	COverlayDockContainer(CDockWidget* DockWidget, SideTabBarArea area, CDockContainerWidget* parent);
+	COverlayDockContainer(CDockWidget* DockWidget, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent);
 
 	/**
 	 * Virtual Destructor
@@ -95,7 +98,7 @@ public:
 	/**
 	 * Returns the side tab bar area of this overlay dock container
 	 */
-	SideTabBarArea sideTabBarArea() const;
+	CDockWidgetSideTab::SideTabBarArea sideTabBarArea() const;
 
 	/**
 	 * Returns the dock area widget of this overlay dock container
@@ -126,7 +129,7 @@ public:
 	/*
 	 * Convenience function fr determining if area exists in config
 	 */
-	static bool areaExistsInConfig(SideTabBarArea area);
+	static bool areaExistsInConfig(CDockWidgetSideTab::SideTabBarArea area);
 };
 }
 

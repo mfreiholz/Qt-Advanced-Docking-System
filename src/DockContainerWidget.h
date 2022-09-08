@@ -34,6 +34,7 @@
 
 #include "ads_globals.h"
 #include "DockWidget.h"
+#include "DockWidgetSideTab.h"
 
 QT_FORWARD_DECLARE_CLASS(QXmlStreamWriter)
 
@@ -105,7 +106,7 @@ protected:
 	 * Initializing inserts the tabs into the side tab widget and hides it
 	 * Returns nullptr if you try and insert into an area where the configuration is not enabled
 	 */
-	COverlayDockContainer* createAndInitializeDockWidgetOverlayContainer(SideTabBarArea area, CDockWidget* DockWidget);
+	COverlayDockContainer* createAndInitializeDockWidgetOverlayContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget);
 
 	/**
 	 * Helper function for creation of the root splitter
@@ -226,7 +227,7 @@ public:
 	/**
 	 * Get's the overlay dock side tab bar area based on the dock area widget position
 	 */
-	SideTabBarArea getDockAreaPosition(CDockAreaWidget* DockAreaWidget);
+	CDockWidgetSideTab::SideTabBarArea getDockAreaPosition(CDockAreaWidget* DockAreaWidget);
 
 	/**
 	 * Removes dockwidget
@@ -326,7 +327,7 @@ public:
 	/**
 	 * Returns the side tab widget for the given area
 	 */
-	CSideTabBar* sideTabBar(SideTabBarArea area) const;
+	CSideTabBar* sideTabBar(CDockWidgetSideTab::SideTabBarArea area) const;
 
 Q_SIGNALS:
 	/**

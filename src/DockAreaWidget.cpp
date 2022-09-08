@@ -1040,7 +1040,7 @@ void CDockAreaWidget::toggleAutoHideArea(bool Enable)
 }
 
 //============================================================================
-void CDockAreaWidget::onAutoHideToggleRequested(CDockWidget* DockWidget, bool Enable, SideTabBarArea area) 
+void CDockAreaWidget::onAutoHideToggleRequested(CDockWidget* DockWidget, bool Enable, CDockWidgetSideTab::SideTabBarArea area) 
 {
     if (Enable)
     {

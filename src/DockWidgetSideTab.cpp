@@ -32,9 +32,11 @@
 
 #include <QBoxLayout>
 
+#include "DockAreaWidget.h"
 #include "ElidingLabel.h"
 
 #include "DockWidget.h"
+#include "OverlayDockContainer.h"
 
 namespace ads
 {
@@ -147,5 +149,16 @@ CDockWidgetSideTab::~CDockWidgetSideTab()
 void CDockWidgetSideTab::updateStyle()
 {
 	internal::repolishStyle(this, internal::RepolishDirectChildren);
+}
+
+CDockWidgetSideTab::SideTabBarArea CDockWidgetSideTab::sideTabBarArea() const
+{
+	auto dockAreaWidget = d->DockWidget->dockAreaWidget();
+	if (dockAreaWidget && dockAreaWidget->isOverlayed())
+	{
+		return dockAreaWidget->overlayDockContainer()->sideTabBarArea();
+	}
+
+	return Left;
 }
 }

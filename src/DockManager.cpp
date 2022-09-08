@@ -863,13 +863,13 @@ CDockAreaWidget* CDockManager::addDockWidgetToContainer(DockWidgetArea area,
 }
 
 //============================================================================
-COverlayDockContainer* CDockManager::addOverlayDockWidget(SideTabBarArea area, CDockWidget* Dockwidget)
+COverlayDockContainer* CDockManager::addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget)
 {
 	return addOverlayDockWidgetToContainer(area, Dockwidget, this);
 }
 
 //============================================================================
-COverlayDockContainer* CDockManager::addOverlayDockWidgetToContainer(SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget)
+COverlayDockContainer* CDockManager::addOverlayDockWidgetToContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget)
 {
 	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
 	auto container = DockContainerWidget->createAndInitializeDockWidgetOverlayContainer(area, Dockwidget);

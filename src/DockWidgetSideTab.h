@@ -49,6 +49,8 @@ class ADS_EXPORT CDockWidgetSideTab : public QFrame
 {
     Q_OBJECT
 
+    Q_PROPERTY(SideTabBarArea sideTabBarArea READ sideTabBarArea)
+
 private:    
 	DockWidgetSideTabPrivate* d; ///< private data (pimpl)
     friend struct DockWidgetSideTabPrivate;
@@ -67,6 +69,20 @@ protected:
 
 public:
     using Super = QFrame;
+
+    /**
+     * Dock widget side tab bar locations
+     */
+    enum SideTabBarArea
+    {
+        None,
+        Left,
+        Right,
+        Bottom
+    };
+
+	Q_ENUM(SideTabBarArea)
+
 	/**
 	 * Default Constructor
 	 * param[in] DockWidget The dock widget this title bar belongs to
@@ -84,6 +100,11 @@ public:
 	 * Update stylesheet style if a property changes
 	 */
 	void updateStyle();
+
+	/**
+	 * Getter for side tab bar area property
+	 */
+	SideTabBarArea sideTabBarArea() const;
 
 Q_SIGNALS:
 	void elidedChanged(bool elided);

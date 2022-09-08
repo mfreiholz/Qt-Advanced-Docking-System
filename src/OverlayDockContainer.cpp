@@ -52,7 +52,7 @@ struct OverlayDockContainerPrivate
 	CDockWidget* DockWidget{nullptr};
 	QPointer<CDockManager> DockManager{nullptr};
 	QSplitter* Splitter;
-	SideTabBarArea Area;
+	CDockWidgetSideTab::SideTabBarArea Area;
 
 	/**
 	 * Private data constructor
@@ -74,7 +74,7 @@ CDockContainerWidget* COverlayDockContainer::parentContainer() const
 }
 
 //============================================================================
-COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, SideTabBarArea area, CDockContainerWidget* parent) :
+COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent) :
     QFrame(parent),
     d(new OverlayDockContainerPrivate(this))
 {
@@ -92,7 +92,7 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, SideTabB
 	const auto emptyWidget = new QWidget();
 	emptyWidget->setMinimumWidth(50);
 
-	if (area == SideTabBarArea::Left)
+	if (area == CDockWidgetSideTab::SideTabBarArea::Left)
 	{
         d->Splitter->addWidget(d->DockArea);
         d->Splitter->addWidget(emptyWidget);
@@ -123,7 +123,7 @@ void COverlayDockContainer::updateMask()
 	const auto rect = d->DockArea->frameGeometry();
 	const auto topLeft = rect.topLeft();
 	const auto handleSize = d->Splitter->handleWidth();
-	const auto offset = d->Area == SideTabBarArea::Left ? 0 : handleSize;
+	const auto offset = d->Area == CDockWidgetSideTab::SideTabBarArea::Left ? 0 : handleSize;
     setMask(QRect(QPoint(topLeft.x() - offset, topLeft.y()), QSize(rect.size().width() + handleSize, rect.size().height())));
 }
 
@@ -138,7 +138,7 @@ void COverlayDockContainer::updateSize()
 }
 
 //============================================================================
-COverlayDockContainer::COverlayDockContainer(CDockWidget* DockWidget, SideTabBarArea area, CDockContainerWidget* parent) : 
+COverlayDockContainer::COverlayDockContainer(CDockWidget* DockWidget, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent) : 
 	COverlayDockContainer(DockWidget->dockManager(), area, parent)
 {
 	addDockWidget(DockWidget);
@@ -195,7 +195,7 @@ void COverlayDockContainer::addDockWidget(CDockWidget* DockWidget)
 
 
 //============================================================================
-SideTabBarArea COverlayDockContainer::sideTabBarArea() const
+CDockWidgetSideTab::SideTabBarArea COverlayDockContainer::sideTabBarArea() const
 {
 	return d->Area;
 }
@@ -209,7 +209,7 @@ CDockAreaWidget* COverlayDockContainer::dockAreaWidget() const
 //============================================================================
 void COverlayDockContainer::moveContentsToParent()
 {
-	const auto position = mapToGlobal(d->Area == Left ? QPoint(1,height() / 2) : QPoint(width() - 1, height() / 2));
+	const auto position = mapToGlobal(d->Area == CDockWidgetSideTab::Left ? QPoint(1,height() / 2) : QPoint(width() - 1, height() / 2));
 
 	const auto dockAreaWidget = parentContainer()->dockAreaAt(position);
 	if (dockAreaWidget != nullptr && !dockAreaWidget->isCentralWidgetArea())
@@ -218,7 +218,7 @@ void COverlayDockContainer::moveContentsToParent()
 	}
 	else
 	{
-        parentContainer()->addDockWidget(d->Area == Left ? LeftDockWidgetArea : RightDockWidgetArea, d->DockWidget);
+        parentContainer()->addDockWidget(d->Area == CDockWidgetSideTab::Left ? LeftDockWidgetArea : RightDockWidgetArea, d->DockWidget);
 	}
 	cleanupAndDelete();
 }
@@ -239,7 +239,7 @@ void COverlayDockContainer::cleanupAndDelete()
 
 void COverlayDockContainer::saveState(QXmlStreamWriter& s)
 {
-    s.writeAttribute("SideTabBarArea", QString::number(sideTabBarArea())); 
+    s.writeAttribute("CDockWidgetSideTab::SideTabBarArea", QString::number(sideTabBarArea())); 
 	QStringList Sizes;
     for (auto Size : d->Splitter->sizes())
     {
@@ -275,13 +275,13 @@ bool COverlayDockContainer::restoreState(CDockingStateReader& s, bool Testing)
 	return true;
 }
 
-bool COverlayDockContainer::areaExistsInConfig(SideTabBarArea area)
+bool COverlayDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarArea area)
 {
-	if (area == Left && !CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
+	if (area == CDockWidgetSideTab::Left && !CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
 	{
 		return false;
 	}
-	if (area == Right && !CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
+	if (area == CDockWidgetSideTab::Right && !CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
 	{
 		return false;
 	}

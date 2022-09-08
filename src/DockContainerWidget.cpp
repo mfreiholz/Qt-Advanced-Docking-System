@@ -138,7 +138,7 @@ public:
 	unsigned int zOrderIndex = 0;
 	QList<CDockAreaWidget*> DockAreas;
 	QList<COverlayDockContainer*> OverlayWidgets;
-	QMap<SideTabBarArea, CSideTabBar*> SideTabBarWidgets;
+	QMap<CDockWidgetSideTab::SideTabBarArea, CSideTabBar*> SideTabBarWidgets;
 	QGridLayout* Layout = nullptr;
 	QSplitter* RootSplitter = nullptr;
 	bool isFloating = false;
@@ -254,7 +254,7 @@ public:
      * Assumes that there are no overlay dock areas, and then restores all the dock areas that
      * exist in the XML
 	 */
-    bool restoreOverlayDockArea(CDockingStateReader& s, SideTabBarArea area, bool Testing);
+    bool restoreOverlayDockArea(CDockingStateReader& s, CDockWidgetSideTab::SideTabBarArea area, bool Testing);
 
 	/**
 	 * Restores either a dock area or an overlay dock area depending on the value in the XML
@@ -1032,7 +1032,7 @@ bool DockContainerWidgetPrivate::restoreSplitter(CDockingStateReader& s,
 }
 
 //============================================================================
-bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, SideTabBarArea area, bool Testing)
+bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, CDockWidgetSideTab::SideTabBarArea area, bool Testing)
 {
 	bool Ok;
 #ifdef ADS_DEBUG_PRINT
@@ -1128,12 +1128,12 @@ bool DockContainerWidgetPrivate::restoreDockOrOverlayDockArea(CDockingStateReade
 	const auto sideTabAreaValue = Stream.attributes().value("SideTabBarArea");
 	if (!sideTabAreaValue.isNull())
 	{
-        auto sideTabBarArea = static_cast<SideTabBarArea>(sideTabAreaValue.toInt(&Ok));
+        auto sideTabBarArea = static_cast<CDockWidgetSideTab::SideTabBarArea>(sideTabAreaValue.toInt(&Ok));
         if (!Ok)
         {
             return false;
         }
-        if (sideTabBarArea != SideTabBarArea::None)
+        if (sideTabBarArea != CDockWidgetSideTab::None)
         {
             return restoreOverlayDockArea(Stream, sideTabBarArea, Testing);
         }
@@ -1500,7 +1500,7 @@ CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockW
 
 
 //============================================================================
-COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer(SideTabBarArea area, CDockWidget* DockWidget)
+COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget)
 {
 	if (d->DockManager != DockWidget->dockManager())
 	{
@@ -1522,31 +1522,31 @@ COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverla
 }
 
 //============================================================================
-SideTabBarArea CDockContainerWidget::getDockAreaPosition(CDockAreaWidget* DockAreaWidget)
+CDockWidgetSideTab::SideTabBarArea CDockContainerWidget::getDockAreaPosition(CDockAreaWidget* DockAreaWidget)
 {
 	const auto dockWidgetCenter = DockAreaWidget->mapToGlobal(DockAreaWidget->frameGeometry().center());
 	const auto splitterCenter = rootSplitter()->mapToGlobal(rootSplitter()->frameGeometry().center());
-	const auto calculatedPosition = dockWidgetCenter.x() <= splitterCenter.x() ? Left : Right;
-	if (calculatedPosition == Right)
+	const auto calculatedPosition = dockWidgetCenter.x() <= splitterCenter.x() ? CDockWidgetSideTab::Left : CDockWidgetSideTab::Right;
+	if (calculatedPosition == CDockWidgetSideTab::Right)
 	{
         if (CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
         {
-            return Right;
+            return CDockWidgetSideTab::Right;
         }
 
-		return Left;
+		return CDockWidgetSideTab::Left;
 	}
 
-    if (calculatedPosition == Left)
+    if (calculatedPosition == CDockWidgetSideTab::Left)
 	{
 		if (CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
 		{
-            return Left;
+            return CDockWidgetSideTab::Left;
 		}
-		return Right;
+		return CDockWidgetSideTab::Right;
 	}
 
-	return Left;
+	return CDockWidgetSideTab::Left;
 
 }
 
@@ -2025,14 +2025,14 @@ void CDockContainerWidget::createSideTabBarWidgets()
 {
 	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
 	{
-        d->SideTabBarWidgets[SideTabBarArea::Left] = new CSideTabBar(this);
-        d->Layout->addWidget(d->SideTabBarWidgets[SideTabBarArea::Left], 0, 0);
+        d->SideTabBarWidgets[CDockWidgetSideTab::Left] = new CSideTabBar(this);
+        d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Left], 0, 0);
 	}
 
 	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
 	{
-        d->SideTabBarWidgets[SideTabBarArea::Right] = new CSideTabBar(this);
-        d->Layout->addWidget(d->SideTabBarWidgets[SideTabBarArea::Right], 0, 2);
+        d->SideTabBarWidgets[CDockWidgetSideTab::Right] = new CSideTabBar(this);
+        d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Right], 0, 2);
 	}
 }
 
@@ -2181,7 +2181,7 @@ void CDockContainerWidget::closeOtherAreas(CDockAreaWidget* KeepOpenArea)
 }
 
 //============================================================================
-CSideTabBar* CDockContainerWidget::sideTabBar(SideTabBarArea area) const
+CSideTabBar* CDockContainerWidget::sideTabBar(CDockWidgetSideTab::SideTabBarArea area) const
 {
 	return d->SideTabBarWidgets[area];
 }
