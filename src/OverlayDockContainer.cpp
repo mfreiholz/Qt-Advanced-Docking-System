@@ -91,7 +91,7 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWid
 	d->Splitter->setChildrenCollapsible(false);
 
 	const auto emptyWidget = new QWidget();
-	emptyWidget->setMinimumWidth(50);
+	emptyWidget->setMinimumWidth(50); // Prevents you from dragging the splitter too far
 
 	if (area == CDockWidgetSideTab::SideTabBarArea::Left)
 	{
