@@ -87,6 +87,7 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWid
 
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::LeftToRight);
 	d->Splitter = new QSplitter(Qt::Orientation::Horizontal);
+	d->Splitter->setObjectName("overlaySplitter");
 	d->Splitter->setChildrenCollapsible(false);
 
 	const auto emptyWidget = new QWidget();
