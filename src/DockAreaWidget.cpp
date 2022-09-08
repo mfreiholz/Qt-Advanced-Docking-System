@@ -32,18 +32,15 @@
 
 #include <QStackedLayout>
 #include <QScrollBar>
-#include <QScrollArea>
 #include <QWheelEvent>
 #include <QStyle>
 #include <QPushButton>
 #include <QDebug>
 #include <QMenu>
-#include <QSplitter>
 #include <QXmlStreamWriter>
-#include <QVector>
 #include <QList>
 
-
+#include "ElidingLabel.h"
 #include "DockContainerWidget.h"
 #include "DockWidget.h"
 #include "FloatingDockContainer.h"
@@ -54,7 +51,6 @@
 #include "DockAreaTitleBar.h"
 #include "DockComponentsFactory.h"
 #include "DockWidgetTab.h"
-#include "SideTabBar.h"
 #include "DockWidgetSideTab.h"
 #include "OverlayDockContainer.h"
 
@@ -451,6 +447,7 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 	d->tabBar()->insertTab(index, TabWidget);
 	d->tabBar()->blockSignals(false);
 	TabWidget->setVisible(!DockWidget->isClosed());
+	d->TitleBar->overlayTitleLabel()->setText(DockWidget->windowTitle());
 	DockWidget->setProperty(INDEX_PROPERTY, index);
 	d->MinSizeHint.setHeight(qMax(d->MinSizeHint.height(), DockWidget->minimumSizeHint().height()));
 	d->MinSizeHint.setWidth(qMax(d->MinSizeHint.width(), DockWidget->minimumSizeHint().width()));
@@ -787,7 +784,9 @@ void CDockAreaWidget::updateTitleBarVisibility()
 			|| CDockManager::testConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar));
 		Hidden |= (d->Flags.testFlag(HideSingleWidgetTitleBar) && openDockWidgetsCount() == 1);
 		d->TitleBar->setVisible(isOverlayed() ? true : !Hidden); // Titlebar must always be visible when overlayed so it can be dragged
-        d->TitleBar->tabBar()->setVisible(isOverlayed() ? false : !Hidden);  // Never show tab bar when overlayed
+		auto tabBar = d->TitleBar->tabBar();
+        tabBar->setVisible(isOverlayed() ? false : !Hidden);  // Never show tab bar when overlayed
+        d->TitleBar->overlayTitleLabel()->setVisible(isOverlayed());  // Always show when overlayed, never otherwise
 	}
 }
 

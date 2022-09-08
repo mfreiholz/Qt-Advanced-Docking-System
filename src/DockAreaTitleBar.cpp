@@ -49,10 +49,10 @@
 #include "DockWidget.h"
 #include "DockWidgetTab.h"
 #include "DockAreaTabBar.h"
-#include "IconProvider.h"
 #include "DockComponentsFactory.h"
 #include "DockFocusController.h"
 #include "OverlayDockContainer.h"
+#include "ElidingLabel.h"
 
 #include <iostream>
 
@@ -72,6 +72,7 @@ struct DockAreaTitleBarPrivate
 	QBoxLayout* Layout;
 	CDockAreaWidget* DockArea;
 	CDockAreaTabBar* TabBar;
+	CElidingLabel* OverlayTitleLabel;
 	bool MenuOutdated = true;
 	QMenu* TabsMenu;
 	QList<tTitleBarButton*> DockWidgetActionsButtons;
@@ -91,7 +92,13 @@ struct DockAreaTitleBarPrivate
 	 */
 	void createButtons();
 
+
 	/**
+	 * Creates the overlay title label, only displayed when the dock area is overlayed
+	 */
+    void createOverlayTitleLabel();
+
+    /**
 	 * Creates the internal TabBar
 	 */
 	void createTabBar();
@@ -208,6 +215,15 @@ void DockAreaTitleBarPrivate::createButtons()
 
 
 //============================================================================
+void DockAreaTitleBarPrivate::createOverlayTitleLabel()
+{
+	OverlayTitleLabel = new CElidingLabel("");
+	OverlayTitleLabel->setObjectName("overlayTitleLabel");
+	Layout->addWidget(OverlayTitleLabel);
+}
+
+
+//============================================================================
 void DockAreaTitleBarPrivate::createTabBar()
 {
 	TabBar = componentsFactory()->createDockAreaTabBar(DockArea);
@@ -287,6 +303,8 @@ CDockAreaTitleBar::CDockAreaTitleBar(CDockAreaWidget* parent) :
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
 	d->createTabBar();
+	d->createOverlayTitleLabel();
+	d->OverlayTitleLabel->setVisible(false); // Default hidden
 	d->Layout->addWidget(new CSpacerWidget(this));
 	d->createButtons();
 
@@ -477,6 +495,13 @@ QAbstractButton* CDockAreaTitleBar::button(TitleBarButton which) const
 	default:
 		return nullptr;
 	}
+}
+
+
+//============================================================================
+CElidingLabel* CDockAreaTitleBar::overlayTitleLabel() const
+{
+	return d->OverlayTitleLabel;
 }
 
 

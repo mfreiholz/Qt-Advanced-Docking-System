@@ -41,6 +41,7 @@ namespace ads
 class CDockAreaTabBar;
 class CDockAreaWidget;
 struct DockAreaTitleBarPrivate;
+class CElidingLabel;
 
 /**
  * Title bar of a dock area.
@@ -119,6 +120,11 @@ public:
 	 * Returns the button corresponding to the given title bar button identifier
 	 */
 	QAbstractButton* button(TitleBarButton which) const;
+
+	/**
+	 * Returns the overlay title label, used when the dock area is overlayed
+	 */
+	CElidingLabel* overlayTitleLabel() const;
 
 	/**
 	 * Updates the visibility of the dock widget actions in the title bar
