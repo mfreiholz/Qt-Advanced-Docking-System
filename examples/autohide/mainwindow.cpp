@@ -3,26 +3,17 @@
 #include "ui_mainwindow.h"
 
 #include <QWidgetAction>
-#include <QLabel>
-#include <QCalendarWidget>
-#include <QTreeView>
 #include <QFileSystemModel>
 #include <QTableWidget>
 #include <QHBoxLayout>
-#include <QRadioButton>
-#include <QPushButton>
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QSettings>
-#include <QMessageBox>
 #include <QPlainTextEdit>
 #include <QToolBar>
 
 #include "DockAreaWidget.h"
 #include "DockAreaTitleBar.h"
-#include "DockAreaTabBar.h"
-#include "FloatingDockContainer.h"
-#include "DockComponentsFactory.h"
 
 using namespace ads;
 
@@ -35,6 +26,7 @@ CMainWindow::CMainWindow(QWidget *parent)
     CDockManager::setConfigFlag(CDockManager::OpaqueSplitterResize, true);
     CDockManager::setConfigFlag(CDockManager::XmlCompressionEnabled, false);
     CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
+    CDockManager::setConfigFlag(CDockManager::DefaultDockContainerConfig, true);
     DockManager = new CDockManager(this);
 
     // Set central widget

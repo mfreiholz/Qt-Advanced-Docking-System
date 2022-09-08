@@ -210,8 +210,7 @@ public:
 
         DefaultDockAreaButtons = DockAreaHasCloseButton
 							   | DockAreaHasUndockButton
-		                       | DockAreaHasTabsMenuButton
-	                           | DockAreaHasAutoHideButton,///< default configuration of dock area title bar buttons
+		                       | DockAreaHasTabsMenuButton, ///< default configuration of dock area title bar buttons
 
 		DefaultDockContainerSideBars = DockContainerHasLeftSideBar 
 	                                 | DockContainerHasRightSideBar, ///< the default configuration for left and right side bars
