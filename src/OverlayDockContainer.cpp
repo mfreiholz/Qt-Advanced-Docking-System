@@ -281,6 +281,43 @@ bool COverlayDockContainer::restoreState(CDockingStateReader& s, bool Testing)
 	return true;
 }
 
+void COverlayDockContainer::toggleView(bool Enable)
+{
+	if (Enable)
+	{
+        const auto dockWidget = d->DockWidget;
+        if (dockWidget)
+        {
+            dockWidget->sideTabWidget()->show();
+        }
+	}
+	else
+	{
+        const auto dockWidget = d->DockWidget;
+        if (dockWidget)
+        {
+            dockWidget->sideTabWidget()->hide();
+        }
+        hide();
+	}
+}
+
+void COverlayDockContainer::collapseView(bool Enable)
+{
+	if (Enable)
+	{
+		hide();
+		d->DockArea->hide();
+		d->DockWidget->hide();
+	}
+	else
+	{
+		show();
+		d->DockArea->show();
+		d->DockWidget->show();
+	}
+}
+
 
 //============================================================================
 bool COverlayDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarArea area)

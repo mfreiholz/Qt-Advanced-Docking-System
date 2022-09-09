@@ -91,11 +91,6 @@ protected:
 	void deleteOverlayWidgets();
 
 	/**
-	 * Access function for overlay widgets
-	 */
-	QList<COverlayDockContainer*> overlayWidgets() const;
-
-	/**
 	 * Access function for the internal root splitter
 	 */
 	QSplitter* rootSplitter() const;
@@ -328,6 +323,12 @@ public:
 	 * Returns the side tab widget for the given area
 	 */
 	CSideTabBar* sideTabBar(CDockWidgetSideTab::SideTabBarArea area) const;
+
+
+	/**
+	 * Access function for overlay widgets
+	 */
+	QList<COverlayDockContainer*> overlayWidgets() const;
 
 Q_SIGNALS:
 	/**

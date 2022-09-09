@@ -1074,6 +1074,12 @@ bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, 
 			return false;
 		}
 
+		bool Closed = s.attributes().value("Closed").toInt(&Ok);
+		if (!Ok)
+		{
+			return false;
+		}
+
 		s.skipCurrentElement();
 		CDockWidget* DockWidget = DockManager->findDockWidget(ObjectName.toString());
 		if (!DockWidget || Testing)
@@ -1085,15 +1091,14 @@ bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, 
 		// We hide the DockArea here to prevent the short display (the flashing)
 		// of the dock areas during application startup
 		DockArea->hide();
-		DockWidget->setToggleViewActionChecked(false);
-		DockWidget->setClosedState(true);
-		DockWidget->setProperty(internal::ClosedProperty, true);
+		DockWidget->setToggleViewActionChecked(!Closed);
+		DockWidget->setClosedState(Closed);
+		DockWidget->setProperty(internal::ClosedProperty, Closed);
 		DockWidget->setProperty(internal::DirtyProperty, false);
         _this->sideTabBar(area)->insertSideTab(0, DockWidget->sideTabWidget());
-        DockWidget->toggleView(false);
         DockArea->overlayDockContainer()->addDockWidget(DockWidget);
-        DockWidget->sideTabWidget()->show();
         DockWidget->sideTabWidget()->updateStyle(); // Needed as the side tab widget get it's left/right property from the overlay dock container which was just added
+        DockWidget->toggleView(Closed);
 	}
 
 	if (Testing)

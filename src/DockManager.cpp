@@ -873,8 +873,7 @@ COverlayDockContainer* CDockManager::addOverlayDockWidgetToContainer(CDockWidget
 {
 	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
 	auto container = DockContainerWidget->createAndInitializeDockWidgetOverlayContainer(area, Dockwidget);
-	container->dockAreaWidget()->toggleView(false);
-	Dockwidget->toggleView(false);
+	container->collapseView(true);
 
 	Q_EMIT dockWidgetAdded(Dockwidget);
 	return container;

@@ -119,6 +119,12 @@ struct DockWidgetPrivate
 	void updateParentDockArea();
 
 	/**
+	 * Closes all overlayed dock widgets if there are no more opened dock areas
+	 * This prevents the overlayed dock widgets from being pinned to an empty dock area
+	 */
+	void closeOverlayDockWidgetsIfNeeded();
+
+	/**
 	 * Setup the top tool bar
 	 */
 	void setupToolBar();
@@ -187,9 +193,10 @@ void DockWidgetPrivate::showDockWidget()
 			FloatingWidget->show();
 		}
 
-		if (DockArea->isOverlayed())
+        // If this widget is pinned and there are no opened dock widgets, unpin the overlay widget by moving it's contents to parent container
+		if (Container->openedDockWidgets().count() == 0 && DockArea->isOverlayed())
 		{
-			DockArea->overlayDockContainer()->show();
+			DockArea->overlayDockContainer()->moveContentsToParent();
 		}
 	}
 }
@@ -200,16 +207,13 @@ void DockWidgetPrivate::hideDockWidget()
 {
 	TabWidget->hide();
 	updateParentDockArea();
-	
+
+	closeOverlayDockWidgetsIfNeeded();
+
 	if (Features.testFlag(CDockWidget::DeleteContentOnClose))
 	{
 		Widget->deleteLater();
 		Widget = nullptr;
-	}
-
-	if (DockArea->isOverlayed())
-	{
-		DockArea->overlayDockContainer()->hide();
 	}
 }
 
@@ -236,6 +240,22 @@ void DockWidgetPrivate::updateParentDockArea()
 	else
 	{
 		DockArea->hideAreaWithNoVisibleContent();
+	}
+}
+
+void DockWidgetPrivate::closeOverlayDockWidgetsIfNeeded()
+{
+	if (_this->dockContainer() && _this->dockContainer()->openedDockWidgets().isEmpty())
+	{
+        for (auto overlayWidget : _this->dockContainer()->overlayWidgets())
+        {
+            if (overlayWidget->dockWidget() == _this)
+            {
+                continue;
+            }
+
+            overlayWidget->dockWidget()->toggleView(false);
+        }
 	}
 }
 
@@ -611,6 +631,8 @@ void CDockWidget::toggleViewInternal(bool Open)
 	CDockWidget* TopLevelDockWidgetBefore = DockContainer
 		? DockContainer->topLevelDockWidget() : nullptr;
 
+	d->Closed = !Open;
+
 	if (Open)
 	{
 		d->showDockWidget();
@@ -619,13 +641,18 @@ void CDockWidget::toggleViewInternal(bool Open)
 	{
 		d->hideDockWidget();
 	}
-	d->Closed = !Open;
+
 	d->ToggleViewAction->blockSignals(true);
 	d->ToggleViewAction->setChecked(Open);
 	d->ToggleViewAction->blockSignals(false);
 	if (d->DockArea)
 	{
 		d->DockArea->toggleDockWidgetView(this, Open);
+	}
+
+	if (d->DockArea->isOverlayed())
+	{
+		d->DockArea->overlayDockContainer()->toggleView(Open);
 	}
 
 	if (Open && TopLevelDockWidgetBefore)
@@ -1051,9 +1078,8 @@ void CDockWidget::onDockWidgetSideTabClicked()
 	}
 
 	overlayContainer->raise();
-	const auto show = !overlayContainer->isVisible();
-	overlayContainer->setVisible(show);
-	toggleView(show);
+	const auto shouldCollapse = overlayContainer->isVisible();
+	overlayContainer->collapseView(shouldCollapse);
 	if (overlayContainer->isVisible())
 	{
 		// d->DockManager->setDockWidgetFocused(this) does not

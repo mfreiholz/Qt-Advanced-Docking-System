@@ -1079,12 +1079,10 @@ void CDockAreaWidget::onAutoHideToggleRequested(CDockWidget* DockWidget, bool En
     if (Enable)
     {
         dockContainer()->createAndInitializeDockWidgetOverlayContainer(area, DockWidget);
-        DockWidget->toggleView(false);
     }
     else
 	{
         overlayDockContainer()->moveContentsToParent();
-		DockWidget->toggleView(true);
 	}
 }
 

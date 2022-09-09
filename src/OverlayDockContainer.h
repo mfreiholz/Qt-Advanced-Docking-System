@@ -127,6 +127,18 @@ public:
 	bool restoreState(CDockingStateReader& Stream, bool Testing);
 
 	/*
+	 * Toggles the overlay dock container widget
+	 * This will also hide the side tab widget
+	 */
+	void toggleView(bool Enable);
+
+	/*
+	 * Collapses the overlay dock container widget
+	 * Does not hide the side tab widget
+	 */
+	void collapseView(bool Enable);
+
+	/*
 	 * Convenience function fr determining if area exists in config
 	 */
 	static bool areaExistsInConfig(CDockWidgetSideTab::SideTabBarArea area);
