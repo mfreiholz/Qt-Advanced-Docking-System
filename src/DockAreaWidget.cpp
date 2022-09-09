@@ -1049,11 +1049,19 @@ void CDockAreaWidget::closeArea()
 	{
         for (auto DockWidget : openedDockWidgets())
         {
-            if ((DockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose) && DockWidget->features().testFlag(CDockWidget::DockWidgetForceCloseWithArea)) ||
-					DockWidget->features().testFlag(CDockWidget::CustomCloseHandling) && !isOverlayed())
+			if ((DockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose) && DockWidget->features().testFlag(CDockWidget::DockWidgetForceCloseWithArea)) ||
+				DockWidget->features().testFlag(CDockWidget::CustomCloseHandling))
+			{
+				DockWidget->closeDockWidgetInternal();
+			}
+			else if (DockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose) && isOverlayed())
+			{
                 DockWidget->closeDockWidgetInternal();
+			}
             else
+            {
                 DockWidget->toggleView(false);
+            }
         }
     }
 }

@@ -1015,6 +1015,10 @@ bool CDockWidget::closeDockWidgetInternal(bool ForceClose)
 				FloatingWidget->hide();
 			}
 		}
+		if (d->DockArea && d->DockArea->isOverlayed())
+		{
+			d->DockArea->overlayDockContainer()->cleanupAndDelete();
+		}
 		deleteDockWidget();
 		Q_EMIT closed();
 	}
