@@ -55,6 +55,9 @@ protected:
     virtual void resizeEvent( QResizeEvent *event ) override;
     virtual void mouseDoubleClickEvent( QMouseEvent *ev ) override;
 
+	virtual int availableWidthForText() const;
+	virtual int availableWidthForText(QResizeEvent* event) const;
+
 public:
     using Super = QLabel;
 
@@ -109,6 +112,8 @@ protected:
 	void paintEvent(QPaintEvent* event) override;
 	QSize sizeHint() const override;
 	QSize minimumSizeHint() const override;
+	int availableWidthForText() const override;
+	int availableWidthForText(QResizeEvent* event) const override;
 
 public:
 	CVerticalElidingLabel(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags ());
