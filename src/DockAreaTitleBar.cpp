@@ -427,7 +427,14 @@ void CDockAreaTitleBar::onTabsMenuActionTriggered(QAction* Action)
 //============================================================================
 void CDockAreaTitleBar::updateDockWidgetActionsButtons()
 {
-	CDockWidget* DockWidget = d->TabBar->currentTab()->dockWidget();
+	auto* const currentTab = d->TabBar->currentTab();
+	if (currentTab == nullptr)
+	{
+		// It's possible for this to be nullptr when restoring state 
+		return;
+	}
+
+	CDockWidget* DockWidget = currentTab->dockWidget();
 	if (!d->DockWidgetActionsButtons.isEmpty())
 	{
 		for (auto Button : d->DockWidgetActionsButtons)
