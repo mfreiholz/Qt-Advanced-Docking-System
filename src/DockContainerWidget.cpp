@@ -1058,7 +1058,8 @@ bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, 
 
         dockContainer->hide();
         DockArea = dockContainer->dockAreaWidget();
-		DockArea->updateAutoHidebuttonCheckState();
+		DockArea->updateAutoHideButtonCheckState();
+        DockArea->updateTitleBarButtonToolTip();
 	}
 
 	while (s.readNextStartElement())
@@ -1653,7 +1654,8 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
         dumpLayout();
         d->emitDockAreasRemoved();
         area->setOverlayDockContainer(nullptr);
-		area->updateAutoHidebuttonCheckState();
+		area->updateAutoHideButtonCheckState();
+        area->updateTitleBarButtonToolTip();
 		return;
 	}
 

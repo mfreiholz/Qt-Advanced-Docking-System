@@ -155,6 +155,12 @@ public:
 	 */
 	int indexOf(QWidget *widget) const;
 
+	/**
+	 * Close group tool tip based on the current state
+	 * Overlayed widgets can only have one dock widget so it does not make sense for the tooltip to show close group
+	 */
+	QString closeGroupToolTip() const;
+
 Q_SIGNALS:
 	/**
 	 * This signal is emitted if a tab in the tab bar is clicked by the user

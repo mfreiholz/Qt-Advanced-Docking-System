@@ -832,7 +832,7 @@ void CDockAreaWidget::markTitleBarMenuOutdated()
 
 
 //============================================================================
-void CDockAreaWidget::updateAutoHidebuttonCheckState()
+void CDockAreaWidget::updateAutoHideButtonCheckState()
 {
 	auto autoHideButton = titleBarButton(TitleBarButtonAutoHide);
 	autoHideButton->blockSignals(true);
@@ -840,9 +840,18 @@ void CDockAreaWidget::updateAutoHidebuttonCheckState()
 	autoHideButton->blockSignals(false);
 }
 
+
+//============================================================================
 void CDockAreaWidget::updateTitleBarButtonVisibility(bool IsTopLevel) const
 {
 	d->updateTitleBarButtonVisibility(IsTopLevel);
+}
+
+
+//============================================================================
+void CDockAreaWidget::updateTitleBarButtonToolTip()
+{
+	internal::setToolTip(titleBarButton(TitleBarButtonClose), titleBar()->closeGroupToolTip());
 }
 
 

@@ -188,7 +188,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	AutoHideButton->setAutoRaise(true);
 	AutoHideButton->setCheckable(true);
 	AutoHideButton->setChecked(false);
-	internal::setToolTip(AutoHideButton, QObject::tr("Toggle Auto Hide Group"));
+	internal::setToolTip(AutoHideButton, QObject::tr("Toggle Auto Hide"));
 	internal::setButtonIcon(AutoHideButton, QStyle::SP_DialogOkButton, ads::AutoHideIcon);
 	AutoHideButton->setSizePolicy(ButtonSizePolicy);
 	Layout->addWidget(AutoHideButton, 0);
@@ -199,14 +199,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	CloseButton->setObjectName("dockAreaCloseButton");
 	CloseButton->setAutoRaise(true);
 	internal::setButtonIcon(CloseButton, QStyle::SP_TitleBarCloseButton, ads::DockAreaCloseIcon);
-	if (testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
-	{
-		internal::setToolTip(CloseButton, QObject::tr("Close Active Tab"));
-	}
-	else
-	{
-		internal::setToolTip(CloseButton, QObject::tr("Close Group"));
-	}
+    internal::setToolTip(CloseButton, _this->closeGroupToolTip());
 	CloseButton->setSizePolicy(ButtonSizePolicy);
 	CloseButton->setIconSize(QSize(16, 16));
 	Layout->addWidget(CloseButton, 0);
@@ -662,6 +655,22 @@ void CDockAreaTitleBar::insertWidget(int index, QWidget *widget)
 int CDockAreaTitleBar::indexOf(QWidget *widget) const
 {
 	return d->Layout->indexOf(widget);
+}
+
+//============================================================================
+QString CDockAreaTitleBar::closeGroupToolTip() const
+{
+	if (d->DockArea->isOverlayed())
+	{
+		return QObject::tr("Close Overlay");
+	    
+	}
+	if (CDockManager::testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))
+	{
+		return QObject::tr("Close Active Tab");
+	}
+
+    return QObject::tr("Close Group") ;
 }
 
 //============================================================================

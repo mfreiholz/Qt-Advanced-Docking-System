@@ -154,12 +154,17 @@ protected:
 	/*
 	 * Update the auto hide button checked state based on if it's overlayed or not
 	 */
-	void updateAutoHidebuttonCheckState();
+	void updateAutoHideButtonCheckState();
 
 	/*
 	 * Update the title bar button visibility based on if it's top level or not
 	 */
 	void updateTitleBarButtonVisibility(bool IsTopLevel) const;
+
+	/*
+	 * Update the title bar button tooltips
+	 */
+	void updateTitleBarButtonToolTip();
 
 protected Q_SLOTS:
 	void toggleView(bool Open);

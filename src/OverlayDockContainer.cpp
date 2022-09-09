@@ -83,7 +83,8 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWid
 	d->DockArea = new CDockAreaWidget(DockManager, parent);
 	d->DockArea->setObjectName("OverlayDockArea");
 	d->DockArea->setOverlayDockContainer(this);
-	d->DockArea->updateAutoHidebuttonCheckState();
+	d->DockArea->updateAutoHideButtonCheckState();
+	d->DockArea->updateTitleBarButtonToolTip();
 
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::LeftToRight);
 	d->Splitter = new QSplitter(Qt::Orientation::Horizontal);
