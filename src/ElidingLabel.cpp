@@ -118,7 +118,7 @@ Qt::TextElideMode CElidingLabel::elideMode() const
 void CElidingLabel::setElideMode(Qt::TextElideMode mode)
 {
 	d->ElideMode = mode;
-	d->elideText(size().width());
+	d->elideText(availableWidthForText());
 }
 
 //============================================================================
@@ -155,9 +155,23 @@ void CElidingLabel::resizeEvent(QResizeEvent *event)
 {
 	if (!d->isModeElideNone())
 	{
-		d->elideText(event->size().width());
+		d->elideText(availableWidthForText(event));
 	}
     Super::resizeEvent(event);
+}
+
+
+//============================================================================
+int CElidingLabel::availableWidthForText() const
+{
+	return size().width();
+}
+
+
+//============================================================================
+int CElidingLabel::availableWidthForText(QResizeEvent* event) const
+{
+	return event->size().width();
 }
 
 
@@ -216,7 +230,7 @@ void CElidingLabel::setText(const QString &text)
 	else
 	{
 		internal::setToolTip(this, text);
-		d->elideText(this->size().width());
+		d->elideText(availableWidthForText());
 	}
 }
 
@@ -238,7 +252,7 @@ void CVerticalElidingLabel::paintEvent(QPaintEvent* event)
 {
 	QPainter painter(this);
 	painter.rotate(90);
-	painter.drawText(0,0, text());
+	painter.drawText(0,0, QLabel::text());
 }
 
 //============================================================================
@@ -253,6 +267,18 @@ QSize CVerticalElidingLabel::minimumSizeHint() const
 {
 	QSize s = CElidingLabel::sizeHint();
 	return QSize(s.height(), s.width());
+}
+
+//============================================================================
+int CVerticalElidingLabel::availableWidthForText() const
+{
+	return size().height();
+}
+
+//============================================================================
+int CVerticalElidingLabel::availableWidthForText(QResizeEvent* event) const
+{
+	return event->size().height();
 }
 } // namespace QtLabb
 
