@@ -191,6 +191,19 @@ void COverlayDockContainer::addDockWidget(CDockWidget* DockWidget)
     }
 	d->DockArea->addDockWidget(DockWidget);
 
+    const auto dockContainerParent = parentContainer();
+    const auto rootSplitter = dockContainerParent->rootSplitter();
+    const auto rect = rootSplitter->frameGeometry();
+    const auto dockWidth = DockWidget->size().width();
+	if (d->Area == CDockWidgetSideTab::SideTabBarArea::Left)
+	{
+        d->Splitter->setSizes({ dockWidth, rect.width() - dockWidth });
+	}
+	else
+	{
+        d->Splitter->setSizes({ rect.width() - dockWidth, dockWidth });
+	}
+
 	updateSize();
 	updateMask();
 }
