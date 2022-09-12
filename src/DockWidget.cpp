@@ -782,6 +782,7 @@ void CDockWidget::setTabToolTip(const QString &text)
 void CDockWidget::setIcon(const QIcon& Icon)
 {
 	d->TabWidget->setIcon(Icon);
+	d->SideTabWidget->setIcon(Icon);
 	if (!d->ToggleViewAction->isCheckable())
 	{
 		d->ToggleViewAction->setIcon(Icon);

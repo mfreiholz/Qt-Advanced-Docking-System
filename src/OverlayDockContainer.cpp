@@ -204,6 +204,8 @@ void COverlayDockContainer::addDockWidget(CDockWidget* DockWidget)
         d->Splitter->setSizes({ rect.width() - dockWidth, dockWidth });
 	}
 
+	d->DockWidget->sideTabWidget()->updateTitleAndIconVisibility(d->Area);
+
 	updateSize();
 	updateMask();
 }

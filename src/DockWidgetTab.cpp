@@ -759,10 +759,6 @@ void CDockWidgetTab::setIconSize(const QSize& Size)
 	d->IconSize = Size;
 	d->updateIcon();
 }
-
-
-
-
 } // namespace ads
 //---------------------------------------------------------------------------
 // EOF DockWidgetTab.cpp

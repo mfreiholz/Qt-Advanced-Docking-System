@@ -92,6 +92,7 @@ enum eStateFileVersion
 };
 
 static CDockManager::ConfigFlags StaticConfigFlags = CDockManager::DefaultNonOpaqueConfig;
+static CDockManager::OverlayFlags StaticOverlayConfigFlags = CDockManager::DefaultAutoHideConfig;
 
 /**
  * Private data class of CDockManager class (pimpl)
@@ -1135,6 +1136,11 @@ CDockManager::ConfigFlags CDockManager::configFlags()
 	return StaticConfigFlags;
 }
 
+CDockManager::OverlayFlags CDockManager::overlayConfigFlags()
+{
+	return StaticOverlayConfigFlags;
+}
+
 
 //===========================================================================
 void CDockManager::setConfigFlags(const ConfigFlags Flags)
@@ -1144,15 +1150,36 @@ void CDockManager::setConfigFlags(const ConfigFlags Flags)
 
 
 //===========================================================================
+void CDockManager::setConfigFlags(const OverlayFlags Flags)
+{
+	StaticOverlayConfigFlags = Flags;
+}
+
+
+//===========================================================================
 void CDockManager::setConfigFlag(eConfigFlag Flag, bool On)
 {
 	internal::setFlag(StaticConfigFlags, Flag, On);
+}
+
+
+//===========================================================================
+void CDockManager::setConfigFlag(eOverlayFlag Flag, bool On)
+{
+	internal::setFlag(StaticOverlayConfigFlags, Flag, On);
 }
 
 //===========================================================================
 bool CDockManager::testConfigFlag(eConfigFlag Flag)
 {
     return configFlags().testFlag(Flag);
+}
+
+
+//===========================================================================
+bool CDockManager::testConfigFlag(eOverlayFlag Flag)
+{
+	return overlayConfigFlags().testFlag(Flag);
 }
 
 

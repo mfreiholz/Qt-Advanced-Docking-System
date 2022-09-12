@@ -24,6 +24,7 @@ ads--CDockWidgetTab {
 
 ads--CDockWidgetSideTab {
 	background: palette(window);
+	qproperty-iconSize: 16px 16px;/* this is optional in case you would like to change icon size*/
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="Left"] {

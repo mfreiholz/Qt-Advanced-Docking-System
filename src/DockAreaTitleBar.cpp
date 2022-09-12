@@ -121,6 +121,15 @@ struct DockAreaTitleBarPrivate
 	}
 
 	/**
+	 * Returns true if the given config flag is set
+	 * Convenience function to ease config flag testing
+	 */
+	static bool testConfigFlag(CDockManager::eOverlayFlag Flag)
+	{
+		return CDockManager::testConfigFlag(Flag);
+	}
+
+	/**
 	 * Test function for current drag state
 	 */
 	bool isDraggingState(eDragState dragState) const

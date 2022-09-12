@@ -39,6 +39,7 @@ struct DockWidgetSideTabPrivate;
 class CDockWidget;
 class CSideTabBar;
 class CDockWidgetTab;
+struct SideTabIconLabelPrivate;
 
 /**
  * A dock widget Side tab that shows a title or an icon.
@@ -50,6 +51,7 @@ class ADS_EXPORT CDockWidgetSideTab : public QFrame
     Q_OBJECT
 
     Q_PROPERTY(SideTabBarArea sideTabBarArea READ sideTabBarArea)
+	Q_PROPERTY(QSize iconSize READ iconSize WRITE setIconSize)
 
 private:    
 	DockWidgetSideTabPrivate* d; ///< private data (pimpl)
@@ -104,10 +106,47 @@ public:
 	 */
 	SideTabBarArea sideTabBarArea() const;
 
+	/**
+	 * Sets the icon to show in title bar
+	 */
+	void setIcon(const QIcon& Icon);
+
+	/**
+	 * Returns the icon size.
+	 * If no explicit icon size has been set, the function returns an invalid
+	 * QSize
+	 */
+	QSize iconSize() const;
+
+	/**
+	 * Set an explicit icon size.
+	 * If no icon size has been set explicitely, than the tab sets the icon size
+	 * depending on the style
+	 */
+	void setIconSize(const QSize& Size);
+
+	/**
+	 * Update the title and icon visibility based on the area and the config
+	 */
+	void updateTitleAndIconVisibility(SideTabBarArea area);
+
 Q_SIGNALS:
 	void elidedChanged(bool elided);
 	void clicked();
 }; // class DockWidgetSideTab
+
+class SideTabIconLabel : public QWidget
+{
+private:
+	SideTabIconLabelPrivate *d; ///< private data (pimpl)
+
+public:
+	SideTabIconLabel(QWidget* parent = nullptr);
+	virtual ~SideTabIconLabel();
+
+	void setPixmap(const QPixmap &pixmap);
+	void setContentsMargins(int left, int top, int right, int bottom);
+}; // class SideTabIconLabel
 }
  // namespace ads
 //-----------------------------------------------------------------------------

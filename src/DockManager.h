@@ -203,19 +203,9 @@ public:
 														 //! Users can overwrite this by setting the environment variable ADS_UseNativeTitle to "1" or "0".
 		MiddleMouseButtonClosesTab = 0x2000000, //! If the flag is set, the user can use the mouse middle button to close the tab under the mouse
 
-		DockAreaHasAutoHideButton = 0x4000000,     //!< If the flag is set each dock area has a auto hide menu button
-		DockContainerHasLeftSideBar = 0x8000000,     //!< If the flag is set each container will have a left side bar
-		DockContainerHasRightSideBar = 0x10000000,     //!< If the flag is set each container will have a right side bar
-		DockAreaOverlayHasTitle = 0x20000000, //!< If the flag is set overlay dock area title bar will show the window title
-
         DefaultDockAreaButtons = DockAreaHasCloseButton
 							   | DockAreaHasUndockButton
 		                       | DockAreaHasTabsMenuButton, ///< default configuration of dock area title bar buttons
-
-		DefaultAutoHideConfig = DockContainerHasLeftSideBar 
-                              | DockContainerHasRightSideBar
-                              | DockAreaHasAutoHideButton
-                              | DockAreaOverlayHasTitle, ///< the default configuration for left and right side bars
 
 		DefaultBaseConfig = DefaultDockAreaButtons
 		                  | ActiveTabHasCloseButton
@@ -233,6 +223,23 @@ public:
 		              | DragPreviewHasWindowFrame ///< the default configuration for non opaque operations that show a real window with frame
 	};
 	Q_DECLARE_FLAGS(ConfigFlags, eConfigFlag)
+
+    enum eOverlayFlag
+	{
+		DockContainerHasLeftSideBar = 0x01, //!< If the flag is set left side bar will prioritize showing icons only over text
+		DockContainerHasRightSideBar = 0x02, //!< If the flag is set right side bar will prioritize showing icons only over text
+		DockAreaHasAutoHideButton = 0x04,     //!< If the flag is set each dock area has a auto hide menu button
+		LeftSideBarPrioritizeIconOnly = 0x08,     //!< If the flag is set each container will have a left side bar
+		RightSideBarPrioritizeIconOnly = 0x10,     //!< If the flag is set each container will have a right side bar
+		DockAreaOverlayHasTitle = 0x20, //!< If the flag is set overlay dock area title bar will show the window title
+
+		DefaultAutoHideConfig = DockContainerHasLeftSideBar 
+                              | DockContainerHasRightSideBar
+                              | DockAreaHasAutoHideButton
+                              | DockAreaOverlayHasTitle, ///< the default configuration for left and right side bars
+	};
+    Q_DECLARE_FLAGS(OverlayFlags, eOverlayFlag)
+
 
 	/**
 	 * Default Constructor.
@@ -254,11 +261,23 @@ public:
 	static ConfigFlags configFlags();
 
 	/**
+	 * This function returns the overlay configuration flags
+	 */
+	static OverlayFlags overlayConfigFlags();
+
+	/**
 	 * Sets the global configuration flags for the whole docking system.
 	 * Call this function before you create the dock manager and before
 	 * your create the first dock widget.
 	 */
 	static void setConfigFlags(const ConfigFlags Flags);
+
+	/**
+	 * Sets the global configuration flags for the whole docking system.
+	 * Call this function before you create the dock manager and before
+	 * your create the first dock widget.
+	 */
+	static void setConfigFlags(const OverlayFlags Flags);
 
 	/**
 	 * Set a certain config flag.
@@ -267,9 +286,20 @@ public:
 	static void setConfigFlag(eConfigFlag Flag, bool On = true);
 
 	/**
+	 * Set a certain overlay config flag.
+	 * \see setConfigFlags()
+	 */
+	static void setConfigFlag(eOverlayFlag Flag, bool On = true);
+
+	/**
 	 * Returns true if the given config flag is set
 	 */
 	static bool testConfigFlag(eConfigFlag Flag);
+
+	/**
+	 * Returns true if the given overlay config flag is set
+	 */
+	static bool testConfigFlag(eOverlayFlag Flag);
 
 	/**
 	 * Returns the global icon provider.
