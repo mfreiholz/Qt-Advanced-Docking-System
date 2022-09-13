@@ -195,7 +195,7 @@ void DockWidgetPrivate::showDockWidget()
 		}
 
         // If this widget is pinned and there are no opened dock widgets, unpin the overlay widget by moving it's contents to parent container
-		if (Container->openedDockWidgets().count() == 0 && DockArea->isOverlayed())
+		if (Container->openedDockWidgets().count() == 0 && DockArea->isOverlayed() && !DockManager->isRestoringState())
 		{
 			DockArea->overlayDockContainer()->moveContentsToParent();
 		}
