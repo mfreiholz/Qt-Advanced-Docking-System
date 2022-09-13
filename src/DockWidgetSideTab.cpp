@@ -109,7 +109,7 @@ struct DockWidgetSideTabPrivate
 			TitleLayout->setContentsMargins(Spacing / 2, Spacing / 2, Spacing, Spacing);
 			if (IconLabel)
 			{
-				IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, 0, 0);
+				IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, 0, Spacing / 2);
 			}
 		}
 	}
