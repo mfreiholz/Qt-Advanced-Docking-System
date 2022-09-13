@@ -1115,7 +1115,6 @@ bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, 
 	else
 	{
 		DockArea->setProperty("currentDockWidget", CurrentDockWidget);
-		appendDockAreas({DockArea});
 	}
 
 	return true;
