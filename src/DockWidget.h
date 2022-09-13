@@ -514,15 +514,15 @@ public:
 
 	/*
 	 * Set default dock proportion when overlayed
-	 * 4 is a quarter of the size, 2 is half the size, 1 is the entire size
+	 * see *DefaultOverlayDockProportion()
 	 */
-	void setDefaultOverlayDockProportion(int Proportion);
+	void setDefaultOverlayDockProportion(double Proportion);
 
 	/*
 	 * Set default dock proportion when overlayed
-	 * 4 is a quarter of the size, 2 is half the size, 1 is the entire size
+	 * 0.25 is a quarter of the size, 0.5 is half the size, 1 is the entire size
 	 */
-	int DefaultOverlayDockProportion() const;
+	double DefaultOverlayDockProportion() const;
 
 public: // reimplements QFrame -----------------------------------------------
     /**

@@ -243,20 +243,28 @@ void COverlayDockContainer::addDockWidget(CDockWidget* DockWidget)
 
 
 //============================================================================
-void COverlayDockContainer::setDockSizeProportion(int SplitterProportion)
+void COverlayDockContainer::setDockSizeProportion(double SplitterProportion)
 {
+	if (SplitterProportion < 0 || SplitterProportion > 1)
+	{
+		ADS_PRINT("SplitterProportion must be set between 0 and 1.");
+		return;
+	}
+
+	const auto dockSize = static_cast<int>(static_cast<double>(INT_MAX) * SplitterProportion);
+	const auto remainingSize = INT_MAX - dockSize;
     switch (d->Area)
     {
         case CDockWidgetSideTab::Left:
         {
-            d->Splitter->setSizes({ INT_MAX / SplitterProportion, INT_MAX - INT_MAX / SplitterProportion });
+            d->Splitter->setSizes({ dockSize, remainingSize });
 			break;
         }
         case CDockWidgetSideTab::Right: 
 			[[fallthrough]];
         case CDockWidgetSideTab::Bottom:
         { 
-            d->Splitter->setSizes({ INT_MAX - INT_MAX / SplitterProportion, INT_MAX / SplitterProportion });
+            d->Splitter->setSizes({ remainingSize, dockSize });
 			break;
         }
     }

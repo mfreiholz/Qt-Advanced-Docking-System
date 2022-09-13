@@ -98,10 +98,10 @@ public:
 	/*
 	 * Set default splitter sizes. Don't use when restoring state
 	 * As we want the size from the XML
-	 * Takes an int which determines the size proportion of the child dock
-	 * E.g. 4 is a quarter of the size, 2 is half the size and 1 is the entire size of the container
+	 * Takes a float between 0 and 1
+	 * E.g. 0.25 is a quarter of the size, 0.5 is half the size and 1 is the entire size of the container
 	 */
-	void setDockSizeProportion(int SplitterProportion = 4);
+	void setDockSizeProportion(double SplitterProportion = 0.25);
 
 	/**
 	 * Returns the side tab bar area of this overlay dock container
