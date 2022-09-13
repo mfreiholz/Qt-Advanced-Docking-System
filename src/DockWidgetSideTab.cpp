@@ -271,6 +271,7 @@ void CDockWidgetSideTab::setOrientation(Qt::Orientation Orientation)
 	d->Orientation = Orientation;
 	d->Layout->setDirection(Orientation == Qt::Vertical ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
 	d->TitleLabel->setOrientation(Orientation);
+	updateStyle();
 }
 
 
