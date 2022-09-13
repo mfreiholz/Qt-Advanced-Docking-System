@@ -282,7 +282,7 @@ void COverlayDockContainer::moveContentsToParent()
 	const auto position = mapToGlobal(d->Area == CDockWidgetSideTab::Left ? QPoint(1,height() / 2) : QPoint(width() - 1, height() / 2));
 
 	const auto dockAreaWidget = parentContainer()->dockAreaAt(position);
-	if (dockAreaWidget != nullptr && !dockAreaWidget->isCentralWidgetArea())
+	if (dockAreaWidget != nullptr && !dockAreaWidget->containsCentralWidget())
 	{
         parentContainer()->addDockWidget(CenterDockWidgetArea, d->DockWidget, dockAreaWidget);
 	}

@@ -1898,8 +1898,6 @@ QList<CDockAreaWidget*> CDockContainerWidget::openedDockAreas() const
 //============================================================================
 QList<CDockWidget*> CDockContainerWidget::openedDockWidgets() const
 {
-    // todo: cleanup
-	qInfo() << "Opened Dock Widgets: ";
 	QList<CDockWidget*> DockWidgetList;
 	for (auto DockArea : d->DockAreas)
 	{
@@ -1907,12 +1905,6 @@ QList<CDockWidget*> CDockContainerWidget::openedDockWidgets() const
 		{
 			DockWidgetList.append(DockArea->openedDockWidgets());
 		}
-	}
-
-    // todo: cleanup
-	for (auto dockWidget : DockWidgetList)
-	{
-		qInfo() << "Opened dock widgets: " << dockWidget->objectName(); 
 	}
 
 	return DockWidgetList;

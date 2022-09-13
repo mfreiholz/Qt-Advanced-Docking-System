@@ -1130,6 +1130,22 @@ bool CDockAreaWidget::isCentralWidgetArea() const
 
 
 //============================================================================
+bool CDockAreaWidget::containsCentralWidget() const
+{
+	auto centralWidget = dockManager()->centralWidget();
+	for (const auto &dockWidget : dockWidgets())
+	{
+		if (dockWidget == centralWidget)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
+//============================================================================
 QSize CDockAreaWidget::minimumSizeHint() const
 {
 	if (!d->MinSizeHint.isValid())

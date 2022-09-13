@@ -358,9 +358,14 @@ public:
 	void setDockAreaFlag(eDockAreaFlag Flag, bool On);
 
     /**
-     * Returns true if the area contains the central widget of it's manager.
+     * Returns true if the area has a single dock widget and contains the central widget of it's manager.
      */
     bool isCentralWidgetArea() const;
+
+    /**
+     * Returns true if the area contains the central widget of it's manager.
+     */
+    bool containsCentralWidget() const;
 
 public Q_SLOTS:
 	/**
