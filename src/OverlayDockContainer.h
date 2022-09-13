@@ -49,17 +49,17 @@ class CDockingStateReader;
 
 class ADS_EXPORT COverlayDockContainer : public QFrame
 {
-    Q_OBJECT
+	Q_OBJECT
 
 private:
-    OverlayDockContainerPrivate* d; ///< private data (pimpl)
-    friend struct OverlayDockContainerPrivate;
+	OverlayDockContainerPrivate* d; ///< private data (pimpl)
+	friend struct OverlayDockContainerPrivate;
 
 protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
 	void mousePressEvent(QMouseEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
-    void updateMask();
+	void updateMask();
 	void updateSize();
 
 	CDockContainerWidget* parentContainer() const;
@@ -94,6 +94,14 @@ public:
 	 * Adds a dock widget and removes the previous dock widget
 	 */
 	void addDockWidget(CDockWidget* DockWidget);
+
+	/*
+	 * Set default splitter sizes. Don't use when restoring state
+	 * As we want the size from the XML
+	 * Takes an int which determines the size proportion of the child dock
+	 * E.g. 4 is a quarter of the size, 2 is half the size and 1 is the entire size of the container
+	 */
+	void setDockSizeProportion(int SplitterProportion = 4);
 
 	/**
 	 * Returns the side tab bar area of this overlay dock container

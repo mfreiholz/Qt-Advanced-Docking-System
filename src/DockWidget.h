@@ -511,6 +511,18 @@ public:
      */
     bool isCurrentTab() const;
 
+	/*
+	 * Set default dock proportion when overlayed
+	 * 4 is a quarter of the size, 2 is half the size, 1 is the entire size
+	 */
+	void setDefaultOverlayDockProportion(int Proportion);
+
+	/*
+	 * Set default dock proportion when overlayed
+	 * 4 is a quarter of the size, 2 is half the size, 1 is the entire size
+	 */
+	int DefaultOverlayDockProportion() const;
+
 public: // reimplements QFrame -----------------------------------------------
     /**
      * Emits titleChanged signal if title change event occurs

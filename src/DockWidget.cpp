@@ -95,6 +95,7 @@ struct DockWidgetPrivate
 	QList<QAction*> TitleBarActions;
 	CDockWidget::eMinimumSizeHintMode MinimumSizeHintMode = CDockWidget::MinimumSizeHintFromDockWidget;
 	WidgetFactory* Factory = nullptr;
+	int DefaultOverlayDockProportion = 4;
 	
 	/**
 	 * Private data constructor
@@ -1130,6 +1131,18 @@ bool CDockWidget::isTabbed() const
 bool CDockWidget::isCurrentTab() const
 {
 	return d->DockArea && (d->DockArea->currentDockWidget() == this);
+}
+
+
+//============================================================================
+void CDockWidget::setDefaultOverlayDockProportion(int Proportion)
+{
+	d->DefaultOverlayDockProportion = Proportion;
+}
+
+int CDockWidget::DefaultOverlayDockProportion() const
+{
+	return d->DefaultOverlayDockProportion;
 }
 
 

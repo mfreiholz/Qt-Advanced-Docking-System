@@ -46,7 +46,7 @@ CMainWindow::CMainWindow(QWidget *parent)
     TableDockWidget->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
     TableDockWidget->resize(250, 150);
     TableDockWidget->setMinimumSize(200,150);
-    TableDockWidget->setFeature(CDockWidget::DockWidgetDeleteOnClose, true);
+    TableDockWidget->setDefaultOverlayDockProportion(2);
     DockManager->addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea::Left, TableDockWidget);
     ui->menuView->addAction(TableDockWidget->toggleViewAction());
 

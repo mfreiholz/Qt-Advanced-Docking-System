@@ -188,6 +188,7 @@ COverlayDockContainer::COverlayDockContainer(CDockWidget* DockWidget, CDockWidge
 	COverlayDockContainer(DockWidget->dockManager(), area, parent)
 {
 	addDockWidget(DockWidget);
+	setDockSizeProportion(DockWidget->DefaultOverlayDockProportion());
 }
 
 //============================================================================
@@ -234,34 +235,32 @@ void COverlayDockContainer::addDockWidget(CDockWidget* DockWidget)
         OldDockArea->removeDockWidget(DockWidget);
     }
 	d->DockArea->addDockWidget(DockWidget);
-
-    const auto dockContainerParent = parentContainer();
-    const auto rootSplitter = dockContainerParent->rootSplitter();
-    const auto rect = rootSplitter->frameGeometry();
-    const auto dockWidth = DockWidget->sizeHint().width();
-    switch (d->Area)
-    {
-        case CDockWidgetSideTab::Left:
-        {
-            d->Splitter->setSizes({ dockWidth, rect.width() - dockWidth });
-			break;
-        }
-        case CDockWidgetSideTab::Right: 
-        {
-            d->Splitter->setSizes({ rect.width() - dockWidth, dockWidth });
-			break;
-        }
-        case CDockWidgetSideTab::Bottom:
-        { 
-            d->Splitter->setSizes({ rect.width() - dockWidth, dockWidth });
-			break;
-        }
-    }
-
 	d->DockWidget->sideTabWidget()->updateOrientationAndSpacing(d->Area);
 
 	updateSize();
 	updateMask();
+}
+
+
+//============================================================================
+void COverlayDockContainer::setDockSizeProportion(int SplitterProportion)
+{
+    switch (d->Area)
+    {
+        case CDockWidgetSideTab::Left:
+        {
+            d->Splitter->setSizes({ INT_MAX / SplitterProportion, INT_MAX - INT_MAX / SplitterProportion });
+			break;
+        }
+        case CDockWidgetSideTab::Right: 
+			[[fallthrough]];
+        case CDockWidgetSideTab::Bottom:
+        { 
+            d->Splitter->setSizes({ INT_MAX - INT_MAX / SplitterProportion, INT_MAX / SplitterProportion });
+			break;
+        }
+    }
+
 }
 
 
