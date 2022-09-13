@@ -232,7 +232,7 @@ public:
 		DockAreaHasAutoHideButton = 0x08,     //!< If the flag is set each dock area has a auto hide menu button
 		LeftSideBarPrioritizeIconOnly = 0x10,     //!< If the flag is set each container will have a left side bar
 		RightSideBarPrioritizeIconOnly = 0x20,     //!< If the flag is set each container will have a right side bar
-		BottomSideBarPrioritizeIconOnly = 0x40, //!< If the flag is set right side bar will prioritize showing icons only over text
+		BottomSideBarPrioritizeIconOnly = 0x40, //!< If the flag is set bottom side bar will prioritize showing icons only over text
 		DockAreaOverlayHasTitle = 0x80, //!< If the flag is set overlay dock area title bar will show the window title
 
 		DefaultAutoHideConfig = DockContainerHasLeftSideBar 

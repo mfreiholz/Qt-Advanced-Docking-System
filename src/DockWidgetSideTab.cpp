@@ -304,6 +304,13 @@ void CDockWidgetSideTab::updateOrientationAndSpacing(SideTabBarArea area)
         d->IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing, Spacing / 2);
 		return;
 	}
+	if (CDockManager::testConfigFlag(CDockManager::BottomSideBarPrioritizeIconOnly) && area == Bottom)
+	{
+		d->TitleLabel->hide();
+		d->TitleLayout->setContentsMargins(0, 0, 0, 0);
+        d->IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing / 2, Spacing / 2);
+		return;
+	}
 
 	d->TitleLabel->show();
 }
