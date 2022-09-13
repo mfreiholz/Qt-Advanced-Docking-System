@@ -51,6 +51,7 @@ struct SideTabBarPrivate
     CSideTabBar* _this;
     CDockContainerWidget* ContainerWidget;
     QBoxLayout* TabsLayout;
+    Qt::Orientation Orientation;
 }; // struct SideTabBarPrivate
 
 //============================================================================
@@ -61,13 +62,14 @@ SideTabBarPrivate::SideTabBarPrivate(CSideTabBar* _public) :
 
 
 //============================================================================
-CSideTabBar::CSideTabBar(CDockContainerWidget* parent) :
+CSideTabBar::CSideTabBar(CDockContainerWidget* parent, Qt::Orientation orientation) :
     QWidget(parent),
     d(new SideTabBarPrivate(this))
 {
     d->ContainerWidget = parent;
+    d->Orientation = orientation;
 
-    d->TabsLayout = new QBoxLayout(QBoxLayout::TopToBottom);
+    d->TabsLayout = new QBoxLayout(d->Orientation == Qt::Vertical ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
     d->TabsLayout->setContentsMargins(0, 0, 0, 0);
     d->TabsLayout->setSpacing(0);
     d->TabsLayout->addStretch(1);
@@ -95,7 +97,6 @@ void CSideTabBar::insertSideTab(int Index, CDockWidgetSideTab* SideTab)
 //============================================================================
 void CSideTabBar::removeSideTab(CDockWidgetSideTab* SideTab)
 {
-    const auto index = d->TabsLayout->indexOf(SideTab);
     d->TabsLayout->removeWidget(SideTab);
 }
 }

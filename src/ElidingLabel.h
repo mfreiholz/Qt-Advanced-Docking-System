@@ -36,7 +36,7 @@
 namespace ads
 {
 struct ElidingLabelPrivate;
-
+struct VerticalElidingLabelPrivate;
 /**
  * A QLabel that supports eliding text.
  * Because the functions setText() and text() are no virtual functions setting
@@ -108,6 +108,9 @@ Q_SIGNALS:
 
 class CVerticalElidingLabel : public CElidingLabel
 {
+private:
+	VerticalElidingLabelPrivate* d;
+
 protected:
 	void paintEvent(QPaintEvent* event) override;
 	QSize sizeHint() const override;
@@ -117,6 +120,8 @@ protected:
 
 public:
 	CVerticalElidingLabel(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags ());
+
+	void setOrientation(Qt::Orientation orientation);
 }; // class CVerticalElidingLabel
 
 } // namespace QtLabb

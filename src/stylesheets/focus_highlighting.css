@@ -37,6 +37,11 @@ ads--CDockWidgetSideTab[sideTabBarArea="Right"] {
 	border-bottom: 1px solid white;
 }
 
+ads--CDockWidgetSideTab[sideTabBarArea="Bottom"] {
+	border-bottom: 3px solid grey;
+	border-right: 1px solid white;
+}
+
 ads--CDockWidgetTab[activeTab="true"] {
 	background: qlineargradient(spread : pad, x1 : 0, y1 : 0, x2 : 0, y2 : 0.5, stop : 0
 		palette(window), stop:1 palette(light));
@@ -123,12 +128,21 @@ ads--CDockWidgetSideTab:hover[sideTabBarArea="Left"] {
 	border-left: 3px solid palette(highlight);
 }
 
+ads--CDockWidgetSideTab:hover[sideTabBarArea="Bottom"] {
+	border-bottom: 3px solid palette(highlight);
+}
+
+
 ads--CDockWidgetSideTab[sideTabBarArea="Right"][focused="true"] {
 	border-right: 3px solid palette(highlight);
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="Left"][focused="true"] {
 	border-left: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="Bottom"][focused="true"] {
+	border-bottom: 3px solid palette(highlight);
 }
 
 ads--CDockWidgetTab[focused="true"] {

@@ -228,13 +228,16 @@ public:
 	{
 		DockContainerHasLeftSideBar = 0x01, //!< If the flag is set left side bar will prioritize showing icons only over text
 		DockContainerHasRightSideBar = 0x02, //!< If the flag is set right side bar will prioritize showing icons only over text
-		DockAreaHasAutoHideButton = 0x04,     //!< If the flag is set each dock area has a auto hide menu button
-		LeftSideBarPrioritizeIconOnly = 0x08,     //!< If the flag is set each container will have a left side bar
-		RightSideBarPrioritizeIconOnly = 0x10,     //!< If the flag is set each container will have a right side bar
-		DockAreaOverlayHasTitle = 0x20, //!< If the flag is set overlay dock area title bar will show the window title
+		DockContainerHasBottomSideBar = 0x04, //!< If the flag is set right side bar will prioritize showing icons only over text
+		DockAreaHasAutoHideButton = 0x08,     //!< If the flag is set each dock area has a auto hide menu button
+		LeftSideBarPrioritizeIconOnly = 0x10,     //!< If the flag is set each container will have a left side bar
+		RightSideBarPrioritizeIconOnly = 0x20,     //!< If the flag is set each container will have a right side bar
+		BottomSideBarPrioritizeIconOnly = 0x40, //!< If the flag is set right side bar will prioritize showing icons only over text
+		DockAreaOverlayHasTitle = 0x80, //!< If the flag is set overlay dock area title bar will show the window title
 
 		DefaultAutoHideConfig = DockContainerHasLeftSideBar 
                               | DockContainerHasRightSideBar
+                              | DockContainerHasBottomSideBar
                               | DockAreaHasAutoHideButton
                               | DockAreaOverlayHasTitle, ///< the default configuration for left and right side bars
 	};

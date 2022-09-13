@@ -56,6 +56,7 @@ struct DockWidgetSideTabPrivate
 	QBoxLayout* TitleLayout; // To have independent spacing from the icon
 	CSideTabBar* SideTabBar;
 	QSize IconSize;
+	Qt::Orientation Orientation{Qt::Vertical};
 	SideTabIconLabel* IconLabel = nullptr;
 	QIcon Icon;
 
@@ -89,6 +90,29 @@ struct DockWidgetSideTabPrivate
 		}
 		IconLabel->setVisible(true);
 	}
+
+	void updateContentsMargins()
+	{
+        QFontMetrics fm(TitleLabel->font());
+        int Spacing = qRound(fm.height() / 2.0);
+
+		if (Orientation == Qt::Vertical)
+		{
+            TitleLayout->setContentsMargins(Spacing, Spacing, 0, Spacing);
+			if (IconLabel)
+			{
+                IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing / 2, 0);
+			}
+		}
+		else if (Orientation == Qt::Horizontal)
+		{
+            TitleLayout->setContentsMargins(Spacing,Spacing / 2,Spacing,Spacing);
+			if (IconLabel)
+			{
+                IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing / 2, 0);
+			}
+		}
+	}
 }; // struct DockWidgetTabPrivate
 
 
@@ -115,7 +139,6 @@ void DockWidgetSideTabPrivate::createLayout()
 	// Fill the layout
     // Purely for spacing on the text without messing up spacing on the icon
 	TitleLayout = new QBoxLayout(QBoxLayout::TopToBottom); 
-	TitleLayout->setContentsMargins(Spacing,Spacing,0,Spacing);
 	TitleLayout->addWidget(TitleLabel);
 	TitleLayout->setSpacing(0);
 
@@ -124,6 +147,8 @@ void DockWidgetSideTabPrivate::createLayout()
 	Layout->setSpacing(0);
 	_this->setLayout(Layout);
 	Layout->addLayout(TitleLayout, 1);
+
+	updateContentsMargins();
 
 	TitleLabel->setVisible(true);
 }
@@ -241,8 +266,22 @@ void CDockWidgetSideTab::setIconSize(const QSize& Size)
 
 
 //============================================================================
-void CDockWidgetSideTab::updateTitleAndIconVisibility(SideTabBarArea area)
+void CDockWidgetSideTab::setOrientation(Qt::Orientation Orientation)
 {
+	d->Orientation = Orientation;
+	d->Layout->setDirection(Orientation == Qt::Vertical ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
+	d->TitleLabel->setOrientation(Orientation);
+}
+
+
+//============================================================================
+void CDockWidgetSideTab::updateOrientationAndSpacing(SideTabBarArea area)
+{
+	setOrientation(area == Bottom ? Qt::Horizontal : Qt::Vertical);
+
+	d->updateContentsMargins();
+
+	// Handle Icon changes
     if (d->Icon.isNull())
     {
 		return;
@@ -251,17 +290,20 @@ void CDockWidgetSideTab::updateTitleAndIconVisibility(SideTabBarArea area)
     QFontMetrics fm(d->TitleLabel->font());
     int Spacing = qRound(fm.height() / 2.0);
 
-	if (CDockManager::testConfigFlag(CDockManager::LeftSideBarPrioritizeIconOnly) && area == Left
-		|| CDockManager::testConfigFlag(CDockManager::RightSideBarPrioritizeIconOnly) && area == Right)
+	if (CDockManager::testConfigFlag(CDockManager::LeftSideBarPrioritizeIconOnly) && area == Left)
 	{
 		d->TitleLabel->hide();
 		d->TitleLayout->setContentsMargins(0, 0, 0, 0);
         d->IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing / 2, Spacing / 2);
 		return;
 	}
-
-    d->TitleLayout->setContentsMargins(Spacing, Spacing, 0, Spacing);
-    d->IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing / 2, 0);
+	if (CDockManager::testConfigFlag(CDockManager::RightSideBarPrioritizeIconOnly) && area == Right)
+	{
+		d->TitleLabel->hide();
+		d->TitleLayout->setContentsMargins(0, 0, 0, 0);
+        d->IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing, Spacing / 2);
+		return;
+	}
 
 	d->TitleLabel->show();
 }

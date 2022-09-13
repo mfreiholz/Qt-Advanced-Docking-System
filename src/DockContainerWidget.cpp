@@ -1444,6 +1444,7 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 	d->Layout->setContentsMargins(0, 0, 0, 0);
 	d->Layout->setSpacing(0);
 	d->Layout->setColumnStretch(1, 1);
+	d->Layout->setRowStretch(0, 1);
 	setLayout(d->Layout);
 
 	// The function d->newSplitter() accesses the config flags from dock
@@ -1524,8 +1525,24 @@ COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverla
 //============================================================================
 CDockWidgetSideTab::SideTabBarArea CDockContainerWidget::getDockAreaPosition(CDockAreaWidget* DockAreaWidget)
 {
-	const auto dockWidgetCenter = DockAreaWidget->mapToGlobal(DockAreaWidget->frameGeometry().center());
+	// Handle bottom case
+	// It's bottom if the width is wider than the height, and if it's below 50% of the window
+	const auto dockWidgetFrameGeometry = DockAreaWidget->frameGeometry();
 	const auto splitterCenter = rootSplitter()->mapToGlobal(rootSplitter()->frameGeometry().center());
+	const auto a = dockWidgetFrameGeometry.width();
+    const auto b = dockWidgetFrameGeometry.height();
+	const auto c = DockAreaWidget->mapToGlobal(dockWidgetFrameGeometry.topLeft()).y();
+    const auto d = splitterCenter.y();
+	const auto e =  CDockManager::testConfigFlag(CDockManager::DockContainerHasBottomSideBar);
+	if (dockWidgetFrameGeometry.width() > dockWidgetFrameGeometry.height() 
+		&& DockAreaWidget->mapToGlobal(dockWidgetFrameGeometry.topLeft()).y() > splitterCenter.y()
+		&& CDockManager::testConfigFlag(CDockManager::DockContainerHasBottomSideBar))
+	{
+        return CDockWidgetSideTab::Bottom;
+	}
+
+	// Then handle left and right
+	const auto dockWidgetCenter = DockAreaWidget->mapToGlobal(dockWidgetFrameGeometry.center());
 	const auto calculatedPosition = dockWidgetCenter.x() <= splitterCenter.x() ? CDockWidgetSideTab::Left : CDockWidgetSideTab::Right;
 	if (calculatedPosition == CDockWidgetSideTab::Right)
 	{
@@ -1534,7 +1551,12 @@ CDockWidgetSideTab::SideTabBarArea CDockContainerWidget::getDockAreaPosition(CDo
             return CDockWidgetSideTab::Right;
         }
 
-		return CDockWidgetSideTab::Left;
+		if (CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
+		{
+            return CDockWidgetSideTab::Left;
+		}
+
+		return CDockWidgetSideTab::Bottom;
 	}
 
     if (calculatedPosition == CDockWidgetSideTab::Left)
@@ -1543,9 +1565,16 @@ CDockWidgetSideTab::SideTabBarArea CDockContainerWidget::getDockAreaPosition(CDo
 		{
             return CDockWidgetSideTab::Left;
 		}
-		return CDockWidgetSideTab::Right;
+
+		if (CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
+		{
+            return CDockWidgetSideTab::Right;
+		}
+
+		return CDockWidgetSideTab::Bottom;
 	}
 
+	Q_ASSERT_X(false, "CDockContainerWidget::getDockAreaPosition", "Unhandled branch. All positions should be accounted for.");
 	return CDockWidgetSideTab::Left;
 
 }
@@ -2026,14 +2055,20 @@ void CDockContainerWidget::createSideTabBarWidgets()
 {
 	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
 	{
-        d->SideTabBarWidgets[CDockWidgetSideTab::Left] = new CSideTabBar(this);
+        d->SideTabBarWidgets[CDockWidgetSideTab::Left] = new CSideTabBar(this, Qt::Vertical);
         d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Left], 0, 0);
 	}
 
 	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
 	{
-        d->SideTabBarWidgets[CDockWidgetSideTab::Right] = new CSideTabBar(this);
+        d->SideTabBarWidgets[CDockWidgetSideTab::Right] = new CSideTabBar(this, Qt::Vertical);
         d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Right], 0, 2);
+	}
+
+	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasBottomSideBar))
+	{
+        d->SideTabBarWidgets[CDockWidgetSideTab::Bottom] = new CSideTabBar(this, Qt::Horizontal);
+        d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Bottom], 1, 1);
 	}
 }
 

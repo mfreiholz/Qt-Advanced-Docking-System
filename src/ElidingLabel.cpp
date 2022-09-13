@@ -241,44 +241,95 @@ QString CElidingLabel::text() const
 	return d->Text;
 }
 
+/**
+ * Private data of public CVerticalElidingLabel
+ */
+struct VerticalElidingLabelPrivate
+{
+	CVerticalElidingLabel* _this;
+	Qt::Orientation Orientation {Qt::Horizontal};
+
+	VerticalElidingLabelPrivate(CVerticalElidingLabel* _public);
+};
+
+
+//============================================================================
+VerticalElidingLabelPrivate::VerticalElidingLabelPrivate(CVerticalElidingLabel* _public)
+{
+}
+
 //============================================================================
 CVerticalElidingLabel::CVerticalElidingLabel(QWidget* parent, Qt::WindowFlags f) :
-	CElidingLabel(parent, f)
+	CElidingLabel(parent, f),
+	d(new VerticalElidingLabelPrivate(this))
 {
+}
+
+//============================================================================
+void CVerticalElidingLabel::setOrientation(Qt::Orientation orientation)
+{
+	d->Orientation = orientation;
+	updateGeometry();
 }
 
 //============================================================================
 void CVerticalElidingLabel::paintEvent(QPaintEvent* event)
 {
-	QPainter painter(this);
-	painter.rotate(90);
-	painter.drawText(0,0, QLabel::text());
+	if (d->Orientation == Qt::Vertical)
+	{
+        QPainter painter(this);
+        painter.rotate(90);
+        painter.drawText(0,0, QLabel::text());
+		return;
+	}
+
+    CElidingLabel::paintEvent(event);
 }
 
 //============================================================================
 QSize CVerticalElidingLabel::sizeHint() const
 {
-	QSize s = CElidingLabel::minimumSizeHint();
-	return QSize(s.height(), s.width());
+	if (d->Orientation == Qt::Vertical)
+	{
+        QSize s = CElidingLabel::minimumSizeHint();
+        return QSize(s.height(), s.width());
+	}
+
+	return CElidingLabel::sizeHint();
 }
 
 //============================================================================
 QSize CVerticalElidingLabel::minimumSizeHint() const
 {
-	QSize s = CElidingLabel::sizeHint();
-	return QSize(s.height(), s.width());
+	if (d->Orientation == Qt::Vertical)
+	{
+        QSize s = CElidingLabel::sizeHint();
+        return QSize(s.height(), s.width());
+	}
+	
+	return CElidingLabel::minimumSizeHint();
 }
 
 //============================================================================
 int CVerticalElidingLabel::availableWidthForText() const
 {
-	return size().height();
+	if (d->Orientation == Qt::Vertical)
+	{
+        return size().height();
+	}
+
+	return CElidingLabel::availableWidthForText();
 }
 
 //============================================================================
 int CVerticalElidingLabel::availableWidthForText(QResizeEvent* event) const
 {
-	return event->size().height();
+	if (d->Orientation == Qt::Vertical)
+	{
+        return event->size().height();
+	}
+
+	return CElidingLabel::availableWidthForText(event);
 }
 } // namespace QtLabb
 

@@ -56,7 +56,7 @@ public:
 	/**
 	 * Default Constructor
 	 */
-    CSideTabBar(CDockContainerWidget* parent);
+    CSideTabBar(CDockContainerWidget* parent, Qt::Orientation orientation);
 
 	/**
 	 * Virtual Destructor

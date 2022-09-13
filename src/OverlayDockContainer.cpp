@@ -58,6 +58,30 @@ struct OverlayDockContainerPrivate
 	 * Private data constructor
 	 */
 	OverlayDockContainerPrivate(COverlayDockContainer *_public);
+
+	/**
+	 * Convenience function to get a dock widget area
+	 */
+	DockWidgetArea getArea(CDockWidgetSideTab::SideTabBarArea area)
+	{
+        switch (area)
+        {
+            case CDockWidgetSideTab::Left:
+            {
+				return LeftDockWidgetArea;
+            }
+            case CDockWidgetSideTab::Right:
+            {
+				return RightDockWidgetArea;
+            }
+            case CDockWidgetSideTab::Bottom: 
+            {
+				return BottomDockWidgetArea;
+            }
+        }
+
+		return LeftDockWidgetArea;
+	}
 }; // struct OverlayDockContainerPrivate
 
 //============================================================================
@@ -87,23 +111,35 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWid
 	d->DockArea->updateTitleBarButtonToolTip();
 
 	QBoxLayout* l = new QBoxLayout(QBoxLayout::LeftToRight);
-	d->Splitter = new QSplitter(Qt::Orientation::Horizontal);
+	d->Splitter = new QSplitter(area == CDockWidgetSideTab::Bottom ? Qt::Orientation::Vertical : Qt::Orientation::Horizontal);
 	d->Splitter->setObjectName("overlaySplitter");
 	d->Splitter->setChildrenCollapsible(false);
 
 	const auto emptyWidget = new QWidget();
-	emptyWidget->setMinimumWidth(50); // Prevents you from dragging the splitter too far
+	emptyWidget->setMinimumWidth(50); 
+	emptyWidget->setMinimumHeight(50); // Prevents you from dragging the splitter too far
 
-	if (area == CDockWidgetSideTab::SideTabBarArea::Left)
-	{
-        d->Splitter->addWidget(d->DockArea);
-        d->Splitter->addWidget(emptyWidget);
-	}
-	else
-	{
-        d->Splitter->addWidget(emptyWidget);
-        d->Splitter->addWidget(d->DockArea);
-	}
+    switch (area)
+    {
+        case CDockWidgetSideTab::Left:
+        {
+            d->Splitter->addWidget(d->DockArea);
+            d->Splitter->addWidget(emptyWidget);
+            break;
+        }
+        case CDockWidgetSideTab::Right: 
+        {
+            d->Splitter->addWidget(emptyWidget);
+            d->Splitter->addWidget(d->DockArea);
+            break;
+        }
+        case CDockWidgetSideTab::Bottom: 
+        {
+            d->Splitter->addWidget(emptyWidget);
+            d->Splitter->addWidget(d->DockArea);
+			break;
+        }
+    }
 
 	l->setContentsMargins(QMargins());
 	l->setSpacing(0);
@@ -122,11 +158,19 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWid
 //============================================================================
 void COverlayDockContainer::updateMask()
 {
-	const auto rect = d->DockArea->frameGeometry();
-	const auto topLeft = rect.topLeft();
-	const auto handleSize = d->Splitter->handleWidth();
-	const auto offset = d->Area == CDockWidgetSideTab::SideTabBarArea::Left ? 0 : handleSize;
-    setMask(QRect(QPoint(topLeft.x() - offset, topLeft.y()), QSize(rect.size().width() + handleSize, rect.size().height())));
+    const auto rect = d->DockArea->frameGeometry();
+    const auto topLeft = rect.topLeft();
+    const auto handleSize = d->Splitter->handleWidth();
+
+	if (d->Area == CDockWidgetSideTab::Bottom)
+	{
+        setMask(QRect(QPoint(topLeft.x(), topLeft.y() - handleSize), QSize(rect.size().width(), rect.size().height() + handleSize)));
+	}
+	else
+	{
+        const auto offset = d->Area == CDockWidgetSideTab::SideTabBarArea::Left ? 0 : handleSize;
+        setMask(QRect(QPoint(topLeft.x() - offset, topLeft.y()), QSize(rect.size().width() + handleSize, rect.size().height())));
+	}
 }
 
 //============================================================================
@@ -194,17 +238,27 @@ void COverlayDockContainer::addDockWidget(CDockWidget* DockWidget)
     const auto dockContainerParent = parentContainer();
     const auto rootSplitter = dockContainerParent->rootSplitter();
     const auto rect = rootSplitter->frameGeometry();
-    const auto dockWidth = DockWidget->size().width();
-	if (d->Area == CDockWidgetSideTab::SideTabBarArea::Left)
-	{
-        d->Splitter->setSizes({ dockWidth, rect.width() - dockWidth });
-	}
-	else
-	{
-        d->Splitter->setSizes({ rect.width() - dockWidth, dockWidth });
-	}
+    const auto dockWidth = DockWidget->sizeHint().width();
+    switch (d->Area)
+    {
+        case CDockWidgetSideTab::Left:
+        {
+            d->Splitter->setSizes({ dockWidth, rect.width() - dockWidth });
+			break;
+        }
+        case CDockWidgetSideTab::Right: 
+        {
+            d->Splitter->setSizes({ rect.width() - dockWidth, dockWidth });
+			break;
+        }
+        case CDockWidgetSideTab::Bottom:
+        { 
+            d->Splitter->setSizes({ rect.width() - dockWidth, dockWidth });
+			break;
+        }
+    }
 
-	d->DockWidget->sideTabWidget()->updateTitleAndIconVisibility(d->Area);
+	d->DockWidget->sideTabWidget()->updateOrientationAndSpacing(d->Area);
 
 	updateSize();
 	updateMask();
@@ -235,7 +289,7 @@ void COverlayDockContainer::moveContentsToParent()
 	}
 	else
 	{
-        parentContainer()->addDockWidget(d->Area == CDockWidgetSideTab::Left ? LeftDockWidgetArea : RightDockWidgetArea, d->DockWidget);
+        parentContainer()->addDockWidget(d->getArea(d->Area), d->DockWidget);
 	}
 	cleanupAndDelete();
 }
@@ -338,14 +392,21 @@ void COverlayDockContainer::collapseView(bool Enable)
 //============================================================================
 bool COverlayDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarArea area)
 {
-	if (area == CDockWidgetSideTab::Left && !CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
-	{
-		return false;
-	}
-	if (area == CDockWidgetSideTab::Right && !CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
-	{
-		return false;
-	}
+    switch (area)
+    {
+        case CDockWidgetSideTab::Left:
+        {
+			return CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar);
+        }
+        case CDockWidgetSideTab::Right:
+        {
+			return CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar);
+        }
+        case CDockWidgetSideTab::Bottom: 
+        {
+			return CDockManager::testConfigFlag(CDockManager::DockContainerHasBottomSideBar);
+        }
+    }
 
 	return true;
 }

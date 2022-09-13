@@ -78,7 +78,8 @@ public:
     enum SideTabBarArea
     {
         Left,
-        Right
+        Right,
+		Bottom
     };
 
 	Q_ENUM(SideTabBarArea)
@@ -120,15 +121,20 @@ public:
 
 	/**
 	 * Set an explicit icon size.
-	 * If no icon size has been set explicitely, than the tab sets the icon size
+	 * If no icon size has been set explicitly, than the tab sets the icon size
 	 * depending on the style
 	 */
 	void setIconSize(const QSize& Size);
 
 	/**
-	 * Update the title and icon visibility based on the area and the config
+	 * Set orientation vertical or horizontal
 	 */
-	void updateTitleAndIconVisibility(SideTabBarArea area);
+	void setOrientation(Qt::Orientation Orientation);
+
+	/**
+	 * Update the orientation, visibility and spacing based on the area and the config
+	 */
+	void updateOrientationAndSpacing(SideTabBarArea area);
 
 Q_SIGNALS:
 	void elidedChanged(bool elided);
