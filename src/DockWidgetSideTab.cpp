@@ -106,10 +106,10 @@ struct DockWidgetSideTabPrivate
 		}
 		else if (Orientation == Qt::Horizontal)
 		{
-            TitleLayout->setContentsMargins(Spacing,Spacing / 2,Spacing,Spacing);
+			TitleLayout->setContentsMargins(Spacing / 2, Spacing / 2, Spacing, Spacing);
 			if (IconLabel)
 			{
-                IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing / 2, 0);
+				IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, 0, 0);
 			}
 		}
 	}
@@ -130,23 +130,21 @@ void DockWidgetSideTabPrivate::createLayout()
 	TitleLabel->setElideMode(Qt::ElideRight);
 	TitleLabel->setText(DockWidget->windowTitle());
 	TitleLabel->setObjectName("dockWidgetTabLabel");
-	//TitleLabel->setAlignment(Qt::AlignLeft);
 	_this->connect(TitleLabel, SIGNAL(elidedChanged(bool)), SIGNAL(elidedChanged(bool)));
-
-	QFontMetrics fm(TitleLabel->font());
-	int Spacing = qRound(fm.height() / 2.0);
 
 	// Fill the layout
     // Purely for spacing on the text without messing up spacing on the icon
 	TitleLayout = new QBoxLayout(QBoxLayout::TopToBottom); 
+	TitleLayout->setAlignment(Qt::AlignCenter);
 	TitleLayout->addWidget(TitleLabel);
 	TitleLayout->setSpacing(0);
 
 	Layout = new QBoxLayout(QBoxLayout::TopToBottom);
+	Layout->setAlignment(Qt::AlignCenter);
 	Layout->setContentsMargins(0,0,0,0);
 	Layout->setSpacing(0);
 	_this->setLayout(Layout);
-	Layout->addLayout(TitleLayout, 1);
+	Layout->addLayout(TitleLayout);
 
 	updateContentsMargins();
 
@@ -342,7 +340,7 @@ SideTabIconLabel::SideTabIconLabel(QWidget* parent) : QWidget(parent),
 {
 	d->Layout = new QBoxLayout(QBoxLayout::TopToBottom);
 	d->Layout->addWidget(d->IconLabel = new QLabel());
-	d->IconLabel->setAlignment(Qt::AlignHCenter);
+	d->Layout->setAlignment(Qt::AlignCenter);
     d->IconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 	setLayout(d->Layout);
 }
