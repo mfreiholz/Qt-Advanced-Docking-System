@@ -1065,6 +1065,7 @@ CDockAreaWidget* CDockManager::setCentralWidget(CDockWidget* widget)
 	widget->setFeature(CDockWidget::DockWidgetClosable, false);
 	widget->setFeature(CDockWidget::DockWidgetMovable, false);
 	widget->setFeature(CDockWidget::DockWidgetFloatable, false);
+	widget->setFeature(CDockWidget::DockWidgetPinnable, false);
 	d->CentralWidget = widget;
 	CDockAreaWidget* CentralArea = addDockWidget(CenterDockWidgetArea, widget);
 	CentralArea->setDockAreaFlag(CDockAreaWidget::eDockAreaFlag::HideSingleWidgetTitleBar, true);
