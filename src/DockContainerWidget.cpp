@@ -1099,22 +1099,7 @@ bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, 
         _this->sideTabBar(area)->insertSideTab(0, DockWidget->sideTabWidget());
         DockArea->overlayDockContainer()->addDockWidget(DockWidget);
         DockWidget->sideTabWidget()->updateStyle(); // Needed as the side tab widget get it's left/right property from the overlay dock container which was just added
-        DockWidget->toggleView(Closed);
-	}
-
-	if (Testing)
-	{
-		return true;
-	}
-
-	if (!DockArea->dockWidgetsCount())
-	{
-		delete DockArea;
-		DockArea = nullptr;
-	}
-	else
-	{
-		DockArea->setProperty("currentDockWidget", CurrentDockWidget);
+		DockArea->overlayDockContainer()->toggleView(!Closed);
 	}
 
 	return true;
@@ -1913,6 +1898,8 @@ QList<CDockAreaWidget*> CDockContainerWidget::openedDockAreas() const
 //============================================================================
 QList<CDockWidget*> CDockContainerWidget::openedDockWidgets() const
 {
+    // todo: cleanup
+	qInfo() << "Opened Dock Widgets: ";
 	QList<CDockWidget*> DockWidgetList;
 	for (auto DockArea : d->DockAreas)
 	{
@@ -1920,6 +1907,12 @@ QList<CDockWidget*> CDockContainerWidget::openedDockWidgets() const
 		{
 			DockWidgetList.append(DockArea->openedDockWidgets());
 		}
+	}
+
+    // todo: cleanup
+	for (auto dockWidget : DockWidgetList)
+	{
+		qInfo() << "Opened dock widgets: " << dockWidget->objectName(); 
 	}
 
 	return DockWidgetList;
