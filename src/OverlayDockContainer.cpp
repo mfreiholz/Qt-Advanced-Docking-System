@@ -311,6 +311,7 @@ void COverlayDockContainer::cleanupAndDelete()
 	}
 
 	// Remove event filter in case there are any queued messages
+	d->DockArea->removeEventFilter(this);
     parent()->removeEventFilter(this);
 
 	hide();
