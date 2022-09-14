@@ -1666,6 +1666,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
         CDockWidget::emitTopLevelEventForWidget(TopLevelWidget, true);
         dumpLayout();
         d->emitDockAreasRemoved();
+		area->overlayDockContainer()->clearDockArea();
         area->setOverlayDockContainer(nullptr);
 		area->updateAutoHideButtonCheckState();
         area->updateTitleBarButtonToolTip();

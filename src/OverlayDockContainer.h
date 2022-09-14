@@ -150,6 +150,12 @@ public:
 	 * Convenience function fr determining if area exists in config
 	 */
 	static bool areaExistsInConfig(CDockWidgetSideTab::SideTabBarArea area);
+
+	/**
+	 * Sets internal DockArea to nullptr
+	 * Called when removing the dock area from this overlay widget
+	 */
+	void clearDockArea();
 };
 }
 
