@@ -158,11 +158,6 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWid
 //============================================================================
 void COverlayDockContainer::updateMask()
 {
-	if (d->DockArea == nullptr)
-	{
-		return;
-	}
-
     const auto rect = d->DockArea->frameGeometry();
     const auto topLeft = rect.topLeft();
     const auto handleSize = d->Splitter->handleWidth();
@@ -227,8 +222,6 @@ CDockWidget* COverlayDockContainer::dockWidget() const
 //============================================================================
 void COverlayDockContainer::addDockWidget(CDockWidget* DockWidget)
 {
-    Q_ASSERT_X(d->DockArea != nullptr, "COverlayDockContainer::addDockWidget", "You should not be using the overlay dock container after the dock area is set to nullptr.");
-
 	if (d->DockWidget)
 	{
 		// Remove the old dock widget at this area
@@ -391,26 +384,14 @@ void COverlayDockContainer::collapseView(bool Enable)
 	if (Enable)
 	{
 		hide();
-		if (d->DockArea)
-		{
-            d->DockArea->hide();
-		}
-		if (d->DockWidget)
-		{
-            d->DockWidget->hide();
-		}
+		d->DockArea->hide();
+		d->DockWidget->hide();
 	}
 	else
 	{
 		show();
-        if (d->DockArea)
-        {
-            d->DockArea->show();
-        }
-		if (d->DockWidget)
-		{
-            d->DockWidget->show();
-		}
+		d->DockArea->show();
+		d->DockWidget->show();
 	}
 }
 
@@ -435,13 +416,6 @@ bool COverlayDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarAre
     }
 
 	return true;
-}
-
-
-//============================================================================
-void COverlayDockContainer::clearDockArea()
-{
-	d->DockArea = nullptr;
 }
 
 
