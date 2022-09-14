@@ -314,6 +314,13 @@ void CDockWidgetSideTab::updateOrientationAndSpacing(SideTabBarArea area)
 	d->TitleLabel->show();
 }
 
+
+//============================================================================
+CDockWidget* CDockWidgetSideTab::dockWidget() const
+{
+	return d->DockWidget;
+}
+
 /**
  * Private data class of SideTabIcon class (pimpl)
  */

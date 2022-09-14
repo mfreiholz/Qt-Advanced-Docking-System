@@ -899,14 +899,19 @@ void DockContainerWidgetPrivate::saveChildNodesState(QXmlStreamWriter& s, QWidge
 
 void DockContainerWidgetPrivate::saveOverlayWidgetsState(QXmlStreamWriter& Stream)
 {
-    for (const auto dockAreaWidget : _this->findChildren<CDockAreaWidget*>())
+    for (const auto sideTabBar : SideTabBarWidgets.values())
     {
-        if (!dockAreaWidget->isOverlayed())
-        {
-            continue;
-        }
+		for (auto itemIndex = 0; itemIndex < sideTabBar->tabCount(); itemIndex++)
+		{
+			const auto sideTab = sideTabBar->tabAt(itemIndex);
+            if (sideTab == nullptr)
+            {
+				continue;
+            }
 
-        dockAreaWidget->saveState(Stream);
+			const auto dockArea = sideTab->dockWidget()->dockAreaWidget();
+            dockArea->saveState(Stream);
+		}
     }
 }
 
@@ -1096,7 +1101,7 @@ bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, 
 		DockWidget->setClosedState(Closed);
 		DockWidget->setProperty(internal::ClosedProperty, Closed);
 		DockWidget->setProperty(internal::DirtyProperty, false);
-        _this->sideTabBar(area)->insertSideTab(0, DockWidget->sideTabWidget());
+        _this->sideTabBar(area)->insertSideTab(-1, DockWidget->sideTabWidget());
         DockArea->overlayDockContainer()->addDockWidget(DockWidget);
         DockWidget->sideTabWidget()->updateStyle(); // Needed as the side tab widget get it's left/right property from the overlay dock container which was just added
 		DockArea->overlayDockContainer()->toggleView(!Closed);

@@ -123,4 +123,18 @@ Qt::Orientation CSideTabBar::orientation() const
 {
     return d->Orientation;
 }
+
+
+//============================================================================
+CDockWidgetSideTab* CSideTabBar::tabAt(int index) const
+{
+    return qobject_cast<CDockWidgetSideTab*>(d->TabsLayout->itemAt(index)->widget());
+}
+
+
+//============================================================================
+int CSideTabBar::tabCount() const
+{
+    return d->TabsLayout->count();
+}
 }

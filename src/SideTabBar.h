@@ -84,6 +84,16 @@ public:
 	 */
 	Qt::Orientation orientation() const;
 
+	/*
+	 * get the side tab widget at position, returns nullptr if it's out of bounds
+	 */
+	CDockWidgetSideTab* tabAt(int index) const;
+
+	/*
+	 * Gets the count of the tab widgets
+	 */
+	int tabCount() const;
+
 	Q_SIGNALS:
 		void sideTabAutoHideToggleRequested();
 };

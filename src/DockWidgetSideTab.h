@@ -136,6 +136,12 @@ public:
 	 */
 	void updateOrientationAndSpacing(SideTabBarArea area);
 
+
+	/**
+	 * returns the dock widget this belongs to
+	 */
+	CDockWidget* dockWidget() const;
+
 Q_SIGNALS:
 	void elidedChanged(bool elided);
 	void clicked();
