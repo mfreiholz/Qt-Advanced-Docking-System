@@ -196,6 +196,10 @@ COverlayDockContainer::~COverlayDockContainer()
 {
 	ADS_PRINT("~COverlayDockContainer");
 
+	// Remove event filter in case there are any queued messages
+	d->DockArea->removeEventFilter(this);
+    parent()->removeEventFilter(this);
+
 	if (d->DockManager)
 	{
 		parentContainer()->removeOverlayWidget(this);
@@ -309,10 +313,6 @@ void COverlayDockContainer::cleanupAndDelete()
         dockWidget->sideTabWidget()->setParent(dockWidget);
         dockWidget->sideTabWidget()->hide();
 	}
-
-	// Remove event filter in case there are any queued messages
-	d->DockArea->removeEventFilter(this);
-    parent()->removeEventFilter(this);
 
 	hide();
 	deleteLater();

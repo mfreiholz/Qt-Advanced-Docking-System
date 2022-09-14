@@ -515,7 +515,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	{
 		setCurrentDockWidget(NextOpenDockWidget);
 	}
-	else if (d->ContentsLayout->isEmpty() && DockContainer->dockAreaCount() >= 1)
+	else if (d->ContentsLayout->isEmpty() && DockContainer->dockAreaCount() >= 1 && !isOverlayed()) // Don't remove empty dock areas that are overlayed, they'll be deleted by the overlay dock
 	{
         ADS_PRINT("Dock Area empty");
 		DockContainer->removeDockArea(this);
