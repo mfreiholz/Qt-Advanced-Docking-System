@@ -45,6 +45,9 @@ class CDockWidgetTab;
 class ADS_EXPORT CSideTabBar : public QWidget
 {
     Q_OBJECT
+
+    Q_PROPERTY(Qt::Orientation orientation READ orientation)
+
 private:
     SideTabBarPrivate* d; ///< private data (pimpl)
 	friend struct SideTabBarPrivate;
@@ -52,7 +55,7 @@ private:
 
 protected:
     void paintEvent(QPaintEvent* event) override;
-	
+
 public:
     using Super = QWidget;
 
@@ -75,6 +78,11 @@ public:
 	 * Removes the given DockWidgetSideTab from the tabbar
 	 */
 	void removeSideTab(CDockWidgetSideTab* SideTab);
+
+	/**
+	 * Returns orientation of side tab.
+	 */
+	Qt::Orientation orientation() const;
 
 	Q_SIGNALS:
 		void sideTabAutoHideToggleRequested();

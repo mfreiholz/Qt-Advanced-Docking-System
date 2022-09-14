@@ -102,6 +102,7 @@ void CSideTabBar::removeSideTab(CDockWidgetSideTab* SideTab)
     d->TabsLayout->removeWidget(SideTab);
 }
 
+
 //============================================================================
 void CSideTabBar::paintEvent(QPaintEvent* event)
 {
@@ -109,5 +110,12 @@ void CSideTabBar::paintEvent(QPaintEvent* event)
     option.initFrom(this);
     QPainter painter(this);
     style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
+}
+
+
+//============================================================================
+Qt::Orientation CSideTabBar::orientation() const
+{
+    return d->Orientation;
 }
 }
