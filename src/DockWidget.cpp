@@ -96,6 +96,7 @@ struct DockWidgetPrivate
 	CDockWidget::eMinimumSizeHintMode MinimumSizeHintMode = CDockWidget::MinimumSizeHintFromDockWidget;
 	WidgetFactory* Factory = nullptr;
 	double DefaultOverlayDockProportion = 0.25;
+	CDockWidget::eOverlayInsertOrder OverlayInsertOrder = CDockWidget::Last;
 	
 	/**
 	 * Private data constructor
@@ -1146,6 +1147,18 @@ void CDockWidget::setDefaultOverlayDockProportion(double Proportion)
 double CDockWidget::DefaultOverlayDockProportion() const
 {
 	return d->DefaultOverlayDockProportion;
+}
+
+
+//============================================================================
+void CDockWidget::setOverlayInsertOrder(eOverlayInsertOrder insertOrder)
+{
+	d->OverlayInsertOrder = insertOrder;
+}
+
+CDockWidget::eOverlayInsertOrder CDockWidget::overlayInsertOrder() const
+{
+	return d->OverlayInsertOrder;
 }
 
 

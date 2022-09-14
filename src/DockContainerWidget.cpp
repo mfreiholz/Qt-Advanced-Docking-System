@@ -1485,7 +1485,7 @@ CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockW
 
 
 //============================================================================
-COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget)
+COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget, CDockWidget::eOverlayInsertOrder insertOrder)
 {
 	if (d->DockManager != DockWidget->dockManager())
 	{
@@ -1498,7 +1498,7 @@ COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverla
 		return nullptr;
 	}
 
-    sideTabBar(area)->insertSideTab(0, DockWidget->sideTabWidget());
+    sideTabBar(area)->insertSideTab(insertOrder == CDockWidget::First ? 0 : -1, DockWidget->sideTabWidget());
     DockWidget->sideTabWidget()->show();
 
 	const auto dockContainer = new COverlayDockContainer(DockWidget, area, this);
@@ -1800,7 +1800,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	auto overlayWidgets = FloatingWidget->dockContainer()->overlayWidgets();
 	for (const auto overlayWidget : overlayWidgets)
 	{
-		createAndInitializeDockWidgetOverlayContainer(overlayWidget->sideTabBarArea(), overlayWidget->dockWidget());
+		createAndInitializeDockWidgetOverlayContainer(overlayWidget->sideTabBarArea(), overlayWidget->dockWidget(), overlayWidget->dockWidget()->overlayInsertOrder());
 	}
 
 	if (DockArea)

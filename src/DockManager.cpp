@@ -864,16 +864,16 @@ CDockAreaWidget* CDockManager::addDockWidgetToContainer(DockWidgetArea area,
 }
 
 //============================================================================
-COverlayDockContainer* CDockManager::addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget)
+COverlayDockContainer* CDockManager::addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockWidget::eOverlayInsertOrder insertOrder)
 {
-	return addOverlayDockWidgetToContainer(area, Dockwidget, this);
+	return addOverlayDockWidgetToContainer(area, Dockwidget, this, insertOrder);
 }
 
 //============================================================================
-COverlayDockContainer* CDockManager::addOverlayDockWidgetToContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget)
+COverlayDockContainer* CDockManager::addOverlayDockWidgetToContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget, CDockWidget::eOverlayInsertOrder insertOrder)
 {
 	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
-	auto container = DockContainerWidget->createAndInitializeDockWidgetOverlayContainer(area, Dockwidget);
+	auto container = DockContainerWidget->createAndInitializeDockWidgetOverlayContainer(area, Dockwidget, insertOrder);
 	container->collapseView(true);
 
 	Q_EMIT dockWidgetAdded(Dockwidget);

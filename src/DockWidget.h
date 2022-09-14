@@ -229,6 +229,17 @@ public:
         ActionModeShow   //!< ActionModeShow
     };
 
+    /**
+     * This mode configures the order of pinning and unpinning overlayed widgets
+     * First will add it to the top of the SideTabBar, while last will append it to the end
+     */
+	enum eOverlayInsertOrder
+	{
+		First,
+		Last
+	};
+
+
 
     /**
      * This constructor creates a dock widget with the given title.
@@ -523,6 +534,16 @@ public:
 	 * 0.25 is a quarter of the size, 0.5 is half the size, 1 is the entire size
 	 */
 	double DefaultOverlayDockProportion() const;
+
+	/*
+	 * Set overlay insertion mode
+	 */
+	void setOverlayInsertOrder(eOverlayInsertOrder insertOrder);
+
+	/*
+	 * Get overlay insertion mode
+	 */
+	eOverlayInsertOrder overlayInsertOrder() const;
 
 public: // reimplements QFrame -----------------------------------------------
     /**

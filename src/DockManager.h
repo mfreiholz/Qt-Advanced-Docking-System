@@ -341,14 +341,14 @@ public:
 	 * An overlay widget is used for auto hide functionality
 	 * \return Returns the COverlayDockContainer that contains the new DockWidget
 	 */
-	COverlayDockContainer* addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget);
+	COverlayDockContainer* addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockWidget::eOverlayInsertOrder insertOrder = CDockWidget::Last);
 
 	/**
 	 * Adds dock widget overlayed into the given container based on the CDockWidgetSideTab::SideTabBarArea.
 	 * An overlay widget is used for auto hide functionality
 	 * \return Returns the COverlayDockContainer that contains the new DockWidget
 	 */
-	COverlayDockContainer* addOverlayDockWidgetToContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget);
+	COverlayDockContainer* addOverlayDockWidgetToContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget, CDockWidget::eOverlayInsertOrder = CDockWidget::Last);
 
 	/**
 	 * This function will add the given Dockwidget to the given dock area as

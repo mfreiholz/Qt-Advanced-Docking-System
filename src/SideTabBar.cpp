@@ -71,12 +71,17 @@ CSideTabBar::CSideTabBar(CDockContainerWidget* parent, Qt::Orientation orientati
     d->ContainerWidget = parent;
     d->Orientation = orientation;
 
+    auto mainLayout = new QBoxLayout(d->Orientation == Qt::Vertical ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
+
     d->TabsLayout = new QBoxLayout(d->Orientation == Qt::Vertical ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
     d->TabsLayout->setContentsMargins(0, 0, 0, 0);
     d->TabsLayout->setSpacing(0);
-    d->TabsLayout->addStretch(1);
-    setLayout(d->TabsLayout);
+    mainLayout->addLayout(d->TabsLayout);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setSpacing(0);
+    mainLayout->addStretch(1);
 
+    setLayout(mainLayout);
     setFocusPolicy(Qt::NoFocus);
 }
 

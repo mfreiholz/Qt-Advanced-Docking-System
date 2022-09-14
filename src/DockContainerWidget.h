@@ -95,13 +95,12 @@ protected:
 	 */
 	QSplitter* rootSplitter() const;
 
-
 	/**
 	 * Creates and initializes a dockwidget overlay container into the given area.
 	 * Initializing inserts the tabs into the side tab widget and hides it
 	 * Returns nullptr if you try and insert into an area where the configuration is not enabled
 	 */
-	COverlayDockContainer* createAndInitializeDockWidgetOverlayContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget);
+	COverlayDockContainer* createAndInitializeDockWidgetOverlayContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget, CDockWidget::eOverlayInsertOrder insertOrder);
 
 	/**
 	 * Helper function for creation of the root splitter
@@ -198,7 +197,6 @@ protected:
 
 
 public:
-
 	/**
 	 * Default Constructor
 	 */
