@@ -35,6 +35,8 @@
 #include "DockWidgetTab.h"
 
 #include <QBoxLayout>
+#include <QStyleOption>
+#include <QPainter>
 
 namespace ads
 {
@@ -98,5 +100,14 @@ void CSideTabBar::insertSideTab(int Index, CDockWidgetSideTab* SideTab)
 void CSideTabBar::removeSideTab(CDockWidgetSideTab* SideTab)
 {
     d->TabsLayout->removeWidget(SideTab);
+}
+
+//============================================================================
+void CSideTabBar::paintEvent(QPaintEvent* event)
+{
+    QStyleOption option;
+    option.initFrom(this);
+    QPainter painter(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
 }
 }

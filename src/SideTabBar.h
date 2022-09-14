@@ -50,6 +50,9 @@ private:
 	friend struct SideTabBarPrivate;
 	friend class DockWidgetSideTab;
 
+protected:
+    void paintEvent(QPaintEvent* event) override;
+	
 public:
     using Super = QWidget;
 
