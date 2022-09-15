@@ -244,7 +244,7 @@ void COverlayDockContainer::addDockWidget(CDockWidget* DockWidget)
 
 
 //============================================================================
-void COverlayDockContainer::setDockSizeProportion(double SplitterProportion)
+void COverlayDockContainer::setDockSizeProportion(float SplitterProportion)
 {
 	if (SplitterProportion < 0 || SplitterProportion > 1)
 	{
@@ -252,7 +252,7 @@ void COverlayDockContainer::setDockSizeProportion(double SplitterProportion)
 		return;
 	}
 
-	const auto dockSize = static_cast<int>(static_cast<double>(INT_MAX) * SplitterProportion);
+	const auto dockSize = static_cast<int>(static_cast<float>(INT_MAX) * SplitterProportion);
 	const auto remainingSize = INT_MAX - dockSize;
     switch (d->Area)
     {

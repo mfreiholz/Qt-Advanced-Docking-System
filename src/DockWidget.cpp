@@ -1137,14 +1137,14 @@ bool CDockWidget::isCurrentTab() const
 
 
 //============================================================================
-void CDockWidget::setDefaultOverlayDockProportion(double Proportion)
+void CDockWidget::setDefaultOverlayDockProportion(float Proportion)
 {
 	d->DefaultOverlayDockProportion = Proportion;
 }
 
 
 //============================================================================
-double CDockWidget::DefaultOverlayDockProportion() const
+float CDockWidget::DefaultOverlayDockProportion() const
 {
 	return d->DefaultOverlayDockProportion;
 }

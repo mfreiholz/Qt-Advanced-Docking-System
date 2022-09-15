@@ -527,13 +527,13 @@ public:
 	 * Set default dock proportion when overlayed
 	 * see *DefaultOverlayDockProportion()
 	 */
-	void setDefaultOverlayDockProportion(double Proportion);
+	void setDefaultOverlayDockProportion(float Proportion);
 
 	/*
 	 * Set default dock proportion when overlayed
 	 * 0.25 is a quarter of the size, 0.5 is half the size, 1 is the entire size
 	 */
-	double DefaultOverlayDockProportion() const;
+	float DefaultOverlayDockProportion() const;
 
 	/*
 	 * Set overlay insertion mode

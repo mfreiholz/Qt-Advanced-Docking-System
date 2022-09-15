@@ -101,7 +101,7 @@ public:
 	 * Takes a float between 0 and 1
 	 * E.g. 0.25 is a quarter of the size, 0.5 is half the size and 1 is the entire size of the container
 	 */
-	void setDockSizeProportion(double SplitterProportion = 0.25);
+	void setDockSizeProportion(float SplitterProportion = 0.25);
 
 	/**
 	 * Returns the side tab bar area of this overlay dock container
