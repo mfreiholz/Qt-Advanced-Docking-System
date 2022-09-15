@@ -391,6 +391,7 @@ void COverlayDockContainer::collapseView(bool Enable)
 	}
 	else
 	{
+		raise();
 		show();
 		d->DockArea->show();
 		d->DockWidget->show();
