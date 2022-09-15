@@ -66,11 +66,15 @@ struct OverlayDockContainerPrivate
 	{
         switch (area)
         {
-            case CDockWidgetSideTab::Left:
+            case CDockWidgetSideTab::LeftBottom: 
+                [[fallthrough]];
+            case CDockWidgetSideTab::LeftTop:
             {
 				return LeftDockWidgetArea;
             }
-            case CDockWidgetSideTab::Right:
+            case CDockWidgetSideTab::RightBottom:
+				[[fallthrough]];
+            case CDockWidgetSideTab::RightTop:
             {
 				return RightDockWidgetArea;
             }
@@ -82,6 +86,34 @@ struct OverlayDockContainerPrivate
 
 		return LeftDockWidgetArea;
 	}
+
+	/*
+	 * Convenience function to get dock position
+	 */
+	QPoint getSimplifiedDockAreaPosition() const
+    {
+        switch (Area)
+            {
+                case CDockWidgetSideTab::LeftTop: 
+                    [[fallthrough]];
+                case CDockWidgetSideTab::LeftBottom:
+                {
+                    return QPoint(1, _this->height() / 2);
+                }
+                case CDockWidgetSideTab::RightTop:
+                    [[fallthrough]];
+                case CDockWidgetSideTab::RightBottom:
+                {
+                    return QPoint(_this->width() - 1, _this->height() / 2);
+                }
+                case CDockWidgetSideTab::Bottom:
+                {
+                    return QPoint(_this->width() / 2, _this->height() - 1);
+                }
+            }
+
+		return QPoint();
+    }
 }; // struct OverlayDockContainerPrivate
 
 //============================================================================
@@ -121,13 +153,17 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWid
 
     switch (area)
     {
-        case CDockWidgetSideTab::Left:
+        case CDockWidgetSideTab::LeftBottom: 
+            [[fallthrough]];
+        case CDockWidgetSideTab::LeftTop:
         {
             d->Splitter->addWidget(d->DockArea);
             d->Splitter->addWidget(emptyWidget);
             break;
         }
-        case CDockWidgetSideTab::Right: 
+        case CDockWidgetSideTab::RightBottom: 
+			[[fallthrough]];
+        case CDockWidgetSideTab::RightTop: 
         {
             d->Splitter->addWidget(emptyWidget);
             d->Splitter->addWidget(d->DockArea);
@@ -165,12 +201,15 @@ void COverlayDockContainer::updateMask()
 	if (d->Area == CDockWidgetSideTab::Bottom)
 	{
         setMask(QRect(QPoint(topLeft.x(), topLeft.y() - handleSize), QSize(rect.size().width(), rect.size().height() + handleSize)));
+		return;
 	}
-	else
-	{
-        const auto offset = d->Area == CDockWidgetSideTab::SideTabBarArea::Left ? 0 : handleSize;
-        setMask(QRect(QPoint(topLeft.x() - offset, topLeft.y()), QSize(rect.size().width() + handleSize, rect.size().height())));
-	}
+
+	auto offset = 0;
+    if (d->Area == CDockWidgetSideTab::SideTabBarArea::RightTop || d->Area == CDockWidgetSideTab::SideTabBarArea::RightBottom)
+    {
+        offset = handleSize;
+    }
+    setMask(QRect(QPoint(topLeft.x() - offset, topLeft.y()), QSize(rect.size().width() + handleSize, rect.size().height())));
 }
 
 //============================================================================
@@ -256,12 +295,16 @@ void COverlayDockContainer::setDockSizeProportion(float SplitterProportion)
 	const auto remainingSize = INT_MAX - dockSize;
     switch (d->Area)
     {
-        case CDockWidgetSideTab::Left:
+        case CDockWidgetSideTab::LeftBottom:
+			[[fallthrough]];
+        case CDockWidgetSideTab::LeftTop:
         {
             d->Splitter->setSizes({ dockSize, remainingSize });
 			break;
         }
-        case CDockWidgetSideTab::Right: 
+        case CDockWidgetSideTab::RightBottom: 
+			[[fallthrough]];
+        case CDockWidgetSideTab::RightTop: 
 			[[fallthrough]];
         case CDockWidgetSideTab::Bottom:
         { 
@@ -288,7 +331,7 @@ CDockAreaWidget* COverlayDockContainer::dockAreaWidget() const
 //============================================================================
 void COverlayDockContainer::moveContentsToParent()
 {
-	const auto position = mapToGlobal(d->Area == CDockWidgetSideTab::Left ? QPoint(1,height() / 2) : QPoint(width() - 1, height() / 2));
+	const auto position = mapToGlobal(d->getSimplifiedDockAreaPosition());
 
 	const auto dockAreaWidget = parentContainer()->dockAreaAt(position);
 	if (dockAreaWidget != nullptr && !dockAreaWidget->containsCentralWidget())
@@ -404,11 +447,15 @@ bool COverlayDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarAre
 {
     switch (area)
     {
-        case CDockWidgetSideTab::Left:
+        case CDockWidgetSideTab::LeftBottom:
+			[[fallthrough]];
+        case CDockWidgetSideTab::LeftTop:
         {
 			return CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar);
         }
-        case CDockWidgetSideTab::Right:
+        case CDockWidgetSideTab::RightBottom:
+			[[fallthrough]];
+        case CDockWidgetSideTab::RightTop:
         {
 			return CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar);
         }

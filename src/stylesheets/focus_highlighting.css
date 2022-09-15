@@ -27,12 +27,12 @@ ads--CDockWidgetSideTab {
 	qproperty-iconSize: 16px 16px;/* this is optional in case you would like to change icon size*/
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="Left"] {
+ads--CDockWidgetSideTab[sideTabBarArea="LeftTop"],[sideTabBarArea="LeftBottom"] {
 	border-left: 3px solid grey;
 	border-bottom: 1px solid white;
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="Right"] {
+ads--CDockWidgetSideTab[sideTabBarArea="RightTop"],[sideTabBarArea="RightBottom"] {
 	border-right: 3px solid grey;
 	border-bottom: 1px solid white;
 }
@@ -120,11 +120,11 @@ ads--CDockSplitter::handle {
 }
 
 /* Focus related styling */
-ads--CDockWidgetSideTab:hover[sideTabBarArea="Right"] {
+ads--CDockWidgetSideTab:hover[sideTabBarArea="RightTop"],:hover[sideTabBarArea="RightBottom"] {
 	border-right: 3px solid palette(highlight);
 }
 
-ads--CDockWidgetSideTab:hover[sideTabBarArea="Left"] {
+ads--CDockWidgetSideTab:hover[sideTabBarArea="LeftTop"],:hover[sideTabBarArea="LeftBottom"] {
 	border-left: 3px solid palette(highlight);
 }
 
@@ -133,11 +133,11 @@ ads--CDockWidgetSideTab:hover[sideTabBarArea="Bottom"] {
 }
 
 
-ads--CDockWidgetSideTab[sideTabBarArea="Right"][focused="true"] {
+ads--CDockWidgetSideTab[sideTabBarArea="RightTop"][focused="true"],[sideTabBarArea="RightBottom"][focused="true"] {
 	border-right: 3px solid palette(highlight);
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="Left"][focused="true"] {
+ads--CDockWidgetSideTab[sideTabBarArea="LeftTop"][focused="true"],[sideTabBarArea="LeftBottom"][focused="true"] {
 	border-left: 3px solid palette(highlight);
 }
 
