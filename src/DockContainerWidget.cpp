@@ -53,6 +53,7 @@
 #include "DockWidgetTab.h"
 #include "DockWidgetSideTab.h"
 #include "DockAreaTitleBar.h"
+#include "DockFocusController.h"
 
 #include <functional>
 #include <iostream>
@@ -1508,6 +1509,7 @@ COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverla
 
 	const auto dockContainer = new COverlayDockContainer(DockWidget, area, this);
 	dockContainer->hide();
+	d->DockManager->dockFocusController()->clearDockWidgetFocus(DockWidget);
 	return dockContainer;
 }
 

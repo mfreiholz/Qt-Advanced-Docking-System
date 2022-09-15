@@ -321,6 +321,14 @@ void CDockFocusController::setDockWidgetTabFocused(CDockWidgetTab* Tab)
 
 
 //===========================================================================
+void CDockFocusController::clearDockWidgetFocus(CDockWidget* dockWidget)
+{
+	dockWidget->clearFocus();
+	updateDockWidgetFocusStyle(dockWidget, false);
+}
+
+
+//===========================================================================
 void CDockFocusController::setDockWidgetFocused(CDockWidget* focusedNow)
 {
 	d->updateDockWidgetFocus(focusedNow);
