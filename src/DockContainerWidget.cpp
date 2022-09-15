@@ -1471,6 +1471,8 @@ CDockContainerWidget::~CDockContainerWidget()
 CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockWidget* Dockwidget,
 	CDockAreaWidget* DockAreaWidget)
 {
+	Q_ASSERT_X(!DockAreaWidget->isOverlayed(), "CDockContainerWidget::addDockWidget", "Adding a dock widget to an area that is already overlayed is not supported.");
+
 	CDockAreaWidget* OldDockArea = Dockwidget->dockAreaWidget();
 	if (OldDockArea)
 	{
