@@ -1505,6 +1505,7 @@ COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverla
 	}
 
     sideTabBar(area)->insertSideTab(insertOrder == CDockWidget::First ? 0 : -1, DockWidget->sideTabWidget());
+	sideTabBar(area)->show();
     DockWidget->sideTabWidget()->show();
 
 	const auto dockContainer = new COverlayDockContainer(DockWidget, area, this);
@@ -1554,7 +1555,8 @@ CDockWidgetSideTab::SideTabBarArea CDockContainerWidget::getDockAreaPosition(CDo
 	{
 		if (CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
 		{
-            return CDockWidgetSideTab::LeftTop;
+    // todo: cleanup - revert
+            return CDockWidgetSideTab::LeftBottom;
 		}
 
 		if (CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
