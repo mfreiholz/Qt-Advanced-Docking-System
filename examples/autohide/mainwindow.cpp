@@ -46,8 +46,8 @@ CMainWindow::CMainWindow(QWidget *parent)
     TableDockWidget->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
     TableDockWidget->resize(250, 150);
     TableDockWidget->setMinimumSize(200,150);
-    TableDockWidget->setDefaultOverlayDockProportion(2);
-    DockManager->addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea::Left, TableDockWidget);
+    TableDockWidget->setDefaultOverlayDockProportion(0.5);
+    DockManager->addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea::LeftTop, TableDockWidget, CDockWidget::Last);
     ui->menuView->addAction(TableDockWidget->toggleViewAction());
 
     table = new QTableWidget();
@@ -58,7 +58,7 @@ CMainWindow::CMainWindow(QWidget *parent)
     TableDockWidget->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
     TableDockWidget->resize(250, 150);
     TableDockWidget->setMinimumSize(200,150);
-    DockManager->addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea::Left, TableDockWidget);
+    DockManager->addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea::LeftTop, TableDockWidget, CDockWidget::Last);
     ui->menuView->addAction(TableDockWidget->toggleViewAction());
 
     QTableWidget* propertiesTable = new QTableWidget();
