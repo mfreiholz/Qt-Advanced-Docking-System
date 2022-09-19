@@ -1555,8 +1555,7 @@ CDockWidgetSideTab::SideTabBarArea CDockContainerWidget::getDockAreaPosition(CDo
 	{
 		if (CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
 		{
-    // todo: cleanup - revert
-            return CDockWidgetSideTab::LeftBottom;
+            return CDockWidgetSideTab::LeftTop;
 		}
 
 		if (CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
