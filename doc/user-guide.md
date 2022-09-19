@@ -41,6 +41,7 @@
 - [Central Widget](#central-widget)
 - [Empty Dock Area](#empty-dock-area)
 - [Custom Close Handling](#custom-close-handling)
+- ['Auto Hide Dock Widgets'](#auto-hide-dock-widgets)
 - [Styling](#styling)
   - [Disabling the Internal Style Sheet](#disabling-the-internal-style-sheet)
 
@@ -608,6 +609,56 @@ auto* CentralDockArea = DockManager->setCentralWidget(CentralDockWidget);
 Normally clicking the close button of a dock widget will just hide the widget and the user can show it again using the `toggleView()` action of the dock widget. This is meant for user interfaces with a static amount of widgets. But the advanced docking system also supports dynamic dock widgets that will get deleted on close. If you set the dock widget flag `DockWidgetDeleteOnClose` for a certain dock widget, then it will be deleted as soon as you close this dock widget. This enables the implementation of user interfaces with dynamically created editors, like in word processing applications or source code development tools.
 
 When an entire area is closed, the default behavior is to hide the dock widgets it contains regardless of the `DockWidgetDeleteOnClose` flag except if there is only one dock widget. In this special case, the `DockWidgetDeleteOnClose` flag is followed. This behavior can be changed by setting the `DockWidgetForceCloseWithArea` flag to all the dock widgets that needs to be closed with their area.
+
+## Auto Hide Dock Widgets
+
+Enabling this feature adds a pin icon to each dock area that will pin the dock widgets in the area to the left, right or bottom edge of the window as a side tab. The dock widget is then normally hidden, but showing the view by clicking the tab would overlay the dock widget on top of all the other widgets.
+
+![Auto hide demo](autohide-feature-demo.png)
+
+The area dock widgets are added to are based on the distance to the left, right and bottom edge.
+
+Note: Overlay, Pin, and Auto Hide here all refer to the same functionality.
+
+### Setting Configuration Flags
+
+Setting and enabling the overlay feature is similar to setting config flags, but do be aware that it uses a different eOverlayFlag enum and not the eConfigFlag enum. This is only relevant if you call `CDockManager::setConfigFlags` for the `ConfigFlags`, as it would mean you have to call `CDockManager::setConfigFlags` a second time for the `OverlayFlags`.
+
+Note: The dock areas collapse on losing focus, so the `FocusHighlighting` feature must be enabled for collapsing an overlay to work. Furthermore, widgets that don't have focus (e.g. by setting DockWidgetFocusable to false), will also prevent the dock widget from losing focus. The widgets are still collapsible on clicking the tab, so it's up to you if you would like collapsing the dock view based on losing focus.
+
+```c++
+CDockManager::setConfigFlags(CDockManager::DefaultAutoHideConfig);
+CDockManager::setConfigFlag(CDockManager::LeftSideBarPrioritizeIconOnly, true);
+...
+d->DockManager = new CDockManager(this);
+```
+
+### Adding Overlay Widgets
+
+Adding an overlay widget is similar to adding a dock widget, simply call `dockManager->addOverlayDockWidget`. 
+
+```c++
+d->DockManager = new CDockManager(this);
+CDockWidget* TableDockWidget = new CDockWidget("Table 1");
+TableDockWidget->setDefaultOverlayDockProportion(0.5); // Default size in proportion to the window size when adding the overlay widget
+DockManager->addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea::LeftTop, TableDockWidget, CDockWidget::Last);
+```
+
+See `autohide` example to learn how it works.
+
+### Configuration Flags For Overlay Widgets
+
+- `DockContainerHasLeftSideBar`, `DockContainerHasRightSideBar`, `DockContainerHasBottomSideBar` -> Enabling each of these enables the side bar at each location. Disabling any of them would mean that the widget cannot be added at that location, so it would be added at the next available location. E.g. If you only enable `DockContainerHasRightSideBar` and `DockContainerHasBottomSideBar` then it will be added to the bottom side bar or right side bar respectively. If none of these are enabled, the auto hide button will not be added, as at least one of them must be enabled to work.
+- `DockAreaHasAutoHideButton` -> Adds the auto hide button to the title bar of the dock area
+- `LeftSideBarPrioritizeIconOnly`, `RightSideBarPrioritizeIconOnly`, `BottomSideBarPrioritizeIconOnly` -> If this is set, the side bar this is enabled with will prioritize showing an icon only, as opposed to an icon and text. This is set per side bar, so if you only enable `LeftSideBarPrioritizeIconOnly`, the right and bottom side bars will still show the icon and the text. This is only relevant if an icon is set, otherwise it will only show text as usual.
+- `DockAreaOverlayHasTitle` -> Adds the title of the dock window where the title bar would be. 
+- `DefaultAutoHideConfig` -> Enables `DockContainerHasLeftSideBar`, `DockContainerHasRightSideBar`, `DockContainerHasBottomSideBar`, `DockAreaHasAutoHideButton`, `DockAreaOverlayHasTitle`
+
+### Limitations
+
+- Currently the `LeftBottom` and `RightBottom` areas can only be added programatically, and not through the pin icon. These are used if you'd like to add a new dock widget separated from the normal dock areas.
+
+- Adding a `DockWidget` (e.g. via `addDockWidget`) to an overlayed `DockArea` that already has a dockwidget is undefined behavior. An overlayed dock area does not have tabs and does not support more than one `DockWidget` in it's area. If you want to add a `DockWidget` to a `DockArea` that *could* be overlayed, check first if it's overlayed via `CDockArea::isOverlayed` and handle it accordingly (typically by adding the overlay dock widget as a side tab instead of to the area).  
 
 ## Styling
 
