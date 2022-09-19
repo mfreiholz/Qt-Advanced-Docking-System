@@ -181,7 +181,7 @@ void DockWidgetPrivate::showDockWidget()
 		DockArea->toggleView(true);
 		TabWidget->show();
 		QSplitter* Splitter = internal::findParent<QSplitter*>(DockArea);
-		while (Splitter && !Splitter->isVisible())
+		while (Splitter && !Splitter->isVisible() && !DockArea->isOverlayed())
 		{
 			Splitter->show();
 			Splitter = internal::findParent<QSplitter*>(Splitter);
