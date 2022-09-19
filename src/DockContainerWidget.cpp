@@ -1504,8 +1504,8 @@ COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverla
 		return nullptr;
 	}
 
+	DockWidget->sideTabWidget()->updateOrientationAndSpacing(area);
     sideTabBar(area)->insertSideTab(insertOrder == CDockWidget::First ? 0 : -1, DockWidget->sideTabWidget());
-	sideTabBar(area)->show();
     DockWidget->sideTabWidget()->show();
 
 	const auto dockContainer = new COverlayDockContainer(DockWidget, area, this);
