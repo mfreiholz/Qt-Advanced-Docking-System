@@ -27,17 +27,17 @@ ads--CDockWidgetSideTab {
 	qproperty-iconSize: 16px 16px;/* this is optional in case you would like to change icon size*/
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="LeftTop"],[sideTabBarArea="LeftBottom"] {
+ads--CDockWidgetSideTab[sideTabBarArea="0"],[sideTabBarArea="1"] {
 	border-left: 3px solid grey;
 	border-bottom: 1px solid white;
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="RightTop"],[sideTabBarArea="RightBottom"] {
+ads--CDockWidgetSideTab[sideTabBarArea="2"],[sideTabBarArea="3"] {
 	border-right: 3px solid grey;
 	border-bottom: 1px solid white;
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="Bottom"] {
+ads--CDockWidgetSideTab[sideTabBarArea="4"] {
 	border-bottom: 3px solid grey;
 	border-right: 1px solid white;
 }
@@ -120,28 +120,27 @@ ads--CDockSplitter::handle {
 }
 
 /* Focus related styling */
-ads--CDockWidgetSideTab:hover[sideTabBarArea="RightTop"],:hover[sideTabBarArea="RightBottom"] {
-	border-right: 3px solid palette(highlight);
-}
-
-ads--CDockWidgetSideTab:hover[sideTabBarArea="LeftTop"],:hover[sideTabBarArea="LeftBottom"] {
+ads--CDockWidgetSideTab:hover[sideTabBarArea="0"],:hover[sideTabBarArea="1"] {
 	border-left: 3px solid palette(highlight);
 }
 
-ads--CDockWidgetSideTab:hover[sideTabBarArea="Bottom"] {
+ads--CDockWidgetSideTab:hover[sideTabBarArea="2"],:hover[sideTabBarArea="3"] {
+	border-right: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab:hover[sideTabBarArea="4"] {
 	border-bottom: 3px solid palette(highlight);
 }
 
-
-ads--CDockWidgetSideTab[sideTabBarArea="RightTop"][focused="true"],[sideTabBarArea="RightBottom"][focused="true"] {
-	border-right: 3px solid palette(highlight);
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="LeftTop"][focused="true"],[sideTabBarArea="LeftBottom"][focused="true"] {
+ads--CDockWidgetSideTab[sideTabBarArea="0"][focused="true"],[sideTabBarArea="1"][focused="true"] {
 	border-left: 3px solid palette(highlight);
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="Bottom"][focused="true"] {
+ads--CDockWidgetSideTab[sideTabBarArea="2"][focused="true"],[sideTabBarArea="3"][focused="true"] {
+	border-right: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="4"][focused="true"] {
 	border-bottom: 3px solid palette(highlight);
 }
 
