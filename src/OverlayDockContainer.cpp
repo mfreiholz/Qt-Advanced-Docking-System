@@ -32,12 +32,10 @@
 #include "DockWidgetSideTab.h"
 #include "DockWidgetTab.h"
 #include "SideTabBar.h"
-#include "DockAreaTitleBar.h"
 #include "DockAreaWidget.h"
 #include "DockingStateReader.h"
 
 #include <QXmlStreamWriter>
-#include <QAbstractButton>
 #include <QBoxLayout>
 #include <QPainter>
 #include <QSplitter>
@@ -51,7 +49,6 @@ struct OverlayDockContainerPrivate
 	CDockAreaWidget* DockArea{nullptr};
 	CDockWidget* DockWidget{nullptr};
 	QPointer<CDockManager> DockManager{nullptr};
-	QSplitter* Splitter;
 	CDockWidgetSideTab::SideTabBarArea Area;
 
 	/**
@@ -126,26 +123,24 @@ OverlayDockContainerPrivate::OverlayDockContainerPrivate(
 
 CDockContainerWidget* COverlayDockContainer::parentContainer() const
 {
-	return qobject_cast<CDockContainerWidget*>(parent());
+	return internal::findParent<CDockContainerWidget*>(this);
 }
 
 //============================================================================
 COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent) :
-    QFrame(parent),
+    QSplitter(area == CDockWidgetSideTab::Bottom ? Qt::Orientation::Vertical : Qt::Orientation::Horizontal, parent),
     d(new OverlayDockContainerPrivate(this))
 {
 	d->DockManager = DockManager;
 	d->Area = area;
 	d->DockArea = new CDockAreaWidget(DockManager, parent);
-	d->DockArea->setObjectName("OverlayDockArea");
+	d->DockArea->setObjectName("overlayDockArea");
 	d->DockArea->setOverlayDockContainer(this);
 	d->DockArea->updateAutoHideButtonCheckState();
 	d->DockArea->updateTitleBarButtonToolTip();
 
-	QBoxLayout* l = new QBoxLayout(QBoxLayout::LeftToRight);
-	d->Splitter = new QSplitter(area == CDockWidgetSideTab::Bottom ? Qt::Orientation::Vertical : Qt::Orientation::Horizontal);
-	d->Splitter->setObjectName("overlaySplitter");
-	d->Splitter->setChildrenCollapsible(false);
+	setObjectName("overlaySplitter");
+	setChildrenCollapsible(false);
 
 	const auto emptyWidget = new QWidget();
 	emptyWidget->setMinimumWidth(50); 
@@ -157,30 +152,25 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWid
             [[fallthrough]];
         case CDockWidgetSideTab::LeftTop:
         {
-            d->Splitter->addWidget(d->DockArea);
-            d->Splitter->addWidget(emptyWidget);
+            addWidget(d->DockArea);
+            addWidget(emptyWidget);
             break;
         }
         case CDockWidgetSideTab::RightBottom: 
 			[[fallthrough]];
         case CDockWidgetSideTab::RightTop: 
         {
-            d->Splitter->addWidget(emptyWidget);
-            d->Splitter->addWidget(d->DockArea);
+            addWidget(emptyWidget);
+            addWidget(d->DockArea);
             break;
         }
         case CDockWidgetSideTab::Bottom: 
         {
-            d->Splitter->addWidget(emptyWidget);
-            d->Splitter->addWidget(d->DockArea);
+            addWidget(emptyWidget);
+            addWidget(d->DockArea);
 			break;
         }
     }
-
-	l->setContentsMargins(QMargins());
-	l->setSpacing(0);
-	l->addWidget(d->Splitter);
-	setLayout(l);
 
 	updateMask();
 	updateSize();
@@ -196,7 +186,7 @@ void COverlayDockContainer::updateMask()
 {
     const auto rect = d->DockArea->frameGeometry();
     const auto topLeft = rect.topLeft();
-    const auto handleSize = d->Splitter->handleWidth();
+    const auto handleSize = handleWidth();
 
 	if (d->Area == CDockWidgetSideTab::Bottom)
 	{
@@ -220,6 +210,7 @@ void COverlayDockContainer::updateSize()
 	const auto rect = rootSplitter->frameGeometry();
 	move(rect.topLeft());
     resize(rect.width(), rect.height());
+	d->DockArea->updateGeometry();
 }
 
 //============================================================================
@@ -299,7 +290,7 @@ void COverlayDockContainer::setDockSizeProportion(float SplitterProportion)
 			[[fallthrough]];
         case CDockWidgetSideTab::LeftTop:
         {
-            d->Splitter->setSizes({ dockSize, remainingSize });
+            setSizes({ dockSize, remainingSize });
 			break;
         }
         case CDockWidgetSideTab::RightBottom: 
@@ -308,7 +299,7 @@ void COverlayDockContainer::setDockSizeProportion(float SplitterProportion)
 			[[fallthrough]];
         case CDockWidgetSideTab::Bottom:
         { 
-            d->Splitter->setSizes({ remainingSize, dockSize });
+            setSizes({ remainingSize, dockSize });
 			break;
         }
     }
@@ -367,7 +358,7 @@ void COverlayDockContainer::saveState(QXmlStreamWriter& s)
 {
     s.writeAttribute("SideTabBarArea", QString::number(sideTabBarArea())); 
 	QStringList Sizes;
-    for (auto Size : d->Splitter->sizes())
+    for (auto Size : sizes())
     {
 		Sizes << QString::number(Size);
     }
@@ -390,14 +381,14 @@ bool COverlayDockContainer::restoreState(CDockingStateReader& s, bool Testing)
 		Sizes.append(value);
 	}
 
-	if (Sizes.count() != d->Splitter->count())
+	if (Sizes.count() != count())
 	{
 		return false;
 	}
 
 	if (!Testing)
 	{
-		d->Splitter->setSizes(Sizes);
+		setSizes(Sizes);
 	}
 
 	return true;

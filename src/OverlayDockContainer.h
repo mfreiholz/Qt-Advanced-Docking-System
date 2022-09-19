@@ -33,7 +33,7 @@
 
 #include "DockWidgetSideTab.h"
 
-#include <QFrame>
+#include <QSplitter>
 
 class QXmlStreamWriter;
 
@@ -47,7 +47,9 @@ class CSideTabBar;
 class CDockAreaWidget;
 class CDockingStateReader;
 
-class ADS_EXPORT COverlayDockContainer : public QFrame
+// Note: This widget must be a QSplitter, inheriting from QWidget and keeping an internal splitter breaks ActiveX widgets
+// likely due to layout issues between this widget and the internal splitter
+class ADS_EXPORT COverlayDockContainer : public QSplitter
 {
 	Q_OBJECT
 
