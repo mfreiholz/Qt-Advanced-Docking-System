@@ -64,13 +64,11 @@ struct OverlayDockContainerPrivate
         switch (area)
         {
             case CDockWidgetSideTab::LeftBottom: 
-                [[fallthrough]];
             case CDockWidgetSideTab::LeftTop:
             {
 				return LeftDockWidgetArea;
             }
             case CDockWidgetSideTab::RightBottom:
-				[[fallthrough]];
             case CDockWidgetSideTab::RightTop:
             {
 				return RightDockWidgetArea;
@@ -92,13 +90,11 @@ struct OverlayDockContainerPrivate
         switch (Area)
             {
                 case CDockWidgetSideTab::LeftTop: 
-                    [[fallthrough]];
                 case CDockWidgetSideTab::LeftBottom:
                 {
                     return QPoint(1, _this->height() / 2);
                 }
                 case CDockWidgetSideTab::RightTop:
-                    [[fallthrough]];
                 case CDockWidgetSideTab::RightBottom:
                 {
                     return QPoint(_this->width() - 1, _this->height() / 2);
@@ -149,7 +145,6 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWid
     switch (area)
     {
         case CDockWidgetSideTab::LeftBottom: 
-            [[fallthrough]];
         case CDockWidgetSideTab::LeftTop:
         {
             addWidget(d->DockArea);
@@ -157,7 +152,6 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWid
             break;
         }
         case CDockWidgetSideTab::RightBottom: 
-			[[fallthrough]];
         case CDockWidgetSideTab::RightTop: 
         {
             addWidget(emptyWidget);
@@ -287,16 +281,13 @@ void COverlayDockContainer::setDockSizeProportion(float SplitterProportion)
     switch (d->Area)
     {
         case CDockWidgetSideTab::LeftBottom:
-			[[fallthrough]];
         case CDockWidgetSideTab::LeftTop:
         {
             setSizes({ dockSize, remainingSize });
 			break;
         }
         case CDockWidgetSideTab::RightBottom: 
-			[[fallthrough]];
         case CDockWidgetSideTab::RightTop: 
-			[[fallthrough]];
         case CDockWidgetSideTab::Bottom:
         { 
             setSizes({ remainingSize, dockSize });
@@ -439,13 +430,11 @@ bool COverlayDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarAre
     switch (area)
     {
         case CDockWidgetSideTab::LeftBottom:
-			[[fallthrough]];
         case CDockWidgetSideTab::LeftTop:
         {
 			return CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar);
         }
         case CDockWidgetSideTab::RightBottom:
-			[[fallthrough]];
         case CDockWidgetSideTab::RightTop:
         {
 			return CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar);
