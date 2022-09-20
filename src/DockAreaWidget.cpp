@@ -485,6 +485,7 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 	if (Activate)
 	{
 		setCurrentIndex(index);
+		DockWidget->setClosedState(false); // Set current index can show the widget without changing the close state, added to keep the close state consistent
 	}
 	// If this dock area is hidden, then we need to make it visible again
 	// by calling DockWidget->toggleViewInternal(true);
@@ -641,6 +642,7 @@ void CDockAreaWidget::internalSetCurrentDockWidget(CDockWidget* DockWidget)
 	}
 
 	setCurrentIndex(Index);
+	DockWidget->setClosedState(false); // Set current index can show the widget without changing the close state, added to keep the close state consistent
 }
 
 
