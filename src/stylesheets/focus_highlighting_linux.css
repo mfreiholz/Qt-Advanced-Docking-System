@@ -44,6 +44,26 @@ ads--CDockWidgetTab[activeTab="true"] QLabel {
         color: palette(foreground);
 }
 
+ads--CDockWidgetSideTab {
+	background: palette(window);
+	qproperty-iconSize: 16px 16px;/* this is optional in case you would like to change icon size*/
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="0"],[sideTabBarArea="1"] {
+	border-left: 3px solid grey;
+	border-bottom: 1px solid white;
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="2"],[sideTabBarArea="3"] {
+	border-right: 3px solid grey;
+	border-bottom: 1px solid white;
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="4"] {
+	border-bottom: 3px solid grey;
+	border-right: 1px solid white;
+}
+
 ads--CDockWidget {
         background: palette(light);
         border-color: palette(light);
@@ -104,6 +124,30 @@ QScrollArea#dockWidgetScrollArea {
 
 
 /* Focus related styling */
+ads--CDockWidgetSideTab:hover[sideTabBarArea="0"],:hover[sideTabBarArea="1"] {
+	border-left: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab:hover[sideTabBarArea="2"],:hover[sideTabBarArea="3"] {
+	border-right: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab:hover[sideTabBarArea="4"] {
+	border-bottom: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="0"][focused="true"],[sideTabBarArea="1"][focused="true"] {
+	border-left: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="2"][focused="true"],[sideTabBarArea="3"][focused="true"] {
+	border-right: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="4"][focused="true"] {
+	border-bottom: 3px solid palette(highlight);
+}
+
 ads--CDockWidgetTab[focused="true"] {
         background: palette(highlight);
         border-color: palette(highlight);
