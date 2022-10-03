@@ -1521,11 +1521,7 @@ CDockWidgetSideTab::SideTabBarArea CDockContainerWidget::getDockAreaPosition(CDo
 	// It's bottom if the width is wider than the height, and if it's below 50% of the window
 	const auto dockWidgetFrameGeometry = DockAreaWidget->frameGeometry();
 	const auto splitterCenter = rootSplitter()->mapToGlobal(rootSplitter()->frameGeometry().center());
-	const auto a = dockWidgetFrameGeometry.width();
-    const auto b = dockWidgetFrameGeometry.height();
-	const auto c = DockAreaWidget->mapToGlobal(dockWidgetFrameGeometry.topLeft()).y();
-    const auto d = splitterCenter.y();
-	const auto e =  CDockManager::testConfigFlag(CDockManager::DockContainerHasBottomSideBar);
+
 	if (dockWidgetFrameGeometry.width() > dockWidgetFrameGeometry.height() 
 		&& DockAreaWidget->mapToGlobal(dockWidgetFrameGeometry.topLeft()).y() > splitterCenter.y()
 		&& CDockManager::testConfigFlag(CDockManager::DockContainerHasBottomSideBar))
