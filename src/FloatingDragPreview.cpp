@@ -8,6 +8,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <AutoHideDockContainer.h>
 #include "FloatingDragPreview.h"
 #include <iostream>
 
@@ -21,7 +22,6 @@
 #include "DockManager.h"
 #include "DockContainerWidget.h"
 #include "DockOverlay.h"
-#include "OverlayDockContainer.h"
 
 namespace ads
 {
@@ -369,9 +369,9 @@ void CFloatingDragPreview::cleanupOverlayContainerWidget()
 {
 	auto DroppedDockWidget = qobject_cast<CDockWidget*>(d->Content);
 	auto DroppedArea = qobject_cast<CDockAreaWidget*>(d->Content);
-	if (DroppedDockWidget && DroppedDockWidget->overlayDockContainer())
+	if (DroppedDockWidget && DroppedDockWidget->autoHideDockContainer())
 	{
-		DroppedDockWidget->overlayDockContainer()->cleanupAndDelete();
+		DroppedDockWidget->autoHideDockContainer()->cleanupAndDelete();
 	}
 	if (DroppedArea && DroppedArea->overlayDockContainer())
 	{

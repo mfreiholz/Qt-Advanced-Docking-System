@@ -76,7 +76,7 @@ private:
 	friend class CDockWidget;
 	friend class CFloatingDragPreview;
 	friend struct FloatingDragPreviewPrivate;
-	friend class COverlayDockContainer;
+	friend class CAutoHideDockContainer;
 
 protected:
 	/**
@@ -100,7 +100,7 @@ protected:
 	 * Initializing inserts the tabs into the side tab widget and hides it
 	 * Returns nullptr if you try and insert into an area where the configuration is not enabled
 	 */
-	COverlayDockContainer* createAndInitializeDockWidgetOverlayContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget, CDockWidget::eOverlayInsertOrder insertOrder);
+	CAutoHideDockContainer* createAndInitializeDockWidgetOverlayContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget, CDockWidget::eOverlayInsertOrder insertOrder);
 
 	/**
 	 * Helper function for creation of the root splitter
@@ -187,13 +187,13 @@ protected:
 	 * Registers the given floating widget in the internal list of
 	 * overlay widgets
 	 */
-    void registerOverlayWidget(COverlayDockContainer* OverlayWidget);
+    void registerOverlayWidget(CAutoHideDockContainer* OverlayWidget);
 
     /**
 	 * Remove the given overlay widget from the list of registered overlay
 	 * widgets
 	 */
-    void removeOverlayWidget(COverlayDockContainer* OverlayWidget);
+    void removeOverlayWidget(CAutoHideDockContainer* OverlayWidget);
 
 
 public:
@@ -326,7 +326,7 @@ public:
 	/**
 	 * Access function for overlay widgets
 	 */
-	QList<COverlayDockContainer*> overlayWidgets() const;
+	QList<CAutoHideDockContainer*> overlayWidgets() const;
 
 Q_SIGNALS:
 	/**
@@ -339,7 +339,7 @@ Q_SIGNALS:
 	/**
 	 * This signal is emitted, if a new overlay widget has been created.
 	 */
-	void overlayWidgetCreated(ads::COverlayDockContainer* OverlayWidget);
+	void overlayWidgetCreated(ads::CAutoHideDockContainer* OverlayWidget);
 
 	/**
 	 * This signal is emitted if one or multiple dock areas has been removed

@@ -26,7 +26,6 @@
 #include "DockManager.h"
 #include "DockAreaTitleBar.h"
 #include "DockWidgetSideTab.h"
-#include "OverlayDockContainer.h"
 
 #ifdef Q_OS_LINUX
 #include "linux/FloatingWidgetTitleBar.h"
@@ -189,12 +188,7 @@ void DockFocusControllerPrivate::updateDockWidgetFocus(CDockWidget* DockWidget)
 	}
 #endif
 
-	if (old && old->overlayDockContainer() && old->overlayDockContainer()->isVisible() && old != FocusedDockWidget)
-	{
-		old->overlayDockContainer()->collapseView(true);
-	}
-
-    if (old == DockWidget && !ForceFocusChangedSignal)
+	if (old == DockWidget && !ForceFocusChangedSignal)
     {
     	return;
     }

@@ -28,6 +28,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <AutoHideDockContainer.h>
 #include "DockWidgetTab.h"
 #include "DockWidget.h"
 
@@ -59,7 +60,6 @@
 #include "DockSplitter.h"
 #include "DockComponentsFactory.h"
 #include "ads_globals.h"
-#include "OverlayDockContainer.h"
 
 
 namespace ads
@@ -437,7 +437,7 @@ CDockWidgetTab* CDockWidget::tabWidget() const
 	return d->TabWidget;
 }
 
-COverlayDockContainer* CDockWidget::overlayDockContainer() const
+CAutoHideDockContainer* CDockWidget::autoHideDockContainer() const
 {
 	if (!d->DockArea)
 	{
@@ -1079,15 +1079,16 @@ void CDockWidget::showNormal()
 //============================================================================
 void CDockWidget::onDockWidgetSideTabClicked()
 {
-	const auto overlayContainer = overlayDockContainer();
+	const auto overlayContainer = autoHideDockContainer();
 	if (!overlayContainer)
 	{
 		return;
 	}
 
 	overlayContainer->raise();
-	const auto shouldCollapse = overlayContainer->isVisible();
-	overlayContainer->collapseView(shouldCollapse);
+	//const auto shouldCollapse = overlayContainer->isVisible();
+	//overlayContainer->collapseView(shouldCollapse);
+	overlayContainer->toggleCollapseState();
 	if (overlayContainer->isVisible())
 	{
 		// d->DockManager->setDockWidgetFocused(this) does not

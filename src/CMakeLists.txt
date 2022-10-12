@@ -29,7 +29,7 @@ set(ads_SRCS
     DockComponentsFactory.cpp
     SideTabBar.cpp
     DockWidgetSideTab.cpp
-    OverlayDockContainer.cpp
+    AutoHideDockContainer.cpp
     ads.qrc
 )
 set(ads_HEADERS
@@ -53,7 +53,7 @@ set(ads_HEADERS
     DockComponentsFactory.h
     SideTabBar.h
     DockWidgetSideTab.h
-    OverlayDockContainer.h
+    AutoHideDockContainer.h
 )
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 if (UNIX AND NOT APPLE)

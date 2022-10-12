@@ -66,7 +66,7 @@ private:
 	friend class CDockWidget;
 	friend struct DockManagerPrivate;
 	friend class CDockManager;
-	friend class COverlayDockContainer;
+	friend class CAutoHideDockContainer;
 	void onDockWidgetFeaturesChanged();
 
 private Q_SLOTS:
@@ -212,7 +212,7 @@ public:
 	 * Returns the overlay dock container widget this dock area widget belongs to or 0
 	 * if there is no
 	 */
-	COverlayDockContainer* overlayDockContainer() const; 
+	CAutoHideDockContainer* overlayDockContainer() const; 
 
 	/**
 	 * Returns true if the dock area exists in an overlay dock container
@@ -223,7 +223,7 @@ public:
 	/**
 	 * Sets the current overlay dock container
 	 */
-	void setOverlayDockContainer(COverlayDockContainer* OverlayDockContainer);
+	void setOverlayDockContainer(CAutoHideDockContainer* OverlayDockContainer);
 
     /**
      * Returns the largest minimumSizeHint() of the dock widgets in this

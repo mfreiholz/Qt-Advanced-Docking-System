@@ -39,7 +39,7 @@ class QXmlStreamWriter;
 
 namespace ads
 {
-struct OverlayDockContainerPrivate;
+struct AutoHideDockContainerPrivate;
 class CDockManager;
 class CDockWidget;
 class CDockContainerWidget;
@@ -49,17 +49,16 @@ class CDockingStateReader;
 
 // Note: This widget must be a QSplitter, inheriting from QWidget and keeping an internal splitter breaks ActiveX widgets
 // likely due to layout issues between this widget and the internal splitter
-class ADS_EXPORT COverlayDockContainer : public QSplitter
+class ADS_EXPORT CAutoHideDockContainer : public QSplitter
 {
 	Q_OBJECT
 
 private:
-	OverlayDockContainerPrivate* d; ///< private data (pimpl)
-	friend struct OverlayDockContainerPrivate;
+	AutoHideDockContainerPrivate* d; ///< private data (pimpl)
+	friend struct AutoHideDockContainerPrivate;
 
 protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
-	void mousePressEvent(QMouseEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
 	void updateMask();
 	void updateSize();
@@ -70,17 +69,17 @@ public:
 	/**
 	 * Create overlay widget with a dock manager
 	 */
-    COverlayDockContainer(CDockManager* DockManager, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent);
+    CAutoHideDockContainer(CDockManager* DockManager, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent);
 
     /**
 	 * Create overlay widget with the given dock widget
 	 */
-	COverlayDockContainer(CDockWidget* DockWidget, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent);
+	CAutoHideDockContainer(CDockWidget* DockWidget, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent);
 
 	/**
 	 * Virtual Destructor
 	 */
-	virtual ~COverlayDockContainer();
+	virtual ~CAutoHideDockContainer();
 
 	/**
 	 * Get's the side tab bar
@@ -147,6 +146,11 @@ public:
 	 * Does not hide the side tab widget
 	 */
 	void collapseView(bool Enable);
+
+	/**
+	 * Toggles the current collapse state
+	 */
+	void toggleCollapseState();
 
 	/*
 	 * Convenience function fr determining if area exists in config

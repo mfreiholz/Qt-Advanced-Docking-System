@@ -48,7 +48,7 @@ HEADERS += \
     IconProvider.h \
     DockComponentsFactory.h  \
     DockFocusController.h \
-    OverlayDockContainer.h \
+    AutoHideDockContainer.h \
     SideTabBar.h \
     DockWidgetSideTab.h
 
@@ -71,7 +71,7 @@ SOURCES += \
     IconProvider.cpp \
     DockComponentsFactory.cpp \
     DockFocusController.cpp \
-    OverlayDockContainer.cpp \
+    AutoHideDockContainer.cpp \
     SideTabBar.cpp \
     DockWidgetSideTab.cpp
 

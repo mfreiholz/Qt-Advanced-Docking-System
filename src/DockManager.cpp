@@ -28,6 +28,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <AutoHideDockContainer.h>
 #include "DockWidgetTab.h"
 #include "DockManager.h"
 
@@ -57,7 +58,6 @@
 #include "DockAreaTitleBar.h"
 #include "DockFocusController.h"
 #include "DockSplitter.h"
-#include "OverlayDockContainer.h"
 
 #ifdef Q_OS_LINUX
 #include "linux/FloatingWidgetTitleBar.h"
@@ -865,13 +865,13 @@ CDockAreaWidget* CDockManager::addDockWidgetToContainer(DockWidgetArea area,
 }
 
 //============================================================================
-COverlayDockContainer* CDockManager::addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockWidget::eOverlayInsertOrder insertOrder)
+CAutoHideDockContainer* CDockManager::addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockWidget::eOverlayInsertOrder insertOrder)
 {
 	return addOverlayDockWidgetToContainer(area, Dockwidget, this, insertOrder);
 }
 
 //============================================================================
-COverlayDockContainer* CDockManager::addOverlayDockWidgetToContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget, CDockWidget::eOverlayInsertOrder insertOrder)
+CAutoHideDockContainer* CDockManager::addOverlayDockWidgetToContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget, CDockWidget::eOverlayInsertOrder insertOrder)
 {
 	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
 	auto container = DockContainerWidget->createAndInitializeDockWidgetOverlayContainer(area, Dockwidget, insertOrder);
