@@ -498,9 +498,10 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 			return QSplitter::eventFilter(watched, event);
 		}
 
-		// Now we check, if the user clicked inside of this overlay. If the click
-		// is inside of the overlay, the we can also ignore the event, because
-		// the overlay should not get collapsed if user works in it
+		// Now we check, if the user clicked inside of this auto hide container.
+		// If the click is inside of this auto hide container, then we can also
+		// ignore the event, because the overlay should not get collapsed if
+		// user works in it
 		QMouseEvent* me = static_cast<QMouseEvent*>(event);
 		auto pos = d->DockArea->mapFromGlobal(me->globalPos());
 		auto rect = d->DockArea->rect().adjusted(-handleWidth(), 0, 0, 0);
@@ -521,9 +522,8 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		}
 
 		// If the mouse button down event is in the dock manager but outside
-		// of the open overlay container, then the auto hide dock widget
+		// of the open auto hide container, then the auto hide dock widget
 		// should get collapsed
-		// If the user clicked into the side tab widget of this
 		collapseView(true);
 	}
 
