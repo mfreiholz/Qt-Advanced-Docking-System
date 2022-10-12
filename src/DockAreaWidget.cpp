@@ -316,6 +316,11 @@ struct DockAreaWidgetPrivate
 	void updateTitleBarButtonVisibility(bool isTopLevel);
 
 	/**
+	 * Convenience function to know if all dock widgets are focusable
+	 */
+	bool allDockWidgetsFocusable() const;
+
+	/**
 	 * Scans all contained dock widgets for the max. minimum size hint
 	 */
 	void updateMinimumSizeHint()
@@ -382,7 +387,7 @@ void DockAreaWidgetPrivate::updateTitleBarButtonVisibility(bool IsTopLevel)
 	if (IsTopLevel)
 	{
 		TitleBar->button(TitleBarButtonClose)->setVisible(!container->isFloating());
-		TitleBar->button(TitleBarButtonAutoHide)->setVisible(!container->isFloating());
+		TitleBar->button(TitleBarButtonAutoHide)->setVisible(!container->isFloating() && allDockWidgetsFocusable());
         // Undock and tabs should never show when overlayed
 		TitleBar->button(TitleBarButtonUndock)->setVisible(!container->isFloating() && !_this->isOverlayed());
         TitleBar->button(TitleBarButtonTabsMenu)->setVisible(!_this->isOverlayed());
@@ -390,10 +395,23 @@ void DockAreaWidgetPrivate::updateTitleBarButtonVisibility(bool IsTopLevel)
 	else
 	{
 		TitleBar->button(TitleBarButtonClose)->setVisible(true);
-		TitleBar->button(TitleBarButtonAutoHide)->setVisible(true);
+		TitleBar->button(TitleBarButtonAutoHide)->setVisible(allDockWidgetsFocusable());
 		TitleBar->button(TitleBarButtonUndock)->setVisible(!_this->isOverlayed());
         TitleBar->button(TitleBarButtonTabsMenu)->setVisible(!_this->isOverlayed());
 	}
+}
+
+bool DockAreaWidgetPrivate::allDockWidgetsFocusable() const
+{
+	for (const auto &dockWidget : _this->dockWidgets())
+	{
+		if (!dockWidget->features().testFlag(CDockWidget::DockWidgetFocusable))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 

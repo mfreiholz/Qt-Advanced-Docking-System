@@ -204,7 +204,6 @@ void COverlayDockContainer::updateSize()
 	const auto rect = rootSplitter->frameGeometry();
 	move(rect.topLeft());
     resize(rect.width(), rect.height());
-	d->DockArea->updateGeometry();
 }
 
 //============================================================================
@@ -313,6 +312,8 @@ CDockAreaWidget* COverlayDockContainer::dockAreaWidget() const
 //============================================================================
 void COverlayDockContainer::moveContentsToParent()
 {
+	cleanupAndDelete();
+
 	const auto position = mapToGlobal(d->getSimplifiedDockAreaPosition());
 
 	const auto dockAreaWidget = parentContainer()->dockAreaAt(position);
@@ -324,7 +325,8 @@ void COverlayDockContainer::moveContentsToParent()
 	{
         parentContainer()->addDockWidget(d->getArea(d->Area), d->DockWidget);
 	}
-	cleanupAndDelete();
+
+    parentContainer()->removeDockArea(d->DockArea);
 }
 
 
@@ -457,14 +459,15 @@ bool COverlayDockContainer::eventFilter(QObject* watched, QEvent* event)
 		updateSize();
 		updateMask();
 	}
-	return QWidget::eventFilter(watched, event);
+
+	return QSplitter::eventFilter(watched, event);
 }
 
 
 //============================================================================
 void COverlayDockContainer::mousePressEvent(QMouseEvent* event)
 {
-    QWidget::mousePressEvent(event);
+    QSplitter::mousePressEvent(event);
 }
 
 
@@ -472,7 +475,7 @@ void COverlayDockContainer::mousePressEvent(QMouseEvent* event)
 void COverlayDockContainer::resizeEvent(QResizeEvent* event)
 {
 	updateMask();
-    QWidget::resizeEvent(event);
+    QSplitter::resizeEvent(event);
 }
 }
 
