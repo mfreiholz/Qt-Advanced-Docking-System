@@ -53,8 +53,6 @@ struct AutoHideDockContainerPrivate
 	CDockWidget* DockWidget{nullptr};
 	QPointer<CDockManager> DockManager{nullptr};
 	CDockWidgetSideTab::SideTabBarArea Area;
-	bool Collapsed = true;
-	bool Ignore = false;
 
 	/**
 	 * Private data constructor
@@ -392,6 +390,8 @@ bool CAutoHideDockContainer::restoreState(CDockingStateReader& s, bool Testing)
 	return true;
 }
 
+
+//============================================================================
 void CAutoHideDockContainer::toggleView(bool Enable)
 {
 	if (Enable)
@@ -414,21 +414,16 @@ void CAutoHideDockContainer::toggleView(bool Enable)
 	}
 }
 
+
+//============================================================================
 void CAutoHideDockContainer::collapseView(bool Enable)
 {
-	std::cout << "COverlayDockContainer::collapseView " << Enable << "  "
-		<< d->DockWidget->objectName().toStdString() << std::endl;
-
-	if (d->Ignore)
-	{
-		return;
-	}
-
 	if (Enable)
 	{
 		hide();
 		d->DockArea->hide();
 		d->DockWidget->hide();
+		qApp->removeEventFilter(this);
 	}
 	else
 	{
@@ -438,7 +433,6 @@ void CAutoHideDockContainer::collapseView(bool Enable)
 		d->DockWidget->show();
 		qApp->installEventFilter(this);
 	}
-	d->Collapsed = Enable;
 }
 
 
@@ -515,20 +509,22 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 			return QSplitter::eventFilter(watched, event);
 		}
 
-		// If the mouse button down event is in the dock manager but outside
-		// of the open overlay container, then the overlay dock widget
-		// should get collapsed
-		collapseView(true);
-		d->Ignore = true;
-	}
-	else if (event->type() == QEvent::MouseButtonRelease)
-	{
-		std::cout << "Mouse release: " << watched->metaObject()->className() << std::endl;
-		d->Ignore = false;
-		if (!isVisible())
+		// Now check, if the user clicked into the side tab and ignore this event,
+		// because the side tab click handler will call collapseView(). If we
+		// do not ignore this here, then we will collapse the container and the side tab
+		// click handler will uncollapse it
+		auto SideTab = d->DockWidget->sideTabWidget();
+		pos = SideTab->mapFromGlobal(me->globalPos());
+		if (SideTab->rect().contains(pos))
 		{
-			qApp->removeEventFilter(this);
+			return QSplitter::eventFilter(watched, event);
 		}
+
+		// If the mouse button down event is in the dock manager but outside
+		// of the open overlay container, then the auto hide dock widget
+		// should get collapsed
+		// If the user clicked into the side tab widget of this
+		collapseView(true);
 	}
 
 	return QSplitter::eventFilter(watched, event);
