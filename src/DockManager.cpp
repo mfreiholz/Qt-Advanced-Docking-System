@@ -93,7 +93,7 @@ enum eStateFileVersion
 };
 
 static CDockManager::ConfigFlags StaticConfigFlags = CDockManager::DefaultNonOpaqueConfig;
-static CDockManager::OverlayFlags StaticOverlayConfigFlags = CDockManager::DefaultAutoHideConfig;
+static CDockManager::AutoHideFlags StaticAutoHideConfigFlags = CDockManager::DefaultAutoHideConfig;
 
 /**
  * Private data class of CDockManager class (pimpl)
@@ -435,7 +435,7 @@ bool DockManagerPrivate::restoreState(const QByteArray& State, int version)
     // Hide updates of floating widgets from use
     hideFloatingWidgets();
     markDockWidgetsDirty();
-	_this->deleteOverlayWidgets();
+	_this->deleteAutoHideWidgets();
 
     if (!restoreStateFromXml(state, version))
     {
@@ -865,16 +865,16 @@ CDockAreaWidget* CDockManager::addDockWidgetToContainer(DockWidgetArea area,
 }
 
 //============================================================================
-CAutoHideDockContainer* CDockManager::addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockWidget::eOverlayInsertOrder insertOrder)
+CAutoHideDockContainer* CDockManager::addAutoHideDockWidget(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockWidget::eAutoHideInsertOrder insertOrder)
 {
-	return addOverlayDockWidgetToContainer(area, Dockwidget, this, insertOrder);
+	return addAutoHideDockWidgetToContainer(area, Dockwidget, this, insertOrder);
 }
 
 //============================================================================
-CAutoHideDockContainer* CDockManager::addOverlayDockWidgetToContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget, CDockWidget::eOverlayInsertOrder insertOrder)
+CAutoHideDockContainer* CDockManager::addAutoHideDockWidgetToContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget, CDockWidget::eAutoHideInsertOrder insertOrder)
 {
 	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
-	auto container = DockContainerWidget->createAndInitializeDockWidgetOverlayContainer(area, Dockwidget, insertOrder);
+	auto container = DockContainerWidget->createAndInitializeAutoHideDockWidgetContainer(area, Dockwidget, insertOrder);
 	container->collapseView(true);
 
 	Q_EMIT dockWidgetAdded(Dockwidget);
@@ -1138,9 +1138,9 @@ CDockManager::ConfigFlags CDockManager::configFlags()
 	return StaticConfigFlags;
 }
 
-CDockManager::OverlayFlags CDockManager::overlayConfigFlags()
+CDockManager::AutoHideFlags CDockManager::autoHideConfigFlags()
 {
-	return StaticOverlayConfigFlags;
+	return StaticAutoHideConfigFlags;
 }
 
 
@@ -1152,9 +1152,9 @@ void CDockManager::setConfigFlags(const ConfigFlags Flags)
 
 
 //===========================================================================
-void CDockManager::setConfigFlags(const OverlayFlags Flags)
+void CDockManager::setConfigFlags(const AutoHideFlags Flags)
 {
-	StaticOverlayConfigFlags = Flags;
+	StaticAutoHideConfigFlags = Flags;
 }
 
 
@@ -1166,9 +1166,9 @@ void CDockManager::setConfigFlag(eConfigFlag Flag, bool On)
 
 
 //===========================================================================
-void CDockManager::setConfigFlag(eOverlayFlag Flag, bool On)
+void CDockManager::setConfigFlag(eAutoHideFlag Flag, bool On)
 {
-	internal::setFlag(StaticOverlayConfigFlags, Flag, On);
+	internal::setFlag(StaticAutoHideConfigFlags, Flag, On);
 }
 
 //===========================================================================
@@ -1179,9 +1179,9 @@ bool CDockManager::testConfigFlag(eConfigFlag Flag)
 
 
 //===========================================================================
-bool CDockManager::testConfigFlag(eOverlayFlag Flag)
+bool CDockManager::testConfigFlag(eAutoHideFlag Flag)
 {
-	return overlayConfigFlags().testFlag(Flag);
+	return autoHideConfigFlags().testFlag(Flag);
 }
 
 

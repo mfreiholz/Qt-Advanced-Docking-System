@@ -224,7 +224,7 @@ public:
 	};
 	Q_DECLARE_FLAGS(ConfigFlags, eConfigFlag)
 
-    enum eOverlayFlag
+    enum eAutoHideFlag
 	{
 		DockContainerHasLeftSideBar = 0x01, //!< If the flag is set left side bar will prioritize showing icons only over text
 		DockContainerHasRightSideBar = 0x02, //!< If the flag is set right side bar will prioritize showing icons only over text
@@ -233,15 +233,15 @@ public:
 		LeftSideBarPrioritizeIconOnly = 0x10,     //!< If the flag is set each container will have a left side bar
 		RightSideBarPrioritizeIconOnly = 0x20,     //!< If the flag is set each container will have a right side bar
 		BottomSideBarPrioritizeIconOnly = 0x40, //!< If the flag is set bottom side bar will prioritize showing icons only over text
-		DockAreaOverlayHasTitle = 0x80, //!< If the flag is set overlay dock area title bar will show the window title
+		AutoHideDockAreaHasTitle = 0x80, //!< If the flag is set overlay dock area title bar will show the window title
 
 		DefaultAutoHideConfig = DockContainerHasLeftSideBar 
                               | DockContainerHasRightSideBar
                               | DockContainerHasBottomSideBar
                               | DockAreaHasAutoHideButton
-                              | DockAreaOverlayHasTitle, ///< the default configuration for left and right side bars
+                              | AutoHideDockAreaHasTitle, ///< the default configuration for left and right side bars
 	};
-    Q_DECLARE_FLAGS(OverlayFlags, eOverlayFlag)
+    Q_DECLARE_FLAGS(AutoHideFlags, eAutoHideFlag)
 
 
 	/**
@@ -264,9 +264,9 @@ public:
 	static ConfigFlags configFlags();
 
 	/**
-	 * This function returns the overlay configuration flags
+	 * This function returns the auto hide configuration flags
 	 */
-	static OverlayFlags overlayConfigFlags();
+	static AutoHideFlags autoHideConfigFlags();
 
 	/**
 	 * Sets the global configuration flags for the whole docking system.
@@ -280,7 +280,7 @@ public:
 	 * Call this function before you create the dock manager and before
 	 * your create the first dock widget.
 	 */
-	static void setConfigFlags(const OverlayFlags Flags);
+	static void setConfigFlags(const AutoHideFlags Flags);
 
 	/**
 	 * Set a certain config flag.
@@ -292,7 +292,7 @@ public:
 	 * Set a certain overlay config flag.
 	 * \see setConfigFlags()
 	 */
-	static void setConfigFlag(eOverlayFlag Flag, bool On = true);
+	static void setConfigFlag(eAutoHideFlag Flag, bool On = true);
 
 	/**
 	 * Returns true if the given config flag is set
@@ -302,7 +302,7 @@ public:
 	/**
 	 * Returns true if the given overlay config flag is set
 	 */
-	static bool testConfigFlag(eOverlayFlag Flag);
+	static bool testConfigFlag(eAutoHideFlag Flag);
 
 	/**
 	 * Returns the global icon provider.
@@ -339,16 +339,16 @@ public:
 	/**
 	 * Adds a dock widget overlayed into the dock manager container based on the side tab bar area.
 	 * An overlay widget is used for auto hide functionality
-	 * \return Returns the COverlayDockContainer that contains the new DockWidget
+	 * \return Returns the CAutoHideDockContainer that contains the new DockWidget
 	 */
-	CAutoHideDockContainer* addOverlayDockWidget(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockWidget::eOverlayInsertOrder insertOrder = CDockWidget::Last);
+	CAutoHideDockContainer* addAutoHideDockWidget(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockWidget::eAutoHideInsertOrder insertOrder = CDockWidget::Last);
 
 	/**
 	 * Adds dock widget overlayed into the given container based on the CDockWidgetSideTab::SideTabBarArea.
 	 * An overlay widget is used for auto hide functionality
-	 * \return Returns the COverlayDockContainer that contains the new DockWidget
+	 * \return Returns the CAutoHideDockContainer that contains the new DockWidget
 	 */
-	CAutoHideDockContainer* addOverlayDockWidgetToContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget, CDockWidget::eOverlayInsertOrder = CDockWidget::Last);
+	CAutoHideDockContainer* addAutoHideDockWidgetToContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget, CDockWidget::eAutoHideInsertOrder = CDockWidget::Last);
 
 	/**
 	 * This function will add the given Dockwidget to the given dock area as

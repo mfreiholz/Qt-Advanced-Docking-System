@@ -85,10 +85,10 @@ protected:
 	virtual bool event(QEvent *e) override;
 
 	/*
-	 * Delete function for resetting the overlay widget list
+	 * Delete function for resetting the auto hide widget list
 	 * Used during restore
 	 */
-	void deleteOverlayWidgets();
+	void deleteAutoHideWidgets();
 
 	/**
 	 * Access function for the internal root splitter
@@ -96,11 +96,11 @@ protected:
 	QSplitter* rootSplitter() const;
 
 	/**
-	 * Creates and initializes a dockwidget overlay container into the given area.
+	 * Creates and initializes a dockwidget auto hide container into the given area.
 	 * Initializing inserts the tabs into the side tab widget and hides it
 	 * Returns nullptr if you try and insert into an area where the configuration is not enabled
 	 */
-	CAutoHideDockContainer* createAndInitializeDockWidgetOverlayContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget, CDockWidget::eOverlayInsertOrder insertOrder);
+	CAutoHideDockContainer* createAndInitializeAutoHideDockWidgetContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget, CDockWidget::eAutoHideInsertOrder insertOrder);
 
 	/**
 	 * Helper function for creation of the root splitter
@@ -185,15 +185,15 @@ protected:
 
 	/**
 	 * Registers the given floating widget in the internal list of
-	 * overlay widgets
+	 * auto hide widgets
 	 */
-    void registerOverlayWidget(CAutoHideDockContainer* OverlayWidget);
+    void registerAutoHideWidget(CAutoHideDockContainer* AutoHideWidget);
 
     /**
-	 * Remove the given overlay widget from the list of registered overlay
+	 * Remove the given auto hide widget from the list of registered auto hide
 	 * widgets
 	 */
-    void removeOverlayWidget(CAutoHideDockContainer* OverlayWidget);
+    void removeAutoHideWidget(CAutoHideDockContainer* AutoHideWidget);
 
 
 public:
@@ -218,7 +218,7 @@ public:
 		CDockAreaWidget* DockAreaWidget = nullptr);
 
 	/**
-	 * Get's the overlay dock side tab bar area based on the dock area widget position
+	 * Get's the auto hide dock side tab bar area based on the dock area widget position
 	 */
 	CDockWidgetSideTab::SideTabBarArea getDockAreaPosition(CDockAreaWidget* DockAreaWidget);
 
@@ -324,9 +324,9 @@ public:
 
 
 	/**
-	 * Access function for overlay widgets
+	 * Access function for auto hide widgets
 	 */
-	QList<CAutoHideDockContainer*> overlayWidgets() const;
+	QList<CAutoHideDockContainer*> autoHideWidgets() const;
 
 Q_SIGNALS:
 	/**
@@ -337,9 +337,9 @@ Q_SIGNALS:
 	void dockAreasAdded();
 
 	/**
-	 * This signal is emitted, if a new overlay widget has been created.
+	 * This signal is emitted, if a new auto hide widget has been created.
 	 */
-	void overlayWidgetCreated(ads::CAutoHideDockContainer* OverlayWidget);
+	void autoHideWidgetCreated(ads::CAutoHideDockContainer* AutoHideWidget);
 
 	/**
 	 * This signal is emitted if one or multiple dock areas has been removed

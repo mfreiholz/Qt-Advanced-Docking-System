@@ -159,7 +159,7 @@ public:
         DockWidgetForceCloseWithArea = 0x040, ///< dock widget will be closed when the dock area hosting it is closed
         NoTab = 0x080, ///< dock widget tab will never be shown if this flag is set
         DeleteContentOnClose = 0x100, ///< deletes only the contained widget on close, keeping the dock widget intact and in place. Attempts to rebuild the contents widget on show if there is a widget factory set.
-        DockWidgetPinnable = 0x200, ///< dock widget can be pinned and added to an overlay widget
+        DockWidgetPinnable = 0x200, ///< dock widget can be pinned and added to an auto hide dock container
         DefaultDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable | DockWidgetFocusable | DockWidgetPinnable,
         AllDockWidgetFeatures = DefaultDockWidgetFeatures | DockWidgetDeleteOnClose | CustomCloseHandling,
         DockWidgetAlwaysCloseAndDelete = DockWidgetForceCloseWithArea | DockWidgetDeleteOnClose,
@@ -230,10 +230,10 @@ public:
     };
 
     /**
-     * This mode configures the order of pinning and unpinning overlayed widgets
-     * First will add it to the top of the SideTabBar, while last will append it to the end
+     * This mode configures the order of pinning and unpinning auto hide widgets
+     * First will add it to the top of the SideTabBar, while Last will append it to the end
      */
-	enum eOverlayInsertOrder
+	enum eAutoHideInsertOrder
 	{
 		First,
 		Last
@@ -316,7 +316,7 @@ public:
     CDockWidgetTab* tabWidget() const;
 
     /**
-     * Returns the overlay dock container of this dock widget 
+     * Returns the auto hide dock container of this dock widget 
      * or 0 if there is none
      */
     CAutoHideDockContainer* autoHideDockContainer() const;
@@ -524,26 +524,26 @@ public:
     bool isCurrentTab() const;
 
 	/*
-	 * Set default dock proportion when overlayed
-	 * see *DefaultOverlayDockProportion()
+	 * Set default dock proportion when auto hiding
+	 * see *DefaultAutoHideDockProportion()
 	 */
-	void setDefaultOverlayDockProportion(float Proportion);
+	void setDefaultAutoHideDockProportion(float Proportion);
 
 	/*
-	 * Set default dock proportion when overlayed
+	 * Set default dock proportion when auto hiding
 	 * 0.25 is a quarter of the size, 0.5 is half the size, 1 is the entire size
 	 */
-	float DefaultOverlayDockProportion() const;
+	float DefaultAutoHideDockProportion() const;
 
 	/*
-	 * Set overlay insertion mode
+	 * Set auto hide insertion mode
 	 */
-	void setOverlayInsertOrder(eOverlayInsertOrder insertOrder);
+	void setAutoHideInsertOrder(eAutoHideInsertOrder insertOrder);
 
 	/*
-	 * Get overlay insertion mode
+	 * Get auto hide insertion mode
 	 */
-	eOverlayInsertOrder overlayInsertOrder() const;
+	eAutoHideInsertOrder autoHideInsertOrder() const;
 
 public: // reimplements QFrame -----------------------------------------------
     /**
@@ -612,7 +612,7 @@ public Q_SLOTS:
     void showNormal();
 
     /**
-     * Shows the dock overlay container when the side tab is clicked
+     * Toggles the dock auto hide container when the side tab is clicked
      */
     void onDockWidgetSideTabClicked();
 

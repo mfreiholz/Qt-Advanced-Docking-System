@@ -93,9 +93,9 @@ public: // implements IFloatingWidget -----------------------------------------
 	virtual void finishDragging() override;
 
 	/**
-	 * Cleanup overlay container if the dragged widget has one
+	 * Cleanup auto hide container if the dragged widget has one
 	 */
-	void cleanupOverlayContainerWidget();
+	void cleanupAutoHideContainerWidget();
 
 Q_SIGNALS:
 	/**

@@ -72,7 +72,7 @@ struct DockAreaTitleBarPrivate
 	QBoxLayout* Layout;
 	CDockAreaWidget* DockArea;
 	CDockAreaTabBar* TabBar;
-	CElidingLabel* OverlayTitleLabel;
+	CElidingLabel* AutoHideTitleLabel;
 	bool MenuOutdated = true;
 	QMenu* TabsMenu;
 	QList<tTitleBarButton*> DockWidgetActionsButtons;
@@ -94,9 +94,9 @@ struct DockAreaTitleBarPrivate
 
 
 	/**
-	 * Creates the overlay title label, only displayed when the dock area is overlayed
+	 * Creates the auto hide title label, only displayed when the dock area is overlayed
 	 */
-    void createOverlayTitleLabel();
+    void createAutoHideTitleLabel();
 
     /**
 	 * Creates the internal TabBar
@@ -124,7 +124,7 @@ struct DockAreaTitleBarPrivate
 	 * Returns true if the given config flag is set
 	 * Convenience function to ease config flag testing
 	 */
-	static bool testConfigFlag(CDockManager::eOverlayFlag Flag)
+	static bool testConfigFlag(CDockManager::eAutoHideFlag Flag)
 	{
 		return CDockManager::testConfigFlag(Flag);
 	}
@@ -217,11 +217,11 @@ void DockAreaTitleBarPrivate::createButtons()
 
 
 //============================================================================
-void DockAreaTitleBarPrivate::createOverlayTitleLabel()
+void DockAreaTitleBarPrivate::createAutoHideTitleLabel()
 {
-	OverlayTitleLabel = new CElidingLabel("");
-	OverlayTitleLabel->setObjectName("overlayTitleLabel");
-	Layout->addWidget(OverlayTitleLabel);
+	AutoHideTitleLabel = new CElidingLabel("");
+	AutoHideTitleLabel->setObjectName("autoHideTitleLabel");
+	Layout->addWidget(AutoHideTitleLabel);
 }
 
 
@@ -282,9 +282,9 @@ IFloatingWidget* DockAreaTitleBarPrivate::makeAreaFloating(const QPoint& Offset,
 //============================================================================
 void DockAreaTitleBarPrivate::startFloating(const QPoint& Offset)
 {
-	if (DockArea->overlayDockContainer() != nullptr)
+	if (DockArea->autoHideDockContainer() != nullptr)
 	{
-		DockArea->overlayDockContainer()->hide();
+		DockArea->autoHideDockContainer()->hide();
 	}
 	FloatingWidget = makeAreaFloating(Offset, DraggingFloatingWidget);
 }
@@ -305,8 +305,8 @@ CDockAreaTitleBar::CDockAreaTitleBar(CDockAreaWidget* parent) :
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
 	d->createTabBar();
-	d->createOverlayTitleLabel();
-	d->OverlayTitleLabel->setVisible(false); // Default hidden
+	d->createAutoHideTitleLabel();
+	d->AutoHideTitleLabel->setVisible(false); // Default hidden
 	d->Layout->addWidget(new CSpacerWidget(this));
 	d->createButtons();
 
@@ -511,9 +511,9 @@ QAbstractButton* CDockAreaTitleBar::button(TitleBarButton which) const
 
 
 //============================================================================
-CElidingLabel* CDockAreaTitleBar::overlayTitleLabel() const
+CElidingLabel* CDockAreaTitleBar::autoHideTitleLabel() const
 {
-	return d->OverlayTitleLabel;
+	return d->AutoHideTitleLabel;
 }
 
 
@@ -588,7 +588,7 @@ void CDockAreaTitleBar::mouseMoveEvent(QMouseEvent* ev)
 	// empty
 	if (d->DockArea->dockContainer()->isFloating()
 	 && d->DockArea->dockContainer()->visibleDockAreaCount() == 1 
-     && !d->DockArea->isOverlayed())
+     && !d->DockArea->isAutoHide())
 	{
 		return;
 	}
@@ -607,7 +607,7 @@ void CDockAreaTitleBar::mouseMoveEvent(QMouseEvent* ev)
 	int DragDistance = (d->DragStartMousePos - ev->pos()).manhattanLength();
 	if (DragDistance >= CDockManager::startDragDistance())
 	{
-        ADS_PRINT("CDockAreaTitlBar::startFloating");
+        ADS_PRINT("CDockAreaTitleBar::startFloating");
 		d->startFloating(d->DragStartMousePos);
 		auto Overlay = d->DockArea->dockManager()->containerOverlay();
 		Overlay->setAllowedAreas(OuterDockAreas);
@@ -672,7 +672,7 @@ int CDockAreaTitleBar::indexOf(QWidget *widget) const
 //============================================================================
 QString CDockAreaTitleBar::closeGroupToolTip() const
 {
-	if (d->DockArea->isOverlayed())
+	if (d->DockArea->isAutoHide())
 	{
 		return QObject::tr("Close Overlay");
 	    

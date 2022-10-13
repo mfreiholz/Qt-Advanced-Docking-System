@@ -95,8 +95,8 @@ struct DockWidgetPrivate
 	QList<QAction*> TitleBarActions;
 	CDockWidget::eMinimumSizeHintMode MinimumSizeHintMode = CDockWidget::MinimumSizeHintFromDockWidget;
 	WidgetFactory* Factory = nullptr;
-	double DefaultOverlayDockProportion = 0.25;
-	CDockWidget::eOverlayInsertOrder OverlayInsertOrder = CDockWidget::Last;
+	double DefaultAutoHideDockProportion = 0.25;
+	CDockWidget::eAutoHideInsertOrder AutoHideInsertOrder = CDockWidget::Last;
 	
 	/**
 	 * Private data constructor
@@ -121,10 +121,10 @@ struct DockWidgetPrivate
 	void updateParentDockArea();
 
 	/**
-	 * Closes all overlayed dock widgets if there are no more opened dock areas
-	 * This prevents the overlayed dock widgets from being pinned to an empty dock area
+	 * Closes all auto hide dock widgets if there are no more opened dock areas
+	 * This prevents the auto hide dock widgets from being pinned to an empty dock area
 	 */
-	void closeOverlayDockWidgetsIfNeeded();
+	void closeAutoHideDockWidgetsIfNeeded();
 
 	/**
 	 * Setup the top tool bar
@@ -181,7 +181,7 @@ void DockWidgetPrivate::showDockWidget()
 		DockArea->toggleView(true);
 		TabWidget->show();
 		QSplitter* Splitter = internal::findParent<QSplitter*>(DockArea);
-		while (Splitter && !Splitter->isVisible() && !DockArea->isOverlayed())
+		while (Splitter && !Splitter->isVisible() && !DockArea->isAutoHide())
 		{
 			Splitter->show();
 			Splitter = internal::findParent<QSplitter*>(Splitter);
@@ -195,11 +195,11 @@ void DockWidgetPrivate::showDockWidget()
 			FloatingWidget->show();
 		}
 
-        // If this widget is pinned and there are no opened dock widgets, unpin the overlay widget by moving it's contents to parent container
+        // If this widget is pinned and there are no opened dock widgets, unpin the auto hide widget by moving it's contents to parent container
 		// While restoring state, opened dock widgets are not valid
-		if (Container->openedDockWidgets().count() == 0 && DockArea->isOverlayed() && !DockManager->isRestoringState())
+		if (Container->openedDockWidgets().count() == 0 && DockArea->isAutoHide() && !DockManager->isRestoringState())
 		{
-			DockArea->overlayDockContainer()->moveContentsToParent();
+			DockArea->autoHideDockContainer()->moveContentsToParent();
 		}
 	}
 }
@@ -211,7 +211,7 @@ void DockWidgetPrivate::hideDockWidget()
 	TabWidget->hide();
 	updateParentDockArea();
 
-	closeOverlayDockWidgetsIfNeeded();
+	closeAutoHideDockWidgetsIfNeeded();
 
 	if (Features.testFlag(CDockWidget::DeleteContentOnClose))
 	{
@@ -246,18 +246,18 @@ void DockWidgetPrivate::updateParentDockArea()
 	}
 }
 
-void DockWidgetPrivate::closeOverlayDockWidgetsIfNeeded()
+void DockWidgetPrivate::closeAutoHideDockWidgetsIfNeeded()
 {
 	if (_this->dockContainer() && _this->dockContainer()->openedDockWidgets().isEmpty())
 	{
-        for (auto overlayWidget : _this->dockContainer()->overlayWidgets())
+        for (auto autoHideWidget : _this->dockContainer()->autoHideWidgets())
         {
-            if (overlayWidget->dockWidget() == _this)
+            if (autoHideWidget->dockWidget() == _this)
             {
                 continue;
             }
 
-            overlayWidget->dockWidget()->toggleView(false);
+            autoHideWidget->dockWidget()->toggleView(false);
         }
 	}
 }
@@ -444,7 +444,7 @@ CAutoHideDockContainer* CDockWidget::autoHideDockContainer() const
 		return nullptr;
 	}
 
-	return d->DockArea->overlayDockContainer();
+	return d->DockArea->autoHideDockContainer();
 }
 
 
@@ -653,9 +653,9 @@ void CDockWidget::toggleViewInternal(bool Open)
 		d->DockArea->toggleDockWidgetView(this, Open);
 	}
 
-	if (d->DockArea->isOverlayed())
+	if (d->DockArea->isAutoHide())
 	{
-		d->DockArea->overlayDockContainer()->toggleView(Open);
+		d->DockArea->autoHideDockContainer()->toggleView(Open);
 	}
 
 	if (Open && TopLevelDockWidgetBefore)
@@ -1019,9 +1019,9 @@ bool CDockWidget::closeDockWidgetInternal(bool ForceClose)
 				FloatingWidget->hide();
 			}
 		}
-		if (d->DockArea && d->DockArea->isOverlayed())
+		if (d->DockArea && d->DockArea->isAutoHide())
 		{
-			d->DockArea->overlayDockContainer()->cleanupAndDelete();
+			d->DockArea->autoHideDockContainer()->cleanupAndDelete();
 		}
 		deleteDockWidget();
 		Q_EMIT closed();
@@ -1079,21 +1079,19 @@ void CDockWidget::showNormal()
 //============================================================================
 void CDockWidget::onDockWidgetSideTabClicked()
 {
-	const auto overlayContainer = autoHideDockContainer();
-	if (!overlayContainer)
+	const auto autoHideContainer = autoHideDockContainer();
+	if (!autoHideContainer)
 	{
 		return;
 	}
 
-	overlayContainer->raise();
-	//const auto shouldCollapse = overlayContainer->isVisible();
-	//overlayContainer->collapseView(shouldCollapse);
-	overlayContainer->toggleCollapseState();
-	if (overlayContainer->isVisible())
+	autoHideContainer->raise();
+	autoHideContainer->toggleCollapseState();
+	if (autoHideContainer->isVisible())
 	{
 		// d->DockManager->setDockWidgetFocused(this) does not
-		// de focus the old widget, leading to the overlay still being visible
-		// even after clicking outside the overlay.
+		// de focus the old widget, leading to the auto hide still being visible
+		// even after clicking outside the auto hide.
 		setFocus(Qt::ActiveWindowFocusReason);
 	}
 }
@@ -1138,28 +1136,28 @@ bool CDockWidget::isCurrentTab() const
 
 
 //============================================================================
-void CDockWidget::setDefaultOverlayDockProportion(float Proportion)
+void CDockWidget::setDefaultAutoHideDockProportion(float Proportion)
 {
-	d->DefaultOverlayDockProportion = Proportion;
+	d->DefaultAutoHideDockProportion = Proportion;
 }
 
 
 //============================================================================
-float CDockWidget::DefaultOverlayDockProportion() const
+float CDockWidget::DefaultAutoHideDockProportion() const
 {
-	return d->DefaultOverlayDockProportion;
+	return d->DefaultAutoHideDockProportion;
 }
 
 
 //============================================================================
-void CDockWidget::setOverlayInsertOrder(eOverlayInsertOrder insertOrder)
+void CDockWidget::setAutoHideInsertOrder(eAutoHideInsertOrder insertOrder)
 {
-	d->OverlayInsertOrder = insertOrder;
+	d->AutoHideInsertOrder = insertOrder;
 }
 
-CDockWidget::eOverlayInsertOrder CDockWidget::overlayInsertOrder() const
+CDockWidget::eAutoHideInsertOrder CDockWidget::autoHideInsertOrder() const
 {
-	return d->OverlayInsertOrder;
+	return d->AutoHideInsertOrder;
 }
 
 

@@ -211,9 +211,9 @@ void CDockWidgetSideTab::updateStyle()
 CDockWidgetSideTab::SideTabBarArea CDockWidgetSideTab::sideTabBarArea() const
 {
 	auto dockAreaWidget = d->DockWidget->dockAreaWidget();
-	if (dockAreaWidget && dockAreaWidget->isOverlayed())
+	if (dockAreaWidget && dockAreaWidget->isAutoHide())
 	{
-		return dockAreaWidget->overlayDockContainer()->sideTabBarArea();
+		return dockAreaWidget->autoHideDockContainer()->sideTabBarArea();
 	}
 
 	return LeftTop;

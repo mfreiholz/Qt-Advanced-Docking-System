@@ -21,7 +21,7 @@
 /// \file   DockWidgetTab.h
 /// \author Syarif Fakhri
 /// \date   05.09.2022
-/// \brief  Implementation of COverlayDockContainer class
+/// \brief  Implementation of CAutoHideDockContainer class
 //============================================================================
 
 //============================================================================
@@ -110,7 +110,7 @@ struct AutoHideDockContainerPrivate
 
 		return QPoint();
     }
-}; // struct OverlayDockContainerPrivate
+}; // struct AutoHideDockContainerPrivate
 
 //============================================================================
 AutoHideDockContainerPrivate::AutoHideDockContainerPrivate(
@@ -133,12 +133,12 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockW
 	d->DockManager = DockManager;
 	d->Area = area;
 	d->DockArea = new CDockAreaWidget(DockManager, parent);
-	d->DockArea->setObjectName("overlayDockArea");
-	d->DockArea->setOverlayDockContainer(this);
+	d->DockArea->setObjectName("autoHideDockArea");
+	d->DockArea->setAutoHideDockContainer(this);
 	d->DockArea->updateAutoHideButtonCheckState();
 	d->DockArea->updateTitleBarButtonToolTip();
 
-	setObjectName("overlaySplitter");
+	setObjectName("autoHideSplitter");
 	setChildrenCollapsible(false);
 
 	const auto emptyWidget = new QWidget();
@@ -172,7 +172,7 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockW
 	updateMask();
 	updateSize();
 
-	parent->registerOverlayWidget(this);
+	parent->registerAutoHideWidget(this);
 
 	d->DockArea->installEventFilter(this);
 	parent->installEventFilter(this);
@@ -214,13 +214,13 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, CDockWid
 	CAutoHideDockContainer(DockWidget->dockManager(), area, parent)
 {
 	addDockWidget(DockWidget);
-	setDockSizeProportion(DockWidget->DefaultOverlayDockProportion());
+	setDockSizeProportion(DockWidget->DefaultAutoHideDockProportion());
 }
 
 //============================================================================
 CAutoHideDockContainer::~CAutoHideDockContainer()
 {
-	ADS_PRINT("~COverlayDockContainer");
+	ADS_PRINT("~CAutoHideDockContainer");
 
 	// Remove event filter in case there are any queued messages
 	d->DockArea->removeEventFilter(this);
@@ -228,7 +228,7 @@ CAutoHideDockContainer::~CAutoHideDockContainer()
 
 	if (d->DockManager)
 	{
-		parentContainer()->removeOverlayWidget(this);
+		parentContainer()->removeAutoHideWidget(this);
 	}
 
 	delete d;
@@ -500,7 +500,7 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 
 		// Now we check, if the user clicked inside of this auto hide container.
 		// If the click is inside of this auto hide container, then we can also
-		// ignore the event, because the overlay should not get collapsed if
+		// ignore the event, because the auto hide overlay should not get collapsed if
 		// user works in it
 		QMouseEvent* me = static_cast<QMouseEvent*>(event);
 		auto pos = d->DockArea->mapFromGlobal(me->globalPos());

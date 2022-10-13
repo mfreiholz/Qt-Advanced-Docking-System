@@ -138,7 +138,7 @@ public:
 	QPointer<CDockManager> DockManager;
 	unsigned int zOrderIndex = 0;
 	QList<CDockAreaWidget*> DockAreas;
-	QList<CAutoHideDockContainer*> OverlayWidgets;
+	QList<CAutoHideDockContainer*> AutoHideWidgets;
 	QMap<CDockWidgetSideTab::SideTabBarArea, CSideTabBar*> SideTabBarWidgets;
 	QGridLayout* Layout = nullptr;
 	QSplitter* RootSplitter = nullptr;
@@ -221,9 +221,9 @@ public:
 	void saveChildNodesState(QXmlStreamWriter& Stream, QWidget* Widget);
 
 	/**
-	 * Save state of overlay widgets
+	 * Save state of auto hide widgets
 	 */
-    void saveOverlayWidgetsState(QXmlStreamWriter& Stream);
+    void saveAutoHideWidgetsState(QXmlStreamWriter& Stream);
 
     /**
 	 * Restore state of child nodes.
@@ -251,16 +251,16 @@ public:
 		bool Testing);
 
 	/**
-	 * Restores the overlay dock area.
-     * Assumes that there are no overlay dock areas, and then restores all the dock areas that
+	 * Restores the auto hide dock area.
+     * Assumes that there are no auto hidden dock areas, and then restores all the dock areas that
      * exist in the XML
 	 */
-    bool restoreOverlayDockArea(CDockingStateReader& s, CDockWidgetSideTab::SideTabBarArea area, bool Testing);
+    bool restoreAutoHideDockArea(CDockingStateReader& s, CDockWidgetSideTab::SideTabBarArea area, bool Testing);
 
 	/**
-	 * Restores either a dock area or an overlay dock area depending on the value in the XML
+	 * Restores either a dock area or an auto hide dock area depending on the value in the XML
 	 */
-    bool restoreDockOrOverlayDockArea(CDockingStateReader& Stream, QWidget*& CreatedWidget,
+    bool restoreDockOrAutoHideDockArea(CDockingStateReader& Stream, QWidget*& CreatedWidget,
         bool Testing);
 
 	/**
@@ -898,7 +898,7 @@ void DockContainerWidgetPrivate::saveChildNodesState(QXmlStreamWriter& s, QWidge
 	}
 }
 
-void DockContainerWidgetPrivate::saveOverlayWidgetsState(QXmlStreamWriter& Stream)
+void DockContainerWidgetPrivate::saveAutoHideWidgetsState(QXmlStreamWriter& Stream)
 {
     for (const auto sideTabBar : SideTabBarWidgets.values())
     {
@@ -1033,7 +1033,7 @@ bool DockContainerWidgetPrivate::restoreSplitter(CDockingStateReader& s,
 }
 
 //============================================================================
-bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, CDockWidgetSideTab::SideTabBarArea area, bool Testing)
+bool DockContainerWidgetPrivate::restoreAutoHideDockArea(CDockingStateReader& s, CDockWidgetSideTab::SideTabBarArea area, bool Testing)
 {
 	bool Ok;
 #ifdef ADS_DEBUG_PRINT
@@ -1103,9 +1103,9 @@ bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, 
 		DockWidget->setProperty(internal::ClosedProperty, Closed);
 		DockWidget->setProperty(internal::DirtyProperty, false);
         _this->sideTabBar(area)->insertSideTab(-1, DockWidget->sideTabWidget());
-        DockArea->overlayDockContainer()->addDockWidget(DockWidget);
+        DockArea->autoHideDockContainer()->addDockWidget(DockWidget);
         DockWidget->sideTabWidget()->updateStyle(); // Needed as the side tab widget get it's left/right property from the overlay dock container which was just added
-		DockArea->overlayDockContainer()->toggleView(!Closed);
+		DockArea->autoHideDockContainer()->toggleView(!Closed);
 	}
 
 	return true;
@@ -1113,7 +1113,7 @@ bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, 
 
 
 //============================================================================
-bool DockContainerWidgetPrivate::restoreDockOrOverlayDockArea(CDockingStateReader& Stream, QWidget*& CreatedWidget,
+bool DockContainerWidgetPrivate::restoreDockOrAutoHideDockArea(CDockingStateReader& Stream, QWidget*& CreatedWidget,
     bool Testing)
 {
 	bool Ok;
@@ -1126,7 +1126,7 @@ bool DockContainerWidgetPrivate::restoreDockOrOverlayDockArea(CDockingStateReade
             return false;
         }
 
-        return restoreOverlayDockArea(Stream, sideTabBarArea, Testing);
+        return restoreAutoHideDockArea(Stream, sideTabBarArea, Testing);
 	}
 
     // If there's no SideTabBarArea value in the XML, or the value of SideTabBarArea is none, restore the dock area
@@ -1241,7 +1241,7 @@ bool DockContainerWidgetPrivate::restoreChildNodes(CDockingStateReader& s,
 		}
         else if (s.name() == QLatin1String("Area"))
 		{
-			Result = restoreDockOrOverlayDockArea(s, CreatedWidget, Testing);
+			Result = restoreDockOrAutoHideDockArea(s, CreatedWidget, Testing);
             ADS_PRINT("DockAreaWidget");
 		}
 		else
@@ -1458,10 +1458,10 @@ CDockContainerWidget::~CDockContainerWidget()
 		d->DockManager->removeDockContainer(this);
 	}
 
-	auto OverlayWidgets = d->OverlayWidgets;
-	for (auto OverlayWidget : OverlayWidgets)
+	auto AutoHideWidgets = d->AutoHideWidgets;
+	for (auto AutohideWidget : AutoHideWidgets)
 	{
-		delete OverlayWidget;
+		delete AutohideWidget;
 	}
 
 	delete d;
@@ -1491,7 +1491,7 @@ CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockW
 
 
 //============================================================================
-CAutoHideDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget, CDockWidget::eOverlayInsertOrder insertOrder)
+CAutoHideDockContainer* CDockContainerWidget::createAndInitializeAutoHideDockWidgetContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget, CDockWidget::eAutoHideInsertOrder insertOrder)
 {
 	if (d->DockManager != DockWidget->dockManager())
 	{
@@ -1609,19 +1609,19 @@ bool CDockContainerWidget::event(QEvent *e)
 
 
 //============================================================================
-void CDockContainerWidget::deleteOverlayWidgets()
+void CDockContainerWidget::deleteAutoHideWidgets()
 {
-    for (auto OverlayWidget : d->OverlayWidgets)
+    for (auto AutohideWidget : d->AutoHideWidgets)
     {
-        OverlayWidget->cleanupAndDelete();
+        AutohideWidget->cleanupAndDelete();
     }
-    d->OverlayWidgets.clear();
+    d->AutoHideWidgets.clear();
 }
 
 //============================================================================
-QList<CAutoHideDockContainer*> CDockContainerWidget::overlayWidgets() const
+QList<CAutoHideDockContainer*> CDockContainerWidget::autoHideWidgets() const
 {
-	return d->OverlayWidgets;
+	return d->AutoHideWidgets;
 }
 
 
@@ -1658,10 +1658,10 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 		*p = nullptr;
 	}
 
-	if (area->isOverlayed())
+	if (area->isAutoHide())
 	{
-		// Removing an area from an overlay widget implies deleting the whole overlay widget
-		// So cleanup will be done when the overlay widget is deleted
+		// Removing an area from an auto hide container widget implies deleting the whole auto hide widget
+		// So cleanup will be done when the auto hide container widget is deleted
 		// Note: there is no parent splitter
         CDockWidget* TopLevelWidget = topLevelDockWidget();
 
@@ -1670,7 +1670,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
         CDockWidget::emitTopLevelEventForWidget(TopLevelWidget, true);
         dumpLayout();
         d->emitDockAreasRemoved();
-        area->setOverlayDockContainer(nullptr);
+        area->setAutoHideDockContainer(nullptr);
 		area->updateAutoHideButtonCheckState();
         area->updateTitleBarButtonToolTip();
 		return;
@@ -1801,10 +1801,10 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
 	bool Dropped = false;
 
-	auto overlayWidgets = FloatingWidget->dockContainer()->overlayWidgets();
-	for (const auto overlayWidget : overlayWidgets)
+	auto autoHideWidgets = FloatingWidget->dockContainer()->autoHideWidgets();
+	for (const auto autohideWidget : autoHideWidgets)
 	{
-		createAndInitializeDockWidgetOverlayContainer(overlayWidget->sideTabBarArea(), overlayWidget->dockWidget(), overlayWidget->dockWidget()->overlayInsertOrder());
+		createAndInitializeAutoHideDockWidgetContainer(autohideWidget->sideTabBarArea(), autohideWidget->dockWidget(), autohideWidget->dockWidget()->autoHideInsertOrder());
 	}
 
 	if (DockArea)
@@ -1949,7 +1949,7 @@ void CDockContainerWidget::saveState(QXmlStreamWriter& s) const
 #endif
 	}
 	d->saveChildNodesState(s, d->RootSplitter);
-	d->saveOverlayWidgetsState(s);
+	d->saveAutoHideWidgetsState(s);
 	s.writeEndElement();
 }
 
@@ -2156,17 +2156,17 @@ void CDockContainerWidget::updateSplitterHandles(QSplitter* splitter)
 }
 
 //============================================================================
-void CDockContainerWidget::registerOverlayWidget(CAutoHideDockContainer* OverlayWidget)
+void CDockContainerWidget::registerAutoHideWidget(CAutoHideDockContainer* AutohideWidget)
 {
-	d->OverlayWidgets.append(OverlayWidget);
-	Q_EMIT overlayWidgetCreated(OverlayWidget);
-    ADS_PRINT("d->OverlayWidgets.count() " << d->OverlayWidgets.count());
+	d->AutoHideWidgets.append(AutohideWidget);
+	Q_EMIT autoHideWidgetCreated(AutohideWidget);
+    ADS_PRINT("d->AutoHideWidgets.count() " << d->AutoHideWidgets.count());
 }
 
 //============================================================================
-void CDockContainerWidget::removeOverlayWidget(CAutoHideDockContainer* OverlayWidget)
+void CDockContainerWidget::removeAutoHideWidget(CAutoHideDockContainer* AutohideWidget)
 {
-	d->OverlayWidgets.removeAll(OverlayWidget);
+	d->AutoHideWidgets.removeAll(AutohideWidget);
 }
 
 //============================================================================

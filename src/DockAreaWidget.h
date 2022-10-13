@@ -152,7 +152,7 @@ protected:
 	void markTitleBarMenuOutdated();
 
 	/*
-	 * Update the auto hide button checked state based on if it's overlayed or not
+	 * Update the auto hide button checked state based on if it's contained in an auto hide container or not
 	 */
 	void updateAutoHideButtonCheckState();
 
@@ -209,21 +209,21 @@ public:
 	CDockContainerWidget* dockContainer() const;
 
 	/**
-	 * Returns the overlay dock container widget this dock area widget belongs to or 0
+	 * Returns the auto hide dock container widget this dock area widget belongs to or 0
 	 * if there is no
 	 */
-	CAutoHideDockContainer* overlayDockContainer() const; 
+	CAutoHideDockContainer* autoHideDockContainer() const; 
 
 	/**
-	 * Returns true if the dock area exists in an overlay dock container
+	 * Returns true if the dock area exists in an auto hide dock container
 	 */
-	bool isOverlayed() const;
+	bool isAutoHide() const;
 
 
 	/**
-	 * Sets the current overlay dock container
+	 * Sets the current auto hide dock container
 	 */
-	void setOverlayDockContainer(CAutoHideDockContainer* OverlayDockContainer);
+	void setAutoHideDockContainer(CAutoHideDockContainer* AutoHideDockContainer);
 
     /**
      * Returns the largest minimumSizeHint() of the dock widgets in this

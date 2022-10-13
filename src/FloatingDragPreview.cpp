@@ -124,7 +124,7 @@ void FloatingDragPreviewPrivate::updateDropOverlays(const QPoint &GlobalPos)
 
 	// Include the overlay widget we're dragging as a visible widget
 	auto dockAreaWidget = qobject_cast<CDockAreaWidget*>(Content);
-	if (dockAreaWidget && dockAreaWidget->isOverlayed())
+	if (dockAreaWidget && dockAreaWidget->isAutoHide())
 	{
 		VisibleDockAreas++;
 	}
@@ -328,7 +328,7 @@ void CFloatingDragPreview::finishDragging()
 {
 	ADS_PRINT("CFloatingDragPreview::finishDragging");
 
-	cleanupOverlayContainerWidget();
+	cleanupAutoHideContainerWidget();
 
 	auto DockDropArea = d->DockManager->dockAreaOverlay()->visibleDropAreaUnderCursor();
 	auto ContainerDropArea = d->DockManager->containerOverlay()->visibleDropAreaUnderCursor();
@@ -365,7 +365,7 @@ void CFloatingDragPreview::finishDragging()
 
 
 //============================================================================
-void CFloatingDragPreview::cleanupOverlayContainerWidget()
+void CFloatingDragPreview::cleanupAutoHideContainerWidget()
 {
 	auto DroppedDockWidget = qobject_cast<CDockWidget*>(d->Content);
 	auto DroppedArea = qobject_cast<CDockAreaWidget*>(d->Content);
@@ -373,9 +373,9 @@ void CFloatingDragPreview::cleanupOverlayContainerWidget()
 	{
 		DroppedDockWidget->autoHideDockContainer()->cleanupAndDelete();
 	}
-	if (DroppedArea && DroppedArea->overlayDockContainer())
+	if (DroppedArea && DroppedArea->autoHideDockContainer())
 	{
-		DroppedArea->overlayDockContainer()->cleanupAndDelete();
+		DroppedArea->autoHideDockContainer()->cleanupAndDelete();
 	}
 }
 

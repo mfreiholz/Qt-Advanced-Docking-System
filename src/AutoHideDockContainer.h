@@ -1,5 +1,5 @@
-#ifndef OverlayDockContainerH
-#define OverlayDockContainerH
+#ifndef AutoHideDockContainerH
+#define AutoHideDockContainerH
 /*******************************************************************************
 ** Qt Advanced Docking System
 ** Copyright (C) 2017 Uwe Kindler
@@ -23,7 +23,7 @@
 /// \file   DockWidgetTab.h
 /// \author Syarif Fakhri
 /// \date   05.09.2022
-/// \brief  Declaration of COverlayDockContainer class
+/// \brief  Declaration of CAutoHideDockContainer class
 //============================================================================
 
 //============================================================================
@@ -67,12 +67,12 @@ protected:
 
 public:
 	/**
-	 * Create overlay widget with a dock manager
+	 * Create Auto Hide widget with a dock manager
 	 */
     CAutoHideDockContainer(CDockManager* DockManager, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent);
 
     /**
-	 * Create overlay widget with the given dock widget
+	 * Create Auto Hide widget with the given dock widget
 	 */
 	CAutoHideDockContainer(CDockWidget* DockWidget, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent);
 
@@ -105,18 +105,18 @@ public:
 	void setDockSizeProportion(float SplitterProportion = 0.25);
 
 	/**
-	 * Returns the side tab bar area of this overlay dock container
+	 * Returns the side tab bar area of this Auto Hide dock container
 	 */
 	CDockWidgetSideTab::SideTabBarArea sideTabBarArea() const;
 
 	/**
-	 * Returns the dock area widget of this overlay dock container
+	 * Returns the dock area widget of this Auto Hide dock container
 	 */
 	CDockAreaWidget* dockAreaWidget() const;
 
 	/**
 	 * Moves the contents to the parent container widget
-	 * Used before removing this overlay dock container 
+	 * Used before removing this Auto Hide dock container 
 	 */
     void moveContentsToParent();
 
@@ -136,13 +136,13 @@ public:
 	bool restoreState(CDockingStateReader& Stream, bool Testing);
 
 	/*
-	 * Toggles the overlay dock container widget
+	 * Toggles the auto Hide dock container widget
 	 * This will also hide the side tab widget
 	 */
 	void toggleView(bool Enable);
 
 	/*
-	 * Collapses the overlay dock container widget
+	 * Collapses the auto hide dock container widget
 	 * Does not hide the side tab widget
 	 */
 	void collapseView(bool Enable);

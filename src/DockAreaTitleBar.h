@@ -122,9 +122,9 @@ public:
 	QAbstractButton* button(TitleBarButton which) const;
 
 	/**
-	 * Returns the overlay title label, used when the dock area is overlayed
+	 * Returns the auto hide title label, used when the dock area is expanded and auto hidden
 	 */
-	CElidingLabel* overlayTitleLabel() const;
+	CElidingLabel* autoHideTitleLabel() const;
 
 	/**
 	 * Updates the visibility of the dock widget actions in the title bar
@@ -157,7 +157,7 @@ public:
 
 	/**
 	 * Close group tool tip based on the current state
-	 * Overlayed widgets can only have one dock widget so it does not make sense for the tooltip to show close group
+	 * Auto hide widgets can only have one dock widget so it does not make sense for the tooltip to show close group
 	 */
 	QString closeGroupToolTip() const;
 

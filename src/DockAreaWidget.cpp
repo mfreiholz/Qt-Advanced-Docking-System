@@ -248,7 +248,7 @@ struct DockAreaWidgetPrivate
 	DockAreaLayout*		ContentsLayout	= nullptr;
 	CDockAreaTitleBar*	TitleBar		= nullptr;
 	CDockManager*		DockManager		= nullptr;
-	CAutoHideDockContainer* OverlayDockContainer = nullptr;
+	CAutoHideDockContainer* AutoHideDockContainer = nullptr;
 	bool UpdateTitleBarButtons = false;
 	DockWidgetAreas		AllowedAreas	= DefaultAllowedAreas;
 	QSize MinSizeHint;
@@ -388,16 +388,16 @@ void DockAreaWidgetPrivate::updateTitleBarButtonVisibility(bool IsTopLevel)
 	{
 		TitleBar->button(TitleBarButtonClose)->setVisible(!container->isFloating());
 		TitleBar->button(TitleBarButtonAutoHide)->setVisible(!container->isFloating() && allDockWidgetsFocusable());
-        // Undock and tabs should never show when overlayed
-		TitleBar->button(TitleBarButtonUndock)->setVisible(!container->isFloating() && !_this->isOverlayed());
-        TitleBar->button(TitleBarButtonTabsMenu)->setVisible(!_this->isOverlayed());
+        // Undock and tabs should never show when auto hidden
+		TitleBar->button(TitleBarButtonUndock)->setVisible(!container->isFloating() && !_this->isAutoHide());
+        TitleBar->button(TitleBarButtonTabsMenu)->setVisible(!_this->isAutoHide());
 	}
 	else
 	{
 		TitleBar->button(TitleBarButtonClose)->setVisible(true);
 		TitleBar->button(TitleBarButtonAutoHide)->setVisible(allDockWidgetsFocusable());
-		TitleBar->button(TitleBarButtonUndock)->setVisible(!_this->isOverlayed());
-        TitleBar->button(TitleBarButtonTabsMenu)->setVisible(!_this->isOverlayed());
+		TitleBar->button(TitleBarButtonUndock)->setVisible(!_this->isAutoHide());
+        TitleBar->button(TitleBarButtonTabsMenu)->setVisible(!_this->isAutoHide());
 	}
 }
 
@@ -457,21 +457,21 @@ CDockContainerWidget* CDockAreaWidget::dockContainer() const
 }
 
 //============================================================================
-CAutoHideDockContainer* CDockAreaWidget::overlayDockContainer() const
+CAutoHideDockContainer* CDockAreaWidget::autoHideDockContainer() const
 {
-	return d->OverlayDockContainer;
+	return d->AutoHideDockContainer;
 }
 
 //============================================================================
-bool CDockAreaWidget::isOverlayed() const
+bool CDockAreaWidget::isAutoHide() const
 {
-	return d->OverlayDockContainer != nullptr;
+	return d->AutoHideDockContainer != nullptr;
 }
 
 //============================================================================
-void CDockAreaWidget::setOverlayDockContainer(CAutoHideDockContainer* OverlayDockContainer)
+void CDockAreaWidget::setAutoHideDockContainer(CAutoHideDockContainer* AutoHideDockContainer)
 {
-	d->OverlayDockContainer = OverlayDockContainer;
+	d->AutoHideDockContainer = AutoHideDockContainer;
 }
 
 
@@ -496,7 +496,7 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 	d->tabBar()->insertTab(index, TabWidget);
 	d->tabBar()->blockSignals(false);
 	TabWidget->setVisible(!DockWidget->isClosed());
-	d->TitleBar->overlayTitleLabel()->setText(DockWidget->windowTitle());
+	d->TitleBar->autoHideTitleLabel()->setText(DockWidget->windowTitle());
 	DockWidget->setProperty(INDEX_PROPERTY, index);
 	d->MinSizeHint.setHeight(qMax(d->MinSizeHint.height(), DockWidget->minimumSizeHint().height()));
 	d->MinSizeHint.setWidth(qMax(d->MinSizeHint.width(), DockWidget->minimumSizeHint().width()));
@@ -534,7 +534,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	{
 		setCurrentDockWidget(NextOpenDockWidget);
 	}
-	else if (d->ContentsLayout->isEmpty() && DockContainer->dockAreaCount() >= 1 && !isOverlayed()) // Don't remove empty dock areas that are overlayed, they'll be deleted by the overlay dock
+	else if (d->ContentsLayout->isEmpty() && DockContainer->dockAreaCount() >= 1 && !isAutoHide()) // Don't remove empty dock areas that are auto hidden, they'll be deleted by the auto hide dock
 	{
         ADS_PRINT("Dock Area empty");
 		DockContainer->removeDockArea(this);
@@ -602,9 +602,9 @@ void CDockAreaWidget::hideAreaWithNoVisibleContent()
 	{
 		FloatingWidget->hide();
 	}
-	if (isOverlayed())
+	if (isAutoHide())
 	{
-		overlayDockContainer()->hide();
+		autoHideDockContainer()->hide();
 	}
 }
 
@@ -834,10 +834,10 @@ void CDockAreaWidget::updateTitleBarVisibility()
 		bool Hidden = Container->hasTopLevelDockWidget() && (Container->isFloating()
 			|| CDockManager::testConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar));
 		Hidden |= (d->Flags.testFlag(HideSingleWidgetTitleBar) && openDockWidgetsCount() == 1);
-		d->TitleBar->setVisible(isOverlayed() ? true : !Hidden); // Titlebar must always be visible when overlayed so it can be dragged
+		d->TitleBar->setVisible(isAutoHide() ? true : !Hidden); // Titlebar must always be visible when auto hidden so it can be dragged
 		auto tabBar = d->TitleBar->tabBar();
-        tabBar->setVisible(isOverlayed() ? false : !Hidden);  // Never show tab bar when overlayed
-        d->TitleBar->overlayTitleLabel()->setVisible(CDockManager::testConfigFlag(CDockManager::DockAreaOverlayHasTitle) && isOverlayed());  // Always show when overlayed, never otherwise
+        tabBar->setVisible(isAutoHide() ? false : !Hidden);  // Never show tab bar when auto hidden
+        d->TitleBar->autoHideTitleLabel()->setVisible(CDockManager::testConfigFlag(CDockManager::AutoHideDockAreaHasTitle) && isAutoHide());  // Always show when auto hidden, never otherwise
         updateTitleBarButtonVisibility(Container->topLevelDockArea() == this);
 	}
 }
@@ -858,7 +858,7 @@ void CDockAreaWidget::updateAutoHideButtonCheckState()
 {
 	auto autoHideButton = titleBarButton(TitleBarButtonAutoHide);
 	autoHideButton->blockSignals(true);
-	autoHideButton->setChecked(isOverlayed());
+	autoHideButton->setChecked(isAutoHide());
 	autoHideButton->blockSignals(false);
 }
 
@@ -887,9 +887,9 @@ void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 	s.writeAttribute("Current", Name);
 	// To keep the saved XML data small, we only save the allowed areas and the
 	// dock area flags if the values are different from the default values
-	if (isOverlayed())
+	if (isAutoHide())
 	{
-		overlayDockContainer()->saveState(s);
+		autoHideDockContainer()->saveState(s);
 	}
 
 	if (d->AllowedAreas != DefaultAllowedAreas)
@@ -1068,11 +1068,10 @@ void CDockAreaWidget::closeArea()
 	// DeleteOnClose feature or CustomCloseHandling, then we delete the dock widget now;
 	// in the case of CustomCloseHandling, the CDockWidget class will emit its
 	// closeRequested signal and not actually delete unless the signal is handled in a way that deletes it
-	// Note: Auto hide and overlays do not support dock widget delete on close
 	auto OpenDockWidgets = openedDockWidgets();
     if (OpenDockWidgets.count() == 1 &&
 			(OpenDockWidgets[0]->features().testFlag(CDockWidget::DockWidgetDeleteOnClose) || OpenDockWidgets[0]->features().testFlag(CDockWidget::CustomCloseHandling))
-			&& !isOverlayed())
+			&& !isAutoHide())
 	{
 		OpenDockWidgets[0]->closeDockWidgetInternal();
 	}
@@ -1085,7 +1084,7 @@ void CDockAreaWidget::closeArea()
 			{
 				DockWidget->closeDockWidgetInternal();
 			}
-			else if (DockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose) && isOverlayed())
+			else if (DockWidget->features().testFlag(CDockWidget::DockWidgetDeleteOnClose) && isAutoHide())
 			{
                 DockWidget->closeDockWidgetInternal();
 			}
@@ -1103,12 +1102,12 @@ void CDockAreaWidget::toggleAutoHideArea(bool Enable)
 	const auto area = dockContainer()->getDockAreaPosition(this);
 	for (const auto DockWidget : openedDockWidgets())
 	{
-		if (Enable == isOverlayed())
+		if (Enable == isAutoHide())
 		{
 			continue;
 		}
 
-		onAutoHideToggleRequested(DockWidget, !isOverlayed(), area);
+		onAutoHideToggleRequested(DockWidget, !isAutoHide(), area);
 	}
 }
 
@@ -1117,11 +1116,11 @@ void CDockAreaWidget::onAutoHideToggleRequested(CDockWidget* DockWidget, bool En
 {
     if (Enable)
     {
-        dockContainer()->createAndInitializeDockWidgetOverlayContainer(area, DockWidget, DockWidget->overlayInsertOrder());
+        dockContainer()->createAndInitializeAutoHideDockWidgetContainer(area, DockWidget, DockWidget->autoHideInsertOrder());
     }
     else
 	{
-        overlayDockContainer()->moveContentsToParent();
+        autoHideDockContainer()->moveContentsToParent();
 	}
 }
 
