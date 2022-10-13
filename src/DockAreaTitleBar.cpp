@@ -632,6 +632,11 @@ void CDockAreaTitleBar::mouseDoubleClickEvent(QMouseEvent *event)
 	{
 		return;
 	}
+	if (d->DockArea->autoHideDockContainer())
+	{
+		d->DockArea->autoHideDockContainer()->cleanupAndDelete();
+	}
+
 	d->makeAreaFloating(event->pos(), DraggingInactive);
 }
 
