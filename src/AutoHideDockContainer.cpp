@@ -18,7 +18,7 @@
 
 
 //============================================================================
-/// \file   DockWidgetTab.h
+/// \file   AutoHideDockContainer.h
 /// \author Syarif Fakhri
 /// \date   05.09.2022
 /// \brief  Implementation of CAutoHideDockContainer class
