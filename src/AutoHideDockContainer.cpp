@@ -52,7 +52,7 @@ struct AutoHideDockContainerPrivate
 	CDockAreaWidget* DockArea{nullptr};
 	CDockWidget* DockWidget{nullptr};
 	QPointer<CDockManager> DockManager{nullptr};
-	CDockWidgetSideTab::SideTabBarArea Area;
+	CDockWidgetSideTab::SideTabBarArea SideTabBarArea;
 
 	/**
 	 * Private data constructor
@@ -90,7 +90,7 @@ struct AutoHideDockContainerPrivate
 	 */
 	QPoint getSimplifiedDockAreaPosition() const
     {
-        switch (Area)
+        switch (SideTabBarArea)
             {
                 case CDockWidgetSideTab::LeftTop: 
                 case CDockWidgetSideTab::LeftBottom:
@@ -110,6 +110,29 @@ struct AutoHideDockContainerPrivate
 
 		return QPoint();
     }
+
+	/*
+	 * Convenience function to get dock area with splitter total size
+	 */
+	QRect getDockAreaWithSplitterRect() const
+	{
+        const auto rect = DockArea->frameGeometry();
+        const auto topLeft = rect.topLeft();
+        const auto handleSize = _this->handleWidth();
+
+        if (SideTabBarArea == CDockWidgetSideTab::Bottom)
+        {
+            return QRect(QPoint(topLeft.x(), topLeft.y() - handleSize), QSize(rect.size().width(), rect.size().height() + handleSize));
+        }
+
+        auto offset = 0;
+        if (SideTabBarArea == CDockWidgetSideTab::SideTabBarArea::RightTop || SideTabBarArea == CDockWidgetSideTab::SideTabBarArea::RightBottom)
+        {
+            offset = handleSize;
+        }
+
+        return QRect(QPoint(topLeft.x() - offset, topLeft.y()), QSize(rect.size().width() + handleSize, rect.size().height()));
+	}
 }; // struct AutoHideDockContainerPrivate
 
 //============================================================================
@@ -131,7 +154,7 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockW
     d(new AutoHideDockContainerPrivate(this))
 {
 	d->DockManager = DockManager;
-	d->Area = area;
+	d->SideTabBarArea = area;
 	d->DockArea = new CDockAreaWidget(DockManager, parent);
 	d->DockArea->setObjectName("autoHideDockArea");
 	d->DockArea->setAutoHideDockContainer(this);
@@ -181,22 +204,7 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockW
 //============================================================================
 void CAutoHideDockContainer::updateMask()
 {
-    const auto rect = d->DockArea->frameGeometry();
-    const auto topLeft = rect.topLeft();
-    const auto handleSize = handleWidth();
-
-	if (d->Area == CDockWidgetSideTab::Bottom)
-	{
-        setMask(QRect(QPoint(topLeft.x(), topLeft.y() - handleSize), QSize(rect.size().width(), rect.size().height() + handleSize)));
-		return;
-	}
-
-	auto offset = 0;
-    if (d->Area == CDockWidgetSideTab::SideTabBarArea::RightTop || d->Area == CDockWidgetSideTab::SideTabBarArea::RightBottom)
-    {
-        offset = handleSize;
-    }
-    setMask(QRect(QPoint(topLeft.x() - offset, topLeft.y()), QSize(rect.size().width() + handleSize, rect.size().height())));
+    setMask(d->getDockAreaWithSplitterRect());
 }
 
 //============================================================================
@@ -237,7 +245,7 @@ CAutoHideDockContainer::~CAutoHideDockContainer()
 //============================================================================
 CSideTabBar* CAutoHideDockContainer::sideTabBar() const
 {
-	return parentContainer()->sideTabBar(d->Area);
+	return parentContainer()->sideTabBar(d->SideTabBarArea);
 }
 
 //============================================================================
@@ -262,7 +270,7 @@ void CAutoHideDockContainer::addDockWidget(CDockWidget* DockWidget)
         OldDockArea->removeDockWidget(DockWidget);
     }
 	d->DockArea->addDockWidget(DockWidget);
-	d->DockWidget->sideTabWidget()->updateOrientationAndSpacing(d->Area);
+	d->DockWidget->sideTabWidget()->updateOrientationAndSpacing(d->SideTabBarArea);
 
 	updateSize();
 	updateMask();
@@ -280,7 +288,7 @@ void CAutoHideDockContainer::setDockSizeProportion(float SplitterProportion)
 
 	const auto dockSize = static_cast<int>(static_cast<float>(INT_MAX) * SplitterProportion);
 	const auto remainingSize = INT_MAX - dockSize;
-    switch (d->Area)
+    switch (d->SideTabBarArea)
     {
         case CDockWidgetSideTab::LeftBottom:
         case CDockWidgetSideTab::LeftTop:
@@ -303,7 +311,7 @@ void CAutoHideDockContainer::setDockSizeProportion(float SplitterProportion)
 //============================================================================
 CDockWidgetSideTab::SideTabBarArea CAutoHideDockContainer::sideTabBarArea() const
 {
-	return d->Area;
+	return d->SideTabBarArea;
 }
 
 //============================================================================
@@ -326,7 +334,7 @@ void CAutoHideDockContainer::moveContentsToParent()
 	}
 	else
 	{
-        parentContainer()->addDockWidget(d->getArea(d->Area), d->DockWidget);
+        parentContainer()->addDockWidget(d->getArea(d->SideTabBarArea), d->DockWidget);
 	}
 
     parentContainer()->removeDockArea(d->DockArea);
@@ -503,8 +511,8 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		// ignore the event, because the auto hide overlay should not get collapsed if
 		// user works in it
 		QMouseEvent* me = static_cast<QMouseEvent*>(event);
-		auto pos = d->DockArea->mapFromGlobal(me->globalPos());
-		auto rect = d->DockArea->rect().adjusted(-handleWidth(), 0, 0, 0);
+		auto pos = mapFromGlobal(me->globalPos());
+		auto rect = d->getDockAreaWithSplitterRect();
 		if (rect.contains(pos))
 		{
 			return QSplitter::eventFilter(watched, event);
