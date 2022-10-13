@@ -111,6 +111,8 @@ void CSideTabBar::removeSideTab(CDockWidgetSideTab* SideTab)
 //============================================================================
 void CSideTabBar::paintEvent(QPaintEvent* event)
 {
+	Q_UNUSED(event)
+
     QStyleOption option;
     option.initFrom(this);
     QPainter painter(this);

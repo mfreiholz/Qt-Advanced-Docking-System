@@ -27,6 +27,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <AutoHideDockContainer.h>
 #include "DockWidgetSideTab.h"
 #include "SideTabBar.h"
 
@@ -37,7 +38,6 @@
 #include "ElidingLabel.h"
 
 #include "DockWidget.h"
-#include "OverlayDockContainer.h"
 
 namespace ads
 {

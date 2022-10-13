@@ -57,7 +57,7 @@ private:
 	DockWidgetSideTabPrivate* d; ///< private data (pimpl)
     friend struct DockWidgetSideTabPrivate;
 	friend class CDockWidget;
-	friend class COverlayDockContainer;
+	friend class CAutoHideDockContainer;
 
 protected:
 	friend class CSideTabBar;

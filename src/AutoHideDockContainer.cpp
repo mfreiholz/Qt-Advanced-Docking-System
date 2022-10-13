@@ -27,7 +27,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include "OverlayDockContainer.h"
+#include <AutoHideDockContainer.h>
 #include "DockManager.h"
 #include "DockWidgetSideTab.h"
 #include "DockWidgetTab.h"
@@ -40,12 +40,15 @@
 #include <QPainter>
 #include <QSplitter>
 #include <QPointer>
+#include <QApplication>
+
+#include <iostream>
 
 namespace ads
 {
-struct OverlayDockContainerPrivate
+struct AutoHideDockContainerPrivate
 {
-    COverlayDockContainer* _this;
+    CAutoHideDockContainer* _this;
 	CDockAreaWidget* DockArea{nullptr};
 	CDockWidget* DockWidget{nullptr};
 	QPointer<CDockManager> DockManager{nullptr};
@@ -54,7 +57,7 @@ struct OverlayDockContainerPrivate
 	/**
 	 * Private data constructor
 	 */
-	OverlayDockContainerPrivate(COverlayDockContainer *_public);
+	AutoHideDockContainerPrivate(CAutoHideDockContainer *_public);
 
 	/**
 	 * Convenience function to get a dock widget area
@@ -110,22 +113,22 @@ struct OverlayDockContainerPrivate
 }; // struct OverlayDockContainerPrivate
 
 //============================================================================
-OverlayDockContainerPrivate::OverlayDockContainerPrivate(
-    COverlayDockContainer *_public) :
+AutoHideDockContainerPrivate::AutoHideDockContainerPrivate(
+    CAutoHideDockContainer *_public) :
 	_this(_public)
 {
 
 }
 
-CDockContainerWidget* COverlayDockContainer::parentContainer() const
+CDockContainerWidget* CAutoHideDockContainer::parentContainer() const
 {
 	return internal::findParent<CDockContainerWidget*>(this);
 }
 
 //============================================================================
-COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent) :
+CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent) :
     QSplitter(area == CDockWidgetSideTab::Bottom ? Qt::Orientation::Vertical : Qt::Orientation::Horizontal, parent),
-    d(new OverlayDockContainerPrivate(this))
+    d(new AutoHideDockContainerPrivate(this))
 {
 	d->DockManager = DockManager;
 	d->Area = area;
@@ -176,7 +179,7 @@ COverlayDockContainer::COverlayDockContainer(CDockManager* DockManager, CDockWid
 }
 
 //============================================================================
-void COverlayDockContainer::updateMask()
+void CAutoHideDockContainer::updateMask()
 {
     const auto rect = d->DockArea->frameGeometry();
     const auto topLeft = rect.topLeft();
@@ -197,7 +200,7 @@ void COverlayDockContainer::updateMask()
 }
 
 //============================================================================
-void COverlayDockContainer::updateSize()
+void CAutoHideDockContainer::updateSize()
 {
 	const auto dockContainerParent = parentContainer();
 	const auto rootSplitter = dockContainerParent->rootSplitter();
@@ -207,15 +210,15 @@ void COverlayDockContainer::updateSize()
 }
 
 //============================================================================
-COverlayDockContainer::COverlayDockContainer(CDockWidget* DockWidget, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent) : 
-	COverlayDockContainer(DockWidget->dockManager(), area, parent)
+CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent) : 
+	CAutoHideDockContainer(DockWidget->dockManager(), area, parent)
 {
 	addDockWidget(DockWidget);
 	setDockSizeProportion(DockWidget->DefaultOverlayDockProportion());
 }
 
 //============================================================================
-COverlayDockContainer::~COverlayDockContainer()
+CAutoHideDockContainer::~CAutoHideDockContainer()
 {
 	ADS_PRINT("~COverlayDockContainer");
 
@@ -232,19 +235,19 @@ COverlayDockContainer::~COverlayDockContainer()
 }
 
 //============================================================================
-CSideTabBar* COverlayDockContainer::sideTabBar() const
+CSideTabBar* CAutoHideDockContainer::sideTabBar() const
 {
 	return parentContainer()->sideTabBar(d->Area);
 }
 
 //============================================================================
-CDockWidget* COverlayDockContainer::dockWidget() const
+CDockWidget* CAutoHideDockContainer::dockWidget() const
 {
 	return d->DockWidget;
 }
 
 //============================================================================
-void COverlayDockContainer::addDockWidget(CDockWidget* DockWidget)
+void CAutoHideDockContainer::addDockWidget(CDockWidget* DockWidget)
 {
 	if (d->DockWidget)
 	{
@@ -267,7 +270,7 @@ void COverlayDockContainer::addDockWidget(CDockWidget* DockWidget)
 
 
 //============================================================================
-void COverlayDockContainer::setDockSizeProportion(float SplitterProportion)
+void CAutoHideDockContainer::setDockSizeProportion(float SplitterProportion)
 {
 	if (SplitterProportion < 0 || SplitterProportion > 1)
 	{
@@ -298,19 +301,19 @@ void COverlayDockContainer::setDockSizeProportion(float SplitterProportion)
 
 
 //============================================================================
-CDockWidgetSideTab::SideTabBarArea COverlayDockContainer::sideTabBarArea() const
+CDockWidgetSideTab::SideTabBarArea CAutoHideDockContainer::sideTabBarArea() const
 {
 	return d->Area;
 }
 
 //============================================================================
-CDockAreaWidget* COverlayDockContainer::dockAreaWidget() const
+CDockAreaWidget* CAutoHideDockContainer::dockAreaWidget() const
 {
 	return d->DockArea;
 }
 
 //============================================================================
-void COverlayDockContainer::moveContentsToParent()
+void CAutoHideDockContainer::moveContentsToParent()
 {
 	cleanupAndDelete();
 
@@ -331,7 +334,7 @@ void COverlayDockContainer::moveContentsToParent()
 
 
 //============================================================================
-void COverlayDockContainer::cleanupAndDelete()
+void CAutoHideDockContainer::cleanupAndDelete()
 {
 	const auto dockWidget = d->DockWidget;
 	if (dockWidget)
@@ -347,7 +350,7 @@ void COverlayDockContainer::cleanupAndDelete()
 
 
 //============================================================================
-void COverlayDockContainer::saveState(QXmlStreamWriter& s)
+void CAutoHideDockContainer::saveState(QXmlStreamWriter& s)
 {
     s.writeAttribute("SideTabBarArea", QString::number(sideTabBarArea())); 
 	QStringList Sizes;
@@ -361,7 +364,7 @@ void COverlayDockContainer::saveState(QXmlStreamWriter& s)
 
 
 //============================================================================
-bool COverlayDockContainer::restoreState(CDockingStateReader& s, bool Testing)
+bool CAutoHideDockContainer::restoreState(CDockingStateReader& s, bool Testing)
 {
 	auto sSizes = s.attributes().value("Sizes").trimmed().toString();
 	ADS_PRINT("Sizes: " << sSizes);
@@ -387,7 +390,9 @@ bool COverlayDockContainer::restoreState(CDockingStateReader& s, bool Testing)
 	return true;
 }
 
-void COverlayDockContainer::toggleView(bool Enable)
+
+//============================================================================
+void CAutoHideDockContainer::toggleView(bool Enable)
 {
 	if (Enable)
 	{
@@ -405,16 +410,20 @@ void COverlayDockContainer::toggleView(bool Enable)
             dockWidget->sideTabWidget()->hide();
         }
         hide();
+        qApp->removeEventFilter(this);
 	}
 }
 
-void COverlayDockContainer::collapseView(bool Enable)
+
+//============================================================================
+void CAutoHideDockContainer::collapseView(bool Enable)
 {
 	if (Enable)
 	{
 		hide();
 		d->DockArea->hide();
 		d->DockWidget->hide();
+		qApp->removeEventFilter(this);
 	}
 	else
 	{
@@ -422,12 +431,20 @@ void COverlayDockContainer::collapseView(bool Enable)
 		show();
 		d->DockArea->show();
 		d->DockWidget->show();
+		qApp->installEventFilter(this);
 	}
 }
 
 
 //============================================================================
-bool COverlayDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarArea area)
+void CAutoHideDockContainer::toggleCollapseState()
+{
+	collapseView(isVisible());
+}
+
+
+//============================================================================
+bool CAutoHideDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarArea area)
 {
     switch (area)
     {
@@ -452,12 +469,62 @@ bool COverlayDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarAre
 
 
 //============================================================================
-bool COverlayDockContainer::eventFilter(QObject* watched, QEvent* event)
+bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 {
 	if (event->type() == QEvent::Resize)
 	{
 		updateSize();
 		updateMask();
+	}
+	else if (event->type() == QEvent::MouseButtonPress)
+	{
+		// First we check, if the mouse button press is inside the dock manager
+		// widget. If it is not, i.e. if someone resizes the main window or
+		// clicks into the application menu or toolbar, then we ignore the
+		// event
+		auto widget = qobject_cast<QWidget*>(watched);
+		bool IsDockManager = false;
+		while (widget)
+		{
+			if (widget == d->DockManager)
+			{
+				IsDockManager = true;
+			}
+			widget = widget->parentWidget();
+		}
+
+		if (!IsDockManager)
+		{
+			return QSplitter::eventFilter(watched, event);
+		}
+
+		// Now we check, if the user clicked inside of this auto hide container.
+		// If the click is inside of this auto hide container, then we can also
+		// ignore the event, because the overlay should not get collapsed if
+		// user works in it
+		QMouseEvent* me = static_cast<QMouseEvent*>(event);
+		auto pos = d->DockArea->mapFromGlobal(me->globalPos());
+		auto rect = d->DockArea->rect().adjusted(-handleWidth(), 0, 0, 0);
+		if (rect.contains(pos))
+		{
+			return QSplitter::eventFilter(watched, event);
+		}
+
+		// Now check, if the user clicked into the side tab and ignore this event,
+		// because the side tab click handler will call collapseView(). If we
+		// do not ignore this here, then we will collapse the container and the side tab
+		// click handler will uncollapse it
+		auto SideTab = d->DockWidget->sideTabWidget();
+		pos = SideTab->mapFromGlobal(me->globalPos());
+		if (SideTab->rect().contains(pos))
+		{
+			return QSplitter::eventFilter(watched, event);
+		}
+
+		// If the mouse button down event is in the dock manager but outside
+		// of the open auto hide container, then the auto hide dock widget
+		// should get collapsed
+		collapseView(true);
 	}
 
 	return QSplitter::eventFilter(watched, event);
@@ -465,14 +532,7 @@ bool COverlayDockContainer::eventFilter(QObject* watched, QEvent* event)
 
 
 //============================================================================
-void COverlayDockContainer::mousePressEvent(QMouseEvent* event)
-{
-    QSplitter::mousePressEvent(event);
-}
-
-
-//============================================================================
-void COverlayDockContainer::resizeEvent(QResizeEvent* event)
+void CAutoHideDockContainer::resizeEvent(QResizeEvent* event)
 {
 	updateMask();
     QSplitter::resizeEvent(event);

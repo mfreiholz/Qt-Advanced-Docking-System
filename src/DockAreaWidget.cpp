@@ -28,6 +28,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <AutoHideDockContainer.h>
 #include "DockAreaWidget.h"
 
 #include <QStackedLayout>
@@ -52,7 +53,6 @@
 #include "DockComponentsFactory.h"
 #include "DockWidgetTab.h"
 #include "DockWidgetSideTab.h"
-#include "OverlayDockContainer.h"
 
 
 namespace ads
@@ -248,7 +248,7 @@ struct DockAreaWidgetPrivate
 	DockAreaLayout*		ContentsLayout	= nullptr;
 	CDockAreaTitleBar*	TitleBar		= nullptr;
 	CDockManager*		DockManager		= nullptr;
-	COverlayDockContainer* OverlayDockContainer = nullptr;
+	CAutoHideDockContainer* OverlayDockContainer = nullptr;
 	bool UpdateTitleBarButtons = false;
 	DockWidgetAreas		AllowedAreas	= DefaultAllowedAreas;
 	QSize MinSizeHint;
@@ -457,7 +457,7 @@ CDockContainerWidget* CDockAreaWidget::dockContainer() const
 }
 
 //============================================================================
-COverlayDockContainer* CDockAreaWidget::overlayDockContainer() const
+CAutoHideDockContainer* CDockAreaWidget::overlayDockContainer() const
 {
 	return d->OverlayDockContainer;
 }
@@ -469,7 +469,7 @@ bool CDockAreaWidget::isOverlayed() const
 }
 
 //============================================================================
-void CDockAreaWidget::setOverlayDockContainer(COverlayDockContainer* OverlayDockContainer)
+void CDockAreaWidget::setOverlayDockContainer(CAutoHideDockContainer* OverlayDockContainer)
 {
 	d->OverlayDockContainer = OverlayDockContainer;
 }

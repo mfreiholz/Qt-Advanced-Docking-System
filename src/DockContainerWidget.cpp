@@ -28,6 +28,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <AutoHideDockContainer.h>
 #include "DockContainerWidget.h"
 
 #include <QEvent>
@@ -49,7 +50,6 @@
 #include "ads_globals.h"
 #include "DockSplitter.h"
 #include "SideTabBar.h"
-#include "OverlayDockContainer.h"
 #include "DockWidgetTab.h"
 #include "DockWidgetSideTab.h"
 #include "DockAreaTitleBar.h"
@@ -138,7 +138,7 @@ public:
 	QPointer<CDockManager> DockManager;
 	unsigned int zOrderIndex = 0;
 	QList<CDockAreaWidget*> DockAreas;
-	QList<COverlayDockContainer*> OverlayWidgets;
+	QList<CAutoHideDockContainer*> OverlayWidgets;
 	QMap<CDockWidgetSideTab::SideTabBarArea, CSideTabBar*> SideTabBarWidgets;
 	QGridLayout* Layout = nullptr;
 	QSplitter* RootSplitter = nullptr;
@@ -1048,7 +1048,7 @@ bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, 
     ADS_PRINT("Restore NodeDockArea Tabs: " << Tabs << " Current: "
             << CurrentDockWidget);
 
-	if (!COverlayDockContainer::areaExistsInConfig(area))
+	if (!CAutoHideDockContainer::areaExistsInConfig(area))
 	{
 		return false;
 	}
@@ -1056,7 +1056,7 @@ bool DockContainerWidgetPrivate::restoreOverlayDockArea(CDockingStateReader& s, 
 	CDockAreaWidget* DockArea = nullptr;
 	if (!Testing)
 	{
-        const auto dockContainer = new COverlayDockContainer(DockManager, area, _this);
+        const auto dockContainer = new CAutoHideDockContainer(DockManager, area, _this);
 		if (!dockContainer->restoreState(s, Testing))
 		{
 			return false;
@@ -1491,13 +1491,13 @@ CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockW
 
 
 //============================================================================
-COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget, CDockWidget::eOverlayInsertOrder insertOrder)
+CAutoHideDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget, CDockWidget::eOverlayInsertOrder insertOrder)
 {
 	if (d->DockManager != DockWidget->dockManager())
 	{
         DockWidget->setDockManager(d->DockManager); // Overlay Dock Container needs a valid dock manager
 	}
-	if (!COverlayDockContainer::areaExistsInConfig(area))
+	if (!CAutoHideDockContainer::areaExistsInConfig(area))
 	{
 		Q_ASSERT_X(false, "CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer",
 			"Requested area does not exist in config");
@@ -1508,7 +1508,7 @@ COverlayDockContainer* CDockContainerWidget::createAndInitializeDockWidgetOverla
     sideTabBar(area)->insertSideTab(insertOrder == CDockWidget::First ? 0 : -1, DockWidget->sideTabWidget());
     DockWidget->sideTabWidget()->show();
 
-	const auto dockContainer = new COverlayDockContainer(DockWidget, area, this);
+	const auto dockContainer = new CAutoHideDockContainer(DockWidget, area, this);
 	dockContainer->hide();
 	d->DockManager->dockFocusController()->clearDockWidgetFocus(DockWidget);
 	return dockContainer;
@@ -1619,7 +1619,7 @@ void CDockContainerWidget::deleteOverlayWidgets()
 }
 
 //============================================================================
-QList<COverlayDockContainer*> CDockContainerWidget::overlayWidgets() const
+QList<CAutoHideDockContainer*> CDockContainerWidget::overlayWidgets() const
 {
 	return d->OverlayWidgets;
 }
@@ -2156,7 +2156,7 @@ void CDockContainerWidget::updateSplitterHandles(QSplitter* splitter)
 }
 
 //============================================================================
-void CDockContainerWidget::registerOverlayWidget(COverlayDockContainer* OverlayWidget)
+void CDockContainerWidget::registerOverlayWidget(CAutoHideDockContainer* OverlayWidget)
 {
 	d->OverlayWidgets.append(OverlayWidget);
 	Q_EMIT overlayWidgetCreated(OverlayWidget);
@@ -2164,7 +2164,7 @@ void CDockContainerWidget::registerOverlayWidget(COverlayDockContainer* OverlayW
 }
 
 //============================================================================
-void CDockContainerWidget::removeOverlayWidget(COverlayDockContainer* OverlayWidget)
+void CDockContainerWidget::removeOverlayWidget(CAutoHideDockContainer* OverlayWidget)
 {
 	d->OverlayWidgets.removeAll(OverlayWidget);
 }

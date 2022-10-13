@@ -27,6 +27,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <AutoHideDockContainer.h>
 #include "DockAreaTitleBar.h"
 
 #include <QPushButton>
@@ -51,7 +52,6 @@
 #include "DockAreaTabBar.h"
 #include "DockComponentsFactory.h"
 #include "DockFocusController.h"
-#include "OverlayDockContainer.h"
 #include "ElidingLabel.h"
 
 #include <iostream>

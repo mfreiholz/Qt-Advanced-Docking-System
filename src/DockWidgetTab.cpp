@@ -28,6 +28,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <AutoHideDockContainer.h>
 #include "FloatingDragPreview.h"
 #include "ElidingLabel.h"
 #include "DockWidgetTab.h"
@@ -51,7 +52,6 @@
 #include "DockManager.h"
 #include "IconProvider.h"
 #include "DockFocusController.h"
-#include "OverlayDockContainer.h"
 
 
 namespace ads

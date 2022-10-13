@@ -241,6 +241,7 @@ QString CElidingLabel::text() const
 	return d->Text;
 }
 
+
 /**
  * Private data of public CVerticalElidingLabel
  */
@@ -255,8 +256,10 @@ struct VerticalElidingLabelPrivate
 
 //============================================================================
 VerticalElidingLabelPrivate::VerticalElidingLabelPrivate(CVerticalElidingLabel* _public)
+	: _this(_public)
 {
 }
+
 
 //============================================================================
 CVerticalElidingLabel::CVerticalElidingLabel(QWidget* parent, Qt::WindowFlags f) :
@@ -264,6 +267,7 @@ CVerticalElidingLabel::CVerticalElidingLabel(QWidget* parent, Qt::WindowFlags f)
 	d(new VerticalElidingLabelPrivate(this))
 {
 }
+
 
 //============================================================================
 void CVerticalElidingLabel::setOrientation(Qt::Orientation orientation)
