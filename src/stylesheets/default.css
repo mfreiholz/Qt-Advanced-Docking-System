@@ -43,16 +43,6 @@ ads--CDockWidgetSideTab {
 	background: palette(window);
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="Left"] {
-	border-left: 3px solid grey;
-	border-bottom: 1px solid white;
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="Right"] {
-	border-right: 3px solid grey;
-	border-bottom: 1px solid white;
-}
-
 ads--CDockWidget {
 	background: palette(light);
 	border-color: palette(light);
