@@ -459,6 +459,8 @@ void CAutoHideDockContainer::collapseView(bool Enable)
 		d->DockManager->setDockWidgetFocused(d->DockWidget);
 		qApp->installEventFilter(this);
 	}
+
+    d->DockWidget->sideTabWidget()->updateStyle();
 }
 
 

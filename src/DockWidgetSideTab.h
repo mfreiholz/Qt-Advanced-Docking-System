@@ -52,6 +52,7 @@ class ADS_EXPORT CDockWidgetSideTab : public QFrame
 
     Q_PROPERTY(SideTabBarArea sideTabBarArea READ sideTabBarArea)
 	Q_PROPERTY(QSize iconSize READ iconSize WRITE setIconSize)
+	Q_PROPERTY(bool activeTab READ isActiveTab)
 
 private:    
 	DockWidgetSideTabPrivate* d; ///< private data (pimpl)
@@ -139,6 +140,10 @@ public:
 	 */
 	void updateOrientationAndSpacing(SideTabBarArea area);
 
+	/**
+	 * Returns true, if this is the active tab. The tab is active if the auto hide widget is visible
+	 */
+	bool isActiveTab() const;
 
 	/**
 	 * returns the dock widget this belongs to

@@ -323,6 +323,18 @@ void CDockWidgetSideTab::updateOrientationAndSpacing(SideTabBarArea area)
 
 
 //============================================================================
+bool CDockWidgetSideTab::isActiveTab() const
+{
+	if (d->DockWidget->autoHideDockContainer())
+	{
+		return d->DockWidget->autoHideDockContainer()->isVisible();
+	}
+
+	return false;
+}
+
+
+//============================================================================
 CDockWidget* CDockWidgetSideTab::dockWidget() const
 {
 	return d->DockWidget;

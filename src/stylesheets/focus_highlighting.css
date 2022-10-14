@@ -141,27 +141,27 @@ ads--CDockWidgetSideTab:hover[sideTabBarArea="5"] {
 	border-bottom: 3px solid palette(highlight);
 }
 
-ads--CDockWidgetSideTab:hover[sideTabBarArea="0"][focused="true"] {
+ads--CDockWidgetSideTab:hover[sideTabBarArea="0"][activeTab="true"] {
 	border-top: 3px solid palette(highlight);
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="0"][focused="true"] {
+ads--CDockWidgetSideTab[sideTabBarArea="0"][activeTab="true"] {
 	border-top: 3px solid palette(highlight);
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="1"][focused="true"],[sideTabBarArea="2"][focused="true"] {
+ads--CDockWidgetSideTab[sideTabBarArea="1"][activeTab="true"],[sideTabBarArea="2"][activeTab="true"] {
 	border-left: 3px solid palette(highlight);
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="3"][focused="true"],[sideTabBarArea="4"][focused="true"] {
+ads--CDockWidgetSideTab[sideTabBarArea="3"][activeTab="true"],[sideTabBarArea="4"][focused="true"] {
 	border-right: 3px solid palette(highlight);
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="5"][focused="true"] {
+ads--CDockWidgetSideTab[sideTabBarArea="5"][activeTab="true"] {
 	border-bottom: 3px solid palette(highlight);
 }
 
-ads--CDockWidgetTab[focused="true"] {
+ads--CDockWidgetTab[activeTab="true"] {
 	background: palette(highlight);
 	border-color: palette(highlight);
 }
