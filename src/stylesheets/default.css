@@ -39,6 +39,7 @@ ads--CDockWidgetTab[activeTab="true"] QLabel {
 	color: palette(foreground);
 }
 
+/* Side tab styling */
 ads--CDockWidgetSideTab {
 	background: palette(window);
 	qproperty-iconSize: 16px 16px;/* this is optional in case you would like to change icon size*/
@@ -99,6 +100,7 @@ ads--CDockWidgetSideTab[sideTabBarArea="3"][activeTab="true"],[sideTabBarArea="4
 ads--CDockWidgetSideTab[sideTabBarArea="5"][activeTab="true"] {
 	border-bottom: 3px solid palette(highlight);
 }
+/* Side tab styling */
 
 ads--CDockWidget {
 	background: palette(light);
