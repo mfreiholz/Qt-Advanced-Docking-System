@@ -237,7 +237,7 @@ public:
 		TopSideBarPrioritizeIconOnly = 0x100, //!< If the flag is set bottom side bar will prioritize showing icons only over text
 		AutoHideDockAreaHasTitle = 0x200, //!< If the flag is set overlay dock area title bar will show the window title
 
-		DefaultAutoHideConfig = DockContainerHasLeftSideBar | BottomSideBarPrioritizeIconOnly | TopSideBarPrioritizeIconOnly
+		DefaultAutoHideConfig = DockContainerHasLeftSideBar
                               | DockContainerHasRightSideBar
                               | DockContainerHasBottomSideBar
                               | DockContainerHasTopSideBar

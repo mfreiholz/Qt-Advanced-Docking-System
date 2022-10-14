@@ -83,7 +83,7 @@ public:
         LeftBottom,
         RightTop,
         RightBottom,
-		Bottom
+        Bottom
     };
 
 	Q_ENUM(SideTabBarArea)
