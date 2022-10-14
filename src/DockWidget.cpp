@@ -1085,15 +1085,7 @@ void CDockWidget::onDockWidgetSideTabClicked()
 		return;
 	}
 
-	autoHideContainer->raise();
 	autoHideContainer->toggleCollapseState();
-	if (autoHideContainer->isVisible())
-	{
-		// d->DockManager->setDockWidgetFocused(this) does not
-		// de focus the old widget, leading to the auto hide still being visible
-		// even after clicking outside the auto hide.
-		setFocus(Qt::ActiveWindowFocusReason);
-	}
 }
 
 //============================================================================

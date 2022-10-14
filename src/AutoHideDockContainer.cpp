@@ -437,6 +437,7 @@ void CAutoHideDockContainer::collapseView(bool Enable)
 		d->DockWidget->show();
 		updateSize();
 		updateMask();
+		d->DockManager->setDockWidgetFocused(d->DockWidget);
 		qApp->installEventFilter(this);
 	}
 }
