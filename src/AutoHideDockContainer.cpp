@@ -80,6 +80,10 @@ struct AutoHideDockContainerPrivate
             {
 				return BottomDockWidgetArea;
             }
+            case CDockWidgetSideTab::Top:
+            {
+				return TopDockWidgetArea;
+            }
         }
 
 		return LeftDockWidgetArea;
@@ -106,6 +110,10 @@ struct AutoHideDockContainerPrivate
                 {
                     return QPoint(_this->width() / 2, _this->height() - 1);
                 }
+                case CDockWidgetSideTab::Top:
+                {
+                    return QPoint(_this->width() / 2, 1);
+                }
             }
 
 		return QPoint();
@@ -123,6 +131,11 @@ struct AutoHideDockContainerPrivate
         if (SideTabBarArea == CDockWidgetSideTab::Bottom)
         {
             return QRect(QPoint(topLeft.x(), topLeft.y() - handleSize), QSize(rect.size().width(), rect.size().height() + handleSize));
+        }
+
+        if (SideTabBarArea == CDockWidgetSideTab::Top)
+        {
+            return QRect(QPoint(topLeft.x(), topLeft.y()), QSize(rect.size().width(), rect.size().height() + handleSize));
         }
 
         auto offset = 0;
@@ -150,7 +163,7 @@ CDockContainerWidget* CAutoHideDockContainer::parentContainer() const
 
 //============================================================================
 CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent) :
-    QSplitter(area == CDockWidgetSideTab::Bottom ? Qt::Orientation::Vertical : Qt::Orientation::Horizontal, parent),
+    QSplitter((area == CDockWidgetSideTab::Bottom || area == CDockWidgetSideTab::Top) ? Qt::Orientation::Vertical : Qt::Orientation::Horizontal, parent),
     d(new AutoHideDockContainerPrivate(this))
 {
 	d->DockManager = DockManager;
@@ -170,6 +183,12 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockW
 
     switch (area)
     {
+        case CDockWidgetSideTab::Top:
+        {
+            addWidget(d->DockArea);
+            addWidget(emptyWidget);
+			break;
+        }
         case CDockWidgetSideTab::LeftBottom: 
         case CDockWidgetSideTab::LeftTop:
         {
@@ -468,6 +487,10 @@ bool CAutoHideDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarAr
         case CDockWidgetSideTab::Bottom: 
         {
 			return CDockManager::testConfigFlag(CDockManager::DockContainerHasBottomSideBar);
+        }
+        case CDockWidgetSideTab::Top:
+        {
+			return CDockManager::testConfigFlag(CDockManager::DockContainerHasTopSideBar);
         }
     }
 

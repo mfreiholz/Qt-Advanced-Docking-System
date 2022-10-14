@@ -1440,7 +1440,7 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 	d->Layout->setContentsMargins(0, 0, 0, 0);
 	d->Layout->setSpacing(0);
 	d->Layout->setColumnStretch(1, 1);
-	d->Layout->setRowStretch(0, 1);
+	d->Layout->setRowStretch(1, 1);
 	setLayout(d->Layout);
 
 	// The function d->newSplitter() accesses the config flags from dock
@@ -1523,16 +1523,21 @@ CAutoHideDockContainer* CDockContainerWidget::createAndInitializeAutoHideDockWid
 //============================================================================
 CDockWidgetSideTab::SideTabBarArea CDockContainerWidget::getDockAreaPosition(CDockAreaWidget* DockAreaWidget)
 {
-	// Handle bottom case
+	// Handle bottom case and top case
 	// It's bottom if the width is wider than the height, and if it's below 50% of the window
 	const auto dockWidgetFrameGeometry = DockAreaWidget->frameGeometry();
 	const auto splitterCenter = rootSplitter()->mapToGlobal(rootSplitter()->frameGeometry().center());
 
-	if (dockWidgetFrameGeometry.width() > dockWidgetFrameGeometry.height() 
-		&& DockAreaWidget->mapToGlobal(dockWidgetFrameGeometry.topLeft()).y() > splitterCenter.y()
-		&& CDockManager::testConfigFlag(CDockManager::DockContainerHasBottomSideBar))
+	if (dockWidgetFrameGeometry.width() > dockWidgetFrameGeometry.height())
 	{
-        return CDockWidgetSideTab::Bottom;
+		if (DockAreaWidget->mapToGlobal(dockWidgetFrameGeometry.topLeft()).y() > splitterCenter.y() && CDockManager::testConfigFlag(CDockManager::DockContainerHasBottomSideBar))
+		{
+            return CDockWidgetSideTab::Bottom;
+		}
+		if (CDockManager::testConfigFlag(CDockManager::DockContainerHasTopSideBar))
+		{
+			return CDockWidgetSideTab::Top;
+		}
 	}
 
 	// Then handle left and right
@@ -2040,7 +2045,7 @@ void CDockContainerWidget::createRootSplitter()
 		return;
 	}
 	d->RootSplitter = d->newSplitter(Qt::Horizontal);
-	d->Layout->addWidget(d->RootSplitter, 0, 1); // Add it to the center - the 0 and 2 indexes are used for the SideTabBar widgets
+	d->Layout->addWidget(d->RootSplitter, 1, 1); // Add it to the center - the 0 and 2 indexes are used for the SideTabBar widgets
 }
 
 
@@ -2055,7 +2060,7 @@ void CDockContainerWidget::createSideTabBarWidgets()
 		leftLayout->addStretch(1);
         d->SideTabBarWidgets[CDockWidgetSideTab::LeftBottom] = new CSideTabBar(this, Qt::Vertical);
 		leftLayout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::LeftBottom]);
-		d->Layout->addLayout(leftLayout, 0, 0);
+		d->Layout->addLayout(leftLayout, 1, 0);
 	}
 
 	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
@@ -2066,13 +2071,19 @@ void CDockContainerWidget::createSideTabBarWidgets()
 		rightLayout->addStretch(1);
         d->SideTabBarWidgets[CDockWidgetSideTab::RightBottom] = new CSideTabBar(this, Qt::Vertical);
 		rightLayout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::RightBottom]);
-		d->Layout->addLayout(rightLayout, 0, 2);
+		d->Layout->addLayout(rightLayout, 1, 2);
 	}
 
 	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasBottomSideBar))
 	{
         d->SideTabBarWidgets[CDockWidgetSideTab::Bottom] = new CSideTabBar(this, Qt::Horizontal);
-        d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Bottom], 1, 1);
+        d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Bottom], 2, 1);
+	}
+
+	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasTopSideBar))
+	{
+        d->SideTabBarWidgets[CDockWidgetSideTab::Top] = new CSideTabBar(this, Qt::Horizontal);
+        d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Top], 0, 1);
 	}
 }
 

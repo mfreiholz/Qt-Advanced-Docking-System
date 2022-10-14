@@ -77,6 +77,7 @@ public:
      */
     enum SideTabBarArea
     {
+		Top,
         LeftTop,
         LeftBottom,
         RightTop,
