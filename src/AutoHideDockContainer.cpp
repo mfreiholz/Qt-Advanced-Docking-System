@@ -192,8 +192,8 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockW
         }
     }
 
-	updateMask();
 	updateSize();
+	updateMask();
 
 	parent->registerAutoHideWidget(this);
 }
@@ -435,8 +435,8 @@ void CAutoHideDockContainer::collapseView(bool Enable)
 		show();
 		d->DockArea->show();
 		d->DockWidget->show();
-		updateMask();
 		updateSize();
+		updateMask();
 		qApp->installEventFilter(this);
 	}
 }
