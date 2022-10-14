@@ -1054,9 +1054,10 @@ bool DockContainerWidgetPrivate::restoreAutoHideDockArea(CDockingStateReader& s,
 	}
 
 	CDockAreaWidget* DockArea = nullptr;
+	CAutoHideDockContainer* dockContainer = nullptr;
 	if (!Testing)
 	{
-        const auto dockContainer = new CAutoHideDockContainer(DockManager, area, _this);
+		dockContainer = new CAutoHideDockContainer(DockManager, area, _this);
 		if (!dockContainer->restoreState(s, Testing))
 		{
 			return false;
@@ -1106,6 +1107,11 @@ bool DockContainerWidgetPrivate::restoreAutoHideDockArea(CDockingStateReader& s,
         DockArea->autoHideDockContainer()->addDockWidget(DockWidget);
         DockWidget->sideTabWidget()->updateStyle(); // Needed as the side tab widget get it's left/right property from the overlay dock container which was just added
 		DockArea->autoHideDockContainer()->toggleView(!Closed);
+	}
+
+	if (dockContainer && !dockContainer->dockWidget())
+	{
+		dockContainer->cleanupAndDelete();
 	}
 
 	return true;

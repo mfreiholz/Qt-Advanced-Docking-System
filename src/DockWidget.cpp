@@ -248,7 +248,7 @@ void DockWidgetPrivate::updateParentDockArea()
 
 void DockWidgetPrivate::closeAutoHideDockWidgetsIfNeeded()
 {
-	if (_this->dockContainer() && _this->dockContainer()->openedDockWidgets().isEmpty())
+	if (_this->dockContainer() && _this->dockContainer()->openedDockWidgets().isEmpty() && !_this->dockManager()->isRestoringState())
 	{
         for (auto autoHideWidget : _this->dockContainer()->autoHideWidgets())
         {

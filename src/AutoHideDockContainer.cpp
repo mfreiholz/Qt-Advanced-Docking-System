@@ -196,9 +196,6 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockW
 	updateSize();
 
 	parent->registerAutoHideWidget(this);
-
-	d->DockArea->installEventFilter(this);
-	parent->installEventFilter(this);
 }
 
 //============================================================================
@@ -231,8 +228,7 @@ CAutoHideDockContainer::~CAutoHideDockContainer()
 	ADS_PRINT("~CAutoHideDockContainer");
 
 	// Remove event filter in case there are any queued messages
-	d->DockArea->removeEventFilter(this);
-    parent()->removeEventFilter(this);
+	qApp->removeEventFilter(this);
 
 	if (d->DockManager)
 	{
@@ -439,6 +435,8 @@ void CAutoHideDockContainer::collapseView(bool Enable)
 		show();
 		d->DockArea->show();
 		d->DockWidget->show();
+		updateMask();
+		updateSize();
 		qApp->installEventFilter(this);
 	}
 }
