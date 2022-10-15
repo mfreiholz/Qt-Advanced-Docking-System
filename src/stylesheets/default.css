@@ -74,6 +74,30 @@ QScrollArea#dockWidgetScrollArea {
 	qproperty-iconSize: 16px;
 }
 
+#autoHideTitleLabel {
+	padding-left: 4px;
+}
+
+/*
+ads--CAutoHideDockContainer::handle {
+	background: palette(dark);
+}
+
+ads--CAutoHideDockContainer::handle:vertical {
+	height: 4px;
+}
+
+
+ads--CAutoHideDockContainer::handle:horizontal {
+	width: 4px;
+}
+*/
+
+/*ads--CAutoHideDockContainer[sideTabBarArea="0"]:handle {
+	border: 1px solid palette(dark);
+	background: white;
+}*/
+
 #tabCloseButton {
 	margin-top: 2px;
 	background: none;

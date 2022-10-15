@@ -47,12 +47,13 @@ class CSideTabBar;
 class CDockAreaWidget;
 class CDockingStateReader;
 
-// Note: This widget must be a QSplitter, inheriting from QWidget and keeping an internal splitter breaks ActiveX widgets
+// Note: This widget must be a QSplitter, inheriting from QWidget and keeping an
+// internal splitter breaks ActiveX widgets
 // likely due to layout issues between this widget and the internal splitter
 class ADS_EXPORT CAutoHideDockContainer : public QSplitter
 {
 	Q_OBJECT
-
+	Q_PROPERTY(int sideTabBarArea READ sideTabBarArea)
 private:
 	AutoHideDockContainerPrivate* d; ///< private data (pimpl)
 	friend struct AutoHideDockContainerPrivate;
