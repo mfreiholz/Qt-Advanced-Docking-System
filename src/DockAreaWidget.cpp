@@ -1100,15 +1100,12 @@ void CDockAreaWidget::closeArea()
 void CDockAreaWidget::toggleAutoHideArea(bool Enable)
 {
 	const auto area = dockContainer()->getDockAreaPosition(this);
-	for (const auto DockWidget : openedDockWidgets())
+	const auto DockWidget = currentDockWidget();
+	if (Enable == isAutoHide())
 	{
-		if (Enable == isAutoHide())
-		{
-			continue;
-		}
-
-		onAutoHideToggleRequested(DockWidget, !isAutoHide(), area);
+		return;
 	}
+	onAutoHideToggleRequested(DockWidget, !isAutoHide(), area);
 }
 
 //============================================================================
