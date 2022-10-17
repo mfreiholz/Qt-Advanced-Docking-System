@@ -123,7 +123,13 @@ QScrollArea#dockWidgetScrollArea {
 }
 
 #dockAreaAutoHideButton {
-	qproperty-icon: url(:/ads/images/pin-button.svg);
+	qproperty-icon: url(:/ads/images/vs-pin-button.svg);
+	qproperty-iconSize: 16px;
+}
+
+ads--CAutoHideDockContainer #dockAreaAutoHideButton 
+{
+	qproperty-icon: url(:/ads/images/vs-pin-button-pinned.svg);
 	qproperty-iconSize: 16px;
 }
 

@@ -15,5 +15,7 @@
         <file>images/maximize-button-focused.svg</file>
         <file>images/restore-button.svg</file>
         <file>images/restore-button-focused.svg</file>
+        <file>images/vs-pin-button.svg</file>
+        <file>images/vs-pin-button-pinned.svg</file>
     </qresource>
 </RCC>
