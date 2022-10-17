@@ -195,13 +195,11 @@ void DockAreaTitleBarPrivate::createButtons()
 	AutoHideButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasAutoHideButton) && autoHideEnabled);
 	AutoHideButton->setObjectName("dockAreaAutoHideButton");
 	AutoHideButton->setAutoRaise(true);
-	AutoHideButton->setCheckable(true);
-	AutoHideButton->setChecked(false);
 	internal::setToolTip(AutoHideButton, QObject::tr("Toggle Auto Hide"));
 	internal::setButtonIcon(AutoHideButton, QStyle::SP_DialogOkButton, ads::AutoHideIcon);
 	AutoHideButton->setSizePolicy(ButtonSizePolicy);
 	Layout->addWidget(AutoHideButton, 0);
-	_this->connect(AutoHideButton, SIGNAL(toggled(bool)),  SLOT(onAutoHideButtonClicked(bool)));
+	_this->connect(AutoHideButton, SIGNAL(clicked()),  SLOT(onAutoHideButtonClicked()));
 
 	// Close button
 	CloseButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasCloseButton));
@@ -486,11 +484,12 @@ void CDockAreaTitleBar::onCurrentTabChanged(int Index)
 
 
 //============================================================================
-void CDockAreaTitleBar::onAutoHideButtonClicked(bool Checked)
+void CDockAreaTitleBar::onAutoHideButtonClicked()
 {
+	qDebug() << "CDockAreaTitleBar::onAutoHideButtonClicked()";
 	if (d->DockArea->features().testFlag(CDockWidget::DockWidgetPinnable))
 	{
-        d->DockArea->toggleAutoHideArea(Checked);
+        d->DockArea->toggleAutoHideArea(!d->DockArea->isAutoHide());
 	}
 }
 

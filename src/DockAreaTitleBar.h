@@ -61,7 +61,7 @@ private Q_SLOTS:
 	void onUndockButtonClicked();
 	void onTabsMenuActionTriggered(QAction* Action);
 	void onCurrentTabChanged(int Index);
-	void onAutoHideButtonClicked(bool Checked);
+	void onAutoHideButtonClicked();
 
 protected:
     /**

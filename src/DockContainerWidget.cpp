@@ -1521,62 +1521,103 @@ CAutoHideDockContainer* CDockContainerWidget::createAndInitializeAutoHideDockWid
 }
 
 
+enum eBorderLocation
+{
+	BorderNone = 0,
+	BorderLeft = 0x01,
+	BorderRight = 0x02,
+	BorderTop = 0x04,
+	BorderBottom = 0x08,
+	BorderVertical = BorderLeft | BorderRight,
+	BorderHorizontal = BorderTop | BorderBottom,
+	BorderTopLeft = BorderTop | BorderLeft,
+	BorderTopRight = BorderTop | BorderRight,
+	BorderBottomLeft = BorderBottom | BorderLeft,
+	BorderBottomRight = BorderBottom | BorderRight,
+	BorderVerticalBottom = BorderVertical | BorderBottom,
+	BorderVerticalTop = BorderVertical | BorderTop,
+	BorderHorizontalLeft = BorderHorizontal | BorderLeft,
+	BorderHorizontalRight = BorderHorizontal | BorderRight,
+	BorderAll = BorderVertical | BorderHorizontal
+};
+
+
 //============================================================================
 CDockWidgetSideTab::SideTabBarArea CDockContainerWidget::calculateSideTabBarArea(CDockAreaWidget* DockAreaWidget)
 {
-	// Handle bottom case and top case
-	// It's bottom if the width is wider than the height, and if it's below 50% of the window
-	const auto dockWidgetFrameGeometry = DockAreaWidget->frameGeometry();
-	const auto splitterCenter = rootSplitter()->mapToGlobal(rootSplitter()->frameGeometry().center());
 
-	if (dockWidgetFrameGeometry.width() > dockWidgetFrameGeometry.height())
+	auto DockMgrRect = d->DockManager->contentRect();
+	int borders = BorderNone; // contains all borders that are touched by the dock ware
+	auto DockAreaTopLeft = DockAreaWidget->mapTo(d->DockManager, DockAreaWidget->rect().topLeft());
+	auto DockAreaRect = DockAreaWidget->rect();
+	DockAreaRect.moveTo(DockAreaTopLeft);
+	const qreal aspectRatio = DockAreaRect.width() / (qMax(1, DockAreaRect.height()) * 1.0);
+	const qreal sizeRatio = (qreal)DockMgrRect.width() / DockAreaRect.width();
+	static const int MinBorderDistance = 16;
+	bool HorizontalOrientation = (aspectRatio > 1.0) && (sizeRatio < 3.0);
+
+	// measure border distances - a distance less than 16 px means we touch the
+	// border
+	int BorderDistance[4];
+	int Distance = qAbs(DockMgrRect.topLeft().y() - DockAreaRect.topLeft().y());
+	BorderDistance[CDockWidgetSideTab::Top] = (Distance < MinBorderDistance) ? 0 : Distance;
+	if (!BorderDistance[CDockWidgetSideTab::Top])
 	{
-		if (DockAreaWidget->mapToGlobal(dockWidgetFrameGeometry.topLeft()).y() > splitterCenter.y() && CDockManager::testConfigFlag(CDockManager::DockContainerHasBottomSideBar))
-		{
-            return CDockWidgetSideTab::Bottom;
-		}
-		if (CDockManager::testConfigFlag(CDockManager::DockContainerHasTopSideBar))
-		{
-			return CDockWidgetSideTab::Top;
-		}
+		borders |= BorderTop;
+	}
+	qDebug() << "BorderDistance[CDockWidgetSideTab::Top] " << BorderDistance[CDockWidgetSideTab::Top];
+	Distance = qAbs(DockMgrRect.bottomRight().y() - DockAreaRect.bottomRight().y());
+	BorderDistance[CDockWidgetSideTab::Bottom] = (Distance < MinBorderDistance) ? 0 : Distance;
+	if (!BorderDistance[CDockWidgetSideTab::Bottom])
+	{
+		borders |= BorderBottom;
+	}
+	qDebug() << "BorderDistance[CDockWidgetSideTab::Bottom] " << BorderDistance[CDockWidgetSideTab::Bottom];
+	Distance = qAbs(DockMgrRect.topLeft().x() - DockAreaRect.topLeft().x());
+	BorderDistance[CDockWidgetSideTab::Left] = (Distance < MinBorderDistance) ? 0 : Distance;
+	if (!BorderDistance[CDockWidgetSideTab::Left])
+	{
+		borders |= BorderLeft;
+	}
+	qDebug() << "BorderDistance[CDockWidgetSideTab::Left] " << BorderDistance[CDockWidgetSideTab::Left];
+	Distance = qAbs(DockMgrRect.bottomRight().x() - DockAreaRect.bottomRight().x());
+	BorderDistance[CDockWidgetSideTab::Right] = (Distance < MinBorderDistance) ? 0 : Distance;
+	if (!BorderDistance[CDockWidgetSideTab::Right])
+	{
+		borders |= BorderRight;
+	}
+	qDebug() << "BorderDistance[CDockWidgetSideTab::Right] " << BorderDistance[CDockWidgetSideTab::Right];
+
+	auto SideTab = CDockWidgetSideTab::Right;
+	switch (borders)
+	{
+	// 1. It's touching all borders
+	case BorderAll: SideTab = HorizontalOrientation ? CDockWidgetSideTab::Bottom : CDockWidgetSideTab::Right; break;
+
+	// 2. It's touching 3 borders
+	case BorderVerticalBottom : SideTab = CDockWidgetSideTab::Bottom; break;
+	case BorderVerticalTop : SideTab = CDockWidgetSideTab::Top; break;
+	case BorderHorizontalLeft: SideTab = CDockWidgetSideTab::Left; break;
+	case BorderHorizontalRight: SideTab = CDockWidgetSideTab::Right; break;
+
+	// 3. Its touching horizontal or vertical borders
+	case BorderVertical : SideTab = CDockWidgetSideTab::Bottom; break;
+	case BorderHorizontal: SideTab = CDockWidgetSideTab::Right; break;
+
+	// 4. Its in a corner
+	case BorderTopLeft : SideTab = HorizontalOrientation ? CDockWidgetSideTab::Top : CDockWidgetSideTab::Left; break;
+	case BorderTopRight : SideTab = HorizontalOrientation ? CDockWidgetSideTab::Top : CDockWidgetSideTab::Right; break;
+	case BorderBottomLeft : SideTab = HorizontalOrientation ? CDockWidgetSideTab::Bottom : CDockWidgetSideTab::Left; break;
+	case BorderBottomRight : SideTab = HorizontalOrientation ? CDockWidgetSideTab::Bottom : CDockWidgetSideTab::Right; break;
+
+	// 5 Ists touching only one border
+	case BorderLeft: SideTab = CDockWidgetSideTab::Left; break;
+	case BorderRight: SideTab = CDockWidgetSideTab::Right; break;
+	case BorderTop: SideTab = CDockWidgetSideTab::Top; break;
+	case BorderBottom: SideTab = CDockWidgetSideTab::Bottom; break;
 	}
 
-	// Then handle left and right
-	const auto dockWidgetCenter = DockAreaWidget->mapToGlobal(dockWidgetFrameGeometry.center());
-	const auto calculatedPosition = dockWidgetCenter.x() <= splitterCenter.x() ? CDockWidgetSideTab::Left : CDockWidgetSideTab::Right;
-	if (calculatedPosition == CDockWidgetSideTab::Right)
-	{
-        if (CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
-        {
-            return CDockWidgetSideTab::Right;
-        }
-
-		if (CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
-		{
-            return CDockWidgetSideTab::Left;
-		}
-
-		return CDockWidgetSideTab::Bottom;
-	}
-
-    if (calculatedPosition == CDockWidgetSideTab::Left)
-	{
-		if (CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
-		{
-            return CDockWidgetSideTab::Left;
-		}
-
-		if (CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
-		{
-            return CDockWidgetSideTab::Right;
-		}
-
-		return CDockWidgetSideTab::Bottom;
-	}
-
-	Q_ASSERT_X(false, "CDockContainerWidget::getDockAreaPosition", "Unhandled branch. All positions should be accounted for.");
-	return CDockWidgetSideTab::Left;
-
+	return SideTab;
 }
 
 //============================================================================
@@ -2232,6 +2273,18 @@ void CDockContainerWidget::closeOtherAreas(CDockAreaWidget* KeepOpenArea)
 CSideTabBar* CDockContainerWidget::sideTabBar(CDockWidgetSideTab::SideTabBarArea area) const
 {
 	return d->SideTabBarWidgets[area];
+}
+
+
+//============================================================================
+QRect CDockContainerWidget::contentRect()
+{
+	if (!d->RootSplitter)
+	{
+		return QRect();
+	}
+
+	return d->RootSplitter->geometry();
 }
 } // namespace ads
 

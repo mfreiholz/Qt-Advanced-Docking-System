@@ -328,6 +328,11 @@ public:
 	 */
 	QList<CAutoHideDockContainer*> autoHideWidgets() const;
 
+	/**
+	 * Returns the content rectangle without the autohide side bars
+	 */
+	QRect contentRect();
+
 Q_SIGNALS:
 	/**
 	 * This signal is emitted if one or multiple dock areas has been added to
