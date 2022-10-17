@@ -39,19 +39,68 @@ ads--CDockWidgetTab[activeTab="true"] QLabel {
 	color: palette(foreground);
 }
 
+/* Side tab styling */
 ads--CDockWidgetSideTab {
 	background: palette(window);
+	qproperty-iconSize: 16px 16px;/* this is optional in case you would like to change icon size*/
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="Left"] {
+ads--CDockWidgetSideTab[sideTabBarArea="0"] {
+	border-top: 3px solid grey;
+	border-right: 1px solid white;
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="1"],[sideTabBarArea="2"] {
 	border-left: 3px solid grey;
 	border-bottom: 1px solid white;
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="Right"] {
+ads--CDockWidgetSideTab[sideTabBarArea="3"],[sideTabBarArea="4"] {
 	border-right: 3px solid grey;
 	border-bottom: 1px solid white;
 }
+
+ads--CDockWidgetSideTab[sideTabBarArea="5"] {
+	border-bottom: 3px solid grey;
+	border-right: 1px solid white;
+}
+
+ads--CDockWidgetSideTab:hover[sideTabBarArea="0"] {
+	border-top: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab:hover[sideTabBarArea="1"],:hover[sideTabBarArea="2"] {
+	border-left: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab:hover[sideTabBarArea="3"],:hover[sideTabBarArea="4"] {
+	border-right: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab:hover[sideTabBarArea="5"] {
+	border-bottom: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab:hover[sideTabBarArea="0"][activeTab="true"] {
+	border-top: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="0"][activeTab="true"] {
+	border-top: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="1"][activeTab="true"],[sideTabBarArea="2"][activeTab="true"] {
+	border-left: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="3"][activeTab="true"],[sideTabBarArea="4"][focused="true"] {
+	border-right: 3px solid palette(highlight);
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="5"][activeTab="true"] {
+	border-bottom: 3px solid palette(highlight);
+}
+/* Side tab styling */
 
 ads--CDockWidget {
 	background: palette(light);

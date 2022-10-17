@@ -106,7 +106,7 @@ struct DockWidgetSideTabPrivate
 		}
 		else if (Orientation == Qt::Horizontal)
 		{
-			TitleLayout->setContentsMargins(Spacing / 2, Spacing / 2, Spacing, Spacing);
+			TitleLayout->setContentsMargins(Spacing / 2, Spacing, Spacing, Spacing);
 			if (IconLabel)
 			{
 				IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, 0, Spacing / 2);
@@ -276,7 +276,7 @@ void CDockWidgetSideTab::setOrientation(Qt::Orientation Orientation)
 //============================================================================
 void CDockWidgetSideTab::updateOrientationAndSpacing(SideTabBarArea area)
 {
-	setOrientation(area == Bottom ? Qt::Horizontal : Qt::Vertical);
+	setOrientation((area == Bottom || area == Top) ? Qt::Horizontal : Qt::Vertical);
 
 	d->updateContentsMargins();
 
@@ -307,11 +307,30 @@ void CDockWidgetSideTab::updateOrientationAndSpacing(SideTabBarArea area)
 	{
 		d->TitleLabel->hide();
 		d->TitleLayout->setContentsMargins(0, 0, 0, 0);
+        d->IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing / 2, Spacing);
+		return;
+	}
+	if (CDockManager::testConfigFlag(CDockManager::TopSideBarPrioritizeIconOnly) && area == Top)
+	{
+		d->TitleLabel->hide();
+		d->TitleLayout->setContentsMargins(0, 0, 0, 0);
         d->IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing / 2, Spacing / 2);
 		return;
 	}
 
 	d->TitleLabel->show();
+}
+
+
+//============================================================================
+bool CDockWidgetSideTab::isActiveTab() const
+{
+	if (d->DockWidget->autoHideDockContainer())
+	{
+		return d->DockWidget->autoHideDockContainer()->isVisible();
+	}
+
+	return false;
 }
 
 

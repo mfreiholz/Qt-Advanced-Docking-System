@@ -633,7 +633,7 @@ d->DockManager = new CDockManager(this);
 
 ### Adding Auto Hide Widgets
 
-Adding an overlay widget is similar to adding a dock widget, simply call `dockManager->addAutoHideDockWidget`. 
+Adding an auto hide widget is similar to adding a dock widget, simply call `dockManager->addAutoHideDockWidget`. 
 
 ```c++
 d->DockManager = new CDockManager(this);
@@ -646,17 +646,17 @@ See `autohide` example to learn how it works.
 
 ### Configuration Flags For Auto Hide Widgets
 
-- `DockContainerHasLeftSideBar`, `DockContainerHasRightSideBar`, `DockContainerHasBottomSideBar` -> Enabling each of these enables the side bar at each location. Disabling any of them would mean that the widget cannot be added at that location, so it would be added at the next available location. E.g. If you only enable `DockContainerHasRightSideBar` and `DockContainerHasBottomSideBar` then it will be added to the bottom side bar or right side bar respectively. If none of these are enabled, the auto hide button will not be added, as at least one of them must be enabled to work.
+- `DockContainerHasTopSideBar`,`DockContainerHasLeftSideBar`, `DockContainerHasRightSideBar`, `DockContainerHasBottomSideBar` -> Enabling each of these enables the side bar at each location. Disabling any of them would mean that the widget cannot be added at that location, so it would be added at the next available location. E.g. If you only enable `DockContainerHasRightSideBar` and `DockContainerHasBottomSideBar` then it will be added to the bottom side bar or right side bar respectively. If none of these are enabled, the auto hide button will not be added, as at least one of them must be enabled to work.
 - `DockAreaHasAutoHideButton` -> Adds the auto hide button to the title bar of the dock area
-- `LeftSideBarPrioritizeIconOnly`, `RightSideBarPrioritizeIconOnly`, `BottomSideBarPrioritizeIconOnly` -> If this is set, the side bar this is enabled with will prioritize showing an icon only, as opposed to an icon and text. This is set per side bar, so if you only enable `LeftSideBarPrioritizeIconOnly`, the right and bottom side bars will still show the icon and the text. This is only relevant if an icon is set, otherwise it will only show text as usual.
+- `TopSideBarPrioritizeIconOnly`, `LeftSideBarPrioritizeIconOnly`, `RightSideBarPrioritizeIconOnly`, `BottomSideBarPrioritizeIconOnly` -> If this is set, the side bar this is enabled with will prioritize showing an icon only, as opposed to an icon and text. This is set per side bar, so if you only enable `LeftSideBarPrioritizeIconOnly`, the right and bottom side bars will still show the icon and the text. This is only relevant if an icon is set, otherwise it will only show text as usual.
 - `AutoHideDockAreaHasTitle` -> Adds the title of the dock window where the title bar would be. 
-- `DefaultAutoHideConfig` -> Enables `DockContainerHasLeftSideBar`, `DockContainerHasRightSideBar`, `DockContainerHasBottomSideBar`, `DockAreaHasAutoHideButton`, `AutoHideDockAreaHasTitle`
+- `DefaultAutoHideConfig` -> Enables `DockContainerHasTopSideBar`, `DockContainerHasLeftSideBar`, `DockContainerHasRightSideBar`, `DockContainerHasBottomSideBar`, `DockAreaHasAutoHideButton`, `AutoHideDockAreaHasTitle`
 
 ### Limitations
 
 - Currently the `LeftBottom` and `RightBottom` areas can only be added programatically, and not through the pin icon. These are used if you'd like to add a new dock widget separated from the normal dock areas.
 
-- Adding a `DockWidget` (e.g. via `addDockWidget`) to an overlayed `DockArea` that already has a dockwidget is undefined behavior. An overlayed dock area does not have tabs and does not support more than one `DockWidget` in it's area. If you want to add a `DockWidget` to a `DockArea` that *could* be overlayed, check first if it's overlayed via `CDockArea::isAutoHide` and handle it accordingly (typically by adding the overlay dock widget as a side tab instead of to the area).  
+- Adding a `DockWidget` (e.g. via `addDockWidget`) to an `DockArea` in an Auto Hide Widget that already has a dockwidget is undefined behavior. An overlayed dock area does not have tabs and does not support more than one `DockWidget` in it's area. If you want to add a `DockWidget` to a `DockArea` that *could* be in an auto hidden widget, check first if it's auto hidden via `CDockArea::isAutoHide` and handle it accordingly (typically by adding the overlay dock widget as a side tab instead of to the area).  
 
 ## Styling
 

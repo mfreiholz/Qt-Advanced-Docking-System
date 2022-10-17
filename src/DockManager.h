@@ -229,15 +229,18 @@ public:
 		DockContainerHasLeftSideBar = 0x01, //!< If the flag is set left side bar will prioritize showing icons only over text
 		DockContainerHasRightSideBar = 0x02, //!< If the flag is set right side bar will prioritize showing icons only over text
 		DockContainerHasBottomSideBar = 0x04, //!< If the flag is set right side bar will prioritize showing icons only over text
-		DockAreaHasAutoHideButton = 0x08,     //!< If the flag is set each dock area has a auto hide menu button
-		LeftSideBarPrioritizeIconOnly = 0x10,     //!< If the flag is set each container will have a left side bar
-		RightSideBarPrioritizeIconOnly = 0x20,     //!< If the flag is set each container will have a right side bar
-		BottomSideBarPrioritizeIconOnly = 0x40, //!< If the flag is set bottom side bar will prioritize showing icons only over text
-		AutoHideDockAreaHasTitle = 0x80, //!< If the flag is set overlay dock area title bar will show the window title
+		DockContainerHasTopSideBar = 0x08, //!< If the flag is set right side bar will prioritize showing icons only over text
+		DockAreaHasAutoHideButton = 0x10,     //!< If the flag is set each dock area has a auto hide menu button
+		LeftSideBarPrioritizeIconOnly = 0x20,     //!< If the flag is set each container will have a left side bar
+		RightSideBarPrioritizeIconOnly = 0x40,     //!< If the flag is set each container will have a right side bar
+		BottomSideBarPrioritizeIconOnly = 0x80, //!< If the flag is set bottom side bar will prioritize showing icons only over text
+		TopSideBarPrioritizeIconOnly = 0x100, //!< If the flag is set bottom side bar will prioritize showing icons only over text
+		AutoHideDockAreaHasTitle = 0x200, //!< If the flag is set overlay dock area title bar will show the window title
 
-		DefaultAutoHideConfig = DockContainerHasLeftSideBar 
+		DefaultAutoHideConfig = DockContainerHasLeftSideBar
                               | DockContainerHasRightSideBar
                               | DockContainerHasBottomSideBar
+                              | DockContainerHasTopSideBar
                               | DockAreaHasAutoHideButton
                               | AutoHideDockAreaHasTitle, ///< the default configuration for left and right side bars
 	};
