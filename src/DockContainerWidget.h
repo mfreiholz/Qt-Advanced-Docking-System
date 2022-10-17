@@ -220,7 +220,7 @@ public:
 	/**
 	 * Get's the auto hide dock side tab bar area based on the dock area widget position
 	 */
-	CDockWidgetSideTab::SideTabBarArea getDockAreaPosition(CDockAreaWidget* DockAreaWidget);
+	CDockWidgetSideTab::SideTabBarArea calculateSideTabBarArea(CDockAreaWidget* DockAreaWidget);
 
 	/**
 	 * Removes dockwidget

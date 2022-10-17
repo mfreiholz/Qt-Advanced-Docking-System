@@ -1099,7 +1099,7 @@ void CDockAreaWidget::closeArea()
 //============================================================================
 void CDockAreaWidget::toggleAutoHideArea(bool Enable)
 {
-	const auto area = dockContainer()->getDockAreaPosition(this);
+	const auto area = dockContainer()->calculateSideTabBarArea(this);
 	const auto DockWidget = currentDockWidget();
 	if (Enable == isAutoHide())
 	{

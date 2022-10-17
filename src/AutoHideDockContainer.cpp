@@ -66,13 +66,11 @@ struct AutoHideDockContainerPrivate
 	{
         switch (area)
         {
-            case CDockWidgetSideTab::LeftBottom: 
-            case CDockWidgetSideTab::LeftTop:
+            case CDockWidgetSideTab::Left:
             {
 				return LeftDockWidgetArea;
             }
-            case CDockWidgetSideTab::RightBottom:
-            case CDockWidgetSideTab::RightTop:
+            case CDockWidgetSideTab::Right:
             {
 				return RightDockWidgetArea;
             }
@@ -96,13 +94,11 @@ struct AutoHideDockContainerPrivate
     {
         switch (SideTabBarArea)
             {
-                case CDockWidgetSideTab::LeftTop: 
-                case CDockWidgetSideTab::LeftBottom:
+                case CDockWidgetSideTab::Left: 
                 {
                     return QPoint(1, _this->height() / 2);
                 }
-                case CDockWidgetSideTab::RightTop:
-                case CDockWidgetSideTab::RightBottom:
+                case CDockWidgetSideTab::Right:
                 {
                     return QPoint(_this->width() - 1, _this->height() / 2);
                 }
@@ -139,7 +135,7 @@ struct AutoHideDockContainerPrivate
         }
 
         auto offset = 0;
-        if (SideTabBarArea == CDockWidgetSideTab::SideTabBarArea::RightTop || SideTabBarArea == CDockWidgetSideTab::SideTabBarArea::RightBottom)
+        if (SideTabBarArea == CDockWidgetSideTab::SideTabBarArea::Right)
         {
             offset = handleSize;
         }
@@ -189,15 +185,13 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockW
             addWidget(emptyWidget);
 			break;
         }
-        case CDockWidgetSideTab::LeftBottom: 
-        case CDockWidgetSideTab::LeftTop:
+        case CDockWidgetSideTab::Left:
         {
             addWidget(d->DockArea);
             addWidget(emptyWidget);
             break;
         }
-        case CDockWidgetSideTab::RightBottom: 
-        case CDockWidgetSideTab::RightTop: 
+        case CDockWidgetSideTab::Right: 
         {
             addWidget(emptyWidget);
             addWidget(d->DockArea);
@@ -305,14 +299,12 @@ void CAutoHideDockContainer::setDockSizeProportion(float SplitterProportion)
 	const auto remainingSize = INT_MAX - dockSize;
     switch (d->SideTabBarArea)
     {
-        case CDockWidgetSideTab::LeftBottom:
-        case CDockWidgetSideTab::LeftTop:
+        case CDockWidgetSideTab::Left:
         {
             setSizes({ dockSize, remainingSize });
 			break;
         }
-        case CDockWidgetSideTab::RightBottom: 
-        case CDockWidgetSideTab::RightTop: 
+        case CDockWidgetSideTab::Right: 
         case CDockWidgetSideTab::Bottom:
         { 
             setSizes({ remainingSize, dockSize });
@@ -467,13 +459,11 @@ bool CAutoHideDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarAr
 {
     switch (area)
     {
-        case CDockWidgetSideTab::LeftBottom:
-        case CDockWidgetSideTab::LeftTop:
+        case CDockWidgetSideTab::Left:
         {
 			return CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar);
         }
-        case CDockWidgetSideTab::RightBottom:
-        case CDockWidgetSideTab::RightTop:
+        case CDockWidgetSideTab::Right:
         {
 			return CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar);
         }

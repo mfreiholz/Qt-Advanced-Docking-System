@@ -216,7 +216,7 @@ CDockWidgetSideTab::SideTabBarArea CDockWidgetSideTab::sideTabBarArea() const
 		return dockAreaWidget->autoHideDockContainer()->sideTabBarArea();
 	}
 
-	return LeftTop;
+	return Left;
 }
 
 
@@ -289,14 +289,14 @@ void CDockWidgetSideTab::updateOrientationAndSpacing(SideTabBarArea area)
     QFontMetrics fm(d->TitleLabel->font());
     int Spacing = qRound(fm.height() / 2.0);
 
-	if (CDockManager::testConfigFlag(CDockManager::LeftSideBarPrioritizeIconOnly) && (area == LeftTop || area == LeftBottom))
+	if (CDockManager::testConfigFlag(CDockManager::LeftSideBarPrioritizeIconOnly) && area == Left)
 	{
 		d->TitleLabel->hide();
 		d->TitleLayout->setContentsMargins(0, 0, 0, 0);
         d->IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing / 2, Spacing / 2);
 		return;
 	}
-	if (CDockManager::testConfigFlag(CDockManager::RightSideBarPrioritizeIconOnly) && (area == RightTop || area == RightBottom))
+	if (CDockManager::testConfigFlag(CDockManager::RightSideBarPrioritizeIconOnly) && area == Right)
 	{
 		d->TitleLabel->hide();
 		d->TitleLayout->setContentsMargins(0, 0, 0, 0);
