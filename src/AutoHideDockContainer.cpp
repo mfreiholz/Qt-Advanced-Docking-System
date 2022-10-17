@@ -339,19 +339,10 @@ CDockAreaWidget* CAutoHideDockContainer::dockAreaWidget() const
 void CAutoHideDockContainer::moveContentsToParent()
 {
 	cleanupAndDelete();
-
-	const auto position = mapToGlobal(d->getSimplifiedDockAreaPosition());
-
-	const auto dockAreaWidget = parentContainer()->dockAreaAt(position);
-	if (dockAreaWidget != nullptr && !dockAreaWidget->containsCentralWidget())
-	{
-        parentContainer()->addDockWidget(CenterDockWidgetArea, d->DockWidget, dockAreaWidget);
-	}
-	else
-	{
-        parentContainer()->addDockWidget(d->getArea(d->SideTabBarArea), d->DockWidget);
-	}
-
+	// If we unpin the auto hide tock widget, then we insert it into the same
+	// location like it had as a auto hide widget.  This brings the least surprise
+	// to the user and he does not have to search where the widget was inserted.
+	parentContainer()->addDockWidget(d->getArea(d->SideTabBarArea), d->DockWidget);
     parentContainer()->removeDockArea(d->DockArea);
 }
 
