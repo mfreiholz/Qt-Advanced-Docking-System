@@ -152,11 +152,6 @@ public:
 	 * Toggles the current collapse state
 	 */
 	void toggleCollapseState();
-
-	/*
-	 * Convenience function fr determining if area exists in config
-	 */
-	static bool areaExistsInConfig(CDockWidgetSideTab::SideTabBarArea area);
 };
 }
 

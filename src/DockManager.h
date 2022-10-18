@@ -226,23 +226,15 @@ public:
 
     enum eAutoHideFlag
 	{
-		DockContainerHasLeftSideBar = 0x01, //!< If the flag is set the dock manager will have a left side bar
-		DockContainerHasRightSideBar = 0x02, //!< If the flag is set the dock manager will have a right side bar
-		DockContainerHasBottomSideBar = 0x04, //!< If the flag is set the dock manager will have a bottom side bar
-		DockContainerHasTopSideBar = 0x08, //!< If the flag is set the dock manager will have a top side bar
-		DockAreaHasAutoHideButton = 0x10,     //!< If the flag is set each dock area has a auto hide menu button
-		LeftSideBarPrioritizeIconOnly = 0x20,  //!< If the flag is set left side bar will prioritize showing icons only over text
-		RightSideBarPrioritizeIconOnly = 0x40, //!< If the flag is set right side bar will prioritize showing icons only over text
-		BottomSideBarPrioritizeIconOnly = 0x80,//!< If the flag is set bottom side bar will prioritize showing icons only over text
-		TopSideBarPrioritizeIconOnly = 0x100, //!< If the flag is set top side bar will prioritize showing icons only over text
-		AutoHideDockAreaHasTitle = 0x200, //!< If the flag is set overlay dock area title bar will show the window title
-		AutoHideButtonTogglesArea = 0x400, //!< If the flag is set, the auto hide button enables auto hiding for all dock widgets in an area, if disabled, only the current dock widget will be toggled
+		DockAreaHasAutoHideButton = 0x01,     //!< If the flag is set each dock area has a auto hide menu button
+		LeftSideBarPrioritizeIconOnly = 0x02,  //!< If the flag is set left side bar will prioritize showing icons only over text
+		RightSideBarPrioritizeIconOnly = 0x04, //!< If the flag is set right side bar will prioritize showing icons only over text
+		BottomSideBarPrioritizeIconOnly = 0x08,//!< If the flag is set bottom side bar will prioritize showing icons only over text
+		TopSideBarPrioritizeIconOnly = 0x10, //!< If the flag is set top side bar will prioritize showing icons only over text
+		AutoHideDockAreaHasTitle = 0x20, //!< If the flag is set overlay dock area title bar will show the window title
+		AutoHideButtonTogglesArea = 0x40, //!< If the flag is set, the auto hide button enables auto hiding for all dock widgets in an area, if disabled, only the current dock widget will be toggled
 
-		DefaultAutoHideConfig = DockContainerHasLeftSideBar
-                              | DockContainerHasRightSideBar
-                              | DockContainerHasBottomSideBar
-                              | DockContainerHasTopSideBar
-                              | DockAreaHasAutoHideButton
+		DefaultAutoHideConfig = DockAreaHasAutoHideButton
                               | AutoHideDockAreaHasTitle, ///< the default configuration for left and right side bars
 	};
     Q_DECLARE_FLAGS(AutoHideFlags, eAutoHideFlag)

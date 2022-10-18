@@ -453,34 +453,6 @@ void CAutoHideDockContainer::toggleCollapseState()
 	collapseView(isVisible());
 }
 
-
-//============================================================================
-bool CAutoHideDockContainer::areaExistsInConfig(CDockWidgetSideTab::SideTabBarArea area)
-{
-    switch (area)
-    {
-        case CDockWidgetSideTab::Left:
-        {
-			return CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar);
-        }
-        case CDockWidgetSideTab::Right:
-        {
-			return CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar);
-        }
-        case CDockWidgetSideTab::Bottom: 
-        {
-			return CDockManager::testConfigFlag(CDockManager::DockContainerHasBottomSideBar);
-        }
-        case CDockWidgetSideTab::Top:
-        {
-			return CDockManager::testConfigFlag(CDockManager::DockContainerHasTopSideBar);
-        }
-    }
-
-	return true;
-}
-
-
 //============================================================================
 bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 {
