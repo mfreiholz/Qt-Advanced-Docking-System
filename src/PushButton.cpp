@@ -59,7 +59,7 @@ CPushButton::Orientation CPushButton::orientation() const
     return m_Orientation;
 }
 
-void CPushButton::setOrientation(Orientation &orientation)
+void CPushButton::setOrientation(Orientation orientation)
 {
     m_Orientation = orientation;
 }

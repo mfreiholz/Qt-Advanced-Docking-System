@@ -33,7 +33,7 @@ public:
     virtual QSize sizeHint() const override;
 
     Orientation orientation() const;
-    void setOrientation(Orientation &orientation);
+    void setOrientation(Orientation orientation);
 
 protected:
     virtual void paintEvent(QPaintEvent *event) override;

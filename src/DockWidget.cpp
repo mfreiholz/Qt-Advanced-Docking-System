@@ -326,7 +326,7 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 	d->TabWidget = componentsFactory()->createDockWidgetTab(this);
 	d->SideTabWidget = componentsFactory()->createDockWidgetSideTab(this);
 
-	connect(d->SideTabWidget, &CDockWidgetSideTab::clicked, this, &CDockWidget::onDockWidgetSideTabClicked);
+	connect(d->SideTabWidget, &CDockWidgetSideTab::pressed, this, &CDockWidget::onDockWidgetSideTabClicked);
 
 	d->ToggleViewAction = new QAction(title, this);
 	d->ToggleViewAction->setCheckable(true);

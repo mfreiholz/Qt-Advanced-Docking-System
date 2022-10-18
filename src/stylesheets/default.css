@@ -110,30 +110,17 @@ QScrollArea#dockWidgetScrollArea {
  *----------------------------------------------------------------------------
  */
 ads--CDockWidgetSideTab {
-	background: palette(window);
+	/*background: palette(window);*/
 	qproperty-iconSize: 16px 16px;/* this is optional in case you would like to change icon size*/
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="0"] {
-	border-right: 1px solid white;
-	background: red;
+	/*border-right: 1px solid white;*/
 }
 
-#sideTabLabel {
-	background: green;
-}
-
-#sideTabIconLabel {
-	background: blue;
-}
-
-ads--CSideTabIconLabel {
-	border: 1px solid yellow	
-}
 
 ads--CDockWidgetSideTab[sideTabBarArea="1"] {
-	border-bottom: 1px solid white;
-	background: red;
+	/*border-bottom: 1px solid white;*/
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="2"] {
