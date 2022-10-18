@@ -124,7 +124,7 @@ public:
 	void setOrientation(Qt::Orientation orientation);
 }; // class CVerticalElidingLabel
 
-} // namespace QtLabb
+} // namespace ads
 
 //---------------------------------------------------------------------------
 #endif // ElidingLabelH
