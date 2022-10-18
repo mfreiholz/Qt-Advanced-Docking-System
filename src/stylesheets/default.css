@@ -115,55 +115,55 @@ ads--CDockWidgetSideTab {
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="0"] {
+	border-top: 3px solid grey;
 	border-right: 1px solid white;
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="1"] {
+	border-left: 3px solid grey;
 	border-bottom: 1px solid white;
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="2"] {
+	border-right: 3px solid grey;
 	border-bottom: 1px solid white;
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="3"] {
+	border-bottom: 3px solid grey;
 	border-right: 1px solid white;
 }
 
 ads--CDockWidgetSideTab:hover[sideTabBarArea="0"] {
-
+	border-top: 3px solid palette(highlight);
 }
 
 ads--CDockWidgetSideTab:hover[sideTabBarArea="1"] {
-
+	border-left: 3px solid palette(highlight);
 }
 
 ads--CDockWidgetSideTab:hover[sideTabBarArea="2"] {
-
+	border-right: 3px solid palette(highlight);
 }
 
 ads--CDockWidgetSideTab:hover[sideTabBarArea="3"] {
-
-}
-
-ads--CDockWidgetSideTab:hover[sideTabBarArea="0"][activeTab="true"] {
-
+	border-bottom: 3px solid palette(highlight);
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="0"][activeTab="true"] {
-
+	border-top: 3px solid palette(highlight);
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="1"][activeTab="true"] {
-
+	border-left: 3px solid palette(highlight);
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="2"][activeTab="true"] {
-
+	border-right: 3px solid palette(highlight);
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="3"][activeTab="true"] {
-
+	border-bottom: 3px solid palette(highlight);
 }
 
 /*
