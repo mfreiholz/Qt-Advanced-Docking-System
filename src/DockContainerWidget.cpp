@@ -1048,7 +1048,7 @@ bool DockContainerWidgetPrivate::restoreAutoHideDockArea(CDockingStateReader& s,
     ADS_PRINT("Restore NodeDockArea Tabs: " << Tabs << " Current: "
             << CurrentDockWidget);
 
-	if (!CAutoHideDockContainer::areaExistsInConfig(area))
+	if (!CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
 	{
 		return false;
 	}
@@ -1452,7 +1452,10 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 	{
 		d->DockManager->registerDockContainer(this);
 		createRootSplitter();
-		createSideTabBarWidgets();
+		if (CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
+		{
+			createSideTabBarWidgets();
+		}
 	}
 }
 
@@ -1503,7 +1506,7 @@ CAutoHideDockContainer* CDockContainerWidget::createAndInitializeAutoHideDockWid
 	{
         DockWidget->setDockManager(d->DockManager); // Overlay Dock Container needs a valid dock manager
 	}
-	if (!CAutoHideDockContainer::areaExistsInConfig(area))
+	if (!CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
 	{
 		Q_ASSERT_X(false, "CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer",
 			"Requested area does not exist in config");
@@ -2094,7 +2097,6 @@ void CDockContainerWidget::createRootSplitter()
 //============================================================================
 void CDockContainerWidget::createSideTabBarWidgets()
 {
-	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasLeftSideBar))
 	{
 		auto leftLayout = new QVBoxLayout();
         d->SideTabBarWidgets[CDockWidgetSideTab::Left] = new CSideTabBar(this, Qt::Vertical);
@@ -2103,7 +2105,6 @@ void CDockContainerWidget::createSideTabBarWidgets()
 		d->Layout->addLayout(leftLayout, 1, 0);
 	}
 
-	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasRightSideBar))
 	{
 		auto rightLayout = new QVBoxLayout();
         d->SideTabBarWidgets[CDockWidgetSideTab::Right] = new CSideTabBar(this, Qt::Vertical);
@@ -2112,13 +2113,11 @@ void CDockContainerWidget::createSideTabBarWidgets()
 		d->Layout->addLayout(rightLayout, 1, 2);
 	}
 
-	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasBottomSideBar))
 	{
         d->SideTabBarWidgets[CDockWidgetSideTab::Bottom] = new CSideTabBar(this, Qt::Horizontal);
         d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Bottom], 2, 1);
 	}
 
-	if (CDockManager::testConfigFlag(CDockManager::DockContainerHasTopSideBar))
 	{
         d->SideTabBarWidgets[CDockWidgetSideTab::Top] = new CSideTabBar(this, Qt::Horizontal);
         d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Top], 0, 1);

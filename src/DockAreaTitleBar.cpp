@@ -191,7 +191,7 @@ void DockAreaTitleBarPrivate::createButtons()
 	_this->connect(UndockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
 
 	// AutoHide Button
-	const auto autoHideEnabled = testConfigFlag(CDockManager::DockContainerHasRightSideBar) || testConfigFlag(CDockManager::DockContainerHasLeftSideBar) || testConfigFlag(CDockManager::DockContainerHasBottomSideBar);
+	const auto autoHideEnabled = testConfigFlag(CDockManager::AutoHideFeatureEnabled);
 	AutoHideButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasAutoHideButton) && autoHideEnabled);
 	AutoHideButton->setObjectName("dockAreaAutoHideButton");
 	AutoHideButton->setAutoRaise(true);
