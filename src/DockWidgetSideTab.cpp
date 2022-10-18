@@ -57,7 +57,7 @@ struct DockWidgetSideTabPrivate
 	CSideTabBar* SideTabBar;
 	QSize IconSize;
 	Qt::Orientation Orientation{Qt::Vertical};
-	SideTabIconLabel* IconLabel = nullptr;
+	CSideTabIconLabel* IconLabel = nullptr;
 	QIcon Icon;
 
 	/**
@@ -129,7 +129,7 @@ void DockWidgetSideTabPrivate::createLayout()
 	TitleLabel = new tTabLabel();
 	TitleLabel->setElideMode(Qt::ElideRight);
 	TitleLabel->setText(DockWidget->windowTitle());
-	TitleLabel->setObjectName("dockWidgetTabLabel");
+	TitleLabel->setObjectName("sideTabLabel");
 	_this->connect(TitleLabel, SIGNAL(elidedChanged(bool)), SIGNAL(elidedChanged(bool)));
 
 	// Fill the layout
@@ -231,7 +231,7 @@ void CDockWidgetSideTab::setIcon(const QIcon& Icon)
 
 	if (!d->IconLabel)
 	{
-		d->IconLabel = new SideTabIconLabel();
+		d->IconLabel = new CSideTabIconLabel();
 		internal::setToolTip(d->IconLabel, d->TitleLabel->toolTip());
 		Layout->insertWidget(0, d->IconLabel, Qt::AlignHCenter);
 	}
@@ -345,27 +345,28 @@ CDockWidget* CDockWidgetSideTab::dockWidget() const
  */
 struct SideTabIconLabelPrivate
 {
-	SideTabIconLabel* _this;
+	CSideTabIconLabel* _this;
 	QLabel* IconLabel;
 	QBoxLayout* Layout;
 
-	SideTabIconLabelPrivate(SideTabIconLabel* _public);
+	SideTabIconLabelPrivate(CSideTabIconLabel* _public);
 }; // struct SideTabIconLabelPrivate
 
 
 //============================================================================
-SideTabIconLabelPrivate::SideTabIconLabelPrivate(SideTabIconLabel* _public) :
+SideTabIconLabelPrivate::SideTabIconLabelPrivate(CSideTabIconLabel* _public) :
     _this(_public)
 {
 }
 
 
 //============================================================================
-SideTabIconLabel::SideTabIconLabel(QWidget* parent) : QWidget(parent),
+CSideTabIconLabel::CSideTabIconLabel(QWidget* parent) : QFrame(parent),
 	d(new SideTabIconLabelPrivate(this))
 {
 	d->Layout = new QBoxLayout(QBoxLayout::TopToBottom);
 	d->Layout->addWidget(d->IconLabel = new QLabel());
+	d->IconLabel->setObjectName("sideTabIconLabel");
 	d->Layout->setAlignment(Qt::AlignCenter);
     d->IconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 	setLayout(d->Layout);
@@ -373,21 +374,21 @@ SideTabIconLabel::SideTabIconLabel(QWidget* parent) : QWidget(parent),
 
 
 //============================================================================
-SideTabIconLabel::~SideTabIconLabel()
+CSideTabIconLabel::~CSideTabIconLabel()
 {
 	delete d;
 }
 
 
 //============================================================================
-void SideTabIconLabel::setPixmap(const QPixmap& pixmap)
+void CSideTabIconLabel::setPixmap(const QPixmap& pixmap)
 {
 	d->IconLabel->setPixmap(pixmap);
 }
 
 
 //============================================================================
-void SideTabIconLabel::setContentsMargins(int left, int top, int right, int bottom)
+void CSideTabIconLabel::setContentsMargins(int left, int top, int right, int bottom)
 {
 	d->Layout->setContentsMargins(left, top, right, bottom);
 }

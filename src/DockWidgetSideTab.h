@@ -152,14 +152,15 @@ Q_SIGNALS:
 	void clicked();
 }; // class DockWidgetSideTab
 
-class SideTabIconLabel : public QWidget
+class CSideTabIconLabel : public QFrame
 {
+	Q_OBJECT
 private:
 	SideTabIconLabelPrivate *d; ///< private data (pimpl)
 
 public:
-	SideTabIconLabel(QWidget* parent = nullptr);
-	virtual ~SideTabIconLabel();
+	CSideTabIconLabel(QWidget* parent = nullptr);
+	virtual ~CSideTabIconLabel();
 
 	void setPixmap(const QPixmap &pixmap);
 	void setContentsMargins(int left, int top, int right, int bottom);

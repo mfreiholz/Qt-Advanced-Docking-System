@@ -116,10 +116,24 @@ ads--CDockWidgetSideTab {
 
 ads--CDockWidgetSideTab[sideTabBarArea="0"] {
 	border-right: 1px solid white;
+	background: red;
+}
+
+#sideTabLabel {
+	background: green;
+}
+
+#sideTabIconLabel {
+	background: blue;
+}
+
+ads--CSideTabIconLabel {
+	border: 1px solid yellow	
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="1"] {
 	border-bottom: 1px solid white;
+	background: red;
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="2"] {
