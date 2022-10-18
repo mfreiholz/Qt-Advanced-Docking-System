@@ -106,7 +106,7 @@ struct DockWidgetSideTabPrivate
 		}
 		else if (Orientation == Qt::Horizontal)
 		{
-			TitleLayout->setContentsMargins(Spacing / 2, Spacing, Spacing, Spacing);
+			TitleLayout->setContentsMargins(Spacing / 2, Spacing, Spacing, Spacing / 2);
 			if (IconLabel)
 			{
 				IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, 0, Spacing / 2);
