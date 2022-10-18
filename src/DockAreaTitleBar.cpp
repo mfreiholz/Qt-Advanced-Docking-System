@@ -197,6 +197,8 @@ void DockAreaTitleBarPrivate::createButtons()
 	internal::setToolTip(AutoHideButton, QObject::tr("Toggle Auto Hide"));
 	internal::setButtonIcon(AutoHideButton, QStyle::SP_DialogOkButton, ads::AutoHideIcon);
 	AutoHideButton->setSizePolicy(ButtonSizePolicy);
+	AutoHideButton->setCheckable(testConfigFlag(CDockManager::AutoHideButtonCheckable));
+	AutoHideButton->setChecked(false);
 	Layout->addWidget(AutoHideButton, 0);
 	_this->connect(AutoHideButton, SIGNAL(clicked()),  SLOT(onAutoHideButtonClicked()));
 
