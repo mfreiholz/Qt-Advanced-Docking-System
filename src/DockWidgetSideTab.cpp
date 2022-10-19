@@ -35,15 +35,11 @@
 
 #include "DockAreaWidget.h"
 #include "DockManager.h"
-#include "ElidingLabel.h"
 
 #include "DockWidget.h"
 
 namespace ads
 {
-
-using tTabLabel = CVerticalElidingLabel;
-
 /**
  * Private data class of CDockWidgetTab class (pimpl)
  */
