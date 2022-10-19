@@ -50,7 +50,8 @@ HEADERS += \
     DockFocusController.h \
     AutoHideDockContainer.h \
     SideTabBar.h \
-    DockWidgetSideTab.h
+    DockWidgetSideTab.h \
+    PushButton.h
 
 
 SOURCES += \
@@ -73,7 +74,8 @@ SOURCES += \
     DockFocusController.cpp \
     AutoHideDockContainer.cpp \
     SideTabBar.cpp \
-    DockWidgetSideTab.cpp
+    DockWidgetSideTab.cpp \
+    PushButton.cpp
 
 
 unix:!macx {

@@ -1048,6 +1048,11 @@ bool DockContainerWidgetPrivate::restoreAutoHideDockArea(CDockingStateReader& s,
     ADS_PRINT("Restore NodeDockArea Tabs: " << Tabs << " Current: "
             << CurrentDockWidget);
 
+	if (!CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
+	{
+		return false;
+	}
+
 	CDockAreaWidget* DockArea = nullptr;
 	CAutoHideDockContainer* dockContainer = nullptr;
 	if (!Testing)
@@ -1447,7 +1452,10 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 	{
 		d->DockManager->registerDockContainer(this);
 		createRootSplitter();
-		createSideTabBarWidgets();
+		if (CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
+		{
+			createSideTabBarWidgets();
+		}
 	}
 }
 
@@ -1497,6 +1505,12 @@ CAutoHideDockContainer* CDockContainerWidget::createAndInitializeAutoHideDockWid
 	if (d->DockManager != DockWidget->dockManager())
 	{
         DockWidget->setDockManager(d->DockManager); // Overlay Dock Container needs a valid dock manager
+	}
+	if (!CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
+	{
+		Q_ASSERT_X(false, "CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer",
+			"Requested area does not exist in config");
+		return nullptr;
 	}
 
 	DockWidget->sideTabWidget()->updateOrientationAndSpacing(area);
@@ -2083,17 +2097,31 @@ void CDockContainerWidget::createRootSplitter()
 //============================================================================
 void CDockContainerWidget::createSideTabBarWidgets()
 {
-    d->SideTabBarWidgets[CDockWidgetSideTab::Left] = new CSideTabBar(this, Qt::Vertical);
-    d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Left], 1, 0);
-	
-    d->SideTabBarWidgets[CDockWidgetSideTab::Right] = new CSideTabBar(this, Qt::Vertical);
-    d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Right],1,2);
+	{
+		auto leftLayout = new QVBoxLayout();
+        d->SideTabBarWidgets[CDockWidgetSideTab::Left] = new CSideTabBar(this, Qt::Vertical);
+        leftLayout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Left]);
+		leftLayout->addStretch(1);
+		d->Layout->addLayout(leftLayout, 1, 0);
+	}
 
-    d->SideTabBarWidgets[CDockWidgetSideTab::Bottom] = new CSideTabBar(this, Qt::Horizontal);
-    d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Bottom], 2, 1);
+	{
+		auto rightLayout = new QVBoxLayout();
+        d->SideTabBarWidgets[CDockWidgetSideTab::Right] = new CSideTabBar(this, Qt::Vertical);
+        rightLayout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Right]);
+		rightLayout->addStretch(1);
+		d->Layout->addLayout(rightLayout, 1, 2);
+	}
 
-    d->SideTabBarWidgets[CDockWidgetSideTab::Top] = new CSideTabBar(this, Qt::Horizontal);
-    d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Top], 0, 1);
+	{
+        d->SideTabBarWidgets[CDockWidgetSideTab::Bottom] = new CSideTabBar(this, Qt::Horizontal);
+        d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Bottom], 2, 1);
+	}
+
+	{
+        d->SideTabBarWidgets[CDockWidgetSideTab::Top] = new CSideTabBar(this, Qt::Horizontal);
+        d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Top], 0, 1);
+	}
 }
 
 

@@ -29,7 +29,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include <QFrame>
+#include "PushButton.h"
 
 #include "ads_globals.h"
 
@@ -46,12 +46,11 @@ struct SideTabIconLabelPrivate;
  * The dock widget tab is shown in the side tab bar to switch between
  * pinned dock widgets
  */
-class ADS_EXPORT CDockWidgetSideTab : public QFrame
+class ADS_EXPORT CDockWidgetSideTab : public CPushButton
 {
     Q_OBJECT
 
     Q_PROPERTY(SideTabBarArea sideTabBarArea READ sideTabBarArea)
-	Q_PROPERTY(QSize iconSize READ iconSize WRITE setIconSize)
 	Q_PROPERTY(bool activeTab READ isActiveTab)
 
 private:    
@@ -65,13 +64,11 @@ protected:
 	friend class CDockAreaWidget;
 	friend class CDockContainerWidget;
 
-	void mousePressEvent(QMouseEvent* event) override;
-
 	void setSideTabBar(CSideTabBar *SideTabBar);
 	void removeFromSideTabBar();
 
 public:
-    using Super = QFrame;
+    using Super = CPushButton;
 
     /**
      * Dock widget side tab bar locations
@@ -109,25 +106,6 @@ public:
 	SideTabBarArea sideTabBarArea() const;
 
 	/**
-	 * Sets the icon to show in title bar
-	 */
-	void setIcon(const QIcon& Icon);
-
-	/**
-	 * Returns the icon size.
-	 * If no explicit icon size has been set, the function returns an invalid
-	 * QSize
-	 */
-	QSize iconSize() const;
-
-	/**
-	 * Set an explicit icon size.
-	 * If no icon size has been set explicitly, than the tab sets the icon size
-	 * depending on the style
-	 */
-	void setIconSize(const QSize& Size);
-
-	/**
 	 * Set orientation vertical or horizontal
 	 */
 	void setOrientation(Qt::Orientation Orientation);
@@ -149,21 +127,7 @@ public:
 
 Q_SIGNALS:
 	void elidedChanged(bool elided);
-	void clicked();
 }; // class DockWidgetSideTab
-
-class SideTabIconLabel : public QWidget
-{
-private:
-	SideTabIconLabelPrivate *d; ///< private data (pimpl)
-
-public:
-	SideTabIconLabel(QWidget* parent = nullptr);
-	virtual ~SideTabIconLabel();
-
-	void setPixmap(const QPixmap &pixmap);
-	void setContentsMargins(int left, int top, int right, int bottom);
-}; // class SideTabIconLabel
 }
  // namespace ads
 //-----------------------------------------------------------------------------
