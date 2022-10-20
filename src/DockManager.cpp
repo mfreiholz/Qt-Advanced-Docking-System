@@ -92,6 +92,8 @@ enum eStateFileVersion
 
 static CDockManager::ConfigFlags StaticConfigFlags = CDockManager::DefaultNonOpaqueConfig;
 
+static QString FloatingContainersTitle;
+
 /**
  * Private data class of CDockManager class (pimpl)
  */
@@ -1253,6 +1255,21 @@ void CDockManager::setSplitterSizes(CDockAreaWidget *ContainedArea, const QList<
 CDockFocusController* CDockManager::dockFocusController() const
 {
 	return d->FocusController;
+}
+
+//===========================================================================
+void CDockManager::setFloatingContainersTitle(const QString& Title)
+{
+	FloatingContainersTitle = Title;
+}
+
+//===========================================================================
+QString CDockManager::floatingContainersTitle()
+{
+	if (FloatingContainersTitle.isEmpty())
+		return qApp->applicationDisplayName();
+
+	return FloatingContainersTitle;
 }
 
 } // namespace ads
