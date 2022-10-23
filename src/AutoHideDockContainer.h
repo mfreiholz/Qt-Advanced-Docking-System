@@ -50,7 +50,7 @@ class CDockingStateReader;
 // Note: This widget must be a QSplitter, inheriting from QWidget and keeping an
 // internal splitter breaks ActiveX widgets
 // likely due to layout issues between this widget and the internal splitter
-class ADS_EXPORT CAutoHideDockContainer : public QSplitter
+class ADS_EXPORT CAutoHideDockContainer : public QFrame
 {
 	Q_OBJECT
 	Q_PROPERTY(int sideTabBarArea READ sideTabBarArea)
@@ -63,10 +63,14 @@ protected:
 	void resizeEvent(QResizeEvent* event) override;
 	void updateMask();
 	void updateSize();
+	virtual bool event(QEvent *event) override;
+	virtual void mouseMoveEvent(QMouseEvent *event) override;
+	virtual void mousePressEvent(QMouseEvent *event) override;
 
 	CDockContainerWidget* parentContainer() const;
 
 public:
+	using Super = QFrame;
 	/**
 	 * Create Auto Hide widget with a dock manager
 	 */

@@ -187,6 +187,7 @@ ads--CAutoHideDockContainer::handle:horizontal {
 	background: white;
 }*/
 
+
 ads--CAutoHideDockContainer #dockAreaAutoHideButton 
 {
 	qproperty-icon: url(:/ads/images/vs-pin-button-pinned.svg);

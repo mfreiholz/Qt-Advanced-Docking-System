@@ -46,6 +46,8 @@
 
 namespace ads
 {
+static const int ResizeMargin = 4;
+
 struct AutoHideDockContainerPrivate
 {
     CAutoHideDockContainer* _this;
@@ -122,7 +124,7 @@ struct AutoHideDockContainerPrivate
 	{
         const auto rect = DockArea->frameGeometry();
         const auto topLeft = rect.topLeft();
-        const auto handleSize = _this->handleWidth();
+        const auto handleSize = 0;
 
         if (SideTabBarArea == CDockWidgetSideTab::Bottom)
         {
@@ -159,7 +161,7 @@ CDockContainerWidget* CAutoHideDockContainer::parentContainer() const
 
 //============================================================================
 CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent) :
-    QSplitter((area == CDockWidgetSideTab::Bottom || area == CDockWidgetSideTab::Top) ? Qt::Orientation::Vertical : Qt::Orientation::Horizontal, parent),
+    Super(parent),
     d(new AutoHideDockContainerPrivate(this))
 {
 	d->DockManager = DockManager;
@@ -170,69 +172,80 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockW
 	d->DockArea->updateAutoHideButtonCheckState();
 	d->DockArea->updateTitleBarButtonToolTip();
 
-	setObjectName("autoHideSplitter");
-	setChildrenCollapsible(false);
-
-	const auto emptyWidget = new QWidget();
-	emptyWidget->setMinimumWidth(50); 
-	emptyWidget->setMinimumHeight(50); // Prevents you from dragging the splitter too far
-
-    switch (area)
-    {
-        case CDockWidgetSideTab::Top:
-        {
-            addWidget(d->DockArea);
-            addWidget(emptyWidget);
-			break;
-        }
-        case CDockWidgetSideTab::Left:
-        {
-            addWidget(d->DockArea);
-            addWidget(emptyWidget);
-            break;
-        }
-        case CDockWidgetSideTab::Right: 
-        {
-            addWidget(emptyWidget);
-            addWidget(d->DockArea);
-            break;
-        }
-        case CDockWidgetSideTab::Bottom: 
-        {
-            addWidget(emptyWidget);
-            addWidget(d->DockArea);
-			break;
-        }
-    }
+	setObjectName("autoHideDockContainer");
+	QBoxLayout *l = new QBoxLayout(QBoxLayout::TopToBottom);
+	l->setContentsMargins(0, 0, 0, 0);
+	l->setSpacing(0);
+	setLayout(l);
+	l->addWidget(d->DockArea);
 
 	updateSize();
-	updateMask();
-
 	parent->registerAutoHideWidget(this);
+	setAutoFillBackground(true);
+	setMouseTracking(true);
 }
 
-//============================================================================
-void CAutoHideDockContainer::updateMask()
-{
-    setMask(d->getDockAreaWithSplitterRect());
-}
 
 //============================================================================
-void CAutoHideDockContainer::updateSize()
-{
-	const auto dockContainerParent = parentContainer();
-	const auto rootSplitter = dockContainerParent->rootSplitter();
-	const auto rect = rootSplitter->frameGeometry();
-	move(rect.topLeft());
-    resize(rect.width(), rect.height());
-}
-
-//============================================================================
-CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent) : 
+CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent) :
 	CAutoHideDockContainer(DockWidget->dockManager(), area, parent)
 {
 	addDockWidget(DockWidget);
 	setDockSizeProportion(DockWidget->DefaultAutoHideDockProportion());
+}
+
+
+//============================================================================
+void CAutoHideDockContainer::updateMask()
+{
+	//setMask(d->getDockAreaWithSplitterRect());
+}
+
+
+//============================================================================
+void CAutoHideDockContainer::updateSize()
+{
+	qDebug() << "CAutoHideDockContainer::updateSize()";
+	const auto dockContainerParent = parentContainer();
+	const auto rootSplitter = dockContainerParent->rootSplitter();
+	const auto rect = rootSplitter->frameGeometry();
+
+	switch (sideTabBarArea())
+	{
+	case CDockWidgetSideTab::Top:
+		 move(rect.topLeft());
+		 resize(rect.width(), height());
+		 setContentsMargins(QMargins(0, 0, 0, ResizeMargin));
+		 break;
+
+	case CDockWidgetSideTab::Left:
+		 move(rect.topLeft());
+		 resize(width(), rect.height());
+		 setContentsMargins(QMargins(0, 0, ResizeMargin, 0));
+		 break;
+
+	case CDockWidgetSideTab::Right:
+		 {
+			 QPoint p = rect.topRight();
+			 p.rx() -= (width() - 1);
+			 move(p);
+			 resize(width(), rect.height());
+			 setContentsMargins(QMargins(ResizeMargin, 0, 0, 0));
+		 }
+		 break;
+
+	case CDockWidgetSideTab::Bottom:
+		 {
+			 QPoint p = rect.bottomLeft();
+			 p.ry() -= (height() - 1);
+			 move(p);
+			 resize(rect.width(), height());
+			 setContentsMargins(QMargins(0, ResizeMargin, 0, 0));
+		 }
+		 break;
+	}
+
+    //resize(rect.width(), rect.height());
 }
 
 //============================================================================
@@ -280,6 +293,8 @@ void CAutoHideDockContainer::addDockWidget(CDockWidget* DockWidget)
     }
 	d->DockArea->addDockWidget(DockWidget);
 	d->DockWidget->sideTabWidget()->updateOrientationAndSpacing(d->SideTabBarArea);
+	qDebug() << "DockWidget->size(): " << DockWidget->size();
+	this->resize(OldDockArea ? OldDockArea->size() : d->DockWidget->size());
 
 	updateSize();
 	updateMask();
@@ -297,7 +312,7 @@ void CAutoHideDockContainer::setDockSizeProportion(float SplitterProportion)
 
 	const auto dockSize = static_cast<int>(static_cast<float>(INT_MAX) * SplitterProportion);
 	const auto remainingSize = INT_MAX - dockSize;
-    switch (d->SideTabBarArea)
+   /* switch (d->SideTabBarArea)
     {
         case CDockWidgetSideTab::Left:
         {
@@ -310,7 +325,7 @@ void CAutoHideDockContainer::setDockSizeProportion(float SplitterProportion)
             setSizes({ remainingSize, dockSize });
 			break;
         }
-    }
+    }*/
 
 }
 
@@ -360,10 +375,11 @@ void CAutoHideDockContainer::saveState(QXmlStreamWriter& s)
 {
     s.writeAttribute("SideTabBarArea", QString::number(sideTabBarArea())); 
 	QStringList Sizes;
-    for (auto Size : sizes())
+	// TODO implement auto hide dock container saving
+    /*for (auto Size : sizes())
     {
 		Sizes << QString::number(Size);
-    }
+    }*/
 
     s.writeAttribute("Sizes", Sizes.join(" "));
 }
@@ -383,7 +399,8 @@ bool CAutoHideDockContainer::restoreState(CDockingStateReader& s, bool Testing)
 		Sizes.append(value);
 	}
 
-	if (Sizes.count() != count())
+	// TODO implement restore state
+	/*if (Sizes.count() != count())
 	{
 		return false;
 	}
@@ -391,7 +408,7 @@ bool CAutoHideDockContainer::restoreState(CDockingStateReader& s, bool Testing)
 	if (!Testing)
 	{
 		setSizes(Sizes);
-	}
+	}*/
 
 	return true;
 }
@@ -481,7 +498,7 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 
 		if (!IsDockManager)
 		{
-			return QSplitter::eventFilter(watched, event);
+			return Super::eventFilter(watched, event);
 		}
 
 		// Now we check, if the user clicked inside of this auto hide container.
@@ -493,7 +510,7 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		auto rect = d->getDockAreaWithSplitterRect();
 		if (rect.contains(pos))
 		{
-			return QSplitter::eventFilter(watched, event);
+			return Super::eventFilter(watched, event);
 		}
 
 		// Now check, if the user clicked into the side tab and ignore this event,
@@ -504,7 +521,7 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		pos = SideTab->mapFromGlobal(me->globalPos());
 		if (SideTab->rect().contains(pos))
 		{
-			return QSplitter::eventFilter(watched, event);
+			return Super::eventFilter(watched, event);
 		}
 
 		// If the mouse button down event is in the dock manager but outside
@@ -513,15 +530,47 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		collapseView(true);
 	}
 
-	return QSplitter::eventFilter(watched, event);
+	return Super::eventFilter(watched, event);
 }
 
 
 //============================================================================
 void CAutoHideDockContainer::resizeEvent(QResizeEvent* event)
 {
+	std::cout << "ResizeEvent" << std::endl;
 	updateMask();
-    QSplitter::resizeEvent(event);
+    Super::resizeEvent(event);
+}
+
+
+//============================================================================
+bool CAutoHideDockContainer::event(QEvent *event)
+{
+	return Super::event(event);
+}
+
+
+//============================================================================
+void CAutoHideDockContainer::mouseMoveEvent(QMouseEvent *event)
+{
+	qDebug() << "mouseMoveEvent: " << event->pos();
+	qDebug() << "height: " << height();
+	auto p = event->pos();
+	if (p.y() > (height() - ResizeMargin - 1) && p.y() < height())
+	{
+		setCursor(Qt::SizeVerCursor);
+	}
+	else
+	{
+		setCursor(Qt::ArrowCursor);
+	}
+}
+
+
+//============================================================================
+void CAutoHideDockContainer::mousePressEvent(QMouseEvent *event)
+{
+	qDebug() << "mousePressEvent: " << event->pos();
 }
 }
 
