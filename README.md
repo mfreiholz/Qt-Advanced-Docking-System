@@ -385,12 +385,14 @@ Taken from the [Qt Blog](https://www.qt.io/blog/qt-design-studio-1.5-beta-releas
 
 [![Qt Design Studio](doc/showcase_qt_design_studio_video.png)](https://youtu.be/za9KBWcFXEw?t=84)
 
-### [CETONI Elements](https://www.cetoni.com/products/qmixelements/)
+### [CETONI Elements](https://cetoni.com/cetoni-elements/)
 
 The CETONI Elements software from [CETONI](https://www.cetoni.com) is a comprehensive,
 plugin-based and modular laboratory automation software for controlling CETONI devices using a joint graphical user interface. The software features a powerful script system to automate processes. The software uses the advanced docking system to give the user the freedom to arrange all the views and windows that are provided by the various plugins.
 
-![CETONI_Elements](doc/showcase_qmix_elements.png)
+[learn more...](https://cetoni.com/cetoni-elements/)
+
+[![CETONI_Elements](doc/showcase_qmix_elements.png)](https://www.youtube.com/watch?v=7pdNfafg3Qc)
 
 ### [ezEditor](https://github.com/ezEngine/ezEngine)
 
@@ -406,7 +408,7 @@ D-Tect X is a X-ray inspection software for industrial radiography. It is a stat
 
 [learn more...](https://www.duerr-ndt.com/products/ndt-software/d-tect-xray-inspection-software.html)
 
-![D-TectX](doc/showcase_d-tect-x.jpg)
+[![D-TectX](doc/showcase_d-tect-x.png)](https://youtu.be/mOor7GmmIJo?t=13)
 
 ### [HiveWE](https://github.com/stijnherfst/HiveWE)
 
