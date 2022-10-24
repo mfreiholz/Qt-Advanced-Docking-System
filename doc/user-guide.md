@@ -288,7 +288,8 @@ current dock widget.
 
 ![FloatingContainerHasWidgetTitle true](cfg_flag_FloatingContainerHasWidgetTitle_true.png)
 
-otherwise it displays application name as window title.
+otherwise it displays the title set with `CDockManager::setFloatingContainersTitle` or
+application name as window title.
 
 ![FloatingContainerHasWidgetTitle false](cfg_flag_FloatingContainerHasWidgetTitle_false.png)
 

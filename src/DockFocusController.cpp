@@ -43,7 +43,7 @@ struct DockFocusControllerPrivate
 	CDockFocusController *_this;
 	QPointer<CDockWidget> FocusedDockWidget = nullptr;
 	QPointer<CDockAreaWidget> FocusedArea = nullptr;
-	CDockWidget* OldFocusedDockWidget = nullptr;
+	QPointer<CDockWidget> OldFocusedDockWidget = nullptr;
 #ifdef Q_OS_LINUX
      QPointer<CFloatingDockContainer> FloatingWidget = nullptr;
 #endif
