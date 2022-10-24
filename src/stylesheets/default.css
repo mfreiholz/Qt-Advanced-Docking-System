@@ -197,3 +197,9 @@ ads--CAutoHideDockContainer #dockAreaAutoHideButton
 #autoHideTitleLabel {
 	padding-left: 4px;
 }
+
+ads--CResizeHandle
+{
+	background: red;
+	border: 1px solid green;
+}

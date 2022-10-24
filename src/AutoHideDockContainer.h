@@ -61,11 +61,7 @@ private:
 protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
-	void updateMask();
 	void updateSize();
-	virtual bool event(QEvent *event) override;
-	virtual void mouseMoveEvent(QMouseEvent *event) override;
-	virtual void mousePressEvent(QMouseEvent *event) override;
 
 	CDockContainerWidget* parentContainer() const;
 

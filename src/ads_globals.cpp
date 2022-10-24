@@ -406,6 +406,15 @@ void repolishStyle(QWidget* w, eRepolishChildOptions Options)
 	}
 }
 
+
+//============================================================================
+QRect globalGeometry(QWidget* w)
+{
+    QRect g = w->geometry();
+    g.moveTopLeft(w->mapToGlobal(QPoint(0, 0)));
+    return g;
+}
+
 } // namespace internal
 } // namespace ads
 

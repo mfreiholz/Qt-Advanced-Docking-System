@@ -307,6 +307,11 @@ enum eRepolishChildOptions
 void repolishStyle(QWidget* w, eRepolishChildOptions Options = RepolishIgnoreChildren);
 
 
+/**
+ * Returns the geometry of the given widget in global space
+ */
+QRect globalGeometry(QWidget* w);
+
 } // namespace internal
 } // namespace ads
 

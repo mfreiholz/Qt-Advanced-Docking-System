@@ -51,7 +51,8 @@ HEADERS += \
     AutoHideDockContainer.h \
     SideTabBar.h \
     DockWidgetSideTab.h \
-    PushButton.h
+    PushButton.h \
+    ResizeHandle.h
 
 
 SOURCES += \
@@ -75,7 +76,8 @@ SOURCES += \
     AutoHideDockContainer.cpp \
     SideTabBar.cpp \
     DockWidgetSideTab.cpp \
-    PushButton.cpp
+    PushButton.cpp \
+    ResizeHandle.cpp
 
 
 unix:!macx {

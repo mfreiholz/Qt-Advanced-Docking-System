@@ -331,7 +331,16 @@ public:
 	/**
 	 * Returns the content rectangle without the autohide side bars
 	 */
-	QRect contentRect();
+	QRect contentRect() const;
+
+	/**
+	 * Returns the content rectangle mapped to global space.
+	 * The content rectangle is the rectangle of the dock manager widget minus
+	 * the auto hide side bars. So that means, it is the geometry of the
+	 * internal root splitter mapped to global space.
+	 */
+	QRect contentRectGlobal() const;
+
 
 Q_SIGNALS:
 	/**

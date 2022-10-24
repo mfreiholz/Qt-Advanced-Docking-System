@@ -2276,7 +2276,7 @@ CSideTabBar* CDockContainerWidget::sideTabBar(CDockWidgetSideTab::SideTabBarArea
 
 
 //============================================================================
-QRect CDockContainerWidget::contentRect()
+QRect CDockContainerWidget::contentRect() const
 {
 	if (!d->RootSplitter)
 	{
@@ -2284,6 +2284,17 @@ QRect CDockContainerWidget::contentRect()
 	}
 
 	return d->RootSplitter->geometry();
+}
+
+
+//===========================================================================
+QRect CDockContainerWidget::contentRectGlobal() const
+{
+	if (!d->RootSplitter)
+	{
+		return QRect();
+	}
+	return internal::globalGeometry(d->RootSplitter);
 }
 } // namespace ads
 

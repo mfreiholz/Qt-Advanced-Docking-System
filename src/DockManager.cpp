@@ -1312,6 +1312,7 @@ void CDockManager::setFloatingContainersTitle(const QString& Title)
 	FloatingContainersTitle = Title;
 }
 
+
 //===========================================================================
 QString CDockManager::floatingContainersTitle()
 {
