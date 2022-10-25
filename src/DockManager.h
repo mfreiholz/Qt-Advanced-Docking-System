@@ -234,6 +234,7 @@ public:
 		TopSideBarPrioritizeIconOnly = 0x20, //!< If the flag is set top side bar will prioritize showing icons only over text
 		AutoHideDockAreaHasTitle = 0x40, //!< If the flag is set overlay dock area title bar will show the window title
 		AutoHideButtonTogglesArea = 0x80, //!< If the flag is set, the auto hide button enables auto hiding for all dock widgets in an area, if disabled, only the current dock widget will be toggled
+		AutoHideButtonCheckable = 0x80, //!< If the flag is set, the auto hide button will be checked and unchecked depending on the auto hide state. Mainly for styling purposes.
 
 		DefaultAutoHideConfig = AutoHideFeatureEnabled
 			                  | DockAreaHasAutoHideButton

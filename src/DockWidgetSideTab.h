@@ -85,7 +85,6 @@ public:
 	/**
 	 * Default Constructor
 	 * param[in] DockWidget The dock widget this title bar belongs to
-	 * param[in] Orientation Horizontal or vertical orientation
 	 * param[in] parent The parent widget of this title bar
 	 */
 	CDockWidgetSideTab(CDockWidget* DockWidget, QWidget* parent = nullptr);

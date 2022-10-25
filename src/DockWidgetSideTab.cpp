@@ -35,15 +35,11 @@
 
 #include "DockAreaWidget.h"
 #include "DockManager.h"
-#include "ElidingLabel.h"
 
 #include "DockWidget.h"
 
 namespace ads
 {
-
-using tTabLabel = CVerticalElidingLabel;
-
 /**
  * Private data class of CDockWidgetTab class (pimpl)
  */
@@ -141,34 +137,35 @@ void CDockWidgetSideTab::updateOrientationAndSpacing(SideTabBarArea area)
 {
 	setOrientation((area == Bottom || area == Top) ? Qt::Horizontal : Qt::Vertical);
 
-	/*if (CDockManager::testConfigFlag(CDockManager::LeftSideBarPrioritizeIconOnly) && area == Left)
+	if (icon().isNull())
 	{
-		d->TitleLabel->hide();
-		d->TitleLayout->setContentsMargins(0, 0, 0, 0);
-        d->IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing / 2, Spacing / 2);
+		return;
+	}
+
+	if (CDockManager::testConfigFlag(CDockManager::LeftSideBarPrioritizeIconOnly) && area == Left)
+	{
+		setText("");
+		setOrientation(Qt::Horizontal);
 		return;
 	}
 	if (CDockManager::testConfigFlag(CDockManager::RightSideBarPrioritizeIconOnly) && area == Right)
 	{
-		d->TitleLabel->hide();
-		d->TitleLayout->setContentsMargins(0, 0, 0, 0);
-        d->IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing, Spacing / 2);
+		setText("");
+		setOrientation(Qt::Horizontal);
 		return;
 	}
 	if (CDockManager::testConfigFlag(CDockManager::BottomSideBarPrioritizeIconOnly) && area == Bottom)
 	{
-		d->TitleLabel->hide();
-		d->TitleLayout->setContentsMargins(0, 0, 0, 0);
-        d->IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing / 2, Spacing);
+		setText("");
+		setOrientation(Qt::Horizontal);
 		return;
 	}
 	if (CDockManager::testConfigFlag(CDockManager::TopSideBarPrioritizeIconOnly) && area == Top)
 	{
-		d->TitleLabel->hide();
-		d->TitleLayout->setContentsMargins(0, 0, 0, 0);
-        d->IconLabel->setContentsMargins(Spacing / 2, Spacing / 2, Spacing / 2, Spacing / 2);
+		setText("");
+		setOrientation(Qt::Horizontal);
 		return;
-	}*/
+	}
 }
 
 
