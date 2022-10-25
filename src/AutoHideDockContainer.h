@@ -47,9 +47,9 @@ class CSideTabBar;
 class CDockAreaWidget;
 class CDockingStateReader;
 
-// Note: This widget must be a QSplitter, inheriting from QWidget and keeping an
-// internal splitter breaks ActiveX widgets
-// likely due to layout issues between this widget and the internal splitter
+/**
+ * Auto hide container for hosting an auto hide dock widget
+ */
 class ADS_EXPORT CAutoHideDockContainer : public QFrame
 {
 	Q_OBJECT

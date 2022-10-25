@@ -10,6 +10,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include "ads_globals.h"
 #include <QFrame>
 
 namespace ads
@@ -19,7 +20,7 @@ struct ResizeHandlePrivate;
 /**
  * Resize handle for resizing its parent widget
  */
-class CResizeHandle : public QFrame
+class ADS_EXPORT CResizeHandle : public QFrame
 {
 	Q_OBJECT
 	Q_DISABLE_COPY(CResizeHandle)

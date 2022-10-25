@@ -10,15 +10,17 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include "ads_globals.h"
+
 #include <QPushButton>
 
 namespace ads
 {
 
 /**
- * ADS specific push button class
+ * ADS specific push button class with orientation support
  */
-class CPushButton : public QPushButton
+class ADS_EXPORT CPushButton : public QPushButton
 {
     Q_OBJECT
 public:
@@ -32,7 +34,14 @@ public:
 
     virtual QSize sizeHint() const override;
 
+    /**
+     * Returns the current orientation
+     */
     Orientation orientation() const;
+
+    /**
+     * Set the orientation of this button
+     */
     void setOrientation(Orientation orientation);
 
 protected:
