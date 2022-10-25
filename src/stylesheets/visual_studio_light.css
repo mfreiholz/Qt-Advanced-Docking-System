@@ -2,14 +2,15 @@
 /*
  * Default style sheet on Windows Platforms with focus highlighting flag enabled
  */
-ads--CDockManager {
-	padding: 6px;
+ads--CDockManager 
+{
 	background: palette(window);
 } 
  
  
 ads--CDockContainerWidget {
 	background: palette(window);
+	padding: 2px;
 }
 
 
@@ -153,57 +154,61 @@ ads--CDockWidgetSideTab {
 	qproperty-iconSize: 16px 16px;/* this is optional in case you would like to change icon size*/
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="0"] {
-	/*border-right: 1px solid white;*/
+
+ads--CDockWidgetSideTab
+{
+	background: none;
+	border: none;
+	padding-left: 2px;
+	padding-right: 0px;
+	text-align: center;
+}
+
+ads--CDockWidgetSideTab[sideTabBarArea="0"],
+ads--CDockWidgetSideTab[sideTabBarArea="2"] 
+{
+	border-top: 5px solid rgba(0, 0, 0, 48);
+	margin-right: 6px;
+	min-height: 20;
 }
 
 
-ads--CDockWidgetSideTab[sideTabBarArea="1"] {
-	/*border-bottom: 1px solid white;*/
+ads--CDockWidgetSideTab[sideTabBarArea="1"],
+ads--CDockWidgetSideTab[sideTabBarArea="3"] 
+{
+	border-bottom: 5px solid rgba(0, 0, 0, 48);
+	margin-right: 6px;
+	min-height: 20;
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="2"] {
-	border-bottom: 1px solid white;
+
+
+ads--CDockWidgetSideTab:hover[sideTabBarArea="0"],
+ads--CDockWidgetSideTab:hover[sideTabBarArea="2"]  
+{
+	border-top: 5px solid palette(highlight);
+	color: palette(highlight);
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="3"] {
-	border-right: 1px solid white;
+
+ads--CDockWidgetSideTab:hover[sideTabBarArea="1"],
+ads--CDockWidgetSideTab:hover[sideTabBarArea="3"]  
+{
+	border-bottom: 5px solid palette(highlight);
+	color: palette(highlight);
 }
 
-ads--CDockWidgetSideTab:hover[sideTabBarArea="0"] {
-
+ads--CDockWidgetSideTab[sideTabBarArea="0"][activeTab="true"],
+ads--CDockWidgetSideTab[sideTabBarArea="2"][activeTab="true"]  
+{
+	border-top: 5px solid palette(highlight);
 }
 
-ads--CDockWidgetSideTab:hover[sideTabBarArea="1"] {
 
-}
-
-ads--CDockWidgetSideTab:hover[sideTabBarArea="2"] {
-
-}
-
-ads--CDockWidgetSideTab:hover[sideTabBarArea="3"] {
-
-}
-
-ads--CDockWidgetSideTab:hover[sideTabBarArea="0"][activeTab="true"] {
-
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="0"][activeTab="true"] {
-
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="1"][activeTab="true"] {
-
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="2"][activeTab="true"] {
-
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="3"][activeTab="true"] {
-
+ads--CDockWidgetSideTab[sideTabBarArea="1"][activeTab="true"],
+ads--CDockWidgetSideTab[sideTabBarArea="3"][activeTab="true"] 
+{
+	border-bottom: 5px solid palette(highlight);
 }
 
 

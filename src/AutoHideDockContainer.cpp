@@ -233,7 +233,6 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, CDockWid
 //============================================================================
 void CAutoHideDockContainer::updateSize()
 {
-	qDebug() << "CAutoHideDockContainer::updateSize()";
 	auto dockContainerParent = parentContainer();
 	auto rect = dockContainerParent->contentRect();
 
@@ -485,6 +484,7 @@ void CAutoHideDockContainer::collapseView(bool Enable)
 		qApp->installEventFilter(this);
 	}
 
+	qDebug() << "CAutoHideDockContainer::collapseView " << Enable;
     d->DockWidget->sideTabWidget()->updateStyle();
 }
 
@@ -508,22 +508,23 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 	}
 	else if (event->type() == QEvent::MouseButtonPress)
 	{
-		// First we check, if the mouse button press is inside the dock manager
+		auto Container = parentContainer();
+		// First we check, if the mouse button press is inside the container
 		// widget. If it is not, i.e. if someone resizes the main window or
 		// clicks into the application menu or toolbar, then we ignore the
 		// event
 		auto widget = qobject_cast<QWidget*>(watched);
-		bool IsDockManager = false;
+		bool IsContainer = false;
 		while (widget)
 		{
-			if (widget == d->DockManager)
+			if (widget == Container)
 			{
-				IsDockManager = true;
+				IsContainer = true;
 			}
 			widget = widget->parentWidget();
 		}
 
-		if (!IsDockManager)
+		if (!IsContainer)
 		{
 			return Super::eventFilter(watched, event);
 		}

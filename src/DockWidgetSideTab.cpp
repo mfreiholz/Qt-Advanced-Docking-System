@@ -92,7 +92,6 @@ CDockWidgetSideTab::CDockWidgetSideTab(CDockWidget* DockWidget, QWidget* parent)
 	d->DockWidget = DockWidget;
 	setText(DockWidget->windowTitle());
 	setFocusPolicy(Qt::NoFocus);
-	setFlat(true);
 }
 
 
@@ -107,6 +106,7 @@ CDockWidgetSideTab::~CDockWidgetSideTab()
 void CDockWidgetSideTab::updateStyle()
 {
 	internal::repolishStyle(this, internal::RepolishDirectChildren);
+	update();
 }
 
 
