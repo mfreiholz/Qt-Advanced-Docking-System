@@ -53,6 +53,16 @@ ads--CDockWidget {
 
 ads--CTitleBarButton {
 	padding: 0px 0px;
+	background: transparent;
+	border: none;
+}
+
+ads--CTitleBarButton:hover {
+	background: rgba(0, 0, 0, 24);
+}
+
+ads--CTitleBarButton:pressed {
+	background: rgba(0, 0, 0, 48);
 }
 
 QScrollArea#dockWidgetScrollArea {
@@ -108,7 +118,7 @@ ads--CDockWidgetTab[focused="true"] {
 	border-color: palette(highlight);
 }
 
-ads--CDockWidgetTab[focused="true"]>#tabCloseButton {
+ads--CDockWidgetTab[focused="true"] > #tabCloseButton {
 	qproperty-icon: url(:/ads/images/close-button-focused.svg)
 }
 
@@ -131,9 +141,7 @@ ads--CDockAreaTitleBar {
 }
 
 ads--CDockAreaWidget[focused="true"] ads--CDockAreaTitleBar {
-	background: transparent;
 	border-bottom: 2px solid palette(highlight);
-	padding-bottom: 0px;
 }
 
 /*-----------------------------------------------------------------------------
@@ -198,6 +206,7 @@ ads--CDockWidgetSideTab[sideTabBarArea="3"][activeTab="true"] {
 
 }
 
+
 /*
 ads--CAutoHideDockContainer::handle {
 	background: palette(dark);
@@ -226,16 +235,48 @@ ads--CAutoHideDockContainer::handle:horizontal {
 
 ads--CAutoHideDockContainer #dockAreaAutoHideButton 
 {
-	qproperty-icon: url(:/ads/images/vs-pin-button-pinned.svg);
+	qproperty-icon: url(:/ads/images/vs-pin-button-pinned-focused.svg);
 	qproperty-iconSize: 16px;
 }
 
-#autoHideTitleLabel {
+#autoHideTitleLabel 
+{
 	padding-left: 4px;
+	color: palette(light);
 }
 
 ads--CResizeHandle
 {
-	background: red;
-	border: 1px solid green;
+	/*background: red;
+	border: 1px solid green;*/
+}
+
+
+ads--CAutoHideDockContainer
+{
+	background: palette(window);
+}
+
+
+ads--CAutoHideDockContainer ads--CDockAreaTitleBar 
+{
+	background: palette(highlight);
+	border: none;
+	padding: 0px;
+}
+
+ads--CAutoHideDockContainer #dockAreaCloseButton
+{
+	qproperty-icon: url(:/ads/images/close-button-focused.svg)
+}
+
+
+ads--CAutoHideDockContainer ads--CTitleBarButton:hover 
+{
+	background: rgba(255, 255, 255, 48);
+}
+
+ads--CAutoHideDockContainer ads--CTitleBarButton:pressed 
+{
+	background: rgba(255, 255, 255, 96);
 }

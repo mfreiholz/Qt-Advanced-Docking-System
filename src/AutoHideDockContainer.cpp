@@ -218,8 +218,6 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockW
 
 	updateSize();
 	parent->registerAutoHideWidget(this);
-	setAutoFillBackground(true);
-	setMouseTracking(true);
 }
 
 
