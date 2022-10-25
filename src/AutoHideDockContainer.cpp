@@ -317,7 +317,10 @@ void CAutoHideDockContainer::addDockWidget(CDockWidget* DockWidget)
 	d->DockArea->addDockWidget(DockWidget);
 	d->DockWidget->sideTabWidget()->updateOrientationAndSpacing(d->SideTabBarArea);
 	qDebug() << "DockWidget->size(): " << DockWidget->size();
-	this->resize(OldDockArea ? OldDockArea->size() : d->DockWidget->size());
+	// The initial size should be a little bit bigger than the original dock
+	// area size to prevent that the resize handle of this auto hid dock area
+	// is near of the splitter of the old dock area.
+	d->Size = OldDockArea->size() + QSize(16, 16);
 
 	updateSize();
 }
