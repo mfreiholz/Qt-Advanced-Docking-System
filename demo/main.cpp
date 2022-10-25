@@ -46,16 +46,16 @@ int main(int argc, char *argv[])
 	a.setApplicationName("Advanced Docking System Demo");
 	a.setQuitOnLastWindowClosed(true);
 
-	QFile StyleSheetFile(":/adsdemo/app.css");
-	StyleSheetFile.open(QIODevice::ReadOnly);
-	QTextStream StyleSheetStream(&StyleSheetFile);
-	a.setStyleSheet(StyleSheetStream.readAll());
-	StyleSheetFile.close();
-
 	qInstallMessageHandler(myMessageOutput);
 	qDebug() << "Message handler test";
 
 	CMainWindow mw;
 	mw.show();
+
+	QFile StyleSheetFile(":/adsdemo/app.css");
+	StyleSheetFile.open(QIODevice::ReadOnly);
+	QTextStream StyleSheetStream(&StyleSheetFile);
+	a.setStyleSheet(StyleSheetStream.readAll());
+	StyleSheetFile.close();
 	return a.exec();
 }
