@@ -191,9 +191,8 @@ void DockManagerPrivate::loadStylesheet()
 	initResource();
 	QString Result;
 	QString FileName = ":ads/stylesheets/";
-	FileName += "visual_studio_light";
-	/*FileName += CDockManager::testConfigFlag(CDockManager::FocusHighlighting)
-		? "focus_highlighting" : "default";*/
+	FileName += CDockManager::testConfigFlag(CDockManager::FocusHighlighting)
+		? "focus_highlighting" : "default";
 #ifdef Q_OS_LINUX
     FileName += "_linux";
 #endif
