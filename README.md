@@ -8,12 +8,13 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/qcfb3cy932jw9mpy/branch/master?svg=true)](https://ci.appveyor.com/project/githubuser0xFFFF/qt-advanced-docking-system/branch/master)
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](gnu-lgpl-v2.1.md)
 
-[What's new](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/latest)
-[Documentation](doc/user-guide.md)
-
 Qt Advanced Docking System lets you create customizable layouts using a full
 featured window docking system similar to what is found in many popular
 integrated development environments (IDEs) such as Visual Studio.
+
+- [What's new](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/latest)
+- [Documentation](doc/user-guide.md)
+- Original Repository: https://github.com/githubuser0xFFFF/Qt-Advanced-Stylesheets
 
 [![Video Advanced Docking](doc/advanced-docking_video.png)](https://www.youtube.com/watch?v=7pdNfafg3Qc)
 
@@ -25,6 +26,7 @@ adds the following features:
 - option to close tabs with the middle mouse button
 - `DeleteContentOnClose` flag for dynamic deletion and creation of dock widget
   content
+- improved focus highlighting functionality
 
 The [release 3.7](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.7.2)
 adds the following features:
