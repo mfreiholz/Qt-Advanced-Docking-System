@@ -412,6 +412,11 @@ void CDockAreaTitleBar::onUndockButtonClicked()
 {
 	if (d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
 	{
+        if (d->DockArea->autoHideDockContainer())
+        {
+            d->DockArea->autoHideDockContainer()->cleanupAndDelete();
+        }
+
 		d->makeAreaFloating(mapFromGlobal(QCursor::pos()), DraggingInactive);
 	}
 }

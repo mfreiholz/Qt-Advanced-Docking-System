@@ -226,7 +226,6 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, CDockWid
 	CAutoHideDockContainer(DockWidget->dockManager(), area, parent)
 {
 	addDockWidget(DockWidget);
-	setDockSizeProportion(DockWidget->DefaultAutoHideDockProportion());
 }
 
 
@@ -322,35 +321,6 @@ void CAutoHideDockContainer::addDockWidget(CDockWidget* DockWidget)
 	d->Size = OldDockArea->size() + QSize(16, 16);
 
 	updateSize();
-}
-
-
-//============================================================================
-void CAutoHideDockContainer::setDockSizeProportion(float SplitterProportion)
-{
-	if (SplitterProportion < 0 || SplitterProportion > 1)
-	{
-		ADS_PRINT("SplitterProportion must be set between 0 and 1.");
-		return;
-	}
-
-	const auto dockSize = static_cast<int>(static_cast<float>(INT_MAX) * SplitterProportion);
-	const auto remainingSize = INT_MAX - dockSize;
-   /* switch (d->SideTabBarArea)
-    {
-        case CDockWidgetSideTab::Left:
-        {
-            setSizes({ dockSize, remainingSize });
-			break;
-        }
-        case CDockWidgetSideTab::Right: 
-        case CDockWidgetSideTab::Bottom:
-        { 
-            setSizes({ remainingSize, dockSize });
-			break;
-        }
-    }*/
-
 }
 
 
