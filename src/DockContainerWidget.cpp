@@ -1549,41 +1549,41 @@ enum eBorderLocation
 CDockWidgetSideTab::SideTabBarArea CDockContainerWidget::calculateSideTabBarArea(CDockAreaWidget* DockAreaWidget)
 {
 
-	auto DockMgrRect = d->DockManager->contentRect();
+	auto ContentRect = this->contentRect();
 	int borders = BorderNone; // contains all borders that are touched by the dock ware
-	auto DockAreaTopLeft = DockAreaWidget->mapTo(d->DockManager, DockAreaWidget->rect().topLeft());
+	auto DockAreaTopLeft = DockAreaWidget->mapTo(this, DockAreaWidget->rect().topLeft());
 	auto DockAreaRect = DockAreaWidget->rect();
 	DockAreaRect.moveTo(DockAreaTopLeft);
 	const qreal aspectRatio = DockAreaRect.width() / (qMax(1, DockAreaRect.height()) * 1.0);
-	const qreal sizeRatio = (qreal)DockMgrRect.width() / DockAreaRect.width();
+	const qreal sizeRatio = (qreal)ContentRect.width() / DockAreaRect.width();
 	static const int MinBorderDistance = 16;
 	bool HorizontalOrientation = (aspectRatio > 1.0) && (sizeRatio < 3.0);
 
 	// measure border distances - a distance less than 16 px means we touch the
 	// border
 	int BorderDistance[4];
-	int Distance = qAbs(DockMgrRect.topLeft().y() - DockAreaRect.topLeft().y());
+	int Distance = qAbs(ContentRect.topLeft().y() - DockAreaRect.topLeft().y());
 	BorderDistance[CDockWidgetSideTab::Top] = (Distance < MinBorderDistance) ? 0 : Distance;
 	if (!BorderDistance[CDockWidgetSideTab::Top])
 	{
 		borders |= BorderTop;
 	}
 	qDebug() << "BorderDistance[CDockWidgetSideTab::Top] " << BorderDistance[CDockWidgetSideTab::Top];
-	Distance = qAbs(DockMgrRect.bottomRight().y() - DockAreaRect.bottomRight().y());
+	Distance = qAbs(ContentRect.bottomRight().y() - DockAreaRect.bottomRight().y());
 	BorderDistance[CDockWidgetSideTab::Bottom] = (Distance < MinBorderDistance) ? 0 : Distance;
 	if (!BorderDistance[CDockWidgetSideTab::Bottom])
 	{
 		borders |= BorderBottom;
 	}
 	qDebug() << "BorderDistance[CDockWidgetSideTab::Bottom] " << BorderDistance[CDockWidgetSideTab::Bottom];
-	Distance = qAbs(DockMgrRect.topLeft().x() - DockAreaRect.topLeft().x());
+	Distance = qAbs(ContentRect.topLeft().x() - DockAreaRect.topLeft().x());
 	BorderDistance[CDockWidgetSideTab::Left] = (Distance < MinBorderDistance) ? 0 : Distance;
 	if (!BorderDistance[CDockWidgetSideTab::Left])
 	{
 		borders |= BorderLeft;
 	}
 	qDebug() << "BorderDistance[CDockWidgetSideTab::Left] " << BorderDistance[CDockWidgetSideTab::Left];
-	Distance = qAbs(DockMgrRect.bottomRight().x() - DockAreaRect.bottomRight().x());
+	Distance = qAbs(ContentRect.bottomRight().x() - DockAreaRect.bottomRight().x());
 	BorderDistance[CDockWidgetSideTab::Right] = (Distance < MinBorderDistance) ? 0 : Distance;
 	if (!BorderDistance[CDockWidgetSideTab::Right])
 	{
