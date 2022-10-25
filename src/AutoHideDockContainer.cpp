@@ -299,6 +299,7 @@ void CAutoHideDockContainer::setDockSizeProportion(float SplitterProportion)
 	const auto remainingSize = INT_MAX - dockSize;
     switch (d->SideTabBarArea)
     {
+        case CDockWidgetSideTab::Top:
         case CDockWidgetSideTab::Left:
         {
             setSizes({ dockSize, remainingSize });
