@@ -168,7 +168,7 @@ struct AutoHideDockContainerPrivate
 
 	void updateResizeHandleSizeLimitMax()
 	{
-		auto Rect = DockManager->contentRect();
+		auto Rect = _this->parentContainer()->contentRect();
 		ResizeHandle->setMaxResizeSize(ResizeHandle->orientation() == Qt::Horizontal
 			? Rect.width() : Rect.height());
 	}
