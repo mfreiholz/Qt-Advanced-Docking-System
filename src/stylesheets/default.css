@@ -64,7 +64,7 @@ QScrollArea#dockWidgetScrollArea {
 
 #dockAreaAutoHideButton {
   qproperty-icon: url(:/ads/images/vs-pin-button.svg);
-  qproperty-iconsize: 16px;
+  qproperty-iconSize: 16px;
 }
 
 #tabCloseButton {
@@ -74,7 +74,7 @@ QScrollArea#dockWidgetScrollArea {
   padding: 0px -2px;
   qproperty-icon: url(:/ads/images/close-button.svg),
     url(:/ads/images/close-button-disabled.svg) disabled;
-  qproperty-iconsize: 16px;
+  qproperty-iconSize: 16px;
 }
 
 #tabCloseButton:hover {
@@ -92,19 +92,19 @@ QScrollArea#dockWidgetScrollArea {
 
 #tabsMenuButton {
   qproperty-icon: url(:/ads/images/tabs-menu-button.svg);
-  qproperty-iconsize: 16px;
+  qproperty-iconSize: 16px;
 }
 
 #dockAreaCloseButton {
   qproperty-icon: url(:/ads/images/close-button.svg),
     url(:/ads/images/close-button-disabled.svg) disabled;
-  qproperty-iconsize: 16px;
+  qproperty-iconSize: 16px;
 }
 
 #detachGroupButton {
   qproperty-icon: url(:/ads/images/detach-button.svg),
     url(:/ads/images/detach-button-disabled.svg) disabled;
-  qproperty-iconsize: 16px;
+  qproperty-iconSize: 16px;
 }
 
 /*-----------------------------------------------------------------------------
@@ -113,7 +113,7 @@ QScrollArea#dockWidgetScrollArea {
  */
 ads--CDockWidgetSideTab {
   /*background: palette(window);*/
-  qproperty-iconsize: 16px 16px; /* this is optional in case you would like to change icon size*/
+  qproperty-iconSize: 16px 16px; /* this is optional in case you would like to change icon size*/
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="0"] {
@@ -190,7 +190,7 @@ ads--CAutoHideDockContainer::handle:horizontal {
 
 ads--CAutoHideDockContainer #dockAreaAutoHideButton {
   qproperty-icon: url(:/ads/images/vs-pin-button-pinned.svg);
-  qproperty-iconsize: 16px;
+  qproperty-iconSize: 16px;
 }
 
 #autoHideTitleLabel {
