@@ -10,10 +10,21 @@ ads--CDockContainerWidget {
 	background: palette(window);
 }
 
-ads--CDockContainerWidget > QSplitter{
-        padding: 1 0 1 0;
+
+/*****************************************************************************
+ * CDockSplitter
+ *****************************************************************************/
+ads--CDockContainerWidget > QSplitter {
+	padding: 1 0 1 0;
 }
 
+
+ads--CDockSplitter::handle {
+	background-color: palette(dark);
+	/* uncomment the following line if you would like to change the size of
+       the splitter handles */
+	/* height: 1px; */
+}
 
 
 /*****************************************************************************
@@ -21,7 +32,6 @@ ads--CDockContainerWidget > QSplitter{
  *****************************************************************************/
 ads--CDockAreaWidget {
 	background: palette(window);
-	/*border: 1px solid white;*/
 }
 
 
@@ -151,13 +161,6 @@ ads--CTitleBarButton {
 	qproperty-icon: url(:/ads/images/detach-button.svg),
 		url(:/ads/images/detach-button-disabled.svg) disabled;
 	qproperty-iconSize: 16px;	
-}
-
-ads--CDockSplitter::handle {
-	background-color: palette(dark);
-	/* uncomment the following line if you would like to change the size of
-       the splitter handles */
-	/* height: 1px; */
 }
 
 

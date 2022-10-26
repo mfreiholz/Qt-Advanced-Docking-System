@@ -500,12 +500,10 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 //============================================================================
 void CAutoHideDockContainer::resizeEvent(QResizeEvent* event)
 {
-	std::cout << "ResizeEvent" << std::endl;
     Super::resizeEvent(event);
 	if (d->ResizeHandle->isResizing())
 	{
 		d->Size = this->size();
-		qDebug() << "Size " << d->Size;
 		d->updateResizeHandleSizeLimitMax();
 	}
 }
