@@ -24,6 +24,7 @@ class ADS_EXPORT CResizeHandle : public QFrame
 {
 	Q_OBJECT
 	Q_DISABLE_COPY(CResizeHandle)
+	 Q_PROPERTY(bool opaqueResize READ opaqueResize WRITE setOpaqueResize)
 private:
 	ResizeHandlePrivate* d; ///< private data (pimpl)
 	friend struct ResizeHandlePrivate;
@@ -84,6 +85,17 @@ public:
 	 * than this value
 	 */
 	void setMaxResizeSize(int MaxSize);
+
+	/**
+	 * Enable / disable opaque resizing
+	 */
+	void setOpaqueResize(bool opaque = true);
+
+	/**
+	 * Returns true if widgets are resized dynamically (opaquely) while
+	 * interactively moving the resize handle. Otherwise returns false.
+	 */
+	bool opaqueResize() const;
 }; // class name
 }
  // namespace ads
