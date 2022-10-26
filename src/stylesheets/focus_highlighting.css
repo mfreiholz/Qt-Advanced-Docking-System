@@ -163,7 +163,14 @@ ads--CDockSplitter::handle {
 
 
 /*****************************************************************************
+ *
  * Styling of auto hide functionality
+ *
+ *****************************************************************************/
+ 
+ 
+/*****************************************************************************
+ * CDockWidgetSideTab
  *****************************************************************************/
 ads--CDockWidgetSideTab {
 	/*background: palette(window);*/
@@ -171,8 +178,7 @@ ads--CDockWidgetSideTab {
 }
 
 
-ads--CDockWidgetSideTab
-{
+ads--CDockWidgetSideTab {
 	background: none;
 	border: none;
 	padding-left: 2px;
@@ -182,8 +188,7 @@ ads--CDockWidgetSideTab
 
 
 ads--CDockWidgetSideTab[sideTabBarArea="0"],
-ads--CDockWidgetSideTab[sideTabBarArea="2"] 
-{
+ads--CDockWidgetSideTab[sideTabBarArea="2"]  {
 	border-top: 5px solid rgba(0, 0, 0, 48);
 	margin-right: 6px;
 	min-height: 20;
@@ -191,8 +196,7 @@ ads--CDockWidgetSideTab[sideTabBarArea="2"]
 
 
 ads--CDockWidgetSideTab[sideTabBarArea="1"],
-ads--CDockWidgetSideTab[sideTabBarArea="3"] 
-{
+ads--CDockWidgetSideTab[sideTabBarArea="3"] {
 	border-bottom: 5px solid rgba(0, 0, 0, 48);
 	margin-right: 6px;
 	min-height: 20;
@@ -201,116 +205,67 @@ ads--CDockWidgetSideTab[sideTabBarArea="3"]
 
 
 ads--CDockWidgetSideTab:hover[sideTabBarArea="0"],
-ads--CDockWidgetSideTab:hover[sideTabBarArea="2"]  
-{
+ads--CDockWidgetSideTab:hover[sideTabBarArea="2"]  {
 	border-top: 5px solid palette(highlight);
 	color: palette(highlight);
 }
 
 
 ads--CDockWidgetSideTab:hover[sideTabBarArea="1"],
-ads--CDockWidgetSideTab:hover[sideTabBarArea="3"]  
-{
+ads--CDockWidgetSideTab:hover[sideTabBarArea="3"]  {
 	border-bottom: 5px solid palette(highlight);
 	color: palette(highlight);
 }
 
 ads--CDockWidgetSideTab[sideTabBarArea="0"][activeTab="true"],
-ads--CDockWidgetSideTab[sideTabBarArea="2"][activeTab="true"]  
-{
+ads--CDockWidgetSideTab[sideTabBarArea="2"][activeTab="true"]  {
 	border-top: 5px solid palette(highlight);
 }
 
 
 ads--CDockWidgetSideTab[sideTabBarArea="1"][activeTab="true"],
-ads--CDockWidgetSideTab[sideTabBarArea="3"][activeTab="true"] 
-{
+ads--CDockWidgetSideTab[sideTabBarArea="3"][activeTab="true"] {
 	border-bottom: 5px solid palette(highlight);
 }
 
-ads--CSideTabBar
-{
+
+/*****************************************************************************
+ * CSideTabBar
+ *****************************************************************************/
+ads--CSideTabBar{
 	background: palette(window);
 }
 
 
-ads--CSideTabBar[sideTabBarArea="0"]
-{
+ads--CSideTabBar[sideTabBarArea="0"] {
 	border-bottom: 1px solid palette(dark);
 }
 
-ads--CSideTabBar[sideTabBarArea="1"]
-{
+ads--CSideTabBar[sideTabBarArea="1"] {
 	border-right: 1px solid palette(dark);
 }
 
-ads--CSideTabBar[sideTabBarArea="2"]
-{
+ads--CSideTabBar[sideTabBarArea="2"] {
 	border-left: 1px solid palette(dark);
 }
 
-ads--CSideTabBar[sideTabBarArea="3"]
-{
+ads--CSideTabBar[sideTabBarArea="3"] {
 	border-top: 1px solid palette(dark);
 }
 
 
-
-#dockAreaAutoHideButton {
-	qproperty-icon: url(:/ads/images/vs-pin-button.svg);
-	qproperty-iconSize: 16px;
-}
-
-ads--CAutoHideDockContainer #dockAreaAutoHideButton 
-{
-	qproperty-icon: url(:/ads/images/vs-pin-button-pinned-focused.svg);
-	qproperty-iconSize: 16px;
-}
-
-#autoHideTitleLabel 
-{
-	padding-left: 4px;
-	color: palette(light);
-}
-
-
-ads--CAutoHideDockContainer
-{
+/*****************************************************************************
+ * CAutoHideDockContainer
+ *****************************************************************************/
+ads--CAutoHideDockContainer {
 	background: palette(window);
 }
 
 
-ads--CAutoHideDockContainer ads--CDockAreaTitleBar 
-{
+ads--CAutoHideDockContainer ads--CDockAreaTitleBar {
 	background: palette(highlight);
 	padding: 0px;
 	border: none;
-}
-
-ads--CResizeHandle
-{
-	background: palette(window);
-}
-
-
-ads--CAutoHideDockContainer[sideTabBarArea="0"] ads--CResizeHandle
-{
-	border-top: 1px solid palette(dark);
-}
-
-ads--CAutoHideDockContainer[sideTabBarArea="1"] ads--CResizeHandle
-{
-	border-left: 1px solid palette(dark);
-}
-
-ads--CAutoHideDockContainer[sideTabBarArea="2"] ads--CResizeHandle
-{
-	border-right: 1px solid palette(dark);
-}
-
-ads--CAutoHideDockContainer[sideTabBarArea="3"] ads--CResizeHandle
-{
-	border-top: 1px solid palette(dark);
 }
 
 
@@ -318,28 +273,72 @@ ads--CAutoHideDockContainer[sideTabBarArea="3"] ads--CResizeHandle
  * This is required because the ads--CDockAreaWidget[focused="true"] will 
  * overwrite the ads--CAutoHideDockContainer ads--CDockAreaTitleBar rule
  */
-ads--CAutoHideDockContainer ads--CDockAreaWidget[focused="true"] ads--CDockAreaTitleBar 
-{
+ads--CAutoHideDockContainer ads--CDockAreaWidget[focused="true"] ads--CDockAreaTitleBar {
 	background: palette(highlight);
 	padding: 0px;
 	border: none;
 }
 
 
-ads--CAutoHideDockContainer #dockAreaCloseButton
-{
+#autoHideTitleLabel {
+	padding-left: 4px;
+	color: palette(light);
+}
+
+
+/*****************************************************************************
+ * CAutoHideDockContainer titlebar buttons
+ *****************************************************************************/
+#dockAreaAutoHideButton {
+	qproperty-icon: url(:/ads/images/vs-pin-button.svg);
+	qproperty-iconSize: 16px;
+}
+
+ads--CAutoHideDockContainer #dockAreaAutoHideButton {
+	qproperty-icon: url(:/ads/images/vs-pin-button-pinned-focused.svg);
+	qproperty-iconSize: 16px;
+}
+
+
+ads--CAutoHideDockContainer #dockAreaCloseButton{
 	qproperty-icon: url(:/ads/images/close-button-focused.svg)
 }
 
 
-ads--CAutoHideDockContainer ads--CTitleBarButton:hover 
-{
+ads--CAutoHideDockContainer ads--CTitleBarButton:hover {
 	background: rgba(255, 255, 255, 48);
 }
 
-ads--CAutoHideDockContainer ads--CTitleBarButton:pressed 
-{
+ads--CAutoHideDockContainer ads--CTitleBarButton:pressed {
 	background: rgba(255, 255, 255, 96);
 }
 
+/*****************************************************************************
+ * CAutoHideDockContainer Titlebar and Buttons
+ *****************************************************************************/
+
+
+/*****************************************************************************
+ * CResizeHandle
+ *****************************************************************************/
+ads--CResizeHandle {
+	background: palette(window);
+}
+
+
+ads--CAutoHideDockContainer[sideTabBarArea="0"] ads--CResizeHandle {
+	border-top: 1px solid palette(dark);
+}
+
+ads--CAutoHideDockContainer[sideTabBarArea="1"] ads--CResizeHandle {
+	border-left: 1px solid palette(dark);
+}
+
+ads--CAutoHideDockContainer[sideTabBarArea="2"] ads--CResizeHandle {
+	border-right: 1px solid palette(dark);
+}
+
+ads--CAutoHideDockContainer[sideTabBarArea="3"] ads--CResizeHandle {
+	border-top: 1px solid palette(dark);
+}
 
