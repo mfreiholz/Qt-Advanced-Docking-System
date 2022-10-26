@@ -113,58 +113,18 @@ struct AutoHideDockContainerPrivate
 	/**
 	 * Convenience function to get a dock widget area
 	 */
-	DockWidgetArea getArea(CDockWidgetSideTab::SideTabBarArea area)
+	DockWidgetArea getDockWidgetArea(CDockWidgetSideTab::SideTabBarArea area)
 	{
         switch (area)
         {
-            case CDockWidgetSideTab::Left:
-            {
-				return LeftDockWidgetArea;
-            }
-            case CDockWidgetSideTab::Right:
-            {
-				return RightDockWidgetArea;
-            }
-            case CDockWidgetSideTab::Bottom: 
-            {
-				return BottomDockWidgetArea;
-            }
-            case CDockWidgetSideTab::Top:
-            {
-				return TopDockWidgetArea;
-            }
+            case CDockWidgetSideTab::Left: return LeftDockWidgetArea;
+            case CDockWidgetSideTab::Right: return RightDockWidgetArea;
+            case CDockWidgetSideTab::Bottom: return BottomDockWidgetArea;
+            case CDockWidgetSideTab::Top: return TopDockWidgetArea;
         }
 
 		return LeftDockWidgetArea;
 	}
-
-	/*
-	 * Convenience function to get dock position
-	 */
-	QPoint getSimplifiedDockAreaPosition() const
-    {
-        switch (SideTabBarArea)
-            {
-                case CDockWidgetSideTab::Left: 
-                {
-                    return QPoint(1, _this->height() / 2);
-                }
-                case CDockWidgetSideTab::Right:
-                {
-                    return QPoint(_this->width() - 1, _this->height() / 2);
-                }
-                case CDockWidgetSideTab::Bottom:
-                {
-                    return QPoint(_this->width() / 2, _this->height() - 1);
-                }
-                case CDockWidgetSideTab::Top:
-                {
-                    return QPoint(_this->width() / 2, 1);
-                }
-            }
-
-		return QPoint();
-    }
 
 	void updateResizeHandleSizeLimitMax()
 	{
@@ -342,7 +302,7 @@ void CAutoHideDockContainer::moveContentsToParent()
 	// If we unpin the auto hide tock widget, then we insert it into the same
 	// location like it had as a auto hide widget.  This brings the least surprise
 	// to the user and he does not have to search where the widget was inserted.
-	parentContainer()->addDockWidget(d->getArea(d->SideTabBarArea), d->DockWidget);
+	parentContainer()->addDockWidget(d->getDockWidgetArea(d->SideTabBarArea), d->DockWidget);
     parentContainer()->removeDockArea(d->DockArea);
 }
 
