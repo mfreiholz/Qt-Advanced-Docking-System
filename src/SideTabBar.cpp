@@ -54,6 +54,15 @@ struct SideTabBarPrivate
     CDockContainerWidget* ContainerWidget;
     QBoxLayout* TabsLayout;
     Qt::Orientation Orientation;
+    CDockWidgetSideTab::SideTabBarArea SideTabArea = CDockWidgetSideTab::Left;
+
+    /**
+     * Convenience function to check if this is a horizontal side bar
+     */
+    bool isHorizontal() const
+    {
+    	return Qt::Horizontal == Orientation;
+    }
 }; // struct SideTabBarPrivate
 
 //============================================================================
@@ -64,12 +73,14 @@ SideTabBarPrivate::SideTabBarPrivate(CSideTabBar* _public) :
 
 
 //============================================================================
-CSideTabBar::CSideTabBar(CDockContainerWidget* parent, Qt::Orientation orientation) :
-    QWidget(parent),
+CSideTabBar::CSideTabBar(CDockContainerWidget* parent, CDockWidgetSideTab::SideTabBarArea area) :
+    Super(parent),
     d(new SideTabBarPrivate(this))
 {
+	d->SideTabArea = area;
     d->ContainerWidget = parent;
-    d->Orientation = orientation;
+    d->Orientation = (area == CDockWidgetSideTab::Bottom || area == CDockWidgetSideTab::Top)
+    	? Qt::Horizontal : Qt::Vertical;
 
     auto mainLayout = new QBoxLayout(d->Orientation == Qt::Vertical ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
 
@@ -80,9 +91,19 @@ CSideTabBar::CSideTabBar(CDockContainerWidget* parent, Qt::Orientation orientati
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
     mainLayout->addStretch(1);
-
     setLayout(mainLayout);
+
     setFocusPolicy(Qt::NoFocus);
+	if (d->isHorizontal())
+	{
+		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	}
+	else
+	{
+		setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+	}
+
+	hide();
 }
 
 
@@ -98,6 +119,7 @@ void CSideTabBar::insertSideTab(int Index, CDockWidgetSideTab* SideTab)
 {
     d->TabsLayout->insertWidget(Index, SideTab);
     SideTab->setSideTabBar(this);
+    show();
 }
 
 
@@ -105,6 +127,10 @@ void CSideTabBar::insertSideTab(int Index, CDockWidgetSideTab* SideTab)
 void CSideTabBar::removeSideTab(CDockWidgetSideTab* SideTab)
 {
     d->TabsLayout->removeWidget(SideTab);
+    if (d->TabsLayout->isEmpty())
+    {
+    	hide();
+    }
 }
 
 
@@ -138,5 +164,12 @@ CDockWidgetSideTab* CSideTabBar::tabAt(int index) const
 int CSideTabBar::tabCount() const
 {
     return d->TabsLayout->count();
+}
+
+
+//============================================================================
+CDockWidgetSideTab::SideTabBarArea  CSideTabBar::sideTabBarArea() const
+{
+	return d->SideTabArea;
 }
 }

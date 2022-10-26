@@ -29,7 +29,8 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include <QWidget>
+#include <QFrame>
+#include "DockWidgetSideTab.h"
 #include "ads_globals.h"
 
 namespace ads
@@ -37,15 +38,14 @@ namespace ads
 struct SideTabBarPrivate;
 class CDockContainerWidget;
 class CDockWidgetSideTab;
-class CDockWidgetTab;
 
 /**
  * Side tab widget that is shown at the edges of a dock container.
  */
-class ADS_EXPORT CSideTabBar : public QWidget
+class ADS_EXPORT CSideTabBar : public QFrame
 {
     Q_OBJECT
-
+    Q_PROPERTY(int sideTabBarArea READ sideTabBarArea)
     Q_PROPERTY(Qt::Orientation orientation READ orientation)
 
 private:
@@ -57,12 +57,12 @@ protected:
     void paintEvent(QPaintEvent* event) override;
 
 public:
-    using Super = QWidget;
+    using Super = QFrame;
 
 	/**
 	 * Default Constructor
 	 */
-    CSideTabBar(CDockContainerWidget* parent, Qt::Orientation orientation);
+    CSideTabBar(CDockContainerWidget* parent, CDockWidgetSideTab::SideTabBarArea area);
 
 	/**
 	 * Virtual Destructor
@@ -94,8 +94,13 @@ public:
 	 */
 	int tabCount() const;
 
-	Q_SIGNALS:
-		void sideTabAutoHideToggleRequested();
+	/**
+	 * Getter for side tab bar area property
+	 */
+	CDockWidgetSideTab::SideTabBarArea sideTabBarArea() const;
+
+Q_SIGNALS:
+	void sideTabAutoHideToggleRequested();
 };
 }
 
