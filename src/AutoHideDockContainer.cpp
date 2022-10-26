@@ -94,6 +94,10 @@ int resizeHandleLayoutPosition(CDockWidgetSideTab::SideTabBarArea Area)
 	return 0;
 }
 
+
+/**
+ * Private data of CAutoHideDockContainer - pimpl
+ */
 struct AutoHideDockContainerPrivate
 {
     CAutoHideDockContainer* _this;
@@ -126,6 +130,9 @@ struct AutoHideDockContainerPrivate
 		return LeftDockWidgetArea;
 	}
 
+	/**
+	 * Update the resize limit of the resize handle
+	 */
 	void updateResizeHandleSizeLimitMax()
 	{
 		auto Rect = _this->parentContainer()->contentRect();
@@ -182,6 +189,8 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockW
 	d->Layout->addWidget(d->DockArea);
 	d->ResizeHandle = new CResizeHandle(edgeFromSideTabBarArea(area), this);
 	d->ResizeHandle->setMinResizeSize(64);
+	bool OpaqueResize = CDockManager::testConfigFlag(CDockManager::OpaqueSplitterResize);
+	d->ResizeHandle->setOpaqueResize(OpaqueResize);
 	d->Layout->insertWidget(resizeHandleLayoutPosition(area), d->ResizeHandle);
 	d->Size = d->DockArea->size();
 
