@@ -132,6 +132,15 @@ struct AutoHideDockContainerPrivate
 		ResizeHandle->setMaxResizeSize(ResizeHandle->orientation() == Qt::Horizontal
 			? Rect.width() : Rect.height());
 	}
+
+	/**
+	 * Convenience function to check, if this is an horizontal area
+	 */
+	bool isHorizontal() const
+	{
+		return isHorizontalArea(SideTabBarArea);
+	}
+
 }; // struct AutoHideDockContainerPrivate
 
 
@@ -225,8 +234,6 @@ void CAutoHideDockContainer::updateSize()
 		 }
 		 break;
 	}
-
-    //resize(rect.width(), rect.height());
 }
 
 //============================================================================
@@ -236,7 +243,6 @@ CAutoHideDockContainer::~CAutoHideDockContainer()
 
 	// Remove event filter in case there are any queued messages
 	qApp->removeEventFilter(this);
-
 	if (d->DockManager)
 	{
 		parentContainer()->removeAutoHideWidget(this);
@@ -327,41 +333,33 @@ void CAutoHideDockContainer::cleanupAndDelete()
 void CAutoHideDockContainer::saveState(QXmlStreamWriter& s)
 {
     s.writeAttribute("SideTabBarArea", QString::number(sideTabBarArea())); 
-	QStringList Sizes;
-	// TODO implement auto hide dock container saving
-    /*for (auto Size : sizes())
-    {
-		Sizes << QString::number(Size);
-    }*/
-
-    s.writeAttribute("Sizes", Sizes.join(" "));
+    s.writeAttribute("Size", QString::number(d->isHorizontal() ? d->Size.height() : d->Size.width()));
 }
 
 
 //============================================================================
 bool CAutoHideDockContainer::restoreState(CDockingStateReader& s, bool Testing)
 {
-	auto sSizes = s.attributes().value("Sizes").trimmed().toString();
-	ADS_PRINT("Sizes: " << sSizes);
-	QTextStream TextStream(&sSizes);
-	QList<int> Sizes;
-	while (!TextStream.atEnd())
-	{
-		int value;
-		TextStream >> value;
-		Sizes.append(value);
-	}
-
-	// TODO implement restore state
-	/*if (Sizes.count() != count())
+	bool ok;
+	int Size = s.attributes().value("Size").toInt(&ok);
+	if (!ok)
 	{
 		return false;
 	}
 
-	if (!Testing)
+	if (Testing)
 	{
-		setSizes(Sizes);
-	}*/
+		return true;
+	}
+
+	if (d->isHorizontal())
+	{
+		d->Size.setHeight(Size);
+	}
+	else
+	{
+		d->Size.setWidth(Size);
+	}
 
 	return true;
 }
