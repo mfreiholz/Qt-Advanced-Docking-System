@@ -2098,29 +2098,27 @@ void CDockContainerWidget::createRootSplitter()
 void CDockContainerWidget::createSideTabBarWidgets()
 {
 	{
-		auto leftLayout = new QVBoxLayout();
-        d->SideTabBarWidgets[CDockWidgetSideTab::Left] = new CSideTabBar(this, Qt::Vertical);
-        leftLayout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Left]);
-		leftLayout->addStretch(1);
-		d->Layout->addLayout(leftLayout, 1, 0);
+		auto Area = CDockWidgetSideTab::Left;
+        d->SideTabBarWidgets[Area] = new CSideTabBar(this, Area);
+		d->Layout->addWidget(d->SideTabBarWidgets[Area], 1, 0);
 	}
 
 	{
-		auto rightLayout = new QVBoxLayout();
-        d->SideTabBarWidgets[CDockWidgetSideTab::Right] = new CSideTabBar(this, Qt::Vertical);
-        rightLayout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Right]);
-		rightLayout->addStretch(1);
-		d->Layout->addLayout(rightLayout, 1, 2);
+		auto Area = CDockWidgetSideTab::Right;
+        d->SideTabBarWidgets[Area] = new CSideTabBar(this, Area);
+		d->Layout->addWidget(d->SideTabBarWidgets[Area], 1, 2);
 	}
 
 	{
-        d->SideTabBarWidgets[CDockWidgetSideTab::Bottom] = new CSideTabBar(this, Qt::Horizontal);
-        d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Bottom], 2, 1);
+		auto Area = CDockWidgetSideTab::Bottom;
+        d->SideTabBarWidgets[Area] = new CSideTabBar(this, Area);
+        d->Layout->addWidget(d->SideTabBarWidgets[Area], 2, 1);
 	}
 
 	{
-        d->SideTabBarWidgets[CDockWidgetSideTab::Top] = new CSideTabBar(this, Qt::Horizontal);
-        d->Layout->addWidget(d->SideTabBarWidgets[CDockWidgetSideTab::Top], 0, 1);
+		auto Area = CDockWidgetSideTab::Top;
+        d->SideTabBarWidgets[Area] = new CSideTabBar(this, Area);
+        d->Layout->addWidget(d->SideTabBarWidgets[Area], 0, 1);
 	}
 }
 

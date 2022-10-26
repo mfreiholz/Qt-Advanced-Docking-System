@@ -122,13 +122,21 @@ CDockWidgetSideTab::SideTabBarArea CDockWidgetSideTab::sideTabBarArea() const
 	return Left;
 }
 
+
 //============================================================================
 void CDockWidgetSideTab::setOrientation(Qt::Orientation Orientation)
 {
 	d->Orientation = Orientation;
-	CPushButton::setOrientation((Qt::Horizontal == Orientation)
+	CPushButton::setButtonOrientation((Qt::Horizontal == Orientation)
 		? CPushButton::Horizontal : CPushButton::VerticalTopToBottom);
 	updateStyle();
+}
+
+
+//============================================================================
+Qt::Orientation CDockWidgetSideTab::orientation() const
+{
+	return d->Orientation;
 }
 
 

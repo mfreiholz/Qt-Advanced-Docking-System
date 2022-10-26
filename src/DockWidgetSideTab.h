@@ -51,6 +51,7 @@ class ADS_EXPORT CDockWidgetSideTab : public CPushButton
     Q_OBJECT
 
     Q_PROPERTY(SideTabBarArea sideTabBarArea READ sideTabBarArea)
+    Q_PROPERTY(Qt::Orientation orientation READ orientation)
 	Q_PROPERTY(bool activeTab READ isActiveTab)
 
 private:    
@@ -108,6 +109,11 @@ public:
 	 * Set orientation vertical or horizontal
 	 */
 	void setOrientation(Qt::Orientation Orientation);
+
+	/**
+	 * Returns the current orientation
+	 */
+	Qt::Orientation orientation() const;
 
 	/**
 	 * Update the orientation, visibility and spacing based on the area and the config

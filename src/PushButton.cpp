@@ -54,12 +54,12 @@ void CPushButton::paintEvent(QPaintEvent *event)
     painter.drawControl(QStyle::CE_PushButton, option);
 }
 
-CPushButton::Orientation CPushButton::orientation() const
+CPushButton::Orientation CPushButton::buttonOrientation() const
 {
     return m_Orientation;
 }
 
-void CPushButton::setOrientation(Orientation orientation)
+void CPushButton::setButtonOrientation(Orientation orientation)
 {
     m_Orientation = orientation;
 }

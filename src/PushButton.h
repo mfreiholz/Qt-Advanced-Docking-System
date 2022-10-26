@@ -37,12 +37,12 @@ public:
     /**
      * Returns the current orientation
      */
-    Orientation orientation() const;
+    Orientation buttonOrientation() const;
 
     /**
      * Set the orientation of this button
      */
-    void setOrientation(Orientation orientation);
+    void setButtonOrientation(Orientation orientation);
 
 protected:
     virtual void paintEvent(QPaintEvent *event) override;
