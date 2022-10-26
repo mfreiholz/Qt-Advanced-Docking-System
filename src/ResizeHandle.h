@@ -97,7 +97,6 @@ public:
 	 */
 	bool opaqueResize() const;
 }; // class name
-}
- // namespace ads
+} // namespace ads
 //-----------------------------------------------------------------------------
 #endif // ResizeHandleH

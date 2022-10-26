@@ -102,6 +102,6 @@ public:
 Q_SIGNALS:
 	void sideTabAutoHideToggleRequested();
 };
-}
-
+} // namespace ads
+//-----------------------------------------------------------------------------
 #endif
