@@ -36,7 +36,7 @@
 namespace ads
 {
 struct ElidingLabelPrivate;
-struct VerticalElidingLabelPrivate;
+
 /**
  * A QLabel that supports eliding text.
  * Because the functions setText() and text() are no virtual functions setting
@@ -54,9 +54,6 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent* event) override;
     virtual void resizeEvent( QResizeEvent *event ) override;
     virtual void mouseDoubleClickEvent( QMouseEvent *ev ) override;
-
-	virtual int availableWidthForText() const;
-	virtual int availableWidthForText(QResizeEvent* event) const;
 
 public:
     using Super = QLabel;
@@ -105,26 +102,7 @@ Q_SIGNALS:
 	void elidedChanged(bool elided);
 }; //class CElidingLabel
 
-
-class CVerticalElidingLabel : public CElidingLabel
-{
-private:
-	VerticalElidingLabelPrivate* d;
-
-protected:
-	void paintEvent(QPaintEvent* event) override;
-	QSize sizeHint() const override;
-	QSize minimumSizeHint() const override;
-	int availableWidthForText() const override;
-	int availableWidthForText(QResizeEvent* event) const override;
-
-public:
-	CVerticalElidingLabel(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags ());
-
-	void setOrientation(Qt::Orientation orientation);
-}; // class CVerticalElidingLabel
-
-} // namespace ads
+} // namespace QtLabb
 
 //---------------------------------------------------------------------------
 #endif // ElidingLabelH

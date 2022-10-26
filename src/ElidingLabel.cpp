@@ -29,7 +29,6 @@
 //============================================================================
 #include "ElidingLabel.h"
 #include <QMouseEvent>
-#include <QPainter>
 
 
 namespace ads
@@ -118,7 +117,7 @@ Qt::TextElideMode CElidingLabel::elideMode() const
 void CElidingLabel::setElideMode(Qt::TextElideMode mode)
 {
 	d->ElideMode = mode;
-	d->elideText(availableWidthForText());
+	d->elideText(size().width());
 }
 
 //============================================================================
@@ -155,23 +154,9 @@ void CElidingLabel::resizeEvent(QResizeEvent *event)
 {
 	if (!d->isModeElideNone())
 	{
-		d->elideText(availableWidthForText(event));
+		d->elideText(event->size().width());
 	}
     Super::resizeEvent(event);
-}
-
-
-//============================================================================
-int CElidingLabel::availableWidthForText() const
-{
-	return size().width();
-}
-
-
-//============================================================================
-int CElidingLabel::availableWidthForText(QResizeEvent* event) const
-{
-	return event->size().width();
 }
 
 
@@ -230,7 +215,7 @@ void CElidingLabel::setText(const QString &text)
 	else
 	{
 		internal::setToolTip(this, text);
-		d->elideText(availableWidthForText());
+		d->elideText(this->size().width());
 	}
 }
 
@@ -239,101 +224,6 @@ void CElidingLabel::setText(const QString &text)
 QString CElidingLabel::text() const
 {
 	return d->Text;
-}
-
-
-/**
- * Private data of public CVerticalElidingLabel
- */
-struct VerticalElidingLabelPrivate
-{
-	CVerticalElidingLabel* _this;
-	Qt::Orientation Orientation {Qt::Horizontal};
-
-	VerticalElidingLabelPrivate(CVerticalElidingLabel* _public);
-};
-
-
-//============================================================================
-VerticalElidingLabelPrivate::VerticalElidingLabelPrivate(CVerticalElidingLabel* _public)
-	: _this(_public)
-{
-}
-
-
-//============================================================================
-CVerticalElidingLabel::CVerticalElidingLabel(QWidget* parent, Qt::WindowFlags f) :
-	CElidingLabel(parent, f),
-	d(new VerticalElidingLabelPrivate(this))
-{
-}
-
-
-//============================================================================
-void CVerticalElidingLabel::setOrientation(Qt::Orientation orientation)
-{
-	d->Orientation = orientation;
-	updateGeometry();
-}
-
-//============================================================================
-void CVerticalElidingLabel::paintEvent(QPaintEvent* event)
-{
-	if (d->Orientation == Qt::Vertical)
-	{
-        QPainter painter(this);
-        painter.rotate(90);
-        painter.drawText(0,0, QLabel::text());
-		return;
-	}
-
-    CElidingLabel::paintEvent(event);
-}
-
-//============================================================================
-QSize CVerticalElidingLabel::sizeHint() const
-{
-	if (d->Orientation == Qt::Vertical)
-	{
-        QSize s = CElidingLabel::minimumSizeHint();
-        return QSize(s.height(), s.width());
-	}
-
-	return CElidingLabel::sizeHint();
-}
-
-//============================================================================
-QSize CVerticalElidingLabel::minimumSizeHint() const
-{
-	if (d->Orientation == Qt::Vertical)
-	{
-        QSize s = CElidingLabel::sizeHint();
-        return QSize(s.height(), s.width());
-	}
-	
-	return CElidingLabel::minimumSizeHint();
-}
-
-//============================================================================
-int CVerticalElidingLabel::availableWidthForText() const
-{
-	if (d->Orientation == Qt::Vertical)
-	{
-        return size().height();
-	}
-
-	return CElidingLabel::availableWidthForText();
-}
-
-//============================================================================
-int CVerticalElidingLabel::availableWidthForText(QResizeEvent* event) const
-{
-	if (d->Orientation == Qt::Vertical)
-	{
-        return event->size().height();
-	}
-
-	return CElidingLabel::availableWidthForText(event);
 }
 } // namespace QtLabb
 
