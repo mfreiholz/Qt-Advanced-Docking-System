@@ -44,67 +44,6 @@ ads--CDockWidgetTab[activeTab="true"] QLabel {
         color: palette(foreground);
 }
 
-/*-----------------------------------------------------------------------------
- * Styling of auto hide functionality
- *----------------------------------------------------------------------------
- */
-ads--CDockWidgetSideTab {
-	background: palette(window);
-	qproperty-iconSize: 16px 16px;/* this is optional in case you would like to change icon size*/
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="0"] {
-	border-top: 3px solid grey;
-	border-right: 1px solid white;
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="1"] {
-	border-left: 3px solid grey;
-	border-bottom: 1px solid white;
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="2"] {
-	border-right: 3px solid grey;
-	border-bottom: 1px solid white;
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="3"] {
-	border-bottom: 3px solid grey;
-	border-right: 1px solid white;
-}
-
-ads--CDockWidgetSideTab:hover[sideTabBarArea="0"] {
-	border-top: 3px solid palette(highlight);
-}
-
-ads--CDockWidgetSideTab:hover[sideTabBarArea="1"] {
-	border-left: 3px solid palette(highlight);
-}
-
-ads--CDockWidgetSideTab:hover[sideTabBarArea="2"] {
-	border-right: 3px solid palette(highlight);
-}
-
-ads--CDockWidgetSideTab:hover[sideTabBarArea="3"] {
-	border-bottom: 3px solid palette(highlight);
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="0"][activeTab="true"] {
-	border-top: 3px solid palette(highlight);
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="1"][activeTab="true"] {
-	border-left: 3px solid palette(highlight);
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="2"][activeTab="true"] {
-	border-right: 3px solid palette(highlight);
-}
-
-ads--CDockWidgetSideTab[sideTabBarArea="3"][activeTab="true"] {
-	border-bottom: 3px solid palette(highlight);
-}
-
 ads--CDockWidget {
         background: palette(light);
         border-color: palette(light);
@@ -131,17 +70,6 @@ QScrollArea#dockWidgetScrollArea {
         qproperty-icon: url(:/ads/images/detach-button.svg),
                 url(:/ads/images/detach-button-disabled.svg) disabled;
         qproperty-iconSize: 16px;
-}
-
-#dockAreaAutoHideButton {
-	qproperty-icon: url(:/ads/images/vs-pin-button.svg);
-	qproperty-iconSize: 16px;
-}
-
-ads--CAutoHideDockContainer #dockAreaAutoHideButton 
-{
-	qproperty-icon: url(:/ads/images/vs-pin-button-pinned.svg);
-	qproperty-iconSize: 16px;
 }
 
 #tabCloseButton {
@@ -171,6 +99,11 @@ ads--CAutoHideDockContainer #dockAreaAutoHideButton
 
 
 /* Focus related styling */
+ads--CDockWidgetTab[focused="true"] {
+        background: palette(highlight);
+        border-color: palette(highlight);
+}
+
 ads--CDockWidgetTab[focused="true"]>#tabCloseButton {
         qproperty-icon: url(:/ads/images/close-button-focused.svg)
 }
