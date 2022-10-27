@@ -54,6 +54,7 @@ struct DockAreaWidgetPrivate;
 class CIconProvider;
 class CDockComponentsFactory;
 class CDockFocusController;
+class CSideTabBar;
 
 /**
  * The central dock manager that maintains the complete docking system.
@@ -85,6 +86,7 @@ private:
 	friend struct FloatingDragPreviewPrivate;
 	friend class CDockAreaTitleBar;
 	friend class CAutoHideDockContainer;
+	friend CSideTabBar;
 
 
 protected:

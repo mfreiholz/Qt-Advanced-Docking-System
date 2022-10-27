@@ -1099,7 +1099,7 @@ void CDockAreaWidget::toggleAutoHideArea(bool Enable)
 				continue;
 			}
 
-			dockContainer()->createAndInitializeAutoHideDockWidgetContainer(area, DockWidget, DockWidget->autoHideInsertOrder());
+			dockContainer()->createAndSetupAutoHideContainer(area, DockWidget, DockWidget->autoHideInsertOrder());
 		}
 	}
 	else
@@ -1109,7 +1109,7 @@ void CDockAreaWidget::toggleAutoHideArea(bool Enable)
 		{
 			return;
 		}
-		dockContainer()->createAndInitializeAutoHideDockWidgetContainer(area, DockWidget, DockWidget->autoHideInsertOrder());
+		dockContainer()->createAndSetupAutoHideContainer(area, DockWidget, DockWidget->autoHideInsertOrder());
 	}
 }
 

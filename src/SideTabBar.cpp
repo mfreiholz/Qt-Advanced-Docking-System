@@ -30,13 +30,16 @@
 //                                   INCLUDES
 //============================================================================
 #include "SideTabBar.h"
-#include "DockContainerWidget.h"
-#include "DockWidgetSideTab.h"
-#include "DockWidgetTab.h"
 
 #include <QBoxLayout>
 #include <QStyleOption>
 #include <QPainter>
+
+#include "DockContainerWidget.h"
+#include "DockWidgetSideTab.h"
+#include "DockWidgetTab.h"
+#include "DockFocusController.h"
+#include "AutoHideDockContainer.h"
 
 namespace ads
 {
@@ -127,6 +130,35 @@ void CSideTabBar::insertSideTab(int Index, CDockWidgetSideTab* SideTab)
     d->TabsLayout->insertWidget(Index, SideTab);
     SideTab->setSideTabBar(this);
     show();
+}
+
+
+//============================================================================
+CAutoHideDockContainer* CSideTabBar::insertDockWidget(int Index, CDockWidget* DockWidget)
+{
+	CDockWidgetSideTab* Tab = new CDockWidgetSideTab(DockWidget);
+	auto area = sideTabBarArea();
+	qDebug() << "area " << area;
+    Tab->setSideTabBar(this);
+	Tab->updateOrientationAndSpacing(area);
+	d->TabsLayout->insertWidget(Index, Tab);
+    Tab->show();
+
+	auto AutoHideContainer = new CAutoHideDockContainer(DockWidget, area, d->ContainerWidget);
+	AutoHideContainer->hide();
+	DockWidget->dockManager()->dockFocusController()->clearDockWidgetFocus(DockWidget);
+	Tab->updateStyle();
+
+	connect(Tab, &CDockWidgetSideTab::pressed, AutoHideContainer, &CAutoHideDockContainer::toggleCollapseState);
+	show();
+	return AutoHideContainer;
+}
+
+
+//============================================================================
+void CSideTabBar::removeDockWidget(CDockWidget* DockWidget)
+{
+
 }
 
 

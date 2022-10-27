@@ -100,7 +100,7 @@ protected:
 	 * Initializing inserts the tabs into the side tab widget and hides it
 	 * Returns nullptr if you try and insert into an area where the configuration is not enabled
 	 */
-	CAutoHideDockContainer* createAndInitializeAutoHideDockWidgetContainer(
+	CAutoHideDockContainer* createAndSetupAutoHideContainer(
 		SideBarLocation area, CDockWidget* DockWidget, CDockWidget::eAutoHideInsertOrder insertOrder);
 
 	/**

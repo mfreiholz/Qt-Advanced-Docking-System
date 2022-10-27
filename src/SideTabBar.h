@@ -38,6 +38,7 @@ namespace ads
 struct SideTabBarPrivate;
 class CDockContainerWidget;
 class CDockWidgetSideTab;
+class CAutoHideDockContainer;
 
 /**
  * Side tab widget that is shown at the edges of a dock container.
@@ -78,6 +79,16 @@ public:
 	 * Removes the given DockWidgetSideTab from the tabbar
 	 */
 	void removeSideTab(CDockWidgetSideTab* SideTab);
+
+	/**
+	 * Insert dock widget
+	 */
+	CAutoHideDockContainer* insertDockWidget(int Index, CDockWidget* DockWidget);
+
+	/**
+	 * Remove dock widget from sidebar
+	 */
+	void removeDockWidget(CDockWidget* DockWidget);
 
 	/**
 	 * Returns orientation of side tab.

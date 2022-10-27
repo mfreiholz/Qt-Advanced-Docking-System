@@ -718,6 +718,8 @@ QByteArray CDockManager::saveState(int version) const
 		s.writeEndElement();
     s.writeEndDocument();
 
+    std::cout << xmldata.toStdString() << std::endl;
+
     return ConfigFlags.testFlag(XmlCompressionEnabled)
     	? qCompress(xmldata, 9) : xmldata;
 }
@@ -878,7 +880,7 @@ CAutoHideDockContainer* CDockManager::addAutoHideDockWidgetToContainer(SideBarLo
 	CDockContainerWidget* DockContainerWidget, CDockWidget::eAutoHideInsertOrder insertOrder)
 {
 	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
-	auto container = DockContainerWidget->createAndInitializeAutoHideDockWidgetContainer(area, Dockwidget, insertOrder);
+	auto container = DockContainerWidget->createAndSetupAutoHideContainer(area, Dockwidget, insertOrder);
 	container->collapseView(true);
 
 	Q_EMIT dockWidgetAdded(Dockwidget);

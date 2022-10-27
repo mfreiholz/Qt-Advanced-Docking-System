@@ -291,10 +291,16 @@ void CAutoHideDockContainer::addDockWidget(CDockWidget* DockWidget)
     }
 	d->DockArea->addDockWidget(DockWidget);
 	d->DockWidget->sideTabWidget()->updateOrientationAndSpacing(d->SideTabBarArea);
-	// The initial size should be a little bit bigger than the original dock
-	// area size to prevent that the resize handle of this auto hid dock area
-	// is near of the splitter of the old dock area.
-	d->Size = OldDockArea->size() + QSize(16, 16);
+
+	// Prevent overriding of d->Size parameter when this function is called during
+	// state restoring
+	if (!DockWidget->dockManager()->isRestoringState())
+	{
+		// The initial size should be a little bit bigger than the original dock
+		// area size to prevent that the resize handle of this auto hid dock area
+		// is near of the splitter of the old dock area.
+		d->Size = OldDockArea->size() + QSize(16, 16);
+	}
 
 	updateSize();
 }
@@ -343,7 +349,6 @@ void CAutoHideDockContainer::cleanupAndDelete()
 //============================================================================
 void CAutoHideDockContainer::saveState(QXmlStreamWriter& s)
 {
-    s.writeAttribute("SideTabBarArea", QString::number(sideTabBarArea())); 
     s.writeAttribute("Size", QString::number(d->isHorizontal() ? d->Size.height() : d->Size.width()));
 
     qDebug() << ": saveState Size: " << d->Size;
