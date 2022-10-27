@@ -216,30 +216,30 @@ void CAutoHideDockContainer::updateSize()
 	switch (sideTabBarArea())
 	{
 	case SideBarLocation::Top:
-		 move(rect.topLeft());
 		 resize(rect.width(), qMin(rect.height(), d->Size.height()));
+		 move(rect.topLeft());
 		 break;
 
 	case SideBarLocation::Left:
-		 move(rect.topLeft());
 		 resize(qMin(d->Size.width(), rect.width()), rect.height());
+		 move(rect.topLeft());
 		 break;
 
 	case SideBarLocation::Right:
 		 {
+			 resize(qMin(d->Size.width(), rect.width()), rect.height());
 			 QPoint p = rect.topRight();
 			 p.rx() -= (width() - 1);
 			 move(p);
-			 resize(qMin(d->Size.width(), rect.width()), rect.height());
 		 }
 		 break;
 
 	case SideBarLocation::Bottom:
 		 {
+			 resize(rect.width(), qMin(rect.height(), d->Size.height()));
 			 QPoint p = rect.bottomLeft();
 			 p.ry() -= (height() - 1);
 			 move(p);
-			 resize(rect.width(), qMin(rect.height(), d->Size.height()));
 		 }
 		 break;
 	}
@@ -404,18 +404,14 @@ void CAutoHideDockContainer::collapseView(bool Enable)
 	if (Enable)
 	{
 		hide();
-		d->DockArea->hide();
-		d->DockWidget->hide();
 		qApp->removeEventFilter(this);
 	}
 	else
 	{
+		updateSize();
 		d->updateResizeHandleSizeLimitMax();
 		raise();
 		show();
-		d->DockArea->show();
-		d->DockWidget->show();
-		updateSize();
 		d->DockManager->setDockWidgetFocused(d->DockWidget);
 		qApp->installEventFilter(this);
 	}
