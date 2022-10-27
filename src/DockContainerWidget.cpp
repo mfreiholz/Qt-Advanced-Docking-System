@@ -1065,17 +1065,17 @@ bool DockContainerWidgetPrivate::restoreAutoHideDockArea(CDockingStateReader& s,
 	}
 
 	CDockAreaWidget* DockArea = nullptr;
-	CAutoHideDockContainer* dockContainer = nullptr;
+	CAutoHideDockContainer* AutoHideContainer = nullptr;
 	if (!Testing)
 	{
-		dockContainer = new CAutoHideDockContainer(DockManager, area, _this);
-		if (!dockContainer->restoreState(s, Testing))
+		AutoHideContainer = new CAutoHideDockContainer(DockManager, area, _this);
+		if (!AutoHideContainer->restoreState(s, Testing))
 		{
 			return false;
 		}
 
-        dockContainer->hide();
-        DockArea = dockContainer->dockAreaWidget();
+        AutoHideContainer->hide();
+        DockArea = AutoHideContainer->dockAreaWidget();
 		DockArea->updateAutoHideButtonCheckState();
         DockArea->updateTitleBarButtonToolTip();
 	}
@@ -1120,9 +1120,9 @@ bool DockContainerWidgetPrivate::restoreAutoHideDockArea(CDockingStateReader& s,
 		DockArea->autoHideDockContainer()->toggleView(!Closed);
 	}
 
-	if (dockContainer && !dockContainer->dockWidget())
+	if (AutoHideContainer && !AutoHideContainer->dockWidget())
 	{
-		dockContainer->cleanupAndDelete();
+		AutoHideContainer->cleanupAndDelete();
 	}
 
 	return true;

@@ -103,7 +103,6 @@ struct AutoHideDockContainerPrivate
     CAutoHideDockContainer* _this;
 	CDockAreaWidget* DockArea{nullptr};
 	CDockWidget* DockWidget{nullptr};
-	QPointer<CDockManager> DockManager{nullptr};
 	SideBarLocation SideTabBarArea;
 	QBoxLayout* Layout;
 	CResizeHandle* ResizeHandle = nullptr;
@@ -172,7 +171,6 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, SideBa
     Super(parent),
     d(new AutoHideDockContainerPrivate(this))
 {
-	d->DockManager = DockManager;
 	d->SideTabBarArea = area;
 	d->DockArea = new CDockAreaWidget(DockManager, parent);
 	d->DockArea->setObjectName("autoHideDockArea");
@@ -254,7 +252,7 @@ CAutoHideDockContainer::~CAutoHideDockContainer()
 
 	// Remove event filter in case there are any queued messages
 	qApp->removeEventFilter(this);
-	if (d->DockManager)
+	if (parentContainer())
 	{
 		parentContainer()->removeAutoHideWidget(this);
 	}
@@ -424,7 +422,7 @@ void CAutoHideDockContainer::collapseView(bool Enable)
 		d->updateResizeHandleSizeLimitMax();
 		raise();
 		show();
-		d->DockManager->setDockWidgetFocused(d->DockWidget);
+		d->DockWidget->dockManager()->setDockWidgetFocused(d->DockWidget);
 		qApp->installEventFilter(this);
 	}
 
