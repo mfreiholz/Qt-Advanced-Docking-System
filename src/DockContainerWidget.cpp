@@ -853,6 +853,7 @@ void DockContainerWidgetPrivate::addDockAreasToList(const QList<CDockAreaWidget*
 //============================================================================
 void DockContainerWidgetPrivate::appendDockAreas(const QList<CDockAreaWidget*> NewDockAreas)
 {
+	qDebug() << "DockContainerWidgetPrivate::appendDockAreas";
 	DockAreas.append(NewDockAreas);
 	for (auto DockArea : NewDockAreas)
 	{
@@ -898,6 +899,8 @@ void DockContainerWidgetPrivate::saveChildNodesState(QXmlStreamWriter& s, QWidge
 	}
 }
 
+
+//============================================================================
 void DockContainerWidgetPrivate::saveAutoHideWidgetsState(QXmlStreamWriter& s)
 {
 	for (const auto sideTabBar : SideTabBarWidgets.values())
@@ -1730,7 +1733,15 @@ void CDockContainerWidget::addDockArea(CDockAreaWidget* DockAreaWidget,
 //============================================================================
 void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 {
+	qDebug() << "CDockContainerWidget::removeDockArea " << d->DockAreas.contains(area);
     ADS_PRINT("CDockContainerWidget::removeDockArea");
+    // If it is an auto hide area, then there is nothing much to do
+	if (area->isAutoHide())
+	{
+        area->setAutoHideDockContainer(nullptr);
+		return;
+	}
+
 	area->disconnect(this);
 	d->DockAreas.removeAll(area);
 	CDockSplitter* Splitter = internal::findParent<CDockSplitter*>(area);
@@ -1744,24 +1755,6 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 	auto p = std::find(std::begin(d->LastAddedAreaCache), std::end(d->LastAddedAreaCache), area);
 	if (p != std::end(d->LastAddedAreaCache)) {
 		*p = nullptr;
-	}
-
-	if (area->isAutoHide())
-	{
-		// Removing an area from an auto hide container widget implies deleting the whole auto hide widget
-		// So cleanup will be done when the auto hide container widget is deleted
-		// Note: there is no parent splitter
-        CDockWidget* TopLevelWidget = topLevelDockWidget();
-
-        // Updated the title bar visibility of the dock widget if there is only
-        // one single visible dock widget
-        CDockWidget::emitTopLevelEventForWidget(TopLevelWidget, true);
-        dumpLayout();
-        d->emitDockAreasRemoved();
-        area->setAutoHideDockContainer(nullptr);
-		area->updateAutoHideButtonCheckState();
-        area->updateTitleBarButtonToolTip();
-		return;
 	}
 
 	// If splitter has more than 1 widgets, we are finished and can leave
@@ -1953,6 +1946,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 void CDockContainerWidget::dropWidget(QWidget* Widget, DockWidgetArea DropArea, CDockAreaWidget* TargetAreaWidget)
 {
     CDockWidget* SingleDockWidget = topLevelDockWidget();
+    qDebug() << "CDockContainerWidget::dropWidget";
 	if (TargetAreaWidget)
 	{
 		d->moveToNewSection(Widget, TargetAreaWidget, DropArea);

@@ -211,7 +211,6 @@ void CAutoHideDockContainer::updateSize()
 {
 	auto dockContainerParent = parentContainer();
 	auto rect = dockContainerParent->contentRect();
-	qDebug() << "Size " << d->Size;
 
 	switch (sideTabBarArea())
 	{
@@ -248,6 +247,7 @@ void CAutoHideDockContainer::updateSize()
 //============================================================================
 CAutoHideDockContainer::~CAutoHideDockContainer()
 {
+	qDebug() << "~CAutoHideDockContainer()"
 	ADS_PRINT("~CAutoHideDockContainer");
 
 	// Remove event filter in case there are any queued messages
@@ -323,8 +323,8 @@ void CAutoHideDockContainer::moveContentsToParent()
 	// If we unpin the auto hide tock widget, then we insert it into the same
 	// location like it had as a auto hide widget.  This brings the least surprise
 	// to the user and he does not have to search where the widget was inserted.
+	d->DockWidget->setDockArea(nullptr);
 	parentContainer()->addDockWidget(d->getDockWidgetArea(d->SideTabBarArea), d->DockWidget);
-    parentContainer()->removeDockArea(d->DockArea);
 }
 
 
