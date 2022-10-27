@@ -867,13 +867,15 @@ CDockAreaWidget* CDockManager::addDockWidgetToContainer(DockWidgetArea area,
 }
 
 //============================================================================
-CAutoHideDockContainer* CDockManager::addAutoHideDockWidget(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockWidget::eAutoHideInsertOrder insertOrder)
+CAutoHideDockContainer* CDockManager::addAutoHideDockWidget(SideBarLocation area, CDockWidget* Dockwidget,
+	CDockWidget::eAutoHideInsertOrder insertOrder)
 {
 	return addAutoHideDockWidgetToContainer(area, Dockwidget, this, insertOrder);
 }
 
 //============================================================================
-CAutoHideDockContainer* CDockManager::addAutoHideDockWidgetToContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget, CDockWidget::eAutoHideInsertOrder insertOrder)
+CAutoHideDockContainer* CDockManager::addAutoHideDockWidgetToContainer(SideBarLocation area, CDockWidget* Dockwidget,
+	CDockContainerWidget* DockContainerWidget, CDockWidget::eAutoHideInsertOrder insertOrder)
 {
 	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
 	auto container = DockContainerWidget->createAndInitializeAutoHideDockWidgetContainer(area, Dockwidget, insertOrder);

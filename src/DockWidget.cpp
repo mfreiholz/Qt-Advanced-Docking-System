@@ -344,6 +344,10 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 CDockWidget::~CDockWidget()
 {
 	ADS_PRINT("~CDockWidget()");
+	if (d->SideTabWidget)
+	{
+		delete d->SideTabWidget;
+	}
 	delete d;
 }
 

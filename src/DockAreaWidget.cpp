@@ -867,6 +867,7 @@ void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 	auto CurrentDockWidget = currentDockWidget();
 	QString Name = CurrentDockWidget ? CurrentDockWidget->objectName() : "";
 	s.writeAttribute("Current", Name);
+
 	// To keep the saved XML data small, we only save the allowed areas and the
 	// dock area flags if the values are different from the default values
 	if (isAutoHide())

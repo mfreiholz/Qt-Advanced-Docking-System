@@ -53,7 +53,7 @@ class CDockingStateReader;
 class ADS_EXPORT CAutoHideDockContainer : public QFrame
 {
 	Q_OBJECT
-	Q_PROPERTY(int sideTabBarArea READ sideTabBarArea)
+	Q_PROPERTY(ads::SideBarLocation sideTabBarArea READ sideTabBarArea)
 private:
 	AutoHideDockContainerPrivate* d; ///< private data (pimpl)
 	friend struct AutoHideDockContainerPrivate;
@@ -70,12 +70,12 @@ public:
 	/**
 	 * Create Auto Hide widget with a dock manager
 	 */
-    CAutoHideDockContainer(CDockManager* DockManager, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent);
+    CAutoHideDockContainer(CDockManager* DockManager, SideBarLocation area, CDockContainerWidget* parent);
 
     /**
 	 * Create Auto Hide widget with the given dock widget
 	 */
-	CAutoHideDockContainer(CDockWidget* DockWidget, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent);
+	CAutoHideDockContainer(CDockWidget* DockWidget, SideBarLocation area, CDockContainerWidget* parent);
 
 	/**
 	 * Virtual Destructor
@@ -100,7 +100,7 @@ public:
 	/**
 	 * Returns the side tab bar area of this Auto Hide dock container
 	 */
-	CDockWidgetSideTab::SideTabBarArea sideTabBarArea() const;
+	SideBarLocation sideTabBarArea() const;
 
 	/**
 	 * Returns the dock area widget of this Auto Hide dock container

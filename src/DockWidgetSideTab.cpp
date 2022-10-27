@@ -98,6 +98,7 @@ CDockWidgetSideTab::CDockWidgetSideTab(CDockWidget* DockWidget, QWidget* parent)
 //============================================================================
 CDockWidgetSideTab::~CDockWidgetSideTab()
 {
+	qDebug() << "~CDockWidgetSideTab()";
 	delete d;
 }
 
@@ -111,7 +112,7 @@ void CDockWidgetSideTab::updateStyle()
 
 
 //============================================================================
-CDockWidgetSideTab::SideTabBarArea CDockWidgetSideTab::sideTabBarArea() const
+SideBarLocation CDockWidgetSideTab::sideTabBarArea() const
 {
 	auto dockAreaWidget = d->DockWidget->dockAreaWidget();
 	if (dockAreaWidget && dockAreaWidget->isAutoHide())
@@ -141,7 +142,7 @@ Qt::Orientation CDockWidgetSideTab::orientation() const
 
 
 //============================================================================
-void CDockWidgetSideTab::updateOrientationAndSpacing(SideTabBarArea area)
+void CDockWidgetSideTab::updateOrientationAndSpacing(SideBarLocation area)
 {
 	setOrientation((area == Bottom || area == Top) ? Qt::Horizontal : Qt::Vertical);
 

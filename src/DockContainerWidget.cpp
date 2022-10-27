@@ -139,7 +139,7 @@ public:
 	unsigned int zOrderIndex = 0;
 	QList<CDockAreaWidget*> DockAreas;
 	QList<CAutoHideDockContainer*> AutoHideWidgets;
-	QMap<CDockWidgetSideTab::SideTabBarArea, CSideTabBar*> SideTabBarWidgets;
+	QMap<SideBarLocation, CSideTabBar*> SideTabBarWidgets;
 	QGridLayout* Layout = nullptr;
 	QSplitter* RootSplitter = nullptr;
 	bool isFloating = false;
@@ -255,7 +255,7 @@ public:
      * Assumes that there are no auto hidden dock areas, and then restores all the dock areas that
      * exist in the XML
 	 */
-    bool restoreAutoHideDockArea(CDockingStateReader& s, CDockWidgetSideTab::SideTabBarArea area, bool Testing);
+    bool restoreAutoHideDockArea(CDockingStateReader& s, SideBarLocation area, bool Testing);
 
 	/**
 	 * Restores either a dock area or an auto hide dock area depending on the value in the XML
@@ -1033,7 +1033,7 @@ bool DockContainerWidgetPrivate::restoreSplitter(CDockingStateReader& s,
 }
 
 //============================================================================
-bool DockContainerWidgetPrivate::restoreAutoHideDockArea(CDockingStateReader& s, CDockWidgetSideTab::SideTabBarArea area, bool Testing)
+bool DockContainerWidgetPrivate::restoreAutoHideDockArea(CDockingStateReader& s, SideBarLocation area, bool Testing)
 {
 	bool Ok;
 #ifdef ADS_DEBUG_PRINT
@@ -1126,7 +1126,7 @@ bool DockContainerWidgetPrivate::restoreDockOrAutoHideDockArea(CDockingStateRead
 	const auto sideTabAreaValue = Stream.attributes().value("SideTabBarArea");
 	if (!sideTabAreaValue.isNull())
 	{
-        auto sideTabBarArea = static_cast<CDockWidgetSideTab::SideTabBarArea>(sideTabAreaValue.toInt(&Ok));
+        auto sideTabBarArea = static_cast<SideBarLocation>(sideTabAreaValue.toInt(&Ok));
         if (!Ok)
         {
             return false;
@@ -1500,7 +1500,8 @@ CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockW
 
 
 //============================================================================
-CAutoHideDockContainer* CDockContainerWidget::createAndInitializeAutoHideDockWidgetContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget, CDockWidget::eAutoHideInsertOrder insertOrder)
+CAutoHideDockContainer* CDockContainerWidget::createAndInitializeAutoHideDockWidgetContainer(
+	SideBarLocation area, CDockWidget* DockWidget, CDockWidget::eAutoHideInsertOrder insertOrder)
 {
 	if (d->DockManager != DockWidget->dockManager())
 	{
@@ -1546,7 +1547,7 @@ enum eBorderLocation
 
 
 //============================================================================
-CDockWidgetSideTab::SideTabBarArea CDockContainerWidget::calculateSideTabBarArea(CDockAreaWidget* DockAreaWidget)
+SideBarLocation CDockContainerWidget::calculateSideTabBarArea(CDockAreaWidget* DockAreaWidget)
 {
 
 	auto ContentRect = this->contentRect();
@@ -1562,62 +1563,62 @@ CDockWidgetSideTab::SideTabBarArea CDockContainerWidget::calculateSideTabBarArea
 	// measure border distances - a distance less than 16 px means we touch the
 	// border
 	int BorderDistance[4];
+
 	int Distance = qAbs(ContentRect.topLeft().y() - DockAreaRect.topLeft().y());
-	BorderDistance[CDockWidgetSideTab::Top] = (Distance < MinBorderDistance) ? 0 : Distance;
-	if (!BorderDistance[CDockWidgetSideTab::Top])
+	BorderDistance[SideBarLocation::Top] = (Distance < MinBorderDistance) ? 0 : Distance;
+	if (!BorderDistance[SideBarLocation::Top])
 	{
 		borders |= BorderTop;
 	}
-	qDebug() << "BorderDistance[CDockWidgetSideTab::Top] " << BorderDistance[CDockWidgetSideTab::Top];
+
 	Distance = qAbs(ContentRect.bottomRight().y() - DockAreaRect.bottomRight().y());
-	BorderDistance[CDockWidgetSideTab::Bottom] = (Distance < MinBorderDistance) ? 0 : Distance;
-	if (!BorderDistance[CDockWidgetSideTab::Bottom])
+	BorderDistance[SideBarLocation::Bottom] = (Distance < MinBorderDistance) ? 0 : Distance;
+	if (!BorderDistance[SideBarLocation::Bottom])
 	{
 		borders |= BorderBottom;
 	}
-	qDebug() << "BorderDistance[CDockWidgetSideTab::Bottom] " << BorderDistance[CDockWidgetSideTab::Bottom];
+
 	Distance = qAbs(ContentRect.topLeft().x() - DockAreaRect.topLeft().x());
-	BorderDistance[CDockWidgetSideTab::Left] = (Distance < MinBorderDistance) ? 0 : Distance;
-	if (!BorderDistance[CDockWidgetSideTab::Left])
+	BorderDistance[SideBarLocation::Left] = (Distance < MinBorderDistance) ? 0 : Distance;
+	if (!BorderDistance[SideBarLocation::Left])
 	{
 		borders |= BorderLeft;
 	}
-	qDebug() << "BorderDistance[CDockWidgetSideTab::Left] " << BorderDistance[CDockWidgetSideTab::Left];
+
 	Distance = qAbs(ContentRect.bottomRight().x() - DockAreaRect.bottomRight().x());
-	BorderDistance[CDockWidgetSideTab::Right] = (Distance < MinBorderDistance) ? 0 : Distance;
-	if (!BorderDistance[CDockWidgetSideTab::Right])
+	BorderDistance[SideBarLocation::Right] = (Distance < MinBorderDistance) ? 0 : Distance;
+	if (!BorderDistance[SideBarLocation::Right])
 	{
 		borders |= BorderRight;
 	}
-	qDebug() << "BorderDistance[CDockWidgetSideTab::Right] " << BorderDistance[CDockWidgetSideTab::Right];
 
-	auto SideTab = CDockWidgetSideTab::Right;
+	auto SideTab = SideBarLocation::Right;
 	switch (borders)
 	{
 	// 1. It's touching all borders
-	case BorderAll: SideTab = HorizontalOrientation ? CDockWidgetSideTab::Bottom : CDockWidgetSideTab::Right; break;
+	case BorderAll: SideTab = HorizontalOrientation ? SideBarLocation::Bottom : SideBarLocation::Right; break;
 
 	// 2. It's touching 3 borders
-	case BorderVerticalBottom : SideTab = CDockWidgetSideTab::Bottom; break;
-	case BorderVerticalTop : SideTab = CDockWidgetSideTab::Top; break;
-	case BorderHorizontalLeft: SideTab = CDockWidgetSideTab::Left; break;
-	case BorderHorizontalRight: SideTab = CDockWidgetSideTab::Right; break;
+	case BorderVerticalBottom : SideTab = SideBarLocation::Bottom; break;
+	case BorderVerticalTop : SideTab = SideBarLocation::Top; break;
+	case BorderHorizontalLeft: SideTab = SideBarLocation::Left; break;
+	case BorderHorizontalRight: SideTab = SideBarLocation::Right; break;
 
 	// 3. Its touching horizontal or vertical borders
-	case BorderVertical : SideTab = CDockWidgetSideTab::Bottom; break;
-	case BorderHorizontal: SideTab = CDockWidgetSideTab::Right; break;
+	case BorderVertical : SideTab = SideBarLocation::Bottom; break;
+	case BorderHorizontal: SideTab = SideBarLocation::Right; break;
 
 	// 4. Its in a corner
-	case BorderTopLeft : SideTab = HorizontalOrientation ? CDockWidgetSideTab::Top : CDockWidgetSideTab::Left; break;
-	case BorderTopRight : SideTab = HorizontalOrientation ? CDockWidgetSideTab::Top : CDockWidgetSideTab::Right; break;
-	case BorderBottomLeft : SideTab = HorizontalOrientation ? CDockWidgetSideTab::Bottom : CDockWidgetSideTab::Left; break;
-	case BorderBottomRight : SideTab = HorizontalOrientation ? CDockWidgetSideTab::Bottom : CDockWidgetSideTab::Right; break;
+	case BorderTopLeft : SideTab = HorizontalOrientation ? SideBarLocation::Top : SideBarLocation::Left; break;
+	case BorderTopRight : SideTab = HorizontalOrientation ? SideBarLocation::Top : SideBarLocation::Right; break;
+	case BorderBottomLeft : SideTab = HorizontalOrientation ? SideBarLocation::Bottom : SideBarLocation::Left; break;
+	case BorderBottomRight : SideTab = HorizontalOrientation ? SideBarLocation::Bottom : SideBarLocation::Right; break;
 
 	// 5 Ists touching only one border
-	case BorderLeft: SideTab = CDockWidgetSideTab::Left; break;
-	case BorderRight: SideTab = CDockWidgetSideTab::Right; break;
-	case BorderTop: SideTab = CDockWidgetSideTab::Top; break;
-	case BorderBottom: SideTab = CDockWidgetSideTab::Bottom; break;
+	case BorderLeft: SideTab = SideBarLocation::Left; break;
+	case BorderRight: SideTab = SideBarLocation::Right; break;
+	case BorderTop: SideTab = SideBarLocation::Top; break;
+	case BorderBottom: SideTab = SideBarLocation::Bottom; break;
 	}
 
 	return SideTab;
@@ -2016,7 +2017,7 @@ bool CDockContainerWidget::restoreState(CDockingStateReader& s, bool Testing)
 	bool IsFloating = s.attributes().value("Floating").toInt();
     ADS_PRINT("Restore CDockContainerWidget Floating" << IsFloating);
 
-	QWidget*NewRootSplitter {};
+	QWidget* NewRootSplitter {};
 	if (!Testing)
 	{
 		d->VisibleDockAreaCount = -1;// invalidate the dock area count
@@ -2098,25 +2099,25 @@ void CDockContainerWidget::createRootSplitter()
 void CDockContainerWidget::createSideTabBarWidgets()
 {
 	{
-		auto Area = CDockWidgetSideTab::Left;
+		auto Area = SideBarLocation::Left;
         d->SideTabBarWidgets[Area] = new CSideTabBar(this, Area);
 		d->Layout->addWidget(d->SideTabBarWidgets[Area], 1, 0);
 	}
 
 	{
-		auto Area = CDockWidgetSideTab::Right;
+		auto Area = SideBarLocation::Right;
         d->SideTabBarWidgets[Area] = new CSideTabBar(this, Area);
 		d->Layout->addWidget(d->SideTabBarWidgets[Area], 1, 2);
 	}
 
 	{
-		auto Area = CDockWidgetSideTab::Bottom;
+		auto Area = SideBarLocation::Bottom;
         d->SideTabBarWidgets[Area] = new CSideTabBar(this, Area);
         d->Layout->addWidget(d->SideTabBarWidgets[Area], 2, 1);
 	}
 
 	{
-		auto Area = CDockWidgetSideTab::Top;
+		auto Area = SideBarLocation::Top;
         d->SideTabBarWidgets[Area] = new CSideTabBar(this, Area);
         d->Layout->addWidget(d->SideTabBarWidgets[Area], 0, 1);
 	}
@@ -2267,7 +2268,7 @@ void CDockContainerWidget::closeOtherAreas(CDockAreaWidget* KeepOpenArea)
 }
 
 //============================================================================
-CSideTabBar* CDockContainerWidget::sideTabBar(CDockWidgetSideTab::SideTabBarArea area) const
+CSideTabBar* CDockContainerWidget::sideTabBar(SideBarLocation area) const
 {
 	return d->SideTabBarWidgets[area];
 }

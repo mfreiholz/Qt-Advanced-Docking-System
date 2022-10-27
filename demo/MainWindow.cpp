@@ -650,7 +650,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	// uncomment the following line to enable focus highlighting of the dock
 	// widget that has the focus
-	CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
+	//CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
 
 	// uncomment if you would like to enable dock widget auto hiding
     CDockManager::setConfigFlag(CDockManager::DefaultAutoHideConfig, true);
@@ -748,7 +748,7 @@ void CMainWindow::onViewToggled(bool Open)
 		return;
 	}
 
-	qDebug() << DockWidget->objectName() << " viewToggled(" << Open << ")";
+	//qDebug() << DockWidget->objectName() << " viewToggled(" << Open << ")";
 }
 
 

@@ -54,7 +54,7 @@ struct SideTabBarPrivate
     CDockContainerWidget* ContainerWidget;
     QBoxLayout* TabsLayout;
     Qt::Orientation Orientation;
-    CDockWidgetSideTab::SideTabBarArea SideTabArea = CDockWidgetSideTab::Left;
+    SideBarLocation SideTabArea = SideBarLocation::Left;
 
     /**
      * Convenience function to check if this is a horizontal side bar
@@ -73,13 +73,13 @@ SideTabBarPrivate::SideTabBarPrivate(CSideTabBar* _public) :
 
 
 //============================================================================
-CSideTabBar::CSideTabBar(CDockContainerWidget* parent, CDockWidgetSideTab::SideTabBarArea area) :
+CSideTabBar::CSideTabBar(CDockContainerWidget* parent, SideBarLocation area) :
     Super(parent),
     d(new SideTabBarPrivate(this))
 {
 	d->SideTabArea = area;
     d->ContainerWidget = parent;
-    d->Orientation = (area == CDockWidgetSideTab::Bottom || area == CDockWidgetSideTab::Top)
+    d->Orientation = (area == SideBarLocation::Bottom || area == SideBarLocation::Top)
     	? Qt::Horizontal : Qt::Vertical;
 
     auto mainLayout = new QBoxLayout(d->Orientation == Qt::Vertical ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
@@ -126,6 +126,7 @@ void CSideTabBar::insertSideTab(int Index, CDockWidgetSideTab* SideTab)
 //============================================================================
 void CSideTabBar::removeSideTab(CDockWidgetSideTab* SideTab)
 {
+	qDebug() << "CSideTabBar::removeSideTab " << SideTab->text();
     d->TabsLayout->removeWidget(SideTab);
     if (d->TabsLayout->isEmpty())
     {
@@ -168,7 +169,7 @@ int CSideTabBar::tabCount() const
 
 
 //============================================================================
-CDockWidgetSideTab::SideTabBarArea  CSideTabBar::sideTabBarArea() const
+SideBarLocation CSideTabBar::sideTabBarArea() const
 {
 	return d->SideTabArea;
 }

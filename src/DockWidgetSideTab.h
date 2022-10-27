@@ -50,7 +50,7 @@ class ADS_EXPORT CDockWidgetSideTab : public CPushButton
 {
     Q_OBJECT
 
-    Q_PROPERTY(SideTabBarArea sideTabBarArea READ sideTabBarArea)
+    Q_PROPERTY(ads::SideBarLocation sideTabBarArea READ sideTabBarArea)
     Q_PROPERTY(Qt::Orientation orientation READ orientation)
 	Q_PROPERTY(bool activeTab READ isActiveTab)
 
@@ -70,18 +70,6 @@ protected:
 
 public:
     using Super = CPushButton;
-
-    /**
-     * Dock widget side tab bar locations
-     */
-    enum SideTabBarArea
-    {
-		Top,
-        Left,
-        Right,
-        Bottom
-    };
-	Q_ENUM(SideTabBarArea)
 
 	/**
 	 * Default Constructor
@@ -103,7 +91,7 @@ public:
 	/**
 	 * Getter for side tab bar area property
 	 */
-	SideTabBarArea sideTabBarArea() const;
+	SideBarLocation sideTabBarArea() const;
 
 	/**
 	 * Set orientation vertical or horizontal
@@ -118,7 +106,7 @@ public:
 	/**
 	 * Update the orientation, visibility and spacing based on the area and the config
 	 */
-	void updateOrientationAndSpacing(SideTabBarArea area);
+	void updateOrientationAndSpacing(SideBarLocation area);
 
 	/**
 	 * Returns true, if this is the active tab. The tab is active if the auto hide widget is visible

@@ -100,7 +100,8 @@ protected:
 	 * Initializing inserts the tabs into the side tab widget and hides it
 	 * Returns nullptr if you try and insert into an area where the configuration is not enabled
 	 */
-	CAutoHideDockContainer* createAndInitializeAutoHideDockWidgetContainer(CDockWidgetSideTab::SideTabBarArea area, CDockWidget* DockWidget, CDockWidget::eAutoHideInsertOrder insertOrder);
+	CAutoHideDockContainer* createAndInitializeAutoHideDockWidgetContainer(
+		SideBarLocation area, CDockWidget* DockWidget, CDockWidget::eAutoHideInsertOrder insertOrder);
 
 	/**
 	 * Helper function for creation of the root splitter
@@ -220,7 +221,7 @@ public:
 	/**
 	 * Get's the auto hide dock side tab bar area based on the dock area widget position
 	 */
-	CDockWidgetSideTab::SideTabBarArea calculateSideTabBarArea(CDockAreaWidget* DockAreaWidget);
+	SideBarLocation calculateSideTabBarArea(CDockAreaWidget* DockAreaWidget);
 
 	/**
 	 * Removes dockwidget
@@ -320,7 +321,7 @@ public:
 	/**
 	 * Returns the side tab widget for the given area
 	 */
-	CSideTabBar* sideTabBar(CDockWidgetSideTab::SideTabBarArea area) const;
+	CSideTabBar* sideTabBar(SideBarLocation area) const;
 
 
 	/**

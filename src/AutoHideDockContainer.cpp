@@ -50,14 +50,14 @@ namespace ads
 static const int ResizeMargin = 4;
 
 //============================================================================
-bool static isHorizontalArea(CDockWidgetSideTab::SideTabBarArea Area)
+bool static isHorizontalArea(SideBarLocation Area)
 {
 	switch (Area)
 	{
-	case CDockWidgetSideTab::Top:
-	case CDockWidgetSideTab::Bottom: return true;
-	case CDockWidgetSideTab::Left:
-	case CDockWidgetSideTab::Right: return false;
+	case SideBarLocation::Top:
+	case SideBarLocation::Bottom: return true;
+	case SideBarLocation::Left:
+	case SideBarLocation::Right: return false;
 	}
 
 	return true;
@@ -65,14 +65,14 @@ bool static isHorizontalArea(CDockWidgetSideTab::SideTabBarArea Area)
 
 
 //============================================================================
-Qt::Edge static edgeFromSideTabBarArea(CDockWidgetSideTab::SideTabBarArea Area)
+Qt::Edge static edgeFromSideTabBarArea(SideBarLocation Area)
 {
 	switch (Area)
 	{
-	case CDockWidgetSideTab::Top: return Qt::BottomEdge;
-	case CDockWidgetSideTab::Bottom: return Qt::TopEdge;
-	case CDockWidgetSideTab::Left: return Qt::RightEdge;
-	case CDockWidgetSideTab::Right: return Qt::LeftEdge;
+	case SideBarLocation::Top: return Qt::BottomEdge;
+	case SideBarLocation::Bottom: return Qt::TopEdge;
+	case SideBarLocation::Left: return Qt::RightEdge;
+	case SideBarLocation::Right: return Qt::LeftEdge;
 	}
 
 	return Qt::LeftEdge;
@@ -80,15 +80,15 @@ Qt::Edge static edgeFromSideTabBarArea(CDockWidgetSideTab::SideTabBarArea Area)
 
 
 //============================================================================
-int resizeHandleLayoutPosition(CDockWidgetSideTab::SideTabBarArea Area)
+int resizeHandleLayoutPosition(SideBarLocation Area)
 {
 	switch (Area)
 	{
-	case CDockWidgetSideTab::Bottom:
-	case CDockWidgetSideTab::Right: return 0;
+	case SideBarLocation::Bottom:
+	case SideBarLocation::Right: return 0;
 
-	case CDockWidgetSideTab::Top:
-	case CDockWidgetSideTab::Left: return 1;
+	case SideBarLocation::Top:
+	case SideBarLocation::Left: return 1;
 	}
 
 	return 0;
@@ -104,7 +104,7 @@ struct AutoHideDockContainerPrivate
 	CDockAreaWidget* DockArea{nullptr};
 	CDockWidget* DockWidget{nullptr};
 	QPointer<CDockManager> DockManager{nullptr};
-	CDockWidgetSideTab::SideTabBarArea SideTabBarArea;
+	SideBarLocation SideTabBarArea;
 	QBoxLayout* Layout;
 	CResizeHandle* ResizeHandle = nullptr;
 	QSize Size;
@@ -117,14 +117,14 @@ struct AutoHideDockContainerPrivate
 	/**
 	 * Convenience function to get a dock widget area
 	 */
-	DockWidgetArea getDockWidgetArea(CDockWidgetSideTab::SideTabBarArea area)
+	DockWidgetArea getDockWidgetArea(SideBarLocation area)
 	{
         switch (area)
         {
-            case CDockWidgetSideTab::Left: return LeftDockWidgetArea;
-            case CDockWidgetSideTab::Right: return RightDockWidgetArea;
-            case CDockWidgetSideTab::Bottom: return BottomDockWidgetArea;
-            case CDockWidgetSideTab::Top: return TopDockWidgetArea;
+            case SideBarLocation::Left: return LeftDockWidgetArea;
+            case SideBarLocation::Right: return RightDockWidgetArea;
+            case SideBarLocation::Bottom: return BottomDockWidgetArea;
+            case SideBarLocation::Top: return TopDockWidgetArea;
         }
 
 		return LeftDockWidgetArea;
@@ -168,7 +168,7 @@ CDockContainerWidget* CAutoHideDockContainer::parentContainer() const
 
 
 //============================================================================
-CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent) :
+CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, SideBarLocation area, CDockContainerWidget* parent) :
     Super(parent),
     d(new AutoHideDockContainerPrivate(this))
 {
@@ -200,7 +200,7 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, CDockW
 
 
 //============================================================================
-CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, CDockWidgetSideTab::SideTabBarArea area, CDockContainerWidget* parent) :
+CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, SideBarLocation area, CDockContainerWidget* parent) :
 	CAutoHideDockContainer(DockWidget->dockManager(), area, parent)
 {
 	addDockWidget(DockWidget);
@@ -215,17 +215,17 @@ void CAutoHideDockContainer::updateSize()
 
 	switch (sideTabBarArea())
 	{
-	case CDockWidgetSideTab::Top:
+	case SideBarLocation::Top:
 		 move(rect.topLeft());
 		 resize(rect.width(), qMin(rect.height(), d->Size.height()));
 		 break;
 
-	case CDockWidgetSideTab::Left:
+	case SideBarLocation::Left:
 		 move(rect.topLeft());
 		 resize(qMin(d->Size.width(), rect.width()), rect.height());
 		 break;
 
-	case CDockWidgetSideTab::Right:
+	case SideBarLocation::Right:
 		 {
 			 QPoint p = rect.topRight();
 			 p.rx() -= (width() - 1);
@@ -234,7 +234,7 @@ void CAutoHideDockContainer::updateSize()
 		 }
 		 break;
 
-	case CDockWidgetSideTab::Bottom:
+	case SideBarLocation::Bottom:
 		 {
 			 QPoint p = rect.bottomLeft();
 			 p.ry() -= (height() - 1);
@@ -299,7 +299,7 @@ void CAutoHideDockContainer::addDockWidget(CDockWidget* DockWidget)
 
 
 //============================================================================
-CDockWidgetSideTab::SideTabBarArea CAutoHideDockContainer::sideTabBarArea() const
+SideBarLocation CAutoHideDockContainer::sideTabBarArea() const
 {
 	return d->SideTabBarArea;
 }

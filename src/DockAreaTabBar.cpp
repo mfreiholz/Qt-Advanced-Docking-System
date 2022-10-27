@@ -146,6 +146,7 @@ CDockAreaTabBar::CDockAreaTabBar(CDockAreaWidget* parent) :
 //============================================================================
 CDockAreaTabBar::~CDockAreaTabBar()
 {
+	qDebug() << "~CDockAreaTabBar count " << count();
 	delete d;
 }
 

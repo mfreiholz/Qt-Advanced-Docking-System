@@ -69,6 +69,7 @@ QT_FORWARD_DECLARE_CLASS(QSplitter)
 
 namespace ads
 {
+Q_NAMESPACE
 class CDockSplitter;
 
 enum DockWidgetArea
@@ -128,6 +129,19 @@ enum eBitwiseOperator
 	BitwiseAnd,
 	BitwiseOr
 };
+
+
+/**
+ * Each dock container supports 4 sidbars
+ */
+enum SideBarLocation
+{
+	Top,
+	Left,
+	Right,
+	Bottom
+};
+Q_ENUMS(SideBarLocation);
 
 
 namespace internal

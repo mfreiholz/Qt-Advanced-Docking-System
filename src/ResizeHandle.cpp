@@ -297,7 +297,6 @@ bool CResizeHandle::isResizing() const
 //============================================================================
 void CResizeHandle::setMinResizeSize(int MinSize)
 {
-	qDebug() << "CResizeHandle::setMinResizeSize " << MinSize;
 	d->MinSize = MinSize;
 }
 
@@ -305,7 +304,6 @@ void CResizeHandle::setMinResizeSize(int MinSize)
 //============================================================================
 void CResizeHandle::setMaxResizeSize(int MaxSize)
 {
-	qDebug() << "CResizeHandle::setMaxResizeSize " << MaxSize;
 	d->MaxSize = MaxSize;
 }
 

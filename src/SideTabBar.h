@@ -45,7 +45,7 @@ class CDockWidgetSideTab;
 class ADS_EXPORT CSideTabBar : public QFrame
 {
     Q_OBJECT
-    Q_PROPERTY(int sideTabBarArea READ sideTabBarArea)
+    Q_PROPERTY(ads::SideBarLocation sideTabBarArea READ sideTabBarArea)
     Q_PROPERTY(Qt::Orientation orientation READ orientation)
 
 private:
@@ -62,7 +62,7 @@ public:
 	/**
 	 * Default Constructor
 	 */
-    CSideTabBar(CDockContainerWidget* parent, CDockWidgetSideTab::SideTabBarArea area);
+    CSideTabBar(CDockContainerWidget* parent, SideBarLocation area);
 
 	/**
 	 * Virtual Destructor
@@ -97,7 +97,7 @@ public:
 	/**
 	 * Getter for side tab bar area property
 	 */
-	CDockWidgetSideTab::SideTabBarArea sideTabBarArea() const;
+	SideBarLocation sideTabBarArea() const;
 
 Q_SIGNALS:
 	void sideTabAutoHideToggleRequested();
