@@ -107,7 +107,7 @@ struct AutoHideDockContainerPrivate
 	SideBarLocation SideTabBarArea;
 	QBoxLayout* Layout;
 	CResizeHandle* ResizeHandle = nullptr;
-	QSize Size;
+	QSize Size; // creates invalid size
 
 	/**
 	 * Private data constructor
@@ -194,6 +194,7 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, SideBa
 	d->Layout->insertWidget(resizeHandleLayoutPosition(area), d->ResizeHandle);
 	d->Size = d->DockArea->size();
 
+
 	updateSize();
 	parent->registerAutoHideWidget(this);
 }
@@ -212,6 +213,7 @@ void CAutoHideDockContainer::updateSize()
 {
 	auto dockContainerParent = parentContainer();
 	auto rect = dockContainerParent->contentRect();
+	qDebug() << "Size " << d->Size;
 
 	switch (sideTabBarArea())
 	{
@@ -343,6 +345,9 @@ void CAutoHideDockContainer::saveState(QXmlStreamWriter& s)
 {
     s.writeAttribute("SideTabBarArea", QString::number(sideTabBarArea())); 
     s.writeAttribute("Size", QString::number(d->isHorizontal() ? d->Size.height() : d->Size.width()));
+
+    qDebug() << ": saveState Size: " << d->Size;
+    qDebug() << ": saveState Size " << QString::number(d->isHorizontal() ? d->Size.height() : d->Size.width());
 }
 
 
@@ -368,8 +373,10 @@ bool CAutoHideDockContainer::restoreState(CDockingStateReader& s, bool Testing)
 	else
 	{
 		d->Size.setWidth(Size);
+		qDebug() << ": restoreState Width " << Size;
 	}
 
+	qDebug() << ": restoreState Size: " << d->Size;
 	return true;
 }
 

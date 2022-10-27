@@ -117,9 +117,6 @@ public:
 	 * returns the dock widget this belongs to
 	 */
 	CDockWidget* dockWidget() const;
-
-Q_SIGNALS:
-	void elidedChanged(bool elided);
 }; // class DockWidgetSideTab
 }
  // namespace ads
