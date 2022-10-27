@@ -62,6 +62,7 @@ CPushButton::Orientation CPushButton::buttonOrientation() const
 void CPushButton::setButtonOrientation(Orientation orientation)
 {
     m_Orientation = orientation;
+    updateGeometry();
 }
 } // namespace ads
 
