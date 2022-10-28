@@ -180,7 +180,6 @@ void CSideTabBar::removeSideTab(CDockWidgetSideTab* SideTab)
 //============================================================================
 bool CSideTabBar::event(QEvent* e)
 {
-	qDebug() << e;
 	switch (e->type())
 	{
 	case QEvent::ChildRemoved:
