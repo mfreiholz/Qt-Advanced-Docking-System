@@ -55,7 +55,9 @@ private:
 	friend class DockWidgetSideTab;
 
 protected:
-    void paintEvent(QPaintEvent* event) override;
+    virtual void paintEvent(QPaintEvent* event) override;
+	virtual bool event(QEvent* e) override;
+	virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
 public:
     using Super = QFrame;

@@ -107,6 +107,7 @@ struct AutoHideDockContainerPrivate
 	QBoxLayout* Layout;
 	CResizeHandle* ResizeHandle = nullptr;
 	QSize Size; // creates invalid size
+	CDockWidgetSideTab* SideTab = nullptr;
 
 	/**
 	 * Private data constructor

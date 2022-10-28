@@ -113,6 +113,7 @@ CSideTabBar::CSideTabBar(CDockContainerWidget* parent, SideBarLocation area) :
 //============================================================================
 CSideTabBar::~CSideTabBar() 
 {
+	qDebug() << "~CSideTabBar() ";
 	// The SideTabeBar is not the owner of the tabs and to prevent deletion
 	// we set the parent here to nullptr to remove it from the children
 	auto Tabs = findChildren<CDockWidgetSideTab*>(QString(), Qt::FindDirectChildrenOnly);
@@ -127,6 +128,7 @@ CSideTabBar::~CSideTabBar()
 //============================================================================
 void CSideTabBar::insertSideTab(int Index, CDockWidgetSideTab* SideTab)
 {
+	SideTab->installEventFilter(this);
     d->TabsLayout->insertWidget(Index, SideTab);
     SideTab->setSideTabBar(this);
     show();
@@ -166,11 +168,71 @@ void CSideTabBar::removeDockWidget(CDockWidget* DockWidget)
 void CSideTabBar::removeSideTab(CDockWidgetSideTab* SideTab)
 {
 	qDebug() << "CSideTabBar::removeSideTab " << SideTab->text();
+	SideTab->removeEventFilter(this);
     d->TabsLayout->removeWidget(SideTab);
     if (d->TabsLayout->isEmpty())
     {
     	hide();
     }
+}
+
+
+//============================================================================
+bool CSideTabBar::event(QEvent* e)
+{
+	qDebug() << e;
+	switch (e->type())
+	{
+	case QEvent::ChildRemoved:
+		if (d->TabsLayout->isEmpty())
+		{
+			hide();
+		}
+		break;
+
+	case QEvent::Resize:
+		if (d->TabsLayout->count())
+		{
+			auto ev = static_cast<QResizeEvent*>(e);
+			auto Tab = tabAt(0);
+			int Size = d->isHorizontal() ? ev->size().height() : ev->size().width();
+			int TabSize = d->isHorizontal() ? Tab->size().height() : Tab->size().width();
+			// If the size of the side bar is less than the size of the first tab
+			// then there are no visible tabs in this side bar. This check will
+			// fail if someone will force a very big border via CSS!!
+			if (Size < TabSize)
+			{
+				hide();
+			}
+		}
+		else
+		{
+			hide();
+		}
+		break;
+
+	default:
+		break;
+	}
+	return Super::event(e);
+}
+
+
+//============================================================================
+bool CSideTabBar::eventFilter(QObject *watched, QEvent *event)
+{
+	if (event->type() != QEvent::ShowToParent)
+	{
+		return false;
+	}
+
+	// As soon as on tab is shhown, we need to show the side tab bar
+	auto Tab = qobject_cast<CDockWidgetSideTab*>(watched);
+	if (Tab)
+	{
+		show();
+	}
+	return false;
 }
 
 
@@ -212,4 +274,5 @@ SideBarLocation CSideTabBar::sideTabBarArea() const
 {
 	return d->SideTabArea;
 }
+
 }

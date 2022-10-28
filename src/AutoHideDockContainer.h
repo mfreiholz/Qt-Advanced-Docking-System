@@ -70,12 +70,14 @@ public:
 	/**
 	 * Create Auto Hide widget with a dock manager
 	 */
-    CAutoHideDockContainer(CDockManager* DockManager, SideBarLocation area, CDockContainerWidget* parent);
+    CAutoHideDockContainer(CDockManager* DockManager, SideBarLocation area,
+    	CDockContainerWidget* parent);
 
     /**
 	 * Create Auto Hide widget with the given dock widget
 	 */
-	CAutoHideDockContainer(CDockWidget* DockWidget, SideBarLocation area, CDockContainerWidget* parent);
+	CAutoHideDockContainer(CDockWidget* DockWidget, SideBarLocation area,
+		CDockContainerWidget* parent);
 
 	/**
 	 * Virtual Destructor

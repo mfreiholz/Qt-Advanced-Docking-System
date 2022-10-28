@@ -79,7 +79,6 @@ struct DockWidgetPrivate
 	QBoxLayout* Layout = nullptr;
 	QWidget* Widget = nullptr;
 	CDockWidgetTab* TabWidget = nullptr;
-	CDockWidgetSideTab* SideTabWidget = nullptr;
 	CDockWidget::DockWidgetFeatures Features = CDockWidget::DefaultDockWidgetFeatures;
 	CDockManager* DockManager = nullptr;
 	CDockAreaWidget* DockArea = nullptr;
@@ -97,6 +96,7 @@ struct DockWidgetPrivate
 	WidgetFactory* Factory = nullptr;
 	double DefaultAutoHideDockProportion = 0.25;
 	CDockWidget::eAutoHideInsertOrder AutoHideInsertOrder = CDockWidget::Last;
+	QPointer<CDockWidgetSideTab> SideTabWidget;
 	
 	/**
 	 * Private data constructor
@@ -246,6 +246,8 @@ void DockWidgetPrivate::updateParentDockArea()
 	}
 }
 
+
+//============================================================================
 void DockWidgetPrivate::closeAutoHideDockWidgetsIfNeeded()
 {
 	if (_this->dockContainer() && _this->dockContainer()->openedDockWidgets().isEmpty() && !_this->dockManager()->isRestoringState())
