@@ -99,7 +99,7 @@ public:
 	 */
 	void addDockWidget(CDockWidget* DockWidget);
 
-	/**
+    /**
 	 * Returns the side tab bar area of this Auto Hide dock container
 	 */
 	SideBarLocation sideTabBarArea() const;
@@ -146,6 +146,13 @@ public:
 	 * Toggles the current collapse state
 	 */
 	void toggleCollapseState();
+
+	/**
+	 * Use this instead of resize. This will ensure the size is consistent internally.
+	 * E.g. If you set a height less than the parent height when it's vertical
+	 * It will simply be rescaled to the parent height while the width will be resized
+	 */
+	void setSize(int width, int height);
 };
 }
 

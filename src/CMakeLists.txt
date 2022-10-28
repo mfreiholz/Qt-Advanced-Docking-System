@@ -31,6 +31,7 @@ set(ads_SRCS
     DockWidgetSideTab.cpp
     AutoHideDockContainer.cpp
     PushButton.cpp
+	ResizeHandle.cpp
     ads.qrc
 )
 set(ads_HEADERS
@@ -56,6 +57,7 @@ set(ads_HEADERS
     DockWidgetSideTab.h
     AutoHideDockContainer.h
     PushButton.h
+	ResizeHandle.h
 )
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 if (UNIX AND NOT APPLE)

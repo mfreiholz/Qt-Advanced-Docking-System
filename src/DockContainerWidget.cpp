@@ -1537,7 +1537,7 @@ CAutoHideDockContainer* CDockContainerWidget::createAndSetupAutoHideContainer(
 {
 	if (d->DockManager != DockWidget->dockManager())
 	{
-        DockWidget->setDockManager(d->DockManager); // Overlay Dock Container needs a valid dock manager
+        DockWidget->setDockManager(d->DockManager); // Auto hide Dock Container needs a valid dock manager
 	}
 	if (!CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
 	{
@@ -1550,11 +1550,10 @@ CAutoHideDockContainer* CDockContainerWidget::createAndSetupAutoHideContainer(
     sideTabBar(area)->insertSideTab(insertOrder == CDockWidget::First ? 0 : -1, DockWidget->sideTabWidget());
     DockWidget->sideTabWidget()->show();
 
-	auto AutoHideContainer = new CAutoHideDockContainer(DockWidget, area, this);
+	const auto AutoHideContainer = new CAutoHideDockContainer(DockWidget, area, this);
 	AutoHideContainer->hide();
 	d->DockManager->dockFocusController()->clearDockWidgetFocus(DockWidget);
 
-	//auto AutoHideContainer = sideTabBar(area)->insertDockWidget(insertOrder == CDockWidget::First ? 0 : -1, DockWidget);
 	return AutoHideContainer;
 }
 

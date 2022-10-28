@@ -12,6 +12,7 @@
 #include <QPlainTextEdit>
 #include <QToolBar>
 
+#include "AutoHideDockContainer.h"
 #include "DockAreaWidget.h"
 #include "DockAreaTitleBar.h"
 
@@ -44,10 +45,9 @@ CMainWindow::CMainWindow(QWidget *parent)
     CDockWidget* TableDockWidget = new CDockWidget("Table 1");
     TableDockWidget->setWidget(table);
     TableDockWidget->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
-    TableDockWidget->resize(250, 150);
     TableDockWidget->setMinimumSize(200,150);
-    TableDockWidget->setDefaultAutoHideDockProportion(0.5);
-    DockManager->addAutoHideDockWidget(SideBarLocation::Left, TableDockWidget, CDockWidget::Last);
+    const auto autoHideContainer = DockManager->addAutoHideDockWidget(SideBarLocation::Left, TableDockWidget, CDockWidget::Last);
+    autoHideContainer->setSize(480, 100);
     ui->menuView->addAction(TableDockWidget->toggleViewAction());
 
     table = new QTableWidget();

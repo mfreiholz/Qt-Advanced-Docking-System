@@ -47,7 +47,7 @@
 
 namespace ads
 {
-static const int ResizeMargin = 4;
+static const int ResizeMargin = 30;
 
 //============================================================================
 bool static isHorizontalArea(SideBarLocation Area)
@@ -136,8 +136,9 @@ struct AutoHideDockContainerPrivate
 	void updateResizeHandleSizeLimitMax()
 	{
 		auto Rect = _this->parentContainer()->contentRect();
-		ResizeHandle->setMaxResizeSize(ResizeHandle->orientation() == Qt::Horizontal
-			? Rect.width() : Rect.height());
+		const auto maxResizeHandleSize = ResizeHandle->orientation() == Qt::Horizontal
+			? Rect.width() : Rect.height();
+		ResizeHandle->setMaxResizeSize(maxResizeHandleSize - ResizeMargin);
 	}
 
 	/**
@@ -216,18 +217,18 @@ void CAutoHideDockContainer::updateSize()
 	switch (sideTabBarArea())
 	{
 	case SideBarLocation::Top:
-		 resize(rect.width(), qMin(rect.height(), d->Size.height()));
+		 resize(rect.width(), qMin(rect.height(), d->Size.height() - ResizeMargin));
 		 move(rect.topLeft());
 		 break;
 
 	case SideBarLocation::Left:
-		 resize(qMin(d->Size.width(), rect.width()), rect.height());
+		 resize(qMin(d->Size.width(), rect.width() - ResizeMargin), rect.height());
 		 move(rect.topLeft());
 		 break;
 
 	case SideBarLocation::Right:
 		 {
-			 resize(qMin(d->Size.width(), rect.width()), rect.height());
+			 resize(qMin(d->Size.width(), rect.width() - ResizeMargin), rect.height());
 			 QPoint p = rect.topRight();
 			 p.rx() -= (width() - 1);
 			 move(p);
@@ -236,7 +237,7 @@ void CAutoHideDockContainer::updateSize()
 
 	case SideBarLocation::Bottom:
 		 {
-			 resize(rect.width(), qMin(rect.height(), d->Size.height()));
+			 resize(rect.width(), qMin(rect.height(), d->Size.height() - ResizeMargin));
 			 QPoint p = rect.bottomLeft();
 			 p.ry() -= (height() - 1);
 			 move(p);
@@ -293,7 +294,7 @@ void CAutoHideDockContainer::addDockWidget(CDockWidget* DockWidget)
 
 	// Prevent overriding of d->Size parameter when this function is called during
 	// state restoring
-	if (!DockWidget->dockManager()->isRestoringState())
+	if (!DockWidget->dockManager()->isRestoringState() && OldDockArea)
 	{
 		// The initial size should be a little bit bigger than the original dock
 		// area size to prevent that the resize handle of this auto hid dock area
@@ -321,7 +322,7 @@ CDockAreaWidget* CAutoHideDockContainer::dockAreaWidget() const
 void CAutoHideDockContainer::moveContentsToParent()
 {
 	cleanupAndDelete();
-	// If we unpin the auto hide tock widget, then we insert it into the same
+	// If we unpin the auto hide dock widget, then we insert it into the same
 	// location like it had as a auto hide widget.  This brings the least surprise
 	// to the user and he does not have to search where the widget was inserted.
 	d->DockWidget->setDockArea(nullptr);
@@ -438,6 +439,12 @@ void CAutoHideDockContainer::toggleCollapseState()
 	collapseView(isVisible());
 }
 
+void CAutoHideDockContainer::setSize(int width, int height)
+{
+	d->Size = QSize(width, height);
+	updateSize();
+}
+
 
 //============================================================================
 bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
@@ -510,7 +517,7 @@ void CAutoHideDockContainer::resizeEvent(QResizeEvent* event)
     Super::resizeEvent(event);
 	if (d->ResizeHandle->isResizing())
 	{
-		d->Size = this->size();
+        d->Size = this->size();
 		d->updateResizeHandleSizeLimitMax();
 	}
 }
