@@ -322,7 +322,7 @@ CDockAreaWidget* CAutoHideDockContainer::dockAreaWidget() const
 void CAutoHideDockContainer::moveContentsToParent()
 {
 	cleanupAndDelete();
-	// If we unpin the auto hide tock widget, then we insert it into the same
+	// If we unpin the auto hide dock widget, then we insert it into the same
 	// location like it had as a auto hide widget.  This brings the least surprise
 	// to the user and he does not have to search where the widget was inserted.
 	parentContainer()->addDockWidget(d->getDockWidgetArea(d->SideTabBarArea), d->DockWidget);
@@ -439,6 +439,12 @@ void CAutoHideDockContainer::toggleCollapseState()
 	collapseView(isVisible());
 }
 
+void CAutoHideDockContainer::setSize(int width, int height)
+{
+	d->Size = QSize(width, height);
+	updateSize();
+}
+
 
 //============================================================================
 bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
@@ -511,7 +517,7 @@ void CAutoHideDockContainer::resizeEvent(QResizeEvent* event)
     Super::resizeEvent(event);
 	if (d->ResizeHandle->isResizing())
 	{
-		d->Size = this->size();
+        d->Size = this->size();
 		d->updateResizeHandleSizeLimitMax();
 	}
 }

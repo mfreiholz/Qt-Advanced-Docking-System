@@ -95,7 +95,6 @@ struct DockWidgetPrivate
 	QList<QAction*> TitleBarActions;
 	CDockWidget::eMinimumSizeHintMode MinimumSizeHintMode = CDockWidget::MinimumSizeHintFromDockWidget;
 	WidgetFactory* Factory = nullptr;
-	double DefaultAutoHideDockProportion = 0.25;
 	CDockWidget::eAutoHideInsertOrder AutoHideInsertOrder = CDockWidget::Last;
 	
 	/**
@@ -1128,20 +1127,6 @@ bool CDockWidget::isTabbed() const
 bool CDockWidget::isCurrentTab() const
 {
 	return d->DockArea && (d->DockArea->currentDockWidget() == this);
-}
-
-
-//============================================================================
-void CDockWidget::setDefaultAutoHideDockProportion(float Proportion)
-{
-	d->DefaultAutoHideDockProportion = Proportion;
-}
-
-
-//============================================================================
-float CDockWidget::DefaultAutoHideDockProportion() const
-{
-	return d->DefaultAutoHideDockProportion;
 }
 
 
