@@ -47,7 +47,7 @@
 
 namespace ads
 {
-static const int ResizeMargin = 4;
+static const int ResizeMargin = 30;
 
 //============================================================================
 bool static isHorizontalArea(SideBarLocation Area)
@@ -136,8 +136,9 @@ struct AutoHideDockContainerPrivate
 	void updateResizeHandleSizeLimitMax()
 	{
 		auto Rect = _this->parentContainer()->contentRect();
-		ResizeHandle->setMaxResizeSize(ResizeHandle->orientation() == Qt::Horizontal
-			? Rect.width() : Rect.height());
+		const auto maxResizeHandleSize = ResizeHandle->orientation() == Qt::Horizontal
+			? Rect.width() : Rect.height();
+		ResizeHandle->setMaxResizeSize(maxResizeHandleSize - ResizeMargin);
 	}
 
 	/**
@@ -218,18 +219,18 @@ void CAutoHideDockContainer::updateSize()
 	switch (sideTabBarArea())
 	{
 	case SideBarLocation::Top:
-		 resize(rect.width(), qMin(rect.height(), d->Size.height()));
+		 resize(rect.width(), qMin(rect.height(), d->Size.height() - ResizeMargin));
 		 move(rect.topLeft());
 		 break;
 
 	case SideBarLocation::Left:
-		 resize(qMin(d->Size.width(), rect.width()), rect.height());
+		 resize(qMin(d->Size.width(), rect.width() - ResizeMargin), rect.height());
 		 move(rect.topLeft());
 		 break;
 
 	case SideBarLocation::Right:
 		 {
-			 resize(qMin(d->Size.width(), rect.width()), rect.height());
+			 resize(qMin(d->Size.width(), rect.width() - ResizeMargin), rect.height());
 			 QPoint p = rect.topRight();
 			 p.rx() -= (width() - 1);
 			 move(p);
@@ -238,7 +239,7 @@ void CAutoHideDockContainer::updateSize()
 
 	case SideBarLocation::Bottom:
 		 {
-			 resize(rect.width(), qMin(rect.height(), d->Size.height()));
+			 resize(rect.width(), qMin(rect.height(), d->Size.height() - ResizeMargin));
 			 QPoint p = rect.bottomLeft();
 			 p.ry() -= (height() - 1);
 			 move(p);
