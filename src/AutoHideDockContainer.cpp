@@ -294,7 +294,7 @@ void CAutoHideDockContainer::addDockWidget(CDockWidget* DockWidget)
 
 	// Prevent overriding of d->Size parameter when this function is called during
 	// state restoring
-	if (!DockWidget->dockManager()->isRestoringState())
+	if (!DockWidget->dockManager()->isRestoringState() && OldDockArea)
 	{
 		// The initial size should be a little bit bigger than the original dock
 		// area size to prevent that the resize handle of this auto hid dock area
