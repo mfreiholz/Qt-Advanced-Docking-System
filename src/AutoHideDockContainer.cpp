@@ -268,6 +268,14 @@ CSideTabBar* CAutoHideDockContainer::sideTabBar() const
 	return parentContainer()->sideTabBar(d->SideTabBarArea);
 }
 
+
+//============================================================================
+CDockWidgetSideTab* CAutoHideDockContainer::sideTab() const
+{
+	return d->SideTab;
+}
+
+
 //============================================================================
 CDockWidget* CAutoHideDockContainer::dockWidget() const
 {
@@ -284,13 +292,13 @@ void CAutoHideDockContainer::addDockWidget(CDockWidget* DockWidget)
 	}
 
 	d->DockWidget = DockWidget;
+	d->SideTab = DockWidget->sideTabWidget();
     CDockAreaWidget* OldDockArea = DockWidget->dockAreaWidget();
     if (OldDockArea)
     {
         OldDockArea->removeDockWidget(DockWidget);
     }
 	d->DockArea->addDockWidget(DockWidget);
-	d->DockWidget->sideTabWidget()->updateOrientationAndSpacing(d->SideTabBarArea);
 
 	// Prevent overriding of d->Size parameter when this function is called during
 	// state restoring
@@ -336,9 +344,10 @@ void CAutoHideDockContainer::cleanupAndDelete()
 	const auto dockWidget = d->DockWidget;
 	if (dockWidget)
 	{
-        dockWidget->sideTabWidget()->removeFromSideTabBar();
-        dockWidget->sideTabWidget()->setParent(dockWidget);
-        dockWidget->sideTabWidget()->hide();
+		auto SideTab = d->SideTab;
+        SideTab->removeFromSideTabBar();
+        SideTab->setParent(dockWidget);
+        SideTab->hide();
 	}
 
 	hide();
@@ -391,18 +400,16 @@ void CAutoHideDockContainer::toggleView(bool Enable)
 {
 	if (Enable)
 	{
-        const auto dockWidget = d->DockWidget;
-        if (dockWidget)
+        if (d->SideTab)
         {
-            dockWidget->sideTabWidget()->show();
+            d->SideTab->show();
         }
 	}
 	else
 	{
-        const auto dockWidget = d->DockWidget;
-        if (dockWidget)
+        if (d->SideTab)
         {
-            dockWidget->sideTabWidget()->hide();
+            d->SideTab->hide();
         }
         hide();
         qApp->removeEventFilter(this);
@@ -429,7 +436,7 @@ void CAutoHideDockContainer::collapseView(bool Enable)
 	}
 
 	ADS_PRINT("CAutoHideDockContainer::collapseView " << Enable);
-    d->DockWidget->sideTabWidget()->updateStyle();
+    d->SideTab->updateStyle();
 }
 
 
@@ -494,7 +501,7 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		// because the side tab click handler will call collapseView(). If we
 		// do not ignore this here, then we will collapse the container and the side tab
 		// click handler will uncollapse it
-		auto SideTab = d->DockWidget->sideTabWidget();
+		auto SideTab = d->SideTab;
 		pos = SideTab->mapFromGlobal(me->globalPos());
 		if (SideTab->rect().contains(pos))
 		{

@@ -70,8 +70,6 @@ static void updateDockWidgetFocusStyle(CDockWidget* DockWidget, bool Focused)
 	DockWidget->setProperty("focused", Focused);
 	DockWidget->tabWidget()->setProperty("focused", Focused);
 	DockWidget->tabWidget()->updateStyle();
-	DockWidget->sideTabWidget()->setProperty("focused", Focused);
-	DockWidget->sideTabWidget()->updateStyle();
 	internal::repolishStyle(DockWidget);
 }
 

@@ -142,7 +142,7 @@ Qt::Orientation CDockWidgetSideTab::orientation() const
 
 
 //============================================================================
-void CDockWidgetSideTab::updateOrientationAndSpacing(SideBarLocation area)
+void CDockWidgetSideTab::updateOrientationForArea(SideBarLocation area)
 {
 	setOrientation((area == Bottom || area == Top) ? Qt::Horizontal : Qt::Vertical);
 

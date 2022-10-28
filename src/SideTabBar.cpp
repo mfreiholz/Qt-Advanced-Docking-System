@@ -128,6 +128,7 @@ CSideTabBar::~CSideTabBar()
 //============================================================================
 void CSideTabBar::insertSideTab(int Index, CDockWidgetSideTab* SideTab)
 {
+	SideTab->updateOrientationForArea(d->SideTabArea);
 	SideTab->installEventFilter(this);
     d->TabsLayout->insertWidget(Index, SideTab);
     SideTab->setSideTabBar(this);
@@ -142,7 +143,7 @@ CAutoHideDockContainer* CSideTabBar::insertDockWidget(int Index, CDockWidget* Do
 	auto area = sideTabBarArea();
 	qDebug() << "area " << area;
     Tab->setSideTabBar(this);
-	Tab->updateOrientationAndSpacing(area);
+	Tab->updateOrientationForArea(area);
 	d->TabsLayout->insertWidget(Index, Tab);
     Tab->show();
 

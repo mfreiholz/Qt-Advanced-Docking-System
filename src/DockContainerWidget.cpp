@@ -1546,7 +1546,6 @@ CAutoHideDockContainer* CDockContainerWidget::createAndSetupAutoHideContainer(
 		return nullptr;
 	}
 
-	DockWidget->sideTabWidget()->updateOrientationAndSpacing(area);
     sideTabBar(area)->insertSideTab(insertOrder == CDockWidget::First ? 0 : -1, DockWidget->sideTabWidget());
     DockWidget->sideTabWidget()->show();
 

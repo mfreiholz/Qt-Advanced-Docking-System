@@ -365,7 +365,9 @@ public:
     CDockAreaWidget* dockAreaWidget() const;
 
     /**
-     * Returns the side tab widget for this dock
+     * Returns the side tab widget for this dock, if this dock widget is in
+     * a auto hide container. If it is not in a auto hide container, then this
+     * function returns a nullptr,
      */
     CDockWidgetSideTab* sideTabWidget() const;
 

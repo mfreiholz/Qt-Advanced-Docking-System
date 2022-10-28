@@ -106,7 +106,7 @@ public:
 	/**
 	 * Update the orientation, visibility and spacing based on the area and the config
 	 */
-	void updateOrientationAndSpacing(SideBarLocation area);
+	void updateOrientationForArea(SideBarLocation area);
 
 	/**
 	 * Returns true, if this is the active tab. The tab is active if the auto hide widget is visible

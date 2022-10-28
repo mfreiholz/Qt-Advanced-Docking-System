@@ -90,6 +90,11 @@ public:
 	CSideTabBar* sideTabBar() const;
 
 	/**
+	 * Returns the side tab
+	 */
+	CDockWidgetSideTab* sideTab() const;
+
+	/**
 	 * Get's the dock widget in this dock container
 	 */
 	CDockWidget* dockWidget() const;
