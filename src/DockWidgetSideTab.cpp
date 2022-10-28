@@ -151,29 +151,30 @@ void CDockWidgetSideTab::updateOrientationForArea(SideBarLocation area)
 		return;
 	}
 
-	if (CDockManager::testConfigFlag(CDockManager::LeftSideBarPrioritizeIconOnly) && area == Left)
+	bool IconOnly = false;
+	switch (area)
 	{
-		setText("");
-		setOrientation(Qt::Horizontal);
-		return;
+	case SideBarLocation::Left:
+		 IconOnly = CDockManager::testConfigFlag(CDockManager::LeftSideBarIconOnly);
+		 break;
+
+	case SideBarLocation::Right:
+		 IconOnly = CDockManager::testConfigFlag(CDockManager::RightSideBarIconOnly);
+		 break;
+
+	case SideBarLocation::Top:
+		 IconOnly = CDockManager::testConfigFlag(CDockManager::BottomSideBarIconOnly);
+		 break;
+
+	case SideBarLocation::Bottom:
+		 IconOnly = CDockManager::testConfigFlag(CDockManager::TopSideBarIconOnly);
+		 break;
 	}
-	if (CDockManager::testConfigFlag(CDockManager::RightSideBarPrioritizeIconOnly) && area == Right)
+
+	if (IconOnly)
 	{
 		setText("");
 		setOrientation(Qt::Horizontal);
-		return;
-	}
-	if (CDockManager::testConfigFlag(CDockManager::BottomSideBarPrioritizeIconOnly) && area == Bottom)
-	{
-		setText("");
-		setOrientation(Qt::Horizontal);
-		return;
-	}
-	if (CDockManager::testConfigFlag(CDockManager::TopSideBarPrioritizeIconOnly) && area == Top)
-	{
-		setText("");
-		setOrientation(Qt::Horizontal);
-		return;
 	}
 }
 

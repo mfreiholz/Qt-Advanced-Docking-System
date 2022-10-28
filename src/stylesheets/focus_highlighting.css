@@ -35,6 +35,39 @@ ads--CDockAreaWidget {
 }
 
 
+ads--CDockAreaTitleBar {
+	background: transparent;
+	border-bottom: 2px solid palette(light);
+	padding-bottom: 0px;
+}
+
+ads--CDockAreaWidget[focused="true"] ads--CDockAreaTitleBar {
+	border-bottom: 2px solid palette(highlight);
+}
+
+ads--CTitleBarButton {
+	padding: 0px 0px;
+}
+
+
+#tabsMenuButton::menu-indicator {
+	image: none;
+}
+
+
+#dockAreaCloseButton {
+	qproperty-icon: url(:/ads/images/close-button.svg),
+		url(:/ads/images/close-button-disabled.svg) disabled;
+	qproperty-iconSize: 16px;
+}
+
+#detachGroupButton {
+	qproperty-icon: url(:/ads/images/detach-button.svg),
+		url(:/ads/images/detach-button-disabled.svg) disabled;
+	qproperty-iconSize: 16px;	
+}
+
+
 
 /*****************************************************************************
  * CDockWidgetTab
@@ -63,28 +96,6 @@ ads--CDockWidgetTab[activeTab="true"] QLabel {
 }
 
 
-
-/*****************************************************************************
- * CDockWidget
- *****************************************************************************/
-ads--CDockWidget {
-	background: palette(light);
-	border-color: palette(light);
-	border-style: solid;
-	border-width: 1px 0 0 0;
-}
-
-
-QScrollArea#dockWidgetScrollArea {
-	padding: 0px;
-	border: none;
-}
-
-
-
-/*****************************************************************************
- * Dock widget tab styling
- *****************************************************************************/
 #tabCloseButton {
 	margin-top: 2px;
 	background: none;
@@ -129,38 +140,19 @@ ads--CDockWidgetTab[focused="true"] QLabel {
 
 
 /*****************************************************************************
- * Dock area title bar and buttons styling
+ * CDockWidget
  *****************************************************************************/
- ads--CDockAreaTitleBar {
-	background: transparent;
-	border-bottom: 2px solid palette(light);
-	padding-bottom: 0px;
-}
-
-ads--CDockAreaWidget[focused="true"] ads--CDockAreaTitleBar {
-	border-bottom: 2px solid palette(highlight);
-}
-
-ads--CTitleBarButton {
-	padding: 0px 0px;
+ads--CDockWidget {
+	background: palette(light);
+	border-color: palette(light);
+	border-style: solid;
+	border-width: 1px 0 0 0;
 }
 
 
-#tabsMenuButton::menu-indicator {
-	image: none;
-}
-
-
-#dockAreaCloseButton {
-	qproperty-icon: url(:/ads/images/close-button.svg),
-		url(:/ads/images/close-button-disabled.svg) disabled;
-	qproperty-iconSize: 16px;
-}
-
-#detachGroupButton {
-	qproperty-icon: url(:/ads/images/detach-button.svg),
-		url(:/ads/images/detach-button-disabled.svg) disabled;
-	qproperty-iconSize: 16px;	
+QScrollArea#dockWidgetScrollArea {
+	padding: 0px;
+	border: none;
 }
 
 

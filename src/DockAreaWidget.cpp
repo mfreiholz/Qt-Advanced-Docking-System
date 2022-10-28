@@ -820,7 +820,7 @@ void CDockAreaWidget::updateTitleBarVisibility()
 		d->TitleBar->setVisible(isAutoHide() ? true : !Hidden); // Titlebar must always be visible when auto hidden so it can be dragged
 		auto tabBar = d->TitleBar->tabBar();
         tabBar->setVisible(isAutoHide() ? false : !Hidden);  // Never show tab bar when auto hidden
-        d->TitleBar->autoHideTitleLabel()->setVisible(CDockManager::testConfigFlag(CDockManager::AutoHideDockAreaHasTitle) && isAutoHide());  // Always show when auto hidden, never otherwise
+        d->TitleBar->autoHideTitleLabel()->setVisible(isAutoHide());  // Always show when auto hidden, never otherwise
         updateTitleBarButtonVisibility(Container->topLevelDockArea() == this);
 	}
 }
