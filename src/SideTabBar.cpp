@@ -160,7 +160,8 @@ CAutoHideDockContainer* CSideTabBar::insertDockWidget(int Index, CDockWidget* Do
 //============================================================================
 void CSideTabBar::removeDockWidget(CDockWidget* DockWidget)
 {
-
+	Q_UNUSED(DockWidget);
+	// TODO implement
 }
 
 
