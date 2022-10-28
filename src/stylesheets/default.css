@@ -32,7 +32,7 @@ ads--CDockAreaWidget {
 
 
 /*****************************************************************************
- * CDockWidgetTab
+ * CDockWidgetTab and close button styling
  *****************************************************************************/
 ads--CDockWidgetTab {
 	background: palette(window);
@@ -57,6 +57,26 @@ ads--CDockWidgetTab[activeTab="true"] QLabel {
 }
 
 
+#tabCloseButton {
+        margin-top: 2px;
+        background: none;
+        border: none;
+        padding: 0px -2px;
+        qproperty-icon: url(:/ads/images/close-button.svg),
+                url(:/ads/images/close-button-disabled.svg) disabled;
+        qproperty-iconSize: 16px;
+}
+
+#tabCloseButton:hover {
+        border: 1px solid rgba(0, 0, 0, 32);
+        background: rgba(0, 0, 0, 16);
+}
+
+#tabCloseButton:pressed {
+        background: rgba(0, 0, 0, 32);
+}
+
+
 /*****************************************************************************
  * CDockWidget
  *****************************************************************************/
@@ -72,30 +92,6 @@ QScrollArea#dockWidgetScrollArea {
 	padding: 0px;
 	border: none;
 }
-
-
-/*****************************************************************************
- * Dock widget tab styling
- *****************************************************************************/
-#tabCloseButton {
-	margin-top: 2px;
-	background: none;
-	border: none;
-	padding: 0px -2px;
-	qproperty-icon: url(:/ads/images/close-button.svg),
-		url(:/ads/images/close-button-disabled.svg) disabled;
-	qproperty-iconSize: 16px;
-}
-
-#tabCloseButton:hover {
-	border: 1px solid rgba(0, 0, 0, 32);
-	background: rgba(0, 0, 0, 16);
-}
-
-#tabCloseButton:pressed {
-	background: rgba(0, 0, 0, 32);
-}
-
 
 
 /*****************************************************************************
