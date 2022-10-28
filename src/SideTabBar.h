@@ -41,7 +41,11 @@ class CDockWidgetSideTab;
 class CAutoHideDockContainer;
 
 /**
- * Side tab widget that is shown at the edges of a dock container.
+ * Side tab bar widget that is shown at the edges of a dock container.
+ * The tab bar is only visible, if it contains visible content, that means if
+ * it contains visible tabs. If it is empty or all tabs are hidden, then the
+ * side bar is also hidden. As soon as one single tab becomes visible, this
+ * tab bar will be shown.
  */
 class ADS_EXPORT CSideTabBar : public QFrame
 {
