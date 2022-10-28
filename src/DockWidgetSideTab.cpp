@@ -47,7 +47,7 @@ struct DockWidgetSideTabPrivate
 {
     CDockWidgetSideTab* _this;
     CDockWidget* DockWidget;
-	CSideTabBar* SideTabBar;
+    CSideTabBar* SideTabBar = nullptr;
 	Qt::Orientation Orientation{Qt::Vertical};
 
 	/**
@@ -106,7 +106,7 @@ CDockWidgetSideTab::~CDockWidgetSideTab()
 //============================================================================
 void CDockWidgetSideTab::updateStyle()
 {
-	internal::repolishStyle(this, internal::RepolishDirectChildren);
+    internal::repolishStyle(this, internal::RepolishDirectChildren);
 	update();
 }
 
@@ -114,10 +114,10 @@ void CDockWidgetSideTab::updateStyle()
 //============================================================================
 SideBarLocation CDockWidgetSideTab::sideTabBarArea() const
 {
-	auto dockAreaWidget = d->DockWidget->dockAreaWidget();
-	if (dockAreaWidget && dockAreaWidget->isAutoHide())
+    if (d->SideTabBar)
 	{
-		return dockAreaWidget->autoHideDockContainer()->sideTabBarArea();
+        qDebug() << "CDockWidgetSideTab::sideTabBarArea() " << d->SideTabBar->sideTabBarArea();
+        return d->SideTabBar->sideTabBarArea();
 	}
 
 	return Left;

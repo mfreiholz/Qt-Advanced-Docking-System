@@ -50,7 +50,7 @@ class CAutoHideDockContainer;
 class ADS_EXPORT CSideTabBar : public QFrame
 {
     Q_OBJECT
-    Q_PROPERTY(ads::SideBarLocation sideTabBarArea READ sideTabBarArea)
+    Q_PROPERTY(int sideTabBarArea READ sideTabBarArea)
     Q_PROPERTY(Qt::Orientation orientation READ orientation)
 
 private:

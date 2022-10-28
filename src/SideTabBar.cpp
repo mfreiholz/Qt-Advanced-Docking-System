@@ -128,10 +128,10 @@ CSideTabBar::~CSideTabBar()
 //============================================================================
 void CSideTabBar::insertSideTab(int Index, CDockWidgetSideTab* SideTab)
 {
-	SideTab->updateOrientationForArea(d->SideTabArea);
 	SideTab->installEventFilter(this);
-    d->TabsLayout->insertWidget(Index, SideTab);
     SideTab->setSideTabBar(this);
+    SideTab->updateOrientationForArea(d->SideTabArea);
+    d->TabsLayout->insertWidget(Index, SideTab);
     show();
 }
 

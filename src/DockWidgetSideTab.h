@@ -50,7 +50,7 @@ class ADS_EXPORT CDockWidgetSideTab : public CPushButton
 {
     Q_OBJECT
 
-    Q_PROPERTY(ads::SideBarLocation sideTabBarArea READ sideTabBarArea)
+    Q_PROPERTY(int sideTabBarArea READ sideTabBarArea)
     Q_PROPERTY(Qt::Orientation orientation READ orientation)
 	Q_PROPERTY(bool activeTab READ isActiveTab)
 

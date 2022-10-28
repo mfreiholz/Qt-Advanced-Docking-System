@@ -53,7 +53,7 @@ class CDockingStateReader;
 class ADS_EXPORT CAutoHideDockContainer : public QFrame
 {
 	Q_OBJECT
-	Q_PROPERTY(ads::SideBarLocation sideTabBarArea READ sideTabBarArea)
+    Q_PROPERTY(int sideTabBarArea READ sideTabBarArea)
 private:
 	AutoHideDockContainerPrivate* d; ///< private data (pimpl)
 	friend struct AutoHideDockContainerPrivate;
