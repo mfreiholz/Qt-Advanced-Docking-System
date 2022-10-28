@@ -216,6 +216,7 @@ struct MainWindowPrivate
 		QFileSystemModel* m = new QFileSystemModel(w);
 		m->setRootPath(QDir::currentPath());
 		w->setModel(m);
+		w->setRootIndex(m->index(QDir::currentPath()));
 		ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Filesystem %1")
 			.arg(FileSystemCount++));
 		DockWidget->setWidget(w);
