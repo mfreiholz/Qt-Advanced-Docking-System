@@ -139,21 +139,19 @@ void CSideTabBar::insertSideTab(int Index, CDockWidgetSideTab* SideTab)
 //============================================================================
 CAutoHideDockContainer* CSideTabBar::insertDockWidget(int Index, CDockWidget* DockWidget)
 {
-	CDockWidgetSideTab* Tab = new CDockWidgetSideTab(DockWidget);
-	auto area = sideTabBarArea();
-	qDebug() << "area " << area;
-    Tab->setSideTabBar(this);
-	Tab->updateOrientationForArea(area);
-	d->TabsLayout->insertWidget(Index, Tab);
-    Tab->show();
+	/*
+	 * sideTabBar(area)->insertSideTab(insertOrder == CDockWidget::First ? 0 : -1, DockWidget->sideTabWidget());
+    DockWidget->sideTabWidget()->show();
 
-	auto AutoHideContainer = new CAutoHideDockContainer(DockWidget, area, d->ContainerWidget);
+	const auto AutoHideContainer = new CAutoHideDockContainer(DockWidget, area, this);
 	AutoHideContainer->hide();
-	DockWidget->dockManager()->dockFocusController()->clearDockWidgetFocus(DockWidget);
-	Tab->updateStyle();
+	d->DockManager->dockFocusController()->clearDockWidgetFocus(DockWidget);
+	return AutoHideContainer;*/
 
-	connect(Tab, &CDockWidgetSideTab::pressed, AutoHideContainer, &CAutoHideDockContainer::toggleCollapseState);
-	show();
+	auto AutoHideContainer = new CAutoHideDockContainer(DockWidget, d->SideTabArea, d->ContainerWidget);
+	DockWidget->dockManager()->dockFocusController()->clearDockWidgetFocus(DockWidget);
+	auto Tab = AutoHideContainer->sideTab();
+	insertSideTab(Index, Tab);
 	return AutoHideContainer;
 }
 

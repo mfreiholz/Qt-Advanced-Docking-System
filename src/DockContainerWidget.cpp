@@ -1535,25 +1535,26 @@ CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockW
 CAutoHideDockContainer* CDockContainerWidget::createAndSetupAutoHideContainer(
 	SideBarLocation area, CDockWidget* DockWidget, CDockWidget::eAutoHideInsertOrder insertOrder)
 {
-	if (d->DockManager != DockWidget->dockManager())
-	{
-        DockWidget->setDockManager(d->DockManager); // Auto hide Dock Container needs a valid dock manager
-	}
 	if (!CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
 	{
 		Q_ASSERT_X(false, "CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer",
 			"Requested area does not exist in config");
 		return nullptr;
 	}
+	if (d->DockManager != DockWidget->dockManager())
+	{
+        DockWidget->setDockManager(d->DockManager); // Auto hide Dock Container needs a valid dock manager
+	}
 
-    sideTabBar(area)->insertSideTab(insertOrder == CDockWidget::First ? 0 : -1, DockWidget->sideTabWidget());
+    /*sideTabBar(area)->insertSideTab(insertOrder == CDockWidget::First ? 0 : -1, DockWidget->sideTabWidget());
     DockWidget->sideTabWidget()->show();
 
 	const auto AutoHideContainer = new CAutoHideDockContainer(DockWidget, area, this);
 	AutoHideContainer->hide();
 	d->DockManager->dockFocusController()->clearDockWidgetFocus(DockWidget);
+	return AutoHideContainer;*/
 
-	return AutoHideContainer;
+	return sideTabBar(area)->insertDockWidget(insertOrder == CDockWidget::First ? 0 : -1, DockWidget);
 }
 
 

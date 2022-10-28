@@ -325,7 +325,8 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 	setObjectName(title);
 
 	d->TabWidget = componentsFactory()->createDockWidgetTab(this);
-	d->SideTabWidget = componentsFactory()->createDockWidgetSideTab(this);
+	d->SideTabWidget = componentsFactory()->createDockWidgetSideTab(nullptr);
+	d->SideTabWidget->hide();
 
 	connect(d->SideTabWidget, &CDockWidgetSideTab::pressed, this, &CDockWidget::onDockWidgetSideTabClicked);
 

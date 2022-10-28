@@ -46,7 +46,7 @@ namespace ads
 struct DockWidgetSideTabPrivate
 {
     CDockWidgetSideTab* _this;
-    CDockWidget* DockWidget;
+    CDockWidget* DockWidget = nullptr;
     CSideTabBar* SideTabBar = nullptr;
 	Qt::Orientation Orientation{Qt::Vertical};
 
@@ -84,13 +84,11 @@ void CDockWidgetSideTab::removeFromSideTabBar()
 }
 
 //============================================================================
-CDockWidgetSideTab::CDockWidgetSideTab(CDockWidget* DockWidget, QWidget* parent) : 
+CDockWidgetSideTab::CDockWidgetSideTab(QWidget* parent) :
 	Super(parent),
 	d(new DockWidgetSideTabPrivate(this))
 {
 	setAttribute(Qt::WA_NoMousePropagation);
-	d->DockWidget = DockWidget;
-	setText(DockWidget->windowTitle());
 	setFocusPolicy(Qt::NoFocus);
 }
 
@@ -182,7 +180,7 @@ void CDockWidgetSideTab::updateOrientationForArea(SideBarLocation area)
 //============================================================================
 bool CDockWidgetSideTab::isActiveTab() const
 {
-	if (d->DockWidget->autoHideDockContainer())
+	if (d->DockWidget && d->DockWidget->autoHideDockContainer())
 	{
 		return d->DockWidget->autoHideDockContainer()->isVisible();
 	}
@@ -195,6 +193,18 @@ bool CDockWidgetSideTab::isActiveTab() const
 CDockWidget* CDockWidgetSideTab::dockWidget() const
 {
 	return d->DockWidget;
+}
+
+
+//============================================================================
+void CDockWidgetSideTab::setDockWidget(CDockWidget* DockWidget)
+{
+	if (!DockWidget)
+	{
+		return;
+	}
+	d->DockWidget = DockWidget;
+	setText(DockWidget->windowTitle());
 }
 
 }

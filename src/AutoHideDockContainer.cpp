@@ -107,7 +107,7 @@ struct AutoHideDockContainerPrivate
 	QBoxLayout* Layout;
 	CResizeHandle* ResizeHandle = nullptr;
 	QSize Size; // creates invalid size
-	CDockWidgetSideTab* SideTab = nullptr;
+	QPointer<CDockWidgetSideTab> SideTab;
 
 	/**
 	 * Private data constructor
@@ -174,6 +174,8 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, SideBa
     d(new AutoHideDockContainerPrivate(this))
 {
 	d->SideTabBarArea = area;
+	d->SideTab = new CDockWidgetSideTab();
+	connect(d->SideTab, &CDockWidgetSideTab::pressed, this, &CAutoHideDockContainer::toggleCollapseState);
 	d->DockArea = new CDockAreaWidget(DockManager, parent);
 	d->DockArea->setObjectName("autoHideDockArea");
 	d->DockArea->setAutoHideDockContainer(this);
@@ -194,7 +196,6 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, SideBa
 	d->Layout->insertWidget(resizeHandleLayoutPosition(area), d->ResizeHandle);
 	d->Size = d->DockArea->size();
 
-
 	updateSize();
 	parent->registerAutoHideWidget(this);
 }
@@ -205,6 +206,7 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, SideBarL
 	CAutoHideDockContainer(DockWidget->dockManager(), area, parent)
 {
 	addDockWidget(DockWidget);
+	hide();
 }
 
 
@@ -292,7 +294,14 @@ void CAutoHideDockContainer::addDockWidget(CDockWidget* DockWidget)
 	}
 
 	d->DockWidget = DockWidget;
-	d->SideTab = DockWidget->sideTabWidget();
+	if (!d->SideTab)
+	{
+		d->SideTab = DockWidget->sideTabWidget();
+	}
+	else
+	{
+		d->SideTab->setDockWidget(DockWidget);
+	}
     CDockAreaWidget* OldDockArea = DockWidget->dockAreaWidget();
     if (OldDockArea)
     {
@@ -446,6 +455,8 @@ void CAutoHideDockContainer::toggleCollapseState()
 	collapseView(isVisible());
 }
 
+
+//============================================================================
 void CAutoHideDockContainer::setSize(int width, int height)
 {
 	d->Size = QSize(width, height);

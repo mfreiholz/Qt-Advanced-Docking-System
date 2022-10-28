@@ -76,7 +76,7 @@ public:
 	 * param[in] DockWidget The dock widget this title bar belongs to
 	 * param[in] parent The parent widget of this title bar
 	 */
-	CDockWidgetSideTab(CDockWidget* DockWidget, QWidget* parent = nullptr);
+	CDockWidgetSideTab(QWidget* parent = nullptr);
 
 	/**
 	 * Virtual Destructor
@@ -117,6 +117,11 @@ public:
 	 * returns the dock widget this belongs to
 	 */
 	CDockWidget* dockWidget() const;
+
+	/**
+	 * Sets the dock widget that is controlled by this tab
+	 */
+	void setDockWidget(CDockWidget* DockWidget);
 }; // class DockWidgetSideTab
 }
  // namespace ads
