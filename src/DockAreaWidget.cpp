@@ -53,6 +53,7 @@
 #include "DockComponentsFactory.h"
 #include "DockWidgetTab.h"
 #include "DockWidgetSideTab.h"
+#include "DockingStateReader.h"
 
 
 namespace ads
@@ -892,6 +893,98 @@ void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 		dockWidget(i)->saveState(s);
 	}
 	s.writeEndElement();
+}
+
+
+//============================================================================
+bool CDockAreaWidget::restoreDockArea(CDockingStateReader& s, CDockAreaWidget*& CreatedWidget,
+		bool Testing, CDockContainerWidget* Container)
+{
+	bool Ok;
+#ifdef ADS_DEBUG_PRINT
+	int Tabs = s.attributes().value("Tabs").toInt(&Ok);
+	if (!Ok)
+	{
+		return false;
+	}
+#endif
+
+	QString CurrentDockWidget = s.attributes().value("Current").toString();
+    ADS_PRINT("Restore NodeDockArea Tabs: " << Tabs << " Current: "
+            << CurrentDockWidget);
+
+    auto DockManager = Container->dockManager();
+	CDockAreaWidget* DockArea = nullptr;
+	if (!Testing)
+	{
+		DockArea = new CDockAreaWidget(DockManager, Container);
+		const auto AllowedAreasAttribute = s.attributes().value("AllowedAreas");
+		if (!AllowedAreasAttribute.isEmpty())
+		{
+			DockArea->setAllowedAreas((DockWidgetArea)AllowedAreasAttribute.toInt(nullptr, 16));
+		}
+
+		const auto FlagsAttribute = s.attributes().value("Flags");
+		if (!FlagsAttribute.isEmpty())
+		{
+			DockArea->setDockAreaFlags((CDockAreaWidget::DockAreaFlags)FlagsAttribute.toInt(nullptr, 16));
+		}
+	}
+
+	while (s.readNextStartElement())
+	{
+        if (s.name() != QLatin1String("Widget"))
+		{
+			continue;
+		}
+
+		auto ObjectName = s.attributes().value("Name");
+		if (ObjectName.isEmpty())
+		{
+			return false;
+		}
+
+		bool Closed = s.attributes().value("Closed").toInt(&Ok);
+		if (!Ok)
+		{
+			return false;
+		}
+
+		s.skipCurrentElement();
+		CDockWidget* DockWidget = DockManager->findDockWidget(ObjectName.toString());
+		if (!DockWidget || Testing)
+		{
+			continue;
+		}
+
+        ADS_PRINT("Dock Widget found - parent " << DockWidget->parent());
+		// We hide the DockArea here to prevent the short display (the flashing)
+		// of the dock areas during application startup
+		DockArea->hide();
+        DockArea->addDockWidget(DockWidget);
+		DockWidget->setToggleViewActionChecked(!Closed);
+		DockWidget->setClosedState(Closed);
+		DockWidget->setProperty(internal::ClosedProperty, Closed);
+		DockWidget->setProperty(internal::DirtyProperty, false);
+	}
+
+	if (Testing)
+	{
+		return true;
+	}
+
+	if (!DockArea->dockWidgetsCount())
+	{
+		delete DockArea;
+		DockArea = nullptr;
+	}
+	else
+	{
+		DockArea->setProperty("currentDockWidget", CurrentDockWidget);
+	}
+
+	CreatedWidget = DockArea;
+	return true;
 }
 
 

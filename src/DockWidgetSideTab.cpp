@@ -205,6 +205,7 @@ void CDockWidgetSideTab::setDockWidget(CDockWidget* DockWidget)
 	}
 	d->DockWidget = DockWidget;
 	setText(DockWidget->windowTitle());
+	setIcon(d->DockWidget->icon());
 }
 
 }

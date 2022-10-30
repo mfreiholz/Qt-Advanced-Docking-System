@@ -910,23 +910,7 @@ void DockContainerWidgetPrivate::saveAutoHideWidgetsState(QXmlStreamWriter& s)
 			continue;
 		}
 
-		s.writeStartElement("SideBar");
-		s.writeAttribute("Area", QString::number(sideTabBar->sideTabBarArea()));
-		s.writeAttribute("Tabs", QString::number(sideTabBar->tabCount()));
-
-		for (auto i = 0; i < sideTabBar->tabCount(); ++i)
-		{
-			auto Tab = sideTabBar->tabAt(i);
-            if (!Tab)
-            {
-				continue;
-            }
-
-			auto DockArea = Tab->dockWidget()->dockAreaWidget();
-            DockArea->saveState(s);
-		}
-
-		s.writeEndElement();
+		sideTabBar->saveState(s);
     }
 }
 
@@ -1049,6 +1033,11 @@ bool DockContainerWidgetPrivate::restoreSplitter(CDockingStateReader& s,
 //============================================================================
 bool DockContainerWidgetPrivate::restoreAutoHideDockArea(CDockingStateReader& s, SideBarLocation area, bool Testing)
 {
+	if (!CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
+	{
+		return false;
+	}
+
 	bool Ok;
 #ifdef ADS_DEBUG_PRINT
 	int Tabs = s.attributes().value("Tabs").toInt(&Ok);
@@ -1061,11 +1050,6 @@ bool DockContainerWidgetPrivate::restoreAutoHideDockArea(CDockingStateReader& s,
 	QString CurrentDockWidget = s.attributes().value("Current").toString();
     ADS_PRINT("Restore NodeDockArea Tabs: " << Tabs << " Current: "
             << CurrentDockWidget);
-
-	if (!CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
-	{
-		return false;
-	}
 
 	CDockAreaWidget* DockArea = nullptr;
 	CAutoHideDockContainer* AutoHideContainer = nullptr;
@@ -1136,91 +1120,14 @@ bool DockContainerWidgetPrivate::restoreAutoHideDockArea(CDockingStateReader& s,
 bool DockContainerWidgetPrivate::restoreDockArea(CDockingStateReader& s,
 	QWidget*& CreatedWidget, bool Testing)
 {
-	bool Ok;
-#ifdef ADS_DEBUG_PRINT
-	int Tabs = s.attributes().value("Tabs").toInt(&Ok);
-	if (!Ok)
-	{
-		return false;
-	}
-#endif
-
-	QString CurrentDockWidget = s.attributes().value("Current").toString();
-    ADS_PRINT("Restore NodeDockArea Tabs: " << Tabs << " Current: "
-            << CurrentDockWidget);
-
 	CDockAreaWidget* DockArea = nullptr;
-	if (!Testing)
+	auto Result = CDockAreaWidget::restoreDockArea(s, DockArea, Testing, _this);
+	if (Result && DockArea)
 	{
-		DockArea = new CDockAreaWidget(DockManager, _this);
-		const auto AllowedAreasAttribute = s.attributes().value("AllowedAreas");
-		if (!AllowedAreasAttribute.isEmpty())
-		{
-			DockArea->setAllowedAreas((DockWidgetArea)AllowedAreasAttribute.toInt(nullptr, 16));
-		}
-
-		const auto FlagsAttribute = s.attributes().value("Flags");
-		if (!FlagsAttribute.isEmpty())
-		{
-			DockArea->setDockAreaFlags((CDockAreaWidget::DockAreaFlags)FlagsAttribute.toInt(nullptr, 16));
-		}
-	}
-
-	while (s.readNextStartElement())
-	{
-        if (s.name() != QLatin1String("Widget"))
-		{
-			continue;
-		}
-
-		auto ObjectName = s.attributes().value("Name");
-		if (ObjectName.isEmpty())
-		{
-			return false;
-		}
-
-		bool Closed = s.attributes().value("Closed").toInt(&Ok);
-		if (!Ok)
-		{
-			return false;
-		}
-
-		s.skipCurrentElement();
-		CDockWidget* DockWidget = DockManager->findDockWidget(ObjectName.toString());
-		if (!DockWidget || Testing)
-		{
-			continue;
-		}
-
-        ADS_PRINT("Dock Widget found - parent " << DockWidget->parent());
-		// We hide the DockArea here to prevent the short display (the flashing)
-		// of the dock areas during application startup
-		DockArea->hide();
-        DockArea->addDockWidget(DockWidget);
-		DockWidget->setToggleViewActionChecked(!Closed);
-		DockWidget->setClosedState(Closed);
-		DockWidget->setProperty(internal::ClosedProperty, Closed);
-		DockWidget->setProperty(internal::DirtyProperty, false);
-	}
-
-	if (Testing)
-	{
-		return true;
-	}
-
-	if (!DockArea->dockWidgetsCount())
-	{
-		delete DockArea;
-		DockArea = nullptr;
-	}
-	else
-	{
-		DockArea->setProperty("currentDockWidget", CurrentDockWidget);
 		appendDockAreas({DockArea});
 	}
-
 	CreatedWidget = DockArea;
-	return true;
+	return Result;
 }
 
 
@@ -2318,6 +2225,13 @@ QRect CDockContainerWidget::contentRectGlobal() const
 		return QRect();
 	}
 	return internal::globalGeometry(d->RootSplitter);
+}
+
+
+//===========================================================================
+CDockManager* CDockContainerWidget::dockManager() const
+{
+	return d->DockManager;
 }
 } // namespace ads
 

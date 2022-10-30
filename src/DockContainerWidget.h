@@ -342,6 +342,11 @@ public:
 	 */
 	QRect contentRectGlobal() const;
 
+	/**
+	 * Returns the dock manager that owns this container
+	 */
+	CDockManager* dockManager() const;
+
 
 Q_SIGNALS:
 	/**

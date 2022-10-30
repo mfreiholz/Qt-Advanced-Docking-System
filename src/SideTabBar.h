@@ -33,9 +33,12 @@
 #include "DockWidgetSideTab.h"
 #include "ads_globals.h"
 
+class QXmlStreamWriter;
+
 namespace ads
 {
 struct SideTabBarPrivate;
+class DockContainerWidgetPrivate;
 class CDockContainerWidget;
 class CDockWidgetSideTab;
 class CAutoHideDockContainer;
@@ -57,11 +60,17 @@ private:
     SideTabBarPrivate* d; ///< private data (pimpl)
 	friend struct SideTabBarPrivate;
 	friend class DockWidgetSideTab;
+	friend DockContainerWidgetPrivate;
 
 protected:
     virtual void paintEvent(QPaintEvent* event) override;
 	virtual bool event(QEvent* e) override;
 	virtual bool eventFilter(QObject *watched, QEvent *event) override;
+
+	/**
+	 * Saves the state into the given stream
+	 */
+	void saveState(QXmlStreamWriter& Stream) const;
 
 public:
     using Super = QFrame;

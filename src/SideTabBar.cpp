@@ -34,12 +34,14 @@
 #include <QBoxLayout>
 #include <QStyleOption>
 #include <QPainter>
+#include <QXmlStreamWriter>
 
 #include "DockContainerWidget.h"
 #include "DockWidgetSideTab.h"
 #include "DockWidgetTab.h"
 #include "DockFocusController.h"
 #include "AutoHideDockContainer.h"
+#include "DockAreaWidget.h"
 
 namespace ads
 {
@@ -274,4 +276,31 @@ SideBarLocation CSideTabBar::sideTabBarArea() const
 	return d->SideTabArea;
 }
 
+
+//============================================================================
+void CSideTabBar::saveState(QXmlStreamWriter& s) const
+{
+	if (!tabCount())
+	{
+		return;
+	}
+
+	s.writeStartElement("SideBar");
+	s.writeAttribute("Area", QString::number(sideTabBarArea()));
+	s.writeAttribute("Tabs", QString::number(tabCount()));
+
+	for (auto i = 0; i < tabCount(); ++i)
+	{
+		auto Tab = tabAt(i);
+		if (!Tab)
+		{
+			continue;
+		}
+
+		auto DockArea = Tab->dockWidget()->dockAreaWidget();
+		DockArea->saveState(s);
+	}
+
+	s.writeEndElement();
+}
 }

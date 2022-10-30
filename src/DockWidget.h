@@ -316,12 +316,6 @@ public:
     CDockWidgetTab* tabWidget() const;
 
     /**
-     * Returns the auto hide dock container of this dock widget 
-     * or 0 if there is none
-     */
-    CAutoHideDockContainer* autoHideDockContainer() const;
-
-    /**
      * Sets, whether the dock widget is movable, closable, and floatable.
      */
     void setFeatures(DockWidgetFeatures features);
@@ -370,6 +364,22 @@ public:
      * function returns a nullptr,
      */
     CDockWidgetSideTab* sideTabWidget() const;
+
+    /**
+     * Assign a side tab widget if this dock widget is an auto hide container
+     */
+    void setSideTabWidget(CDockWidgetSideTab* SideTab) const;
+
+    /**
+     * Returns true, if this dock widget is in an auto hide container
+     */
+    bool isAutoHide() const;
+
+    /**
+     * Returns the auto hide dock container of this dock widget
+     * or 0 if there is none
+     */
+    CAutoHideDockContainer* autoHideDockContainer() const;
 
     /**
      * This property holds whether the dock widget is floating.
@@ -613,10 +623,6 @@ public Q_SLOTS:
      */
     void showNormal();
 
-    /**
-     * Toggles the dock auto hide container when the side tab is clicked
-     */
-    void onDockWidgetSideTabClicked();
 
 Q_SIGNALS:
     /**

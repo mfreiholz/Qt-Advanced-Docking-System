@@ -27,14 +27,7 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include <AutoHideDockContainer.h>
-#include "DockManager.h"
-#include "DockWidgetSideTab.h"
-#include "DockWidgetTab.h"
-#include "SideTabBar.h"
-#include "DockAreaWidget.h"
-#include "DockingStateReader.h"
-#include "ResizeHandle.h"
+#include "AutoHideDockContainer.h"
 
 #include <QXmlStreamWriter>
 #include <QBoxLayout>
@@ -42,6 +35,16 @@
 #include <QSplitter>
 #include <QPointer>
 #include <QApplication>
+
+#include "DockManager.h"
+#include "DockWidgetSideTab.h"
+#include "DockWidgetTab.h"
+#include "SideTabBar.h"
+#include "DockAreaWidget.h"
+#include "DockingStateReader.h"
+#include "ResizeHandle.h"
+#include "DockComponentsFactory.h"
+
 
 #include <iostream>
 
@@ -174,7 +177,7 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, SideBa
     d(new AutoHideDockContainerPrivate(this))
 {
 	d->SideTabBarArea = area;
-	d->SideTab = new CDockWidgetSideTab();
+	d->SideTab = componentsFactory()->createDockWidgetSideTab(nullptr);
 	connect(d->SideTab, &CDockWidgetSideTab::pressed, this, &CAutoHideDockContainer::toggleCollapseState);
 	d->DockArea = new CDockAreaWidget(DockManager, parent);
 	d->DockArea->setObjectName("autoHideDockArea");
@@ -294,14 +297,7 @@ void CAutoHideDockContainer::addDockWidget(CDockWidget* DockWidget)
 	}
 
 	d->DockWidget = DockWidget;
-	if (!d->SideTab)
-	{
-		d->SideTab = DockWidget->sideTabWidget();
-	}
-	else
-	{
-		d->SideTab->setDockWidget(DockWidget);
-	}
+	d->SideTab->setDockWidget(DockWidget);
     CDockAreaWidget* OldDockArea = DockWidget->dockAreaWidget();
     if (OldDockArea)
     {

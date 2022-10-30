@@ -325,10 +325,6 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 	setObjectName(title);
 
 	d->TabWidget = componentsFactory()->createDockWidgetTab(this);
-	d->SideTabWidget = componentsFactory()->createDockWidgetSideTab(nullptr);
-	d->SideTabWidget->hide();
-
-	connect(d->SideTabWidget, &CDockWidgetSideTab::pressed, this, &CDockWidget::onDockWidgetSideTabClicked);
 
 	d->ToggleViewAction = new QAction(title, this);
 	d->ToggleViewAction->setCheckable(true);
@@ -346,10 +342,6 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 CDockWidget::~CDockWidget()
 {
 	ADS_PRINT("~CDockWidget()");
-	if (d->SideTabWidget)
-	{
-		delete d->SideTabWidget;
-	}
 	delete d;
 }
 
@@ -443,6 +435,8 @@ CDockWidgetTab* CDockWidget::tabWidget() const
 	return d->TabWidget;
 }
 
+
+//============================================================================
 CAutoHideDockContainer* CDockWidget::autoHideDockContainer() const
 {
 	if (!d->DockArea)
@@ -531,6 +525,20 @@ CDockAreaWidget* CDockWidget::dockAreaWidget() const
 CDockWidgetSideTab* CDockWidget::sideTabWidget() const
 {
 	return d->SideTabWidget;
+}
+
+
+//============================================================================
+void CDockWidget::setSideTabWidget(CDockWidgetSideTab* SideTab) const
+{
+	d->SideTabWidget = SideTab;
+}
+
+
+//============================================================================
+bool CDockWidget::isAutoHide() const
+{
+	return !d->SideTabWidget.isNull();
 }
 
 
@@ -741,6 +749,10 @@ bool CDockWidget::event(QEvent *e)
 			{
 				d->TabWidget->setText(title);
 			}
+			if (d->SideTabWidget)
+			{
+				d->SideTabWidget->setText(title);
+			}
 			if (d->ToggleViewAction)
 			{
 				d->ToggleViewAction->setText(title);
@@ -791,7 +803,12 @@ void CDockWidget::setTabToolTip(const QString &text)
 void CDockWidget::setIcon(const QIcon& Icon)
 {
 	d->TabWidget->setIcon(Icon);
-	d->SideTabWidget->setIcon(Icon);
+
+	if (d->SideTabWidget)
+	{
+		d->SideTabWidget->setIcon(Icon);
+	}
+
 	if (!d->ToggleViewAction->isCheckable())
 	{
 		d->ToggleViewAction->setIcon(Icon);
@@ -1082,17 +1099,6 @@ void CDockWidget::showNormal()
 	}
 }
 
-//============================================================================
-void CDockWidget::onDockWidgetSideTabClicked()
-{
-	const auto autoHideContainer = autoHideDockContainer();
-	if (!autoHideContainer)
-	{
-		return;
-	}
-
-	autoHideContainer->toggleCollapseState();
-}
 
 //============================================================================
 bool CDockWidget::isFullScreen() const
