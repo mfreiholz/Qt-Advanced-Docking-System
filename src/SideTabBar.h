@@ -42,6 +42,7 @@ class DockContainerWidgetPrivate;
 class CDockContainerWidget;
 class CDockWidgetSideTab;
 class CAutoHideDockContainer;
+class CDockingStateReader;
 
 /**
  * Side tab bar widget that is shown at the edges of a dock container.

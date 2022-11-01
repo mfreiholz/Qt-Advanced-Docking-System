@@ -47,7 +47,7 @@ CMainWindow::CMainWindow(QWidget *parent)
     TableDockWidget->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
     TableDockWidget->setMinimumSize(200,150);
     const auto autoHideContainer = DockManager->addAutoHideDockWidget(SideBarLocation::Left, TableDockWidget, CDockWidget::Last);
-    autoHideContainer->setSize(480, 100);
+    autoHideContainer->setSize(480);
     ui->menuView->addAction(TableDockWidget->toggleViewAction());
 
     table = new QTableWidget();

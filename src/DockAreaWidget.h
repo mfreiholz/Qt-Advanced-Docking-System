@@ -301,8 +301,8 @@ public:
 	 * Restores a dock area.
 	 * \see restoreChildNodes() for details
 	 */
-    static bool restoreDockArea(CDockingStateReader& Stream, CDockAreaWidget*& CreatedWidget,
-		bool Testing, CDockContainerWidget* Container);
+    static bool restoreState(CDockingStateReader& Stream, CDockAreaWidget*& CreatedWidget,
+		bool Testing, CDockContainerWidget* ParentContainer);
 
 	/**
 	 * This functions returns the dock widget features of all dock widget in

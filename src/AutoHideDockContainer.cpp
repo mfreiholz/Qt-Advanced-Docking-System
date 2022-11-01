@@ -167,7 +167,14 @@ AutoHideDockContainerPrivate::AutoHideDockContainerPrivate(
 //============================================================================
 CDockContainerWidget* CAutoHideDockContainer::parentContainer() const
 {
-	return internal::findParent<CDockContainerWidget*>(this);
+	if (d->DockArea)
+	{
+		return d->DockArea->dockContainer();
+	}
+	else
+	{
+		return internal::findParent<CDockContainerWidget*>(this);
+	}
 }
 
 
@@ -176,6 +183,7 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, SideBa
     Super(parent),
     d(new AutoHideDockContainerPrivate(this))
 {
+	hide(); // auto hide dock container is initially always hidden
 	d->SideTabBarArea = area;
 	d->SideTab = componentsFactory()->createDockWidgetSideTab(nullptr);
 	connect(d->SideTab, &CDockWidgetSideTab::pressed, this, &CAutoHideDockContainer::toggleCollapseState);
@@ -363,40 +371,11 @@ void CAutoHideDockContainer::cleanupAndDelete()
 //============================================================================
 void CAutoHideDockContainer::saveState(QXmlStreamWriter& s)
 {
+	s.writeStartElement("Widget");
+	s.writeAttribute("Name", d->DockWidget->objectName());
+	s.writeAttribute("Closed", QString::number(d->DockWidget->isClosed() ? 1 : 0));
     s.writeAttribute("Size", QString::number(d->isHorizontal() ? d->Size.height() : d->Size.width()));
-
-    qDebug() << ": saveState Size: " << d->Size;
-    qDebug() << ": saveState Size " << QString::number(d->isHorizontal() ? d->Size.height() : d->Size.width());
-}
-
-
-//============================================================================
-bool CAutoHideDockContainer::restoreState(CDockingStateReader& s, bool Testing)
-{
-	bool ok;
-	int Size = s.attributes().value("Size").toInt(&ok);
-	if (!ok)
-	{
-		return false;
-	}
-
-	if (Testing)
-	{
-		return true;
-	}
-
-	if (d->isHorizontal())
-	{
-		d->Size.setHeight(Size);
-	}
-	else
-	{
-		d->Size.setWidth(Size);
-		qDebug() << ": restoreState Width " << Size;
-	}
-
-	qDebug() << ": restoreState Size: " << d->Size;
-	return true;
+	s.writeEndElement();
 }
 
 
@@ -438,6 +417,11 @@ void CAutoHideDockContainer::collapseView(bool Enable)
 		show();
 		d->DockWidget->dockManager()->setDockWidgetFocused(d->DockWidget);
 		qApp->installEventFilter(this);
+
+		qDebug() << "CAutoHideDockContainer.hidden " << this->isHidden();
+		qDebug() << "d->DockArea->isHidden() " << d->DockArea->isHidden();
+		qDebug() << "d->DockWidget->isHidden() " << d->DockWidget->isHidden();
+		qDebug() << "CAutoHideDockContainer.geometry() " << this->geometry();
 	}
 
 	ADS_PRINT("CAutoHideDockContainer::collapseView " << Enable);
@@ -453,9 +437,17 @@ void CAutoHideDockContainer::toggleCollapseState()
 
 
 //============================================================================
-void CAutoHideDockContainer::setSize(int width, int height)
+void CAutoHideDockContainer::setSize(int Size)
 {
-	d->Size = QSize(width, height);
+	if (d->isHorizontal())
+	{
+		d->Size.setHeight(Size);
+	}
+	else
+	{
+		d->Size.setWidth(Size);
+	}
+
 	updateSize();
 }
 

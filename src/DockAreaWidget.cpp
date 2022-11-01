@@ -870,13 +870,6 @@ void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 	QString Name = CurrentDockWidget ? CurrentDockWidget->objectName() : "";
 	s.writeAttribute("Current", Name);
 
-	// To keep the saved XML data small, we only save the allowed areas and the
-	// dock area flags if the values are different from the default values
-	if (isAutoHide())
-	{
-		autoHideDockContainer()->saveState(s);
-	}
-
 	if (d->AllowedAreas != DefaultAllowedAreas)
 	{
 		s.writeAttribute("AllowedAreas", QString::number(d->AllowedAreas, 16));
@@ -897,7 +890,7 @@ void CDockAreaWidget::saveState(QXmlStreamWriter& s) const
 
 
 //============================================================================
-bool CDockAreaWidget::restoreDockArea(CDockingStateReader& s, CDockAreaWidget*& CreatedWidget,
+bool CDockAreaWidget::restoreState(CDockingStateReader& s, CDockAreaWidget*& CreatedWidget,
 		bool Testing, CDockContainerWidget* Container)
 {
 	bool Ok;

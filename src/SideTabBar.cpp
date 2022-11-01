@@ -42,6 +42,7 @@
 #include "DockFocusController.h"
 #include "AutoHideDockContainer.h"
 #include "DockAreaWidget.h"
+#include "DockingStateReader.h"
 
 namespace ads
 {
@@ -141,15 +142,6 @@ void CSideTabBar::insertSideTab(int Index, CDockWidgetSideTab* SideTab)
 //============================================================================
 CAutoHideDockContainer* CSideTabBar::insertDockWidget(int Index, CDockWidget* DockWidget)
 {
-	/*
-	 * sideTabBar(area)->insertSideTab(insertOrder == CDockWidget::First ? 0 : -1, DockWidget->sideTabWidget());
-    DockWidget->sideTabWidget()->show();
-
-	const auto AutoHideContainer = new CAutoHideDockContainer(DockWidget, area, this);
-	AutoHideContainer->hide();
-	d->DockManager->dockFocusController()->clearDockWidgetFocus(DockWidget);
-	return AutoHideContainer;*/
-
 	auto AutoHideContainer = new CAutoHideDockContainer(DockWidget, d->SideTabArea, d->ContainerWidget);
 	DockWidget->dockManager()->dockFocusController()->clearDockWidgetFocus(DockWidget);
 	auto Tab = AutoHideContainer->sideTab();
@@ -297,10 +289,11 @@ void CSideTabBar::saveState(QXmlStreamWriter& s) const
 			continue;
 		}
 
-		auto DockArea = Tab->dockWidget()->dockAreaWidget();
-		DockArea->saveState(s);
+		Tab->dockWidget()->autoHideDockContainer()->saveState(s);
 	}
 
 	s.writeEndElement();
 }
-}
+
+
+} // namespace ads

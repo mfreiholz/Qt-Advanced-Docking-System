@@ -46,6 +46,7 @@ class CDockContainerWidget;
 class CSideTabBar;
 class CDockAreaWidget;
 class CDockingStateReader;
+struct SideTabBarPrivate;
 
 /**
  * Auto hide container for hosting an auto hide dock widget
@@ -57,13 +58,18 @@ class ADS_EXPORT CAutoHideDockContainer : public QFrame
 private:
 	AutoHideDockContainerPrivate* d; ///< private data (pimpl)
 	friend struct AutoHideDockContainerPrivate;
+	friend CSideTabBar;
+	friend SideTabBarPrivate;
 
 protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
 	void updateSize();
 
-	CDockContainerWidget* parentContainer() const;
+	/*
+	 * Saves the state and size
+	 */
+	void saveState(QXmlStreamWriter& Stream);
 
 public:
 	using Super = QFrame;
@@ -115,6 +121,11 @@ public:
 	CDockAreaWidget* dockAreaWidget() const;
 
 	/**
+	 * Returns the parent container that hosts this auto hide container
+	 */
+	CDockContainerWidget* parentContainer() const;
+
+	/**
 	 * Moves the contents to the parent container widget
 	 * Used before removing this Auto Hide dock container 
 	 */
@@ -124,16 +135,6 @@ public:
 	 * Cleanups up the side tab widget and then deletes itself
 	 */
 	void cleanupAndDelete();
-
-	/*
-	 * Saves the state and size
-	 */
-	void saveState(QXmlStreamWriter& Stream);
-
-	/*
-	 * Restores the size of the splitter
-	 */
-	bool restoreState(CDockingStateReader& Stream, bool Testing);
 
 	/*
 	 * Toggles the auto Hide dock container widget
@@ -153,13 +154,13 @@ public:
 	void toggleCollapseState();
 
 	/**
-	 * Use this instead of resize. This will ensure the size is consistent internally.
-	 * E.g. If you set a height less than the parent height when it's vertical
-	 * It will simply be rescaled to the parent height while the width will be resized
+	 * Use this instead of resize.
+	 * Depending on the sidebar location this will set the width or heigth
+	 * of this auto hide container.
 	 */
-	void setSize(int width, int height);
+	void setSize(int Size);
 };
-}
+} // namespace ads
 
-
+//-----------------------------------------------------------------------------
 #endif

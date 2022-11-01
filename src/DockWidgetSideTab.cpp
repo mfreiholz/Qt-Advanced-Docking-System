@@ -114,7 +114,6 @@ SideBarLocation CDockWidgetSideTab::sideTabBarArea() const
 {
     if (d->SideTabBar)
 	{
-        qDebug() << "CDockWidgetSideTab::sideTabBarArea() " << d->SideTabBar->sideTabBarArea();
         return d->SideTabBar->sideTabBarArea();
 	}
 

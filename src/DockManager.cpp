@@ -700,7 +700,8 @@ QByteArray CDockManager::saveState(int version) const
     QByteArray xmldata;
     QXmlStreamWriter s(&xmldata);
     auto ConfigFlags = CDockManager::configFlags();
-	s.setAutoFormatting(ConfigFlags.testFlag(XmlAutoFormattingEnabled));
+	//s.setAutoFormatting(ConfigFlags.testFlag(XmlAutoFormattingEnabled));
+	s.setAutoFormatting(true);
     s.writeStartDocument();
 		s.writeStartElement("QtAdvancedDockingSystem");
 		s.writeAttribute("Version", QString::number(CurrentVersion));
