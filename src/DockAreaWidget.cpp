@@ -1176,7 +1176,7 @@ void CDockAreaWidget::toggleAutoHideArea(bool Enable)
 
 	const auto area = dockContainer()->calculateSideTabBarArea(this);
 
-	if (dockManager()->testConfigFlag(CDockManager::AutoHideButtonTogglesArea))
+	if (CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideButtonTogglesArea))
 	{
 		for (const auto DockWidget : openedDockWidgets())
 		{

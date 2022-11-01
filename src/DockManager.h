@@ -307,7 +307,7 @@ public:
 	/**
 	 * Returns true if the given overlay config flag is set
 	 */
-	static bool testConfigFlag(eAutoHideFlag Flag);
+	static bool testAutoHideConfigFlag(eAutoHideFlag Flag);
 
 	/**
 	 * Returns the global icon provider.

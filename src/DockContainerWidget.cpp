@@ -1045,7 +1045,7 @@ bool DockContainerWidgetPrivate::restoreSideBar(CDockingStateReader& s,
 	Q_UNUSED(CreatedWidget)
 	// Simply ignore side bar auto hide widgets from saved state if
 	// auto hide support is disabled
-	if (!CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
+	if (!CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled))
 	{
 		return true;
 	}
@@ -1374,7 +1374,7 @@ CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockW
 CAutoHideDockContainer* CDockContainerWidget::createAndSetupAutoHideContainer(
 	SideBarLocation area, CDockWidget* DockWidget, CDockWidget::eAutoHideInsertOrder insertOrder)
 {
-	if (!CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
+	if (!CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled))
 	{
 		Q_ASSERT_X(false, "CDockContainerWidget::createAndInitializeDockWidgetOverlayContainer",
 			"Requested area does not exist in config");
@@ -1951,7 +1951,7 @@ void CDockContainerWidget::createRootSplitter()
 //============================================================================
 void CDockContainerWidget::createSideTabBarWidgets()
 {
-	if (!CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
+	if (!CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled))
 	{
 		return;
 	}

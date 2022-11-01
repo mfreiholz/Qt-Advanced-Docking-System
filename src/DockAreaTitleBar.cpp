@@ -124,9 +124,9 @@ struct DockAreaTitleBarPrivate
 	 * Returns true if the given config flag is set
 	 * Convenience function to ease config flag testing
 	 */
-	static bool testConfigFlag(CDockManager::eAutoHideFlag Flag)
+	static bool testAutoHideConfigFlag(CDockManager::eAutoHideFlag Flag)
 	{
-		return CDockManager::testConfigFlag(Flag);
+		return CDockManager::testAutoHideConfigFlag(Flag);
 	}
 
 	/**
@@ -191,14 +191,14 @@ void DockAreaTitleBarPrivate::createButtons()
 	_this->connect(UndockButton, SIGNAL(clicked()), SLOT(onUndockButtonClicked()));
 
 	// AutoHide Button
-	const auto autoHideEnabled = testConfigFlag(CDockManager::AutoHideFeatureEnabled);
-	AutoHideButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasAutoHideButton) && autoHideEnabled);
+	const auto autoHideEnabled = testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled);
+	AutoHideButton = new CTitleBarButton(testAutoHideConfigFlag(CDockManager::DockAreaHasAutoHideButton) && autoHideEnabled);
 	AutoHideButton->setObjectName("dockAreaAutoHideButton");
 	AutoHideButton->setAutoRaise(true);
 	internal::setToolTip(AutoHideButton, QObject::tr("Toggle Auto Hide"));
 	internal::setButtonIcon(AutoHideButton, QStyle::SP_DialogOkButton, ads::AutoHideIcon);
 	AutoHideButton->setSizePolicy(ButtonSizePolicy);
-	AutoHideButton->setCheckable(testConfigFlag(CDockManager::AutoHideButtonCheckable));
+	AutoHideButton->setCheckable(testAutoHideConfigFlag(CDockManager::AutoHideButtonCheckable));
 	AutoHideButton->setChecked(false);
 	Layout->addWidget(AutoHideButton, 0);
 	_this->connect(AutoHideButton, SIGNAL(clicked()),  SLOT(onAutoHideButtonClicked()));

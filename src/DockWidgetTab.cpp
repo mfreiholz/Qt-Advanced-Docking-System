@@ -343,10 +343,6 @@ CDockWidgetTab::CDockWidgetTab(CDockWidget* DockWidget, QWidget *parent) :
 	d->DockWidget = DockWidget;
 	d->createLayout();
 	setFocusPolicy(Qt::NoFocus);
-	/*if (CDockManager::testConfigFlag(CDockManager::FocusHighlighting))
-	{
-		setFocusPolicy(Qt::ClickFocus);
-	}*/
 }
 
 //============================================================================

@@ -1183,7 +1183,7 @@ bool CDockManager::testConfigFlag(eConfigFlag Flag)
 
 
 //===========================================================================
-bool CDockManager::testConfigFlag(eAutoHideFlag Flag)
+bool CDockManager::testAutoHideConfigFlag(eAutoHideFlag Flag)
 {
 	return autoHideConfigFlags().testFlag(Flag);
 }
