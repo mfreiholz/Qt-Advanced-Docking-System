@@ -1,4 +1,4 @@
-![ukraine](doc/ukraine.jpg)
+![ukraine](doc/taiwan_ukraine.jpg)
 
 ![logo](doc/ads_logo.svg)
 
@@ -14,7 +14,7 @@ integrated development environments (IDEs) such as Visual Studio.
 
 - [What's new](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/latest)
 - [Documentation](doc/user-guide.md)
-- Original Repository: https://github.com/githubuser0xFFFF/Qt-Advanced-Stylesheets
+- Original Repository: https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System
 
 [![Video Advanced Docking](doc/advanced-docking_video.png)](https://www.youtube.com/watch?v=7pdNfafg3Qc)
 
