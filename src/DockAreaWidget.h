@@ -79,6 +79,16 @@ private Q_SLOTS:
 	 */
 	void reorderDockWidget(int fromIndex, int toIndex);
 
+	/*
+	 * Update the auto hide button checked state based on if it's contained in an auto hide container or not
+	 */
+	void updateAutoHideButtonCheckState();
+
+	/*
+	 * Update the title bar button tooltips
+	 */
+	void updateTitleBarButtonToolTip();
+
 protected:
 
 #ifdef Q_OS_WIN
@@ -153,19 +163,9 @@ protected:
 	void markTitleBarMenuOutdated();
 
 	/*
-	 * Update the auto hide button checked state based on if it's contained in an auto hide container or not
-	 */
-	void updateAutoHideButtonCheckState();
-
-	/*
 	 * Update the title bar button visibility based on if it's top level or not
 	 */
 	void updateTitleBarButtonVisibility(bool IsTopLevel) const;
-
-	/*
-	 * Update the title bar button tooltips
-	 */
-	void updateTitleBarButtonToolTip();
 
 protected Q_SLOTS:
 	void toggleView(bool Open);

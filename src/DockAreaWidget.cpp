@@ -455,6 +455,8 @@ bool CDockAreaWidget::isAutoHide() const
 void CDockAreaWidget::setAutoHideDockContainer(CAutoHideDockContainer* AutoHideDockContainer)
 {
 	d->AutoHideDockContainer = AutoHideDockContainer;
+	updateAutoHideButtonCheckState();
+	updateTitleBarButtonToolTip();
 }
 
 
@@ -812,16 +814,24 @@ void CDockAreaWidget::updateTitleBarVisibility()
         return;
     }
 
-	if (d->TitleBar)
+    if (!d->TitleBar)
+    {
+    	return;
+    }
+
+	bool Hidden = Container->hasTopLevelDockWidget() && (Container->isFloating()
+		|| CDockManager::testConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar));
+	Hidden |= (d->Flags.testFlag(HideSingleWidgetTitleBar) && openDockWidgetsCount() == 1);
+	bool IsAutoHide = isAutoHide();
+	Hidden &= !IsAutoHide; // Titlebar must always be visible when auto hidden so it can be dragged
+	d->TitleBar->setVisible(!Hidden);
+
+	if (CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled))
 	{
-		bool Hidden = Container->hasTopLevelDockWidget() && (Container->isFloating()
-			|| CDockManager::testConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar));
-		Hidden |= (d->Flags.testFlag(HideSingleWidgetTitleBar) && openDockWidgetsCount() == 1);
-		d->TitleBar->setVisible(isAutoHide() ? true : !Hidden); // Titlebar must always be visible when auto hidden so it can be dragged
 		auto tabBar = d->TitleBar->tabBar();
-        tabBar->setVisible(isAutoHide() ? false : !Hidden);  // Never show tab bar when auto hidden
-        d->TitleBar->autoHideTitleLabel()->setVisible(isAutoHide());  // Always show when auto hidden, never otherwise
-        updateTitleBarButtonVisibility(Container->topLevelDockArea() == this);
+		tabBar->setVisible(!IsAutoHide);  // Never show tab bar when auto hidden
+		d->TitleBar->autoHideTitleLabel()->setVisible(IsAutoHide);  // Always show when auto hidden, never otherwise
+		updateTitleBarButtonVisibility(Container->topLevelDockArea() == this);
 	}
 }
 
@@ -849,6 +859,7 @@ void CDockAreaWidget::updateAutoHideButtonCheckState()
 //============================================================================
 void CDockAreaWidget::updateTitleBarButtonVisibility(bool IsTopLevel) const
 {
+	qDebug() << "CDockAreaWidget::updateTitleBarButtonVisibility IsTopLevel " << IsTopLevel;
 	d->updateTitleBarButtonVisibility(IsTopLevel);
 }
 

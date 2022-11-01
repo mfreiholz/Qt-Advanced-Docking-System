@@ -190,8 +190,6 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, SideBa
 	d->DockArea = new CDockAreaWidget(DockManager, parent);
 	d->DockArea->setObjectName("autoHideDockArea");
 	d->DockArea->setAutoHideDockContainer(this);
-	d->DockArea->updateAutoHideButtonCheckState();
-	d->DockArea->updateTitleBarButtonToolTip();
 
 	setObjectName("autoHideDockContainer");
 
