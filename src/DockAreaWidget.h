@@ -33,8 +33,8 @@
 #include <QFrame>
 
 #include "ads_globals.h"
+#include "AutoHideTab.h"
 #include "DockWidget.h"
-#include "DockWidgetSideTab.h"
 
 QT_FORWARD_DECLARE_CLASS(QXmlStreamWriter)
 QT_FORWARD_DECLARE_CLASS(QAbstractButton)

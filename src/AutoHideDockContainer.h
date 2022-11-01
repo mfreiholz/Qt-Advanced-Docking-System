@@ -31,9 +31,8 @@
 //============================================================================
 #include "ads_globals.h"
 
-#include "DockWidgetSideTab.h"
-
 #include <QSplitter>
+#include "AutoHideTab.h"
 
 class QXmlStreamWriter;
 
@@ -43,7 +42,7 @@ struct AutoHideDockContainerPrivate;
 class CDockManager;
 class CDockWidget;
 class CDockContainerWidget;
-class CSideTabBar;
+class CAutoHideSideBar;
 class CDockAreaWidget;
 class CDockingStateReader;
 struct SideTabBarPrivate;
@@ -58,7 +57,7 @@ class ADS_EXPORT CAutoHideDockContainer : public QFrame
 private:
 	AutoHideDockContainerPrivate* d; ///< private data (pimpl)
 	friend struct AutoHideDockContainerPrivate;
-	friend CSideTabBar;
+	friend CAutoHideSideBar;
 	friend SideTabBarPrivate;
 
 protected:
@@ -93,12 +92,12 @@ public:
 	/**
 	 * Get's the side tab bar
 	 */
-	CSideTabBar* sideTabBar() const;
+	CAutoHideSideBar* sideTabBar() const;
 
 	/**
 	 * Returns the side tab
 	 */
-	CDockWidgetSideTab* sideTab() const;
+	CAutoHideTab* sideTab() const;
 
 	/**
 	 * Get's the dock widget in this dock container

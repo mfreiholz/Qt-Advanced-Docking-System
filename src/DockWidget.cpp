@@ -29,6 +29,8 @@
 //                                   INCLUDES
 //============================================================================
 #include <AutoHideDockContainer.h>
+#include <AutoHideSideBar.h>
+#include <AutoHideTab.h>
 #include "DockWidgetTab.h"
 #include "DockWidget.h"
 
@@ -51,8 +53,6 @@
 #include <QScreen>
 #include <QWindow>
 
-#include "SideTabBar.h"
-#include "DockWidgetSideTab.h"
 #include "DockContainerWidget.h"
 #include "DockAreaWidget.h"
 #include "DockManager.h"
@@ -95,7 +95,7 @@ struct DockWidgetPrivate
 	CDockWidget::eMinimumSizeHintMode MinimumSizeHintMode = CDockWidget::MinimumSizeHintFromDockWidget;
 	WidgetFactory* Factory = nullptr;
 	CDockWidget::eAutoHideInsertOrder AutoHideInsertOrder = CDockWidget::Last;
-	QPointer<CDockWidgetSideTab> SideTabWidget;
+	QPointer<CAutoHideTab> SideTabWidget;
 	
 	/**
 	 * Private data constructor
@@ -522,14 +522,14 @@ CDockAreaWidget* CDockWidget::dockAreaWidget() const
 }
 
 //============================================================================
-CDockWidgetSideTab* CDockWidget::sideTabWidget() const
+CAutoHideTab* CDockWidget::sideTabWidget() const
 {
 	return d->SideTabWidget;
 }
 
 
 //============================================================================
-void CDockWidget::setSideTabWidget(CDockWidgetSideTab* SideTab) const
+void CDockWidget::setSideTabWidget(CAutoHideTab* SideTab) const
 {
 	d->SideTabWidget = SideTab;
 }

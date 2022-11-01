@@ -29,6 +29,7 @@
 //                                   INCLUDES
 //============================================================================
 #include <AutoHideDockContainer.h>
+#include <AutoHideTab.h>
 #include "DockAreaWidget.h"
 
 #include <QStackedLayout>
@@ -52,7 +53,6 @@
 #include "DockAreaTitleBar.h"
 #include "DockComponentsFactory.h"
 #include "DockWidgetTab.h"
-#include "DockWidgetSideTab.h"
 #include "DockingStateReader.h"
 
 

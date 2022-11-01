@@ -1,5 +1,5 @@
-#ifndef SideTabBarH
-#define SideTabBarH
+#ifndef AutoHideSideBarH
+#define AutoHideSideBarH
 /*******************************************************************************
 ** Qt Advanced Docking System
 ** Copyright (C) 2017 Uwe Kindler
@@ -23,24 +23,24 @@
 /// \file   DockWidgetTab.h
 /// \author Syarif Fakhri
 /// \date   05.09.2022
-/// \brief  Declaration of CSideTabBar class
+/// \brief  Declaration of CAutoHideSideBar class
 //============================================================================
 
 //============================================================================
 //                                   INCLUDES
 //============================================================================
 #include <QFrame>
-#include "DockWidgetSideTab.h"
 #include "ads_globals.h"
+#include "AutoHideTab.h"
 
 class QXmlStreamWriter;
 
 namespace ads
 {
-struct SideTabBarPrivate;
+struct AutoHideSideBarPrivate;
 class DockContainerWidgetPrivate;
 class CDockContainerWidget;
-class CDockWidgetSideTab;
+class CAutoHideTab;
 class CAutoHideDockContainer;
 class CDockingStateReader;
 
@@ -51,15 +51,15 @@ class CDockingStateReader;
  * side bar is also hidden. As soon as one single tab becomes visible, this
  * tab bar will be shown.
  */
-class ADS_EXPORT CSideTabBar : public QFrame
+class ADS_EXPORT CAutoHideSideBar : public QFrame
 {
     Q_OBJECT
-    Q_PROPERTY(int sideTabBarArea READ sideTabBarArea)
+    Q_PROPERTY(int sideBarArea READ sideBarArea)
     Q_PROPERTY(Qt::Orientation orientation READ orientation)
 
 private:
-    SideTabBarPrivate* d; ///< private data (pimpl)
-	friend struct SideTabBarPrivate;
+    AutoHideSideBarPrivate* d; ///< private data (pimpl)
+	friend struct AutoHideSideBarPrivate;
 	friend class DockWidgetSideTab;
 	friend DockContainerWidgetPrivate;
 
@@ -79,22 +79,22 @@ public:
 	/**
 	 * Default Constructor
 	 */
-    CSideTabBar(CDockContainerWidget* parent, SideBarLocation area);
+    CAutoHideSideBar(CDockContainerWidget* parent, SideBarLocation area);
 
 	/**
 	 * Virtual Destructor
 	 */
-	virtual ~CSideTabBar();
+	virtual ~CAutoHideSideBar();
 
 	/**
 	 * Inserts the given dock widget tab at the given position.
 	 */
-	void insertSideTab(int Index, CDockWidgetSideTab* SideTab);
+	void insertSideTab(int Index, CAutoHideTab* SideTab);
 
 	/**
 	 * Removes the given DockWidgetSideTab from the tabbar
 	 */
-	void removeSideTab(CDockWidgetSideTab* SideTab);
+	void removeSideTab(CAutoHideTab* SideTab);
 
 	/**
 	 * Insert dock widget
@@ -114,7 +114,7 @@ public:
 	/*
 	 * get the side tab widget at position, returns nullptr if it's out of bounds
 	 */
-	CDockWidgetSideTab* tabAt(int index) const;
+	CAutoHideTab* tabAt(int index) const;
 
 	/*
 	 * Gets the count of the tab widgets
@@ -124,7 +124,7 @@ public:
 	/**
 	 * Getter for side tab bar area property
 	 */
-	SideBarLocation sideTabBarArea() const;
+	SideBarLocation sideBarArea() const;
 
 Q_SIGNALS:
 	void sideTabAutoHideToggleRequested();

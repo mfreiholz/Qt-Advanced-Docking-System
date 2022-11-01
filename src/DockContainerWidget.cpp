@@ -29,6 +29,8 @@
 //                                   INCLUDES
 //============================================================================
 #include <AutoHideDockContainer.h>
+#include <AutoHideSideBar.h>
+#include <AutoHideTab.h>
 #include "DockContainerWidget.h"
 
 #include <QEvent>
@@ -49,9 +51,7 @@
 #include "DockOverlay.h"
 #include "ads_globals.h"
 #include "DockSplitter.h"
-#include "SideTabBar.h"
 #include "DockWidgetTab.h"
-#include "DockWidgetSideTab.h"
 #include "DockAreaTitleBar.h"
 #include "DockFocusController.h"
 
@@ -139,7 +139,7 @@ public:
 	unsigned int zOrderIndex = 0;
 	QList<CDockAreaWidget*> DockAreas;
 	QList<CAutoHideDockContainer*> AutoHideWidgets;
-	QMap<SideBarLocation, CSideTabBar*> SideTabBarWidgets;
+	QMap<SideBarLocation, CAutoHideSideBar*> SideTabBarWidgets;
 	QGridLayout* Layout = nullptr;
 	QSplitter* RootSplitter = nullptr;
 	bool isFloating = false;
@@ -1958,25 +1958,25 @@ void CDockContainerWidget::createSideTabBarWidgets()
 
 	{
 		auto Area = SideBarLocation::Left;
-        d->SideTabBarWidgets[Area] = new CSideTabBar(this, Area);
+        d->SideTabBarWidgets[Area] = new CAutoHideSideBar(this, Area);
 		d->Layout->addWidget(d->SideTabBarWidgets[Area], 1, 0);
 	}
 
 	{
 		auto Area = SideBarLocation::Right;
-        d->SideTabBarWidgets[Area] = new CSideTabBar(this, Area);
+        d->SideTabBarWidgets[Area] = new CAutoHideSideBar(this, Area);
 		d->Layout->addWidget(d->SideTabBarWidgets[Area], 1, 2);
 	}
 
 	{
 		auto Area = SideBarLocation::Bottom;
-        d->SideTabBarWidgets[Area] = new CSideTabBar(this, Area);
+        d->SideTabBarWidgets[Area] = new CAutoHideSideBar(this, Area);
         d->Layout->addWidget(d->SideTabBarWidgets[Area], 2, 1);
 	}
 
 	{
 		auto Area = SideBarLocation::Top;
-        d->SideTabBarWidgets[Area] = new CSideTabBar(this, Area);
+        d->SideTabBarWidgets[Area] = new CAutoHideSideBar(this, Area);
         d->Layout->addWidget(d->SideTabBarWidgets[Area], 0, 1);
 	}
 }
@@ -2126,7 +2126,7 @@ void CDockContainerWidget::closeOtherAreas(CDockAreaWidget* KeepOpenArea)
 }
 
 //============================================================================
-CSideTabBar* CDockContainerWidget::sideTabBar(SideBarLocation area) const
+CAutoHideSideBar* CDockContainerWidget::sideTabBar(SideBarLocation area) const
 {
 	return d->SideTabBarWidgets[area];
 }

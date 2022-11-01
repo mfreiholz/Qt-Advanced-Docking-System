@@ -164,9 +164,9 @@ ads--CFloatingWidgetTitleBar {
 
 
 /*****************************************************************************
- * CDockWidgetSideTab
+ * CAutoHideTab
  *****************************************************************************/
-ads--CDockWidgetSideTab {
+ads--CAutoHideTab {
     qproperty-iconSize: 16px 16px;/* this is optional in case you would like to change icon size*/
     padding-left: 2px;
     padding-right: 0px;
@@ -176,64 +176,64 @@ ads--CDockWidgetSideTab {
     border: none;
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="1"],
-ads--CDockWidgetSideTab[sideTabBarArea="3"] {
+ads--CAutoHideTab[sideTabBarArea="1"],
+ads--CAutoHideTab[sideTabBarArea="3"] {
     border-bottom: 5px solid rgba(0, 0, 0, 48);
 }
 
 
-ads--CDockWidgetSideTab[sideTabBarArea="0"],
-ads--CDockWidgetSideTab[sideTabBarArea="2"]  {
+ads--CAutoHideTab[sideTabBarArea="0"],
+ads--CAutoHideTab[sideTabBarArea="2"]  {
     border-top: 5px solid rgba(0, 0, 0, 48);
 }
 
 
-ads--CDockWidgetSideTab:hover[sideTabBarArea="0"],
-ads--CDockWidgetSideTab:hover[sideTabBarArea="2"]  {
+ads--CAutoHideTab:hover[sideTabBarArea="0"],
+ads--CAutoHideTab:hover[sideTabBarArea="2"]  {
     border-top: 5px solid palette(highlight);
     color: palette(highlight);
 }
 
 
-ads--CDockWidgetSideTab:hover[sideTabBarArea="1"],
-ads--CDockWidgetSideTab:hover[sideTabBarArea="3"]  {
+ads--CAutoHideTab:hover[sideTabBarArea="1"],
+ads--CAutoHideTab:hover[sideTabBarArea="3"]  {
     border-bottom: 5px solid palette(highlight);
     color: palette(highlight);
 }
 
-ads--CDockWidgetSideTab[sideTabBarArea="0"][activeTab="true"],
-ads--CDockWidgetSideTab[sideTabBarArea="2"][activeTab="true"]  {
+ads--CAutoHideTab[sideTabBarArea="0"][activeTab="true"],
+ads--CAutoHideTab[sideTabBarArea="2"][activeTab="true"]  {
     border-top: 5px solid palette(highlight);
 }
 
 
-ads--CDockWidgetSideTab[sideTabBarArea="1"][activeTab="true"],
-ads--CDockWidgetSideTab[sideTabBarArea="3"][activeTab="true"] {
+ads--CAutoHideTab[sideTabBarArea="1"][activeTab="true"],
+ads--CAutoHideTab[sideTabBarArea="3"][activeTab="true"] {
     border-bottom: 5px solid palette(highlight);
 }
 
 
 /*****************************************************************************
- * CSideTabBar
+ * CAutoHideBar
  *****************************************************************************/
-ads--CSideTabBar{
+ads--CAutoHideBar{
         background: palette(window);
 }
 
 
-ads--CSideTabBar[sideTabBarArea="0"] {
+ads--CAutoHideBar[sideTabBarArea="0"] {
     border-bottom: 1px solid palette(dark);
 }
 
-ads--CSideTabBar[sideTabBarArea="1"] {
+ads--CAutoHideBar[sideTabBarArea="1"] {
     border-right: 1px solid palette(dark);
 }
 
-ads--CSideTabBar[sideTabBarArea="2"] {
+ads--CAutoHideBar[sideTabBarArea="2"] {
     border-left: 1px solid palette(dark);
 }
 
-ads--CSideTabBar[sideTabBarArea="3"] {
+ads--CAutoHideBar[sideTabBarArea="3"] {
     border-top: 1px solid palette(dark);
 }
 

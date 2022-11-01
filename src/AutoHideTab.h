@@ -35,9 +35,9 @@
 
 namespace ads
 {
-struct DockWidgetSideTabPrivate;
+struct AutoHideTabPrivate;
 class CDockWidget;
-class CSideTabBar;
+class CAutoHideSideBar;
 class CDockWidgetTab;
 struct SideTabIconLabelPrivate;
 
@@ -46,7 +46,7 @@ struct SideTabIconLabelPrivate;
  * The dock widget tab is shown in the side tab bar to switch between
  * pinned dock widgets
  */
-class ADS_EXPORT CDockWidgetSideTab : public CPushButton
+class ADS_EXPORT CAutoHideTab : public CPushButton
 {
     Q_OBJECT
 
@@ -55,18 +55,18 @@ class ADS_EXPORT CDockWidgetSideTab : public CPushButton
 	Q_PROPERTY(bool activeTab READ isActiveTab)
 
 private:    
-	DockWidgetSideTabPrivate* d; ///< private data (pimpl)
-    friend struct DockWidgetSideTabPrivate;
+	AutoHideTabPrivate* d; ///< private data (pimpl)
+    friend struct AutoHideTabPrivate;
 	friend class CDockWidget;
 	friend class CAutoHideDockContainer;
 
 protected:
-	friend class CSideTabBar;
+	friend class CAutoHideSideBar;
 	friend class CDockAreaWidget;
 	friend class CDockContainerWidget;
 
-	void setSideTabBar(CSideTabBar *SideTabBar);
-	void removeFromSideTabBar();
+	void setSideBar(CAutoHideSideBar *SideTabBar);
+	void removeFromSideBar();
 
 public:
     using Super = CPushButton;
@@ -76,12 +76,12 @@ public:
 	 * param[in] DockWidget The dock widget this title bar belongs to
 	 * param[in] parent The parent widget of this title bar
 	 */
-	CDockWidgetSideTab(QWidget* parent = nullptr);
+	CAutoHideTab(QWidget* parent = nullptr);
 
 	/**
 	 * Virtual Destructor
 	 */
-	virtual ~CDockWidgetSideTab();
+	virtual ~CAutoHideTab();
 
 	/**
 	 * Update stylesheet style if a property changes

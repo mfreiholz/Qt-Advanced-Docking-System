@@ -28,9 +28,8 @@
 //                                   INCLUDES
 //============================================================================
 #include <AutoHideDockContainer.h>
-#include "DockWidgetSideTab.h"
-#include "SideTabBar.h"
-
+#include <AutoHideSideBar.h>
+#include <AutoHideTab.h>
 #include <QBoxLayout>
 
 #include "DockAreaWidget.h"
@@ -43,22 +42,22 @@ namespace ads
 /**
  * Private data class of CDockWidgetTab class (pimpl)
  */
-struct DockWidgetSideTabPrivate
+struct AutoHideTabPrivate
 {
-    CDockWidgetSideTab* _this;
+    CAutoHideTab* _this;
     CDockWidget* DockWidget = nullptr;
-    CSideTabBar* SideTabBar = nullptr;
+    CAutoHideSideBar* SideBar = nullptr;
 	Qt::Orientation Orientation{Qt::Vertical};
 
 	/**
 	 * Private data constructor
 	 */
-	DockWidgetSideTabPrivate(CDockWidgetSideTab* _public);
+	AutoHideTabPrivate(CAutoHideTab* _public);
 }; // struct DockWidgetTabPrivate
 
 
 //============================================================================
-DockWidgetSideTabPrivate::DockWidgetSideTabPrivate(CDockWidgetSideTab* _public) :
+AutoHideTabPrivate::AutoHideTabPrivate(CAutoHideTab* _public) :
 	_this(_public)
 {
 
@@ -66,27 +65,27 @@ DockWidgetSideTabPrivate::DockWidgetSideTabPrivate(CDockWidgetSideTab* _public) 
 
 
 //============================================================================
-void CDockWidgetSideTab::setSideTabBar(CSideTabBar* SideTabBar)
+void CAutoHideTab::setSideBar(CAutoHideSideBar* SideTabBar)
 {
-	d->SideTabBar = SideTabBar;
+	d->SideBar = SideTabBar;
 }
 
 
 //============================================================================
-void CDockWidgetSideTab::removeFromSideTabBar()
+void CAutoHideTab::removeFromSideBar()
 {
-	if (d->SideTabBar == nullptr)
+	if (d->SideBar == nullptr)
 	{
 		return;
 	}
-	d->SideTabBar->removeSideTab(this);
-    setSideTabBar(nullptr);
+	d->SideBar->removeSideTab(this);
+    setSideBar(nullptr);
 }
 
 //============================================================================
-CDockWidgetSideTab::CDockWidgetSideTab(QWidget* parent) :
+CAutoHideTab::CAutoHideTab(QWidget* parent) :
 	Super(parent),
-	d(new DockWidgetSideTabPrivate(this))
+	d(new AutoHideTabPrivate(this))
 {
 	setAttribute(Qt::WA_NoMousePropagation);
 	setFocusPolicy(Qt::NoFocus);
@@ -94,7 +93,7 @@ CDockWidgetSideTab::CDockWidgetSideTab(QWidget* parent) :
 
 
 //============================================================================
-CDockWidgetSideTab::~CDockWidgetSideTab()
+CAutoHideTab::~CAutoHideTab()
 {
 	qDebug() << "~CDockWidgetSideTab()";
 	delete d;
@@ -102,7 +101,7 @@ CDockWidgetSideTab::~CDockWidgetSideTab()
 
 
 //============================================================================
-void CDockWidgetSideTab::updateStyle()
+void CAutoHideTab::updateStyle()
 {
     internal::repolishStyle(this, internal::RepolishDirectChildren);
 	update();
@@ -110,11 +109,11 @@ void CDockWidgetSideTab::updateStyle()
 
 
 //============================================================================
-SideBarLocation CDockWidgetSideTab::sideTabBarArea() const
+SideBarLocation CAutoHideTab::sideTabBarArea() const
 {
-    if (d->SideTabBar)
+    if (d->SideBar)
 	{
-        return d->SideTabBar->sideTabBarArea();
+        return d->SideBar->sideBarArea();
 	}
 
 	return Left;
@@ -122,7 +121,7 @@ SideBarLocation CDockWidgetSideTab::sideTabBarArea() const
 
 
 //============================================================================
-void CDockWidgetSideTab::setOrientation(Qt::Orientation Orientation)
+void CAutoHideTab::setOrientation(Qt::Orientation Orientation)
 {
 	d->Orientation = Orientation;
 	CPushButton::setButtonOrientation((Qt::Horizontal == Orientation)
@@ -132,14 +131,14 @@ void CDockWidgetSideTab::setOrientation(Qt::Orientation Orientation)
 
 
 //============================================================================
-Qt::Orientation CDockWidgetSideTab::orientation() const
+Qt::Orientation CAutoHideTab::orientation() const
 {
 	return d->Orientation;
 }
 
 
 //============================================================================
-void CDockWidgetSideTab::updateOrientationForArea(SideBarLocation area)
+void CAutoHideTab::updateOrientationForArea(SideBarLocation area)
 {
 	setOrientation((area == Bottom || area == Top) ? Qt::Horizontal : Qt::Vertical);
 
@@ -177,7 +176,7 @@ void CDockWidgetSideTab::updateOrientationForArea(SideBarLocation area)
 
 
 //============================================================================
-bool CDockWidgetSideTab::isActiveTab() const
+bool CAutoHideTab::isActiveTab() const
 {
 	if (d->DockWidget && d->DockWidget->autoHideDockContainer())
 	{
@@ -189,14 +188,14 @@ bool CDockWidgetSideTab::isActiveTab() const
 
 
 //============================================================================
-CDockWidget* CDockWidgetSideTab::dockWidget() const
+CDockWidget* CAutoHideTab::dockWidget() const
 {
 	return d->DockWidget;
 }
 
 
 //============================================================================
-void CDockWidgetSideTab::setDockWidget(CDockWidget* DockWidget)
+void CAutoHideTab::setDockWidget(CDockWidget* DockWidget)
 {
 	if (!DockWidget)
 	{

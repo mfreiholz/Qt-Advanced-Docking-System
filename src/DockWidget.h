@@ -46,9 +46,9 @@ class CDockContainerWidget;
 class CDockAreaWidget;
 class DockContainerWidgetPrivate;
 class CFloatingDockContainer;
-class CDockWidgetSideTab;
+class CAutoHideTab;
 class CAutoHideDockContainer;
-class CSideTabBar;
+class CAutoHideSideBar;
 
 /**
  * The QDockWidget class provides a widget that can be docked inside a
@@ -79,7 +79,7 @@ protected:
     friend struct DockWidgetTabPrivate;
     friend struct DockAreaTitleBarPrivate;
     friend class CAutoHideDockContainer;
-    friend CSideTabBar;
+    friend CAutoHideSideBar;
 
     /**
      * Assigns the dock manager that manages this dock widget
@@ -365,12 +365,12 @@ public:
      * a auto hide container. If it is not in a auto hide container, then this
      * function returns a nullptr,
      */
-    CDockWidgetSideTab* sideTabWidget() const;
+    CAutoHideTab* sideTabWidget() const;
 
     /**
      * Assign a side tab widget if this dock widget is an auto hide container
      */
-    void setSideTabWidget(CDockWidgetSideTab* SideTab) const;
+    void setSideTabWidget(CAutoHideTab* SideTab) const;
 
     /**
      * Returns true, if this dock widget is in an auto hide container

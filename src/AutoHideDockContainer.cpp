@@ -27,6 +27,8 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
+#include <AutoHideSideBar.h>
+#include <AutoHideTab.h>
 #include "AutoHideDockContainer.h"
 
 #include <QXmlStreamWriter>
@@ -37,9 +39,7 @@
 #include <QApplication>
 
 #include "DockManager.h"
-#include "DockWidgetSideTab.h"
 #include "DockWidgetTab.h"
-#include "SideTabBar.h"
 #include "DockAreaWidget.h"
 #include "DockingStateReader.h"
 #include "ResizeHandle.h"
@@ -110,7 +110,7 @@ struct AutoHideDockContainerPrivate
 	QBoxLayout* Layout;
 	CResizeHandle* ResizeHandle = nullptr;
 	QSize Size; // creates invalid size
-	QPointer<CDockWidgetSideTab> SideTab;
+	QPointer<CAutoHideTab> SideTab;
 
 	/**
 	 * Private data constructor
@@ -186,7 +186,7 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, SideBa
 	hide(); // auto hide dock container is initially always hidden
 	d->SideTabBarArea = area;
 	d->SideTab = componentsFactory()->createDockWidgetSideTab(nullptr);
-	connect(d->SideTab, &CDockWidgetSideTab::pressed, this, &CAutoHideDockContainer::toggleCollapseState);
+	connect(d->SideTab, &CAutoHideTab::pressed, this, &CAutoHideDockContainer::toggleCollapseState);
 	d->DockArea = new CDockAreaWidget(DockManager, parent);
 	d->DockArea->setObjectName("autoHideDockArea");
 	d->DockArea->setAutoHideDockContainer(this);
@@ -275,14 +275,14 @@ CAutoHideDockContainer::~CAutoHideDockContainer()
 }
 
 //============================================================================
-CSideTabBar* CAutoHideDockContainer::sideTabBar() const
+CAutoHideSideBar* CAutoHideDockContainer::sideTabBar() const
 {
 	return parentContainer()->sideTabBar(d->SideTabBarArea);
 }
 
 
 //============================================================================
-CDockWidgetSideTab* CAutoHideDockContainer::sideTab() const
+CAutoHideTab* CAutoHideDockContainer::sideTab() const
 {
 	return d->SideTab;
 }
@@ -357,7 +357,7 @@ void CAutoHideDockContainer::cleanupAndDelete()
 	if (dockWidget)
 	{
 		auto SideTab = d->SideTab;
-        SideTab->removeFromSideTabBar();
+        SideTab->removeFromSideBar();
         SideTab->setParent(dockWidget);
         SideTab->hide();
 	}
