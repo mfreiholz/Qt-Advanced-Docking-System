@@ -493,10 +493,7 @@ void CDockAreaTitleBar::onCurrentTabChanged(int Index)
 //============================================================================
 void CDockAreaTitleBar::onAutoHideButtonClicked()
 {
-	if (d->DockArea->features().testFlag(CDockWidget::DockWidgetPinnable))
-	{
-        d->DockArea->toggleAutoHideArea(!d->DockArea->isAutoHide());
-	}
+	d->DockArea->toggleAutoHideArea(!d->DockArea->isAutoHide());
 }
 
 
