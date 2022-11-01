@@ -227,7 +227,7 @@ void CAutoHideDockContainer::updateSize()
 	auto dockContainerParent = parentContainer();
 	auto rect = dockContainerParent->contentRect();
 
-	switch (sideTabBarArea())
+	switch (sideBarLocation())
 	{
 	case SideBarLocation::Top:
 		 resize(rect.width(), qMin(rect.height(), d->Size.height() - ResizeMargin));
@@ -271,18 +271,23 @@ CAutoHideDockContainer::~CAutoHideDockContainer()
 		parentContainer()->removeAutoHideWidget(this);
 	}
 
+	if (d->SideTab)
+	{
+		delete d->SideTab;
+	}
+
 	delete d;
 }
 
 //============================================================================
-CAutoHideSideBar* CAutoHideDockContainer::sideTabBar() const
+CAutoHideSideBar* CAutoHideDockContainer::sideBar() const
 {
 	return parentContainer()->sideTabBar(d->SideTabBarArea);
 }
 
 
 //============================================================================
-CAutoHideTab* CAutoHideDockContainer::sideTab() const
+CAutoHideTab* CAutoHideDockContainer::autoHideTab() const
 {
 	return d->SideTab;
 }
@@ -327,7 +332,7 @@ void CAutoHideDockContainer::addDockWidget(CDockWidget* DockWidget)
 
 
 //============================================================================
-SideBarLocation CAutoHideDockContainer::sideTabBarArea() const
+SideBarLocation CAutoHideDockContainer::sideBarLocation() const
 {
 	return d->SideTabBarArea;
 }
@@ -356,9 +361,10 @@ void CAutoHideDockContainer::cleanupAndDelete()
 	const auto dockWidget = d->DockWidget;
 	if (dockWidget)
 	{
+
 		auto SideTab = d->SideTab;
         SideTab->removeFromSideBar();
-        SideTab->setParent(dockWidget);
+        SideTab->setParent(nullptr);
         SideTab->hide();
 	}
 

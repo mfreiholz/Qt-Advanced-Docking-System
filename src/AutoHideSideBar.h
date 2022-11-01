@@ -54,7 +54,7 @@ class CDockingStateReader;
 class ADS_EXPORT CAutoHideSideBar : public QFrame
 {
     Q_OBJECT
-    Q_PROPERTY(int sideBarArea READ sideBarArea)
+    Q_PROPERTY(int sideBarLocation READ sideBarLocation)
     Q_PROPERTY(Qt::Orientation orientation READ orientation)
 
 private:
@@ -64,7 +64,6 @@ private:
 	friend DockContainerWidgetPrivate;
 
 protected:
-    virtual void paintEvent(QPaintEvent* event) override;
 	virtual bool event(QEvent* e) override;
 	virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
@@ -72,6 +71,12 @@ protected:
 	 * Saves the state into the given stream
 	 */
 	void saveState(QXmlStreamWriter& Stream) const;
+
+	/**
+	 * Inserts the given dock widget tab at the given position.
+	 * An Index value of -1 appends the side tab at the end.
+	 */
+	void insertTab(int Index, CAutoHideTab* SideTab);
 
 public:
     using Super = QFrame;
@@ -87,24 +92,16 @@ public:
 	virtual ~CAutoHideSideBar();
 
 	/**
-	 * Inserts the given dock widget tab at the given position.
-	 */
-	void insertSideTab(int Index, CAutoHideTab* SideTab);
-
-	/**
 	 * Removes the given DockWidgetSideTab from the tabbar
 	 */
-	void removeSideTab(CAutoHideTab* SideTab);
+	void removeTab(CAutoHideTab* SideTab);
 
 	/**
-	 * Insert dock widget
+	 * Insert dock widget into the side bar.
+	 * The function creates the auto hide dock container, inserts the
+	 * auto hide tab
 	 */
 	CAutoHideDockContainer* insertDockWidget(int Index, CDockWidget* DockWidget);
-
-	/**
-	 * Remove dock widget from sidebar
-	 */
-	void removeDockWidget(CDockWidget* DockWidget);
 
 	/**
 	 * Returns orientation of side tab.
@@ -124,7 +121,7 @@ public:
 	/**
 	 * Getter for side tab bar area property
 	 */
-	SideBarLocation sideBarArea() const;
+	SideBarLocation sideBarLocation() const;
 
 Q_SIGNALS:
 	void sideTabAutoHideToggleRequested();

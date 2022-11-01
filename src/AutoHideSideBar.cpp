@@ -128,11 +128,10 @@ CAutoHideSideBar::~CAutoHideSideBar()
 
 
 //============================================================================
-void CAutoHideSideBar::insertSideTab(int Index, CAutoHideTab* SideTab)
+void CAutoHideSideBar::insertTab(int Index, CAutoHideTab* SideTab)
 {
 	SideTab->installEventFilter(this);
     SideTab->setSideBar(this);
-    SideTab->updateOrientationForArea(d->SideTabArea);
     d->TabsLayout->insertWidget(Index, SideTab);
     show();
 }
@@ -143,22 +142,14 @@ CAutoHideDockContainer* CAutoHideSideBar::insertDockWidget(int Index, CDockWidge
 {
 	auto AutoHideContainer = new CAutoHideDockContainer(DockWidget, d->SideTabArea, d->ContainerWidget);
 	DockWidget->dockManager()->dockFocusController()->clearDockWidgetFocus(DockWidget);
-	auto Tab = AutoHideContainer->sideTab();
-	insertSideTab(Index, Tab);
+	auto Tab = AutoHideContainer->autoHideTab();
+	insertTab(Index, Tab);
 	return AutoHideContainer;
 }
 
 
 //============================================================================
-void CAutoHideSideBar::removeDockWidget(CDockWidget* DockWidget)
-{
-	Q_UNUSED(DockWidget);
-	// TODO implement
-}
-
-
-//============================================================================
-void CAutoHideSideBar::removeSideTab(CAutoHideTab* SideTab)
+void CAutoHideSideBar::removeTab(CAutoHideTab* SideTab)
 {
 	SideTab->removeEventFilter(this);
     d->TabsLayout->removeWidget(SideTab);
@@ -226,19 +217,6 @@ bool CAutoHideSideBar::eventFilter(QObject *watched, QEvent *event)
 	return false;
 }
 
-
-//============================================================================
-void CAutoHideSideBar::paintEvent(QPaintEvent* event)
-{
-	Q_UNUSED(event)
-
-    QStyleOption option;
-    option.initFrom(this);
-    QPainter painter(this);
-    style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
-}
-
-
 //============================================================================
 Qt::Orientation CAutoHideSideBar::orientation() const
 {
@@ -261,7 +239,7 @@ int CAutoHideSideBar::tabCount() const
 
 
 //============================================================================
-SideBarLocation CAutoHideSideBar::sideBarArea() const
+SideBarLocation CAutoHideSideBar::sideBarLocation() const
 {
 	return d->SideTabArea;
 }
@@ -276,7 +254,7 @@ void CAutoHideSideBar::saveState(QXmlStreamWriter& s) const
 	}
 
 	s.writeStartElement("SideBar");
-	s.writeAttribute("Area", QString::number(sideBarArea()));
+	s.writeAttribute("Area", QString::number(sideBarLocation()));
 	s.writeAttribute("Tabs", QString::number(tabCount()));
 
 	for (auto i = 0; i < tabCount(); ++i)

@@ -50,7 +50,7 @@ class ADS_EXPORT CAutoHideTab : public CPushButton
 {
     Q_OBJECT
 
-    Q_PROPERTY(int sideTabBarArea READ sideTabBarArea)
+    Q_PROPERTY(int sideBarLocation READ sideBarLocation)
     Q_PROPERTY(Qt::Orientation orientation READ orientation)
 	Q_PROPERTY(bool activeTab READ isActiveTab)
 
@@ -91,7 +91,7 @@ public:
 	/**
 	 * Getter for side tab bar area property
 	 */
-	SideBarLocation sideTabBarArea() const;
+	SideBarLocation sideBarLocation() const;
 
 	/**
 	 * Set orientation vertical or horizontal
@@ -104,12 +104,8 @@ public:
 	Qt::Orientation orientation() const;
 
 	/**
-	 * Update the orientation, visibility and spacing based on the area and the config
-	 */
-	void updateOrientationForArea(SideBarLocation area);
-
-	/**
-	 * Returns true, if this is the active tab. The tab is active if the auto hide widget is visible
+	 * Returns true, if this is the active tab. The tab is active if the auto
+	 * hide widget is visible
 	 */
 	bool isActiveTab() const;
 

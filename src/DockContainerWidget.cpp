@@ -1714,7 +1714,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	auto autoHideWidgets = FloatingWidget->dockContainer()->autoHideWidgets();
 	for (const auto autohideWidget : autoHideWidgets)
 	{
-		createAndSetupAutoHideContainer(autohideWidget->sideTabBarArea(), autohideWidget->dockWidget(), autohideWidget->dockWidget()->autoHideInsertOrder());
+		createAndSetupAutoHideContainer(autohideWidget->sideBarLocation(), autohideWidget->dockWidget(), autohideWidget->dockWidget()->autoHideInsertOrder());
 	}
 
 	if (DockArea)

@@ -53,7 +53,7 @@ struct SideTabBarPrivate;
 class ADS_EXPORT CAutoHideDockContainer : public QFrame
 {
 	Q_OBJECT
-    Q_PROPERTY(int sideTabBarArea READ sideTabBarArea)
+    Q_PROPERTY(int sideBarLocation READ sideBarLocation)
 private:
 	AutoHideDockContainerPrivate* d; ///< private data (pimpl)
 	friend struct AutoHideDockContainerPrivate;
@@ -63,6 +63,10 @@ private:
 protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
+
+	/**
+	 * Updates the size considering the size limits and the resize margins
+	 */
 	void updateSize();
 
 	/*
@@ -92,12 +96,12 @@ public:
 	/**
 	 * Get's the side tab bar
 	 */
-	CAutoHideSideBar* sideTabBar() const;
+	CAutoHideSideBar* sideBar() const;
 
 	/**
 	 * Returns the side tab
 	 */
-	CAutoHideTab* sideTab() const;
+	CAutoHideTab* autoHideTab() const;
 
 	/**
 	 * Get's the dock widget in this dock container
@@ -112,7 +116,7 @@ public:
     /**
 	 * Returns the side tab bar area of this Auto Hide dock container
 	 */
-	SideBarLocation sideTabBarArea() const;
+	SideBarLocation sideBarLocation() const;
 
 	/**
 	 * Returns the dock area widget of this Auto Hide dock container
