@@ -18,23 +18,23 @@
 
 
 //============================================================================
-/// \file   DockWidgetTab.h
+/// \file   AutoHideTab.cpp
 /// \author Syarif Fakhri
 /// \date   05.09.2022
-/// \brief  Implementation of CDockWidgetSideTab class
+/// \brief  Implementation of CAutoHideTab class
 //============================================================================
 
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include <AutoHideDockContainer.h>
-#include <AutoHideSideBar.h>
-#include <AutoHideTab.h>
+#include "AutoHideTab.h"
+
 #include <QBoxLayout>
 
+#include "AutoHideDockContainer.h"
+#include "AutoHideSideBar.h"
 #include "DockAreaWidget.h"
 #include "DockManager.h"
-
 #include "DockWidget.h"
 
 namespace ads

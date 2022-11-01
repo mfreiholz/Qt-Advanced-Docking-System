@@ -20,7 +20,7 @@
 
 
 //============================================================================
-/// \file   DockWidgetTab.h
+/// \file   AutoHideSideBar.h
 /// \author Syarif Fakhri
 /// \date   05.09.2022
 /// \brief  Declaration of CAutoHideSideBar class

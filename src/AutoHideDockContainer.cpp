@@ -18,7 +18,7 @@
 
 
 //============================================================================
-/// \file   AutoHideDockContainer.h
+/// \file   AutoHideDockContainer.cpp
 /// \author Syarif Fakhri
 /// \date   05.09.2022
 /// \brief  Implementation of CAutoHideDockContainer class
@@ -27,8 +27,6 @@
 //============================================================================
 //                                   INCLUDES
 //============================================================================
-#include <AutoHideSideBar.h>
-#include <AutoHideTab.h>
 #include "AutoHideDockContainer.h"
 
 #include <QXmlStreamWriter>
@@ -44,6 +42,8 @@
 #include "DockingStateReader.h"
 #include "ResizeHandle.h"
 #include "DockComponentsFactory.h"
+#include "AutoHideSideBar.h"
+#include "AutoHideTab.h"
 
 
 #include <iostream>

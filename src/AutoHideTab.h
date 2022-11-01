@@ -1,5 +1,5 @@
-#ifndef DockWidgetSideTabH
-#define DockWidgetSideTabH
+#ifndef AutoHideTabH
+#define AutoHideTabH
 /*******************************************************************************
 ** Qt Advanced Docking System
 ** Copyright (C) 2017 Uwe Kindler
@@ -20,10 +20,10 @@
 
 
 //============================================================================
-/// \file   DockWidgetTab.h
+/// \file   AutoHideTab.h
 /// \author Syarif Fakhri
 /// \date   05.09.2022
-/// \brief  Declaration of CDockWidgetSideTab class
+/// \brief  Declaration of CAutoHideTab class
 //============================================================================
 
 //============================================================================
@@ -118,7 +118,7 @@ public:
 	 * Sets the dock widget that is controlled by this tab
 	 */
 	void setDockWidget(CDockWidget* DockWidget);
-}; // class DockWidgetSideTab
+}; // class AutoHideTab
 }
  // namespace ads
 //-----------------------------------------------------------------------------
