@@ -220,7 +220,7 @@ public:
 	/**
 	 * Get's the auto hide dock side tab bar area based on the dock area widget position
 	 */
-	SideBarLocation calculateSideTabBarArea(CDockAreaWidget* DockAreaWidget);
+	SideBarLocation calculateSideTabBarArea(const CDockAreaWidget* DockAreaWidget) const;
 
 	/**
 	 * Removes dockwidget

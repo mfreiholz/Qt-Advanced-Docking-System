@@ -62,6 +62,15 @@ static const char* const INDEX_PROPERTY = "index";
 static const char* const ACTION_PROPERTY = "action";
 
 /**
+ * Check, if auto hide is enabled
+ */
+static bool isAutoHideFeatureEnabled()
+{
+	return CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled);
+}
+
+
+/**
  * Internal dock area layout mimics stack layout but only inserts the current
  * widget into the internal QLayout object.
  * \warning Only the current widget has a parent. All other widgets
@@ -826,7 +835,7 @@ void CDockAreaWidget::updateTitleBarVisibility()
 	Hidden &= !IsAutoHide; // Titlebar must always be visible when auto hidden so it can be dragged
 	d->TitleBar->setVisible(!Hidden);
 
-	if (CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled))
+	if (isAutoHideFeatureEnabled())
 	{
 		auto tabBar = d->TitleBar->tabBar();
 		tabBar->setVisible(!IsAutoHide);  // Never show tab bar when auto hidden
@@ -1176,16 +1185,29 @@ void CDockAreaWidget::closeArea()
     }
 }
 
+
 //============================================================================
-void CDockAreaWidget::toggleAutoHide(bool Enable)
+SideBarLocation CDockAreaWidget::calculateSideTabBarArea() const
 {
+	return dockContainer()->calculateSideTabBarArea(this);
+}
+
+
+//============================================================================
+void CDockAreaWidget::setAutoHide(bool Enable)
+{
+	if (!isAutoHideFeatureEnabled())
+	{
+		return;
+	}
+
 	if (!Enable)
 	{
 		autoHideDockContainer()->moveContentsToParent();
 		return;
 	}
 
-	const auto area = dockContainer()->calculateSideTabBarArea(this);
+	const auto area = calculateSideTabBarArea();
 
 	if (CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideButtonTogglesArea)
 	 && features().testFlag(CDockWidget::DockWidgetPinnable))
@@ -1209,6 +1231,18 @@ void CDockAreaWidget::toggleAutoHide(bool Enable)
 		}
 		dockContainer()->createAndSetupAutoHideContainer(area, DockWidget);
 	}
+}
+
+
+//============================================================================
+void CDockAreaWidget::toggleAutoHide()
+{
+	if (!isAutoHideFeatureEnabled())
+	{
+		return;
+	}
+
+	setAutoHide(!isAutoHide());
 }
 
 

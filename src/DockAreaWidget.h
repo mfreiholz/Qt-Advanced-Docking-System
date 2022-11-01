@@ -89,6 +89,12 @@ private Q_SLOTS:
 	 */
 	void updateTitleBarButtonToolTip();
 
+	/**
+	 * Calculate the auto hide side bar location depending on the dock area
+	 * widget position in the container
+	 */
+	SideBarLocation calculateSideTabBarArea() const;
+
 protected:
 
 #ifdef Q_OS_WIN
@@ -211,7 +217,7 @@ public:
 	CAutoHideDockContainer* autoHideDockContainer() const; 
 
 	/**
-	 * Returns true if the dock area exists in an auto hide dock container
+	 * Returns true if the dock area is in an auto hide container
 	 */
 	bool isAutoHide() const;
 
@@ -385,9 +391,15 @@ public Q_SLOTS:
 	void closeArea();
 
 	/**
-	 * Toggles the Auto hides behaviour of the dock area and all dock widgets in this area
+	 * Sets the dock area into auto hide mode or into normal mode
 	 */
-	void toggleAutoHide(bool Enable);
+	void setAutoHide(bool Enable);
+
+	/**
+	 * Switches the dock area to auto hide mode or vice versa depending on its
+	 * current state.
+	 */
+	void toggleAutoHide();
 
     /**
 	 * This function closes all other areas except of this area

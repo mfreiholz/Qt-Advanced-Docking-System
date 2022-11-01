@@ -1411,7 +1411,7 @@ enum eBorderLocation
 
 
 //============================================================================
-SideBarLocation CDockContainerWidget::calculateSideTabBarArea(CDockAreaWidget* DockAreaWidget)
+SideBarLocation CDockContainerWidget::calculateSideTabBarArea(const CDockAreaWidget* DockAreaWidget) const
 {
 
 	auto ContentRect = this->contentRect();
