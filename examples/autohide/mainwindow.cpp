@@ -27,7 +27,7 @@ CMainWindow::CMainWindow(QWidget *parent)
     CDockManager::setConfigFlag(CDockManager::OpaqueSplitterResize, true);
     CDockManager::setConfigFlag(CDockManager::XmlCompressionEnabled, false);
     CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
-    CDockManager::setConfigFlag(CDockManager::DefaultAutoHideConfig, true);
+    CDockManager::setAutoHideConfigFlags(CDockManager::DefaultAutoHideConfig);
     DockManager = new CDockManager(this);
 
     // Set central widget

@@ -117,7 +117,6 @@ CSideTabBar::CSideTabBar(CDockContainerWidget* parent, SideBarLocation area) :
 CSideTabBar::~CSideTabBar() 
 {
 	qDebug() << "~CSideTabBar() ";
-	qDebug() << "parent " << d->ContainerWidget;
 	// The SideTabeBar is not the owner of the tabs and to prevent deletion
 	// we set the parent here to nullptr to remove it from the children
 	auto Tabs = findChildren<CDockWidgetSideTab*>(QString(), Qt::FindDirectChildrenOnly);

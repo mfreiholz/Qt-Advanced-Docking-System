@@ -226,9 +226,15 @@ public:
 	};
 	Q_DECLARE_FLAGS(ConfigFlags, eConfigFlag)
 
+
+	/**
+	 * These global configuration flags configure some dock manager auto hide
+	 * settings
+	 * Set the dock manager flags, before you create the dock manager instance.
+	 */
     enum eAutoHideFlag
 	{
-		AutoHideFeatureEnabled = 0x01,
+		AutoHideFeatureEnabled = 0x01, //!< enables / disables auto hide feature
 		DockAreaHasAutoHideButton = 0x02,     //!< If the flag is set each dock area has a auto hide menu button
 		LeftSideBarIconOnly = 0x04,  //!< If the flag is set left side bar will show only icon if a the dock widget has an icon assigned
 		RightSideBarIconOnly = 0x08, //!< If the flag is set right side bar will show only icon if a the dock widget has an icon assigned
@@ -279,7 +285,7 @@ public:
 	 * Call this function before you create the dock manager and before
 	 * your create the first dock widget.
 	 */
-	static void setConfigFlags(const AutoHideFlags Flags);
+	static void setAutoHideConfigFlags(const AutoHideFlags Flags);
 
 	/**
 	 * Set a certain config flag.
@@ -291,7 +297,7 @@ public:
 	 * Set a certain overlay config flag.
 	 * \see setConfigFlags()
 	 */
-	static void setConfigFlag(eAutoHideFlag Flag, bool On = true);
+	static void setAutoHideConfigFlag(eAutoHideFlag Flag, bool On = true);
 
 	/**
 	 * Returns true if the given config flag is set

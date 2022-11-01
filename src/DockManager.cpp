@@ -93,7 +93,7 @@ enum eStateFileVersion
 };
 
 static CDockManager::ConfigFlags StaticConfigFlags = CDockManager::DefaultNonOpaqueConfig;
-static CDockManager::AutoHideFlags StaticAutoHideConfigFlags = CDockManager::DefaultAutoHideConfig;
+static CDockManager::AutoHideFlags StaticAutoHideConfigFlags; // auto hide feature is disabled by default
 
 static QString FloatingContainersTitle;
 
@@ -1159,7 +1159,7 @@ void CDockManager::setConfigFlags(const ConfigFlags Flags)
 
 
 //===========================================================================
-void CDockManager::setConfigFlags(const AutoHideFlags Flags)
+void CDockManager::setAutoHideConfigFlags(const AutoHideFlags Flags)
 {
 	StaticAutoHideConfigFlags = Flags;
 }
@@ -1173,7 +1173,7 @@ void CDockManager::setConfigFlag(eConfigFlag Flag, bool On)
 
 
 //===========================================================================
-void CDockManager::setConfigFlag(eAutoHideFlag Flag, bool On)
+void CDockManager::setAutoHideConfigFlag(eAutoHideFlag Flag, bool On)
 {
 	internal::setFlag(StaticAutoHideConfigFlags, Flag, On);
 }
