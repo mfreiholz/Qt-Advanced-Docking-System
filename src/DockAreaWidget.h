@@ -387,7 +387,7 @@ public Q_SLOTS:
 	/**
 	 * Toggles the Auto hides behaviour of the dock area and all dock widgets in this area
 	 */
-	void toggleAutoHideArea(bool Enable);
+	void toggleAutoHide(bool Enable);
 
     /**
 	 * This function closes all other areas except of this area

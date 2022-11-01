@@ -867,18 +867,17 @@ CDockAreaWidget* CDockManager::addDockWidgetToContainer(DockWidgetArea area,
 }
 
 //============================================================================
-CAutoHideDockContainer* CDockManager::addAutoHideDockWidget(SideBarLocation area, CDockWidget* Dockwidget,
-	CDockWidget::eAutoHideInsertOrder insertOrder)
+CAutoHideDockContainer* CDockManager::addAutoHideDockWidget(SideBarLocation area, CDockWidget* Dockwidget)
 {
-	return addAutoHideDockWidgetToContainer(area, Dockwidget, this, insertOrder);
+	return addAutoHideDockWidgetToContainer(area, Dockwidget, this);
 }
 
 //============================================================================
 CAutoHideDockContainer* CDockManager::addAutoHideDockWidgetToContainer(SideBarLocation area, CDockWidget* Dockwidget,
-	CDockContainerWidget* DockContainerWidget, CDockWidget::eAutoHideInsertOrder insertOrder)
+	CDockContainerWidget* DockContainerWidget)
 {
 	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
-	auto container = DockContainerWidget->createAndSetupAutoHideContainer(area, Dockwidget, insertOrder);
+	auto container = DockContainerWidget->createAndSetupAutoHideContainer(area, Dockwidget);
 	container->collapseView(true);
 
 	Q_EMIT dockWidgetAdded(Dockwidget);

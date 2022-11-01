@@ -1372,7 +1372,7 @@ CDockAreaWidget* CDockContainerWidget::addDockWidget(DockWidgetArea area, CDockW
 
 //============================================================================
 CAutoHideDockContainer* CDockContainerWidget::createAndSetupAutoHideContainer(
-	SideBarLocation area, CDockWidget* DockWidget, CDockWidget::eAutoHideInsertOrder insertOrder)
+	SideBarLocation area, CDockWidget* DockWidget)
 {
 	if (!CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled))
 	{
@@ -1385,7 +1385,7 @@ CAutoHideDockContainer* CDockContainerWidget::createAndSetupAutoHideContainer(
         DockWidget->setDockManager(d->DockManager); // Auto hide Dock Container needs a valid dock manager
 	}
 
-	return sideTabBar(area)->insertDockWidget(insertOrder == CDockWidget::First ? 0 : -1, DockWidget);
+	return sideTabBar(area)->insertDockWidget(-1, DockWidget);
 }
 
 
@@ -1714,7 +1714,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	auto autoHideWidgets = FloatingWidget->dockContainer()->autoHideWidgets();
 	for (const auto autohideWidget : autoHideWidgets)
 	{
-		createAndSetupAutoHideContainer(autohideWidget->sideBarLocation(), autohideWidget->dockWidget(), autohideWidget->dockWidget()->autoHideInsertOrder());
+		createAndSetupAutoHideContainer(autohideWidget->sideBarLocation(), autohideWidget->dockWidget());
 	}
 
 	if (DockArea)

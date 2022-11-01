@@ -94,7 +94,6 @@ struct DockWidgetPrivate
 	QList<QAction*> TitleBarActions;
 	CDockWidget::eMinimumSizeHintMode MinimumSizeHintMode = CDockWidget::MinimumSizeHintFromDockWidget;
 	WidgetFactory* Factory = nullptr;
-	CDockWidget::eAutoHideInsertOrder AutoHideInsertOrder = CDockWidget::Last;
 	QPointer<CAutoHideTab> SideTabWidget;
 	
 	/**
@@ -1136,18 +1135,6 @@ bool CDockWidget::isTabbed() const
 bool CDockWidget::isCurrentTab() const
 {
 	return d->DockArea && (d->DockArea->currentDockWidget() == this);
-}
-
-
-//============================================================================
-void CDockWidget::setAutoHideInsertOrder(eAutoHideInsertOrder insertOrder)
-{
-	d->AutoHideInsertOrder = insertOrder;
-}
-
-CDockWidget::eAutoHideInsertOrder CDockWidget::autoHideInsertOrder() const
-{
-	return d->AutoHideInsertOrder;
 }
 
 

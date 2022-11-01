@@ -647,7 +647,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// uncomment the following line if you want a central widget in the main dock container (the dock manager) without a titlebar
 	// If you enable this code, you can test it in the demo with the Calendar 0
 	// dock widget.
-	// CDockManager::setConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar, true);
+	//CDockManager::setConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar, true);
 
 	// uncomment the following line to enable focus highlighting of the dock
 	// widget that has the focus
