@@ -846,7 +846,6 @@ void DockContainerWidgetPrivate::addDockAreasToList(const QList<CDockAreaWidget*
 //============================================================================
 void DockContainerWidgetPrivate::appendDockAreas(const QList<CDockAreaWidget*> NewDockAreas)
 {
-	qDebug() << "DockContainerWidgetPrivate::appendDockAreas";
 	DockAreas.append(NewDockAreas);
 	for (auto DockArea : NewDockAreas)
 	{
@@ -1326,12 +1325,10 @@ CDockContainerWidget::CDockContainerWidget(CDockManager* DockManager, QWidget *p
 	{
 		d->DockManager->registerDockContainer(this);
 		createRootSplitter();
-		if (CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
-		{
-			createSideTabBarWidgets();
-		}
+		createSideTabBarWidgets();
 	}
 }
+
 
 //============================================================================
 CDockContainerWidget::~CDockContainerWidget()
@@ -1566,7 +1563,6 @@ void CDockContainerWidget::addDockArea(CDockAreaWidget* DockAreaWidget,
 //============================================================================
 void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 {
-	qDebug() << "CDockContainerWidget::removeDockArea " << d->DockAreas.contains(area);
     ADS_PRINT("CDockContainerWidget::removeDockArea");
     // If it is an auto hide area, then there is nothing much to do
 	if (area->isAutoHide())
@@ -1779,7 +1775,6 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 void CDockContainerWidget::dropWidget(QWidget* Widget, DockWidgetArea DropArea, CDockAreaWidget* TargetAreaWidget)
 {
     CDockWidget* SingleDockWidget = topLevelDockWidget();
-    qDebug() << "CDockContainerWidget::dropWidget";
 	if (TargetAreaWidget)
 	{
 		d->moveToNewSection(Widget, TargetAreaWidget, DropArea);
@@ -1956,6 +1951,11 @@ void CDockContainerWidget::createRootSplitter()
 //============================================================================
 void CDockContainerWidget::createSideTabBarWidgets()
 {
+	if (!CDockManager::testConfigFlag(CDockManager::AutoHideFeatureEnabled))
+	{
+		return;
+	}
+
 	{
 		auto Area = SideBarLocation::Left;
         d->SideTabBarWidgets[Area] = new CSideTabBar(this, Area);

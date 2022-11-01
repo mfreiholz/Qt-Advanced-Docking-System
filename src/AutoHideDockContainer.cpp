@@ -262,7 +262,6 @@ void CAutoHideDockContainer::updateSize()
 //============================================================================
 CAutoHideDockContainer::~CAutoHideDockContainer()
 {
-	qDebug() << "~CAutoHideDockContainer()"
 	ADS_PRINT("~CAutoHideDockContainer");
 
 	// Remove event filter in case there are any queued messages
@@ -417,11 +416,6 @@ void CAutoHideDockContainer::collapseView(bool Enable)
 		show();
 		d->DockWidget->dockManager()->setDockWidgetFocused(d->DockWidget);
 		qApp->installEventFilter(this);
-
-		qDebug() << "CAutoHideDockContainer.hidden " << this->isHidden();
-		qDebug() << "d->DockArea->isHidden() " << d->DockArea->isHidden();
-		qDebug() << "d->DockWidget->isHidden() " << d->DockWidget->isHidden();
-		qDebug() << "CAutoHideDockContainer.geometry() " << this->geometry();
 	}
 
 	ADS_PRINT("CAutoHideDockContainer::collapseView " << Enable);
