@@ -1186,10 +1186,104 @@ void CDockAreaWidget::closeArea()
 }
 
 
+enum eBorderLocation
+{
+	BorderNone = 0,
+	BorderLeft = 0x01,
+	BorderRight = 0x02,
+	BorderTop = 0x04,
+	BorderBottom = 0x08,
+	BorderVertical = BorderLeft | BorderRight,
+	BorderHorizontal = BorderTop | BorderBottom,
+	BorderTopLeft = BorderTop | BorderLeft,
+	BorderTopRight = BorderTop | BorderRight,
+	BorderBottomLeft = BorderBottom | BorderLeft,
+	BorderBottomRight = BorderBottom | BorderRight,
+	BorderVerticalBottom = BorderVertical | BorderBottom,
+	BorderVerticalTop = BorderVertical | BorderTop,
+	BorderHorizontalLeft = BorderHorizontal | BorderLeft,
+	BorderHorizontalRight = BorderHorizontal | BorderRight,
+	BorderAll = BorderVertical | BorderHorizontal
+};
+
+
 //============================================================================
 SideBarLocation CDockAreaWidget::calculateSideTabBarArea() const
 {
-	return dockContainer()->calculateSideTabBarArea(this);
+	auto Container = dockContainer();
+	auto ContentRect = Container->contentRect();
+
+	int borders = BorderNone; // contains all borders that are touched by the dock ware
+	auto DockAreaTopLeft = mapTo(Container, rect().topLeft());
+	auto DockAreaRect = rect();
+	DockAreaRect.moveTo(DockAreaTopLeft);
+	const qreal aspectRatio = DockAreaRect.width() / (qMax(1, DockAreaRect.height()) * 1.0);
+	const qreal sizeRatio = (qreal)ContentRect.width() / DockAreaRect.width();
+	static const int MinBorderDistance = 16;
+	bool HorizontalOrientation = (aspectRatio > 1.0) && (sizeRatio < 3.0);
+
+	// measure border distances - a distance less than 16 px means we touch the
+	// border
+	int BorderDistance[4];
+
+	int Distance = qAbs(ContentRect.topLeft().y() - DockAreaRect.topLeft().y());
+	BorderDistance[SideBarLocation::Top] = (Distance < MinBorderDistance) ? 0 : Distance;
+	if (!BorderDistance[SideBarLocation::Top])
+	{
+		borders |= BorderTop;
+	}
+
+	Distance = qAbs(ContentRect.bottomRight().y() - DockAreaRect.bottomRight().y());
+	BorderDistance[SideBarLocation::Bottom] = (Distance < MinBorderDistance) ? 0 : Distance;
+	if (!BorderDistance[SideBarLocation::Bottom])
+	{
+		borders |= BorderBottom;
+	}
+
+	Distance = qAbs(ContentRect.topLeft().x() - DockAreaRect.topLeft().x());
+	BorderDistance[SideBarLocation::Left] = (Distance < MinBorderDistance) ? 0 : Distance;
+	if (!BorderDistance[SideBarLocation::Left])
+	{
+		borders |= BorderLeft;
+	}
+
+	Distance = qAbs(ContentRect.bottomRight().x() - DockAreaRect.bottomRight().x());
+	BorderDistance[SideBarLocation::Right] = (Distance < MinBorderDistance) ? 0 : Distance;
+	if (!BorderDistance[SideBarLocation::Right])
+	{
+		borders |= BorderRight;
+	}
+
+	auto SideTab = SideBarLocation::Right;
+	switch (borders)
+	{
+	// 1. It's touching all borders
+	case BorderAll: SideTab = HorizontalOrientation ? SideBarLocation::Bottom : SideBarLocation::Right; break;
+
+	// 2. It's touching 3 borders
+	case BorderVerticalBottom : SideTab = SideBarLocation::Bottom; break;
+	case BorderVerticalTop : SideTab = SideBarLocation::Top; break;
+	case BorderHorizontalLeft: SideTab = SideBarLocation::Left; break;
+	case BorderHorizontalRight: SideTab = SideBarLocation::Right; break;
+
+	// 3. Its touching horizontal or vertical borders
+	case BorderVertical : SideTab = SideBarLocation::Bottom; break;
+	case BorderHorizontal: SideTab = SideBarLocation::Right; break;
+
+	// 4. Its in a corner
+	case BorderTopLeft : SideTab = HorizontalOrientation ? SideBarLocation::Top : SideBarLocation::Left; break;
+	case BorderTopRight : SideTab = HorizontalOrientation ? SideBarLocation::Top : SideBarLocation::Right; break;
+	case BorderBottomLeft : SideTab = HorizontalOrientation ? SideBarLocation::Bottom : SideBarLocation::Left; break;
+	case BorderBottomRight : SideTab = HorizontalOrientation ? SideBarLocation::Bottom : SideBarLocation::Right; break;
+
+	// 5 Ists touching only one border
+	case BorderLeft: SideTab = SideBarLocation::Left; break;
+	case BorderRight: SideTab = SideBarLocation::Right; break;
+	case BorderTop: SideTab = SideBarLocation::Top; break;
+	case BorderBottom: SideTab = SideBarLocation::Bottom; break;
+	}
+
+	return SideTab;
 }
 
 
@@ -1203,7 +1297,10 @@ void CDockAreaWidget::setAutoHide(bool Enable)
 
 	if (!Enable)
 	{
-		autoHideDockContainer()->moveContentsToParent();
+		if (isAutoHide())
+		{
+			autoHideDockContainer()->moveContentsToParent();
+		}
 		return;
 	}
 
