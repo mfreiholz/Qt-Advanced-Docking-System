@@ -1304,11 +1304,10 @@ void CDockAreaWidget::setAutoHide(bool Enable)
 		return;
 	}
 
-	const auto area = calculateSideTabBarArea();
-
 	if (CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideButtonTogglesArea)
 	 && features().testFlag(CDockWidget::DockWidgetPinnable))
 	{
+		auto area = calculateSideTabBarArea();
 		for (const auto DockWidget : openedDockWidgets())
 		{
 			if (Enable == isAutoHide())
@@ -1321,12 +1320,7 @@ void CDockAreaWidget::setAutoHide(bool Enable)
 	}
 	else
 	{
-		const auto DockWidget = currentDockWidget();
-		if (Enable == isAutoHide())
-		{
-			return;
-		}
-		dockContainer()->createAndSetupAutoHideContainer(area, DockWidget);
+		currentDockWidget()->setAutoHide(true);
 	}
 }
 

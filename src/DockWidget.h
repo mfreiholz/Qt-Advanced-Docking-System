@@ -592,6 +592,18 @@ public Q_SLOTS:
      */
     void showNormal();
 
+	/**
+	 * Sets the dock widget into auto hide mode if this feature is enabled
+	 * via CDockManager::setAutoHideFlags(CDockManager::AutoHideFeatureEnabled)
+	 */
+	void setAutoHide(bool Enable);
+
+	/**
+	 * Switches the dock widget to auto hide mode or vice versa depending on its
+	 * current state.
+	 */
+	void toggleAutoHide();
+
 
 Q_SIGNALS:
     /**

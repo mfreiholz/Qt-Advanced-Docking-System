@@ -1156,6 +1156,45 @@ void CDockWidget::raise()
 }
 
 
+//============================================================================
+void CDockWidget::setAutoHide(bool Enable)
+{
+	if (!CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled))
+	{
+		return;
+	}
+
+	// Do nothing if nothing changes
+	if (Enable == isAutoHide())
+	{
+		return;
+	}
+
+	auto DockArea = dockAreaWidget();
+	if (!Enable)
+	{
+		DockArea->setAutoHide(false);
+	}
+	else
+	{
+		auto area = DockArea->calculateSideTabBarArea();
+		dockContainer()->createAndSetupAutoHideContainer(area, this);
+	}
+}
+
+
+//============================================================================
+void CDockWidget::toggleAutoHide()
+{
+	if (!CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled))
+	{
+		return;
+	}
+
+	setAutoHide(!isAutoHide());
+}
+
+
 } // namespace ads
 
 //---------------------------------------------------------------------------
