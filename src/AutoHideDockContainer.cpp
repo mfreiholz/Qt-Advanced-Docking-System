@@ -228,7 +228,7 @@ void CAutoHideDockContainer::updateSize()
 	switch (sideBarLocation())
 	{
 	case SideBarLocation::Top:
-		 resize(rect.width(), qMin(rect.height(), d->Size.height() - ResizeMargin));
+		 resize(rect.width(), qMin(rect.height()  - ResizeMargin, d->Size.height()));
 		 move(rect.topLeft());
 		 break;
 
@@ -248,7 +248,7 @@ void CAutoHideDockContainer::updateSize()
 
 	case SideBarLocation::Bottom:
 		 {
-			 resize(rect.width(), qMin(rect.height(), d->Size.height() - ResizeMargin));
+			 resize(rect.width(), qMin(rect.height() - ResizeMargin, d->Size.height()));
 			 QPoint p = rect.bottomLeft();
 			 p.ry() -= (height() - 1);
 			 move(p);
