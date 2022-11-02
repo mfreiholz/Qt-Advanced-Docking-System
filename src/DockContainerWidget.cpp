@@ -1338,12 +1338,6 @@ CDockContainerWidget::~CDockContainerWidget()
 		d->DockManager->removeDockContainer(this);
 	}
 
-	auto AutoHideWidgets = d->AutoHideWidgets;
-	for (auto AutohideWidget : AutoHideWidgets)
-	{
-		delete AutohideWidget;
-	}
-
 	delete d;
 }
 
@@ -1427,17 +1421,6 @@ bool CDockContainerWidget::event(QEvent *e)
 	}
 
 	return Result;
-}
-
-
-//============================================================================
-void CDockContainerWidget::deleteAutoHideWidgets()
-{
-    for (auto AutohideWidget : d->AutoHideWidgets)
-    {
-        AutohideWidget->cleanupAndDelete();
-    }
-    d->AutoHideWidgets.clear();
 }
 
 

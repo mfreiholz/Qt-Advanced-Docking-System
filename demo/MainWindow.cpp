@@ -752,7 +752,7 @@ void CMainWindow::onViewToggled(bool Open)
 		return;
 	}
 
-	qDebug() << DockWidget->objectName() << " viewToggled(" << Open << ")";
+	//qDebug() << DockWidget->objectName() << " viewToggled(" << Open << ")";
 }
 
 

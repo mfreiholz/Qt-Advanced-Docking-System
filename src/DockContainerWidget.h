@@ -84,12 +84,6 @@ protected:
 	 */
 	virtual bool event(QEvent *e) override;
 
-	/*
-	 * Delete function for resetting the auto hide widget list
-	 * Used during restore
-	 */
-	void deleteAutoHideWidgets();
-
 	/**
 	 * Access function for the internal root splitter
 	 */
