@@ -163,7 +163,8 @@ protected:
 	CDockWidget* topLevelDockWidget() const;
 
 	/**
-	 * Returns the top level dock area.
+	 * If the container has only one single visible dock area, then this
+	 * functions returns this top level dock area
 	 */
 	CDockAreaWidget* topLevelDockArea() const;
 

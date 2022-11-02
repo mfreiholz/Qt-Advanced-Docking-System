@@ -1405,6 +1405,19 @@ void CDockAreaWidget::onDockWidgetFeaturesChanged()
 }
 
 
+//============================================================================
+bool CDockAreaWidget::isTopLevelArea() const
+{
+	auto Container = dockContainer();
+	if (!Container)
+	{
+		return false;
+	}
+
+	return (Container->topLevelDockArea() == this);
+}
+
+
 #ifdef Q_OS_WIN
 //============================================================================
 bool CDockAreaWidget::event(QEvent *e)

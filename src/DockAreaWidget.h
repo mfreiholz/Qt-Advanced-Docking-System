@@ -376,6 +376,12 @@ public:
      */
     bool containsCentralWidget() const;
 
+    /**
+     * If this dock area is the one and only visible area in a container, then
+     * this function returns true
+     */
+    bool isTopLevelArea() const;
+
 
 public Q_SLOTS:
 	/**
