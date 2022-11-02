@@ -223,6 +223,11 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, SideBarL
 void CAutoHideDockContainer::updateSize()
 {
 	auto dockContainerParent = parentContainer();
+	if (!dockContainerParent)
+	{
+		return;
+	}
+
 	auto rect = dockContainerParent->contentRect();
 
 	switch (sideBarLocation())
