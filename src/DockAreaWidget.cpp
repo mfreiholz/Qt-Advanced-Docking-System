@@ -514,6 +514,15 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 {
     ADS_PRINT("CDockAreaWidget::removeDockWidget");
+
+    // If this dock area is in a auto hide container, then we can delete
+    // the auto hide container now
+    if (isAutoHide())
+    {
+    	autoHideDockContainer()->cleanupAndDelete();
+    	return;
+    }
+
     auto CurrentDockWidget = currentDockWidget();
   	auto NextOpenDockWidget = (DockWidget == CurrentDockWidget) ? nextOpenDockWidget(DockWidget) : nullptr;
 
@@ -528,7 +537,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	{
 		setCurrentDockWidget(NextOpenDockWidget);
 	}
-	else if (d->ContentsLayout->isEmpty() && DockContainer->dockAreaCount() >= 1 && !isAutoHide()) // Don't remove empty dock areas that are auto hidden, they'll be deleted by the auto hide dock
+	else if (d->ContentsLayout->isEmpty() && DockContainer->dockAreaCount() >= 1) // Don't remove empty dock areas that are auto hidden, they'll be deleted by the auto hide dock
 	{
         ADS_PRINT("Dock Area empty");
 		DockContainer->removeDockArea(this);
@@ -868,7 +877,6 @@ void CDockAreaWidget::updateAutoHideButtonCheckState()
 //============================================================================
 void CDockAreaWidget::updateTitleBarButtonVisibility(bool IsTopLevel) const
 {
-	qDebug() << "CDockAreaWidget::updateTitleBarButtonVisibility IsTopLevel " << IsTopLevel;
 	d->updateTitleBarButtonVisibility(IsTopLevel);
 }
 
@@ -970,9 +978,15 @@ bool CDockAreaWidget::restoreState(CDockingStateReader& s, CDockAreaWidget*& Cre
 		}
 
         ADS_PRINT("Dock Widget found - parent " << DockWidget->parent());
+        if (DockWidget->autoHideDockContainer())
+        {
+        	DockWidget->autoHideDockContainer()->cleanupAndDelete();
+        }
+
 		// We hide the DockArea here to prevent the short display (the flashing)
 		// of the dock areas during application startup
 		DockArea->hide();
+		qDebug() << "DockArea->addDockWidget " << DockWidget->windowTitle();
         DockArea->addDockWidget(DockWidget);
 		DockWidget->setToggleViewActionChecked(!Closed);
 		DockWidget->setClosedState(Closed);

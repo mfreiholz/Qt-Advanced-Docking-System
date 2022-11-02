@@ -62,7 +62,7 @@ private Q_SLOTS:
 	void onTabsMenuActionTriggered(QAction* Action);
 	void onCurrentTabChanged(int Index);
 	void onAutoHideButtonClicked();
-	void onAutoHideDockAreaClicked();
+	void onAutoHideDockAreaActionClicked();
 
 protected:
     /**

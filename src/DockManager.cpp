@@ -437,7 +437,6 @@ bool DockManagerPrivate::restoreState(const QByteArray& State, int version)
     // Hide updates of floating widgets from use
     hideFloatingWidgets();
     markDockWidgetsDirty();
-	_this->deleteAutoHideWidgets();
 
     if (!restoreStateFromXml(state, version))
     {

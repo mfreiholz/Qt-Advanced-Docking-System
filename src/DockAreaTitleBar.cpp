@@ -498,13 +498,14 @@ void CDockAreaTitleBar::onAutoHideButtonClicked()
 	}
 	else
 	{
+		qDebug() << "d->DockArea->currentDockWidget()->toggleAutoHide()";
 		d->DockArea->currentDockWidget()->toggleAutoHide();
 	}
 }
 
 
 //============================================================================
-void CDockAreaTitleBar::onAutoHideDockAreaClicked()
+void CDockAreaTitleBar::onAutoHideDockAreaActionClicked()
 {
 	d->DockArea->toggleAutoHide();
 }
@@ -675,7 +676,7 @@ void CDockAreaTitleBar::contextMenuEvent(QContextMenuEvent* ev)
 		Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable));
 		if (CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled))
 		{
-			Action = Menu.addAction(IsAutoHide ? tr("Dock") : tr("Auto Hide Group"), this, SLOT(onAutoHideDockAreaClicked()));
+			Action = Menu.addAction(IsAutoHide ? tr("Dock") : tr("Auto Hide Group"), this, SLOT(onAutoHideDockAreaActionClicked()));
 			Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetPinnable));
 		}
 		Menu.addSeparator();

@@ -1440,6 +1440,7 @@ void CDockContainerWidget::deleteAutoHideWidgets()
     d->AutoHideWidgets.clear();
 }
 
+
 //============================================================================
 QList<CAutoHideDockContainer*> CDockContainerWidget::autoHideWidgets() const
 {
