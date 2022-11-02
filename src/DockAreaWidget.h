@@ -391,7 +391,9 @@ public Q_SLOTS:
 	void closeArea();
 
 	/**
-	 * Sets the dock area into auto hide mode or into normal mode
+	 * Sets the dock area into auto hide mode or into normal mode.
+	 * If the dock area is switched to auto hide mode, then all dock widgets
+	 * that are pinable will be added to the sidebar
 	 */
 	void setAutoHide(bool Enable);
 
