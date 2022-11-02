@@ -495,7 +495,10 @@ void MainWindowPrivate::createContent()
 
 #ifdef Q_OS_WIN
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    if (!ads::CDockManager::testConfigFlag(ads::CDockManager::OpaqueUndocking))
+    // ActiveX widget only works without OpaqueUndocking and without
+    // auto hide feature
+    if (!ads::CDockManager::testConfigFlag(ads::CDockManager::OpaqueUndocking)
+     && !ads::CDockManager::testAutoHideConfigFlag(ads::CDockManager::AutoHideFeatureEnabled))
     {
     	DockManager->addDockWidget(ads::CenterDockWidgetArea, createActiveXWidget(), RighDockArea);
     }
