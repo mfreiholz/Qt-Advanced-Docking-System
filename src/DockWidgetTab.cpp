@@ -56,7 +56,7 @@
 
 namespace ads
 {
-
+static const char* const LocationProperty = "Location";
 using tTabLabel = CElidingLabel;
 
 /**
@@ -217,6 +217,18 @@ struct DockWidgetTabPrivate
 		return DockWidget->dockManager()->dockFocusController();
 	}
 
+	/**
+	 * Helper function to create and initialize the menu entries for
+	 * the "Auto Hide Group To..." menu
+	 */
+	QAction* createAutoHideToAction(const QString& Title, SideBarLocation Location,
+		QMenu* Menu)
+	{
+		auto Action = Menu->addAction(Title);
+		Action->setProperty("Location", Location);
+		QObject::connect(Action, &QAction::triggered, _this, &CDockWidgetTab::onAutoHideToActionClicked);
+		return Action;
+	}
 };
 // struct DockWidgetTabPrivate
 
@@ -518,7 +530,15 @@ void CDockWidgetTab::contextMenuEvent(QContextMenuEvent* ev)
     if (CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled))
     {
     	Action = Menu.addAction(tr("Auto Hide"), this, SLOT(autoHideDockWidget()));
-    	Action->setEnabled(d->DockWidget->features().testFlag(CDockWidget::DockWidgetPinnable));
+    	auto IsPinnable = d->DockWidget->features().testFlag(CDockWidget::DockWidgetPinnable);
+    	Action->setEnabled(IsPinnable);
+
+		auto menu = Menu.addMenu(tr("Auto Hide To..."));
+		menu->setEnabled(IsPinnable);
+		d->createAutoHideToAction(tr("Top"), SideBarTop, menu);
+		d->createAutoHideToAction(tr("Left"), SideBarLeft, menu);
+		d->createAutoHideToAction(tr("Right"), SideBarRight, menu);
+		d->createAutoHideToAction(tr("Bottom"), SideBarBottom, menu);
     }
 	Menu.addSeparator();
 	Action = Menu.addAction(tr("Close"), this, SIGNAL(closeRequested()));
@@ -709,6 +729,14 @@ void CDockWidgetTab::detachDockWidget()
 void CDockWidgetTab::autoHideDockWidget()
 {
 	d->DockWidget->setAutoHide(true);
+}
+
+
+//===========================================================================
+void CDockWidgetTab::onAutoHideToActionClicked()
+{
+	int Location = sender()->property(LocationProperty).toInt();
+	d->DockWidget->toggleAutoHide((SideBarLocation)Location);
 }
 
 

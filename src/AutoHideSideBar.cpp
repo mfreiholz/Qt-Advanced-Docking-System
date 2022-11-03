@@ -62,7 +62,7 @@ struct AutoHideSideBarPrivate
     CTabsWidget* TabsContainerWidget;
     QBoxLayout* TabsLayout;
     Qt::Orientation Orientation;
-    SideBarLocation SideTabArea = SideBarLocation::Left;
+    SideBarLocation SideTabArea = SideBarLocation::SideBarLeft;
 
     /**
      * Convenience function to check if this is a horizontal side bar
@@ -161,7 +161,7 @@ CAutoHideSideBar::CAutoHideSideBar(CDockContainerWidget* parent, SideBarLocation
 {
 	d->SideTabArea = area;
     d->ContainerWidget = parent;
-    d->Orientation = (area == SideBarLocation::Bottom || area == SideBarLocation::Top)
+    d->Orientation = (area == SideBarLocation::SideBarBottom || area == SideBarLocation::SideBarTop)
     	? Qt::Horizontal : Qt::Vertical;
 
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);

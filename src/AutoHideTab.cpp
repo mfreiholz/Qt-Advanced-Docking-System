@@ -74,7 +74,7 @@ AutoHideTabPrivate::AutoHideTabPrivate(CAutoHideTab* _public) :
 void AutoHideTabPrivate::updateOrientation()
 {
 	auto area = SideBar->sideBarLocation();
-	_this->setOrientation((area == Bottom || area == Top) ? Qt::Horizontal : Qt::Vertical);
+	_this->setOrientation((area == SideBarBottom || area == SideBarTop) ? Qt::Horizontal : Qt::Vertical);
 
 	if (_this->icon().isNull())
 	{
@@ -84,21 +84,24 @@ void AutoHideTabPrivate::updateOrientation()
 	bool IconOnly = false;
 	switch (area)
 	{
-	case SideBarLocation::Left:
+	case SideBarLocation::SideBarLeft:
 		 IconOnly = CDockManager::testAutoHideConfigFlag(CDockManager::LeftSideBarIconOnly);
 		 break;
 
-	case SideBarLocation::Right:
+	case SideBarLocation::SideBarRight:
 		 IconOnly = CDockManager::testAutoHideConfigFlag(CDockManager::RightSideBarIconOnly);
 		 break;
 
-	case SideBarLocation::Top:
+	case SideBarLocation::SideBarTop:
 		 IconOnly = CDockManager::testAutoHideConfigFlag(CDockManager::BottomSideBarIconOnly);
 		 break;
 
-	case SideBarLocation::Bottom:
+	case SideBarLocation::SideBarBottom:
 		 IconOnly = CDockManager::testAutoHideConfigFlag(CDockManager::TopSideBarIconOnly);
 		 break;
+
+	default:
+		break;
 	}
 
 	if (IconOnly)
@@ -133,7 +136,7 @@ void CAutoHideTab::removeFromSideBar()
 
 //============================================================================
 CAutoHideTab::CAutoHideTab(QWidget* parent) :
-	Super(parent),
+	CPushButton(parent),
 	d(new AutoHideTabPrivate(this))
 {
 	setAttribute(Qt::WA_NoMousePropagation);
@@ -165,7 +168,7 @@ SideBarLocation CAutoHideTab::sideBarLocation() const
         return d->SideBar->sideBarLocation();
 	}
 
-	return Left;
+	return SideBarLeft;
 }
 
 
