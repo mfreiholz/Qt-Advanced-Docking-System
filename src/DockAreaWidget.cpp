@@ -537,7 +537,7 @@ void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 	{
 		setCurrentDockWidget(NextOpenDockWidget);
 	}
-	else if (d->ContentsLayout->isEmpty() && DockContainer->dockAreaCount() >= 1) // Don't remove empty dock areas that are auto hidden, they'll be deleted by the auto hide dock
+	else if (d->ContentsLayout->isEmpty() && DockContainer->dockAreaCount() >= 1)
 	{
         ADS_PRINT("Dock Area empty");
 		DockContainer->removeDockArea(this);
@@ -827,22 +827,20 @@ void CDockAreaWidget::updateTitleBarVisibility()
 		return;
 	}
 
-    if (CDockManager::testConfigFlag(CDockManager::AlwaysShowTabs))
-    {
-        return;
-    }
-
     if (!d->TitleBar)
     {
     	return;
     }
 
-	bool Hidden = Container->hasTopLevelDockWidget() && (Container->isFloating()
-		|| CDockManager::testConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar));
-	Hidden |= (d->Flags.testFlag(HideSingleWidgetTitleBar) && openDockWidgetsCount() == 1);
-	bool IsAutoHide = isAutoHide();
-	Hidden &= !IsAutoHide; // Titlebar must always be visible when auto hidden so it can be dragged
-	d->TitleBar->setVisible(!Hidden);
+    bool IsAutoHide = isAutoHide();
+    if (!CDockManager::testConfigFlag(CDockManager::AlwaysShowTabs))
+    {
+		bool Hidden = Container->hasTopLevelDockWidget() && (Container->isFloating()
+			|| CDockManager::testConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar));
+		Hidden |= (d->Flags.testFlag(HideSingleWidgetTitleBar) && openDockWidgetsCount() == 1);
+		Hidden &= !IsAutoHide; // Titlebar must always be visible when auto hidden so it can be dragged
+		d->TitleBar->setVisible(!Hidden);
+    }
 
 	if (isAutoHideFeatureEnabled())
 	{

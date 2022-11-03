@@ -150,9 +150,6 @@ public:
 	 * Setter for spacing property - sets the spacing
 	 */
 	void setSpacing(int Spacing);
-
-Q_SIGNALS:
-	void sideTabAutoHideToggleRequested();
 };
 } // namespace ads
 //-----------------------------------------------------------------------------

@@ -689,22 +689,22 @@ void CDockAreaTitleBar::contextMenuEvent(QContextMenuEvent* ev)
 		return;
 	}
 
-	bool IsAutoHide = d->DockArea->isAutoHide();
-	bool IsTopLevelArea = d->DockArea->isTopLevelArea();
+	const bool isAutoHide = d->DockArea->isAutoHide();
+	const bool isTopLevelArea = d->DockArea->isTopLevelArea();
 	QAction* Action;
 	QMenu Menu(this);
-	if (!IsTopLevelArea)
+	if (!isTopLevelArea)
 	{
-		Action = Menu.addAction(IsAutoHide ? tr("Detach") : tr("Detach Group"),
+		Action = Menu.addAction(isAutoHide ? tr("Detach") : tr("Detach Group"),
 			this, SLOT(onUndockButtonClicked()));
 		Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable));
 		if (CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled))
 		{
-			Action = Menu.addAction(IsAutoHide ? tr("Dock") : tr("Auto Hide Group"), this, SLOT(onAutoHideDockAreaActionClicked()));
+			Action = Menu.addAction(isAutoHide ? tr("Dock") : tr("Auto Hide Group"), this, SLOT(onAutoHideDockAreaActionClicked()));
 			auto AreaIsPinnable = d->DockArea->features().testFlag(CDockWidget::DockWidgetPinnable);
 			Action->setEnabled(AreaIsPinnable);
 
-			if (!IsAutoHide)
+			if (!isAutoHide)
 			{
 				auto menu = Menu.addMenu(tr("Auto Hide Group To..."));
 				menu->setEnabled(AreaIsPinnable);
@@ -716,12 +716,11 @@ void CDockAreaTitleBar::contextMenuEvent(QContextMenuEvent* ev)
 		}
 		Menu.addSeparator();
 	}
-	Action = Menu.addAction(IsAutoHide ? tr("Close") : tr("Close Group"), this, SLOT(onCloseButtonClicked()));
+	Action = Menu.addAction(isAutoHide ? tr("Close") : tr("Close Group"), this, SLOT(onCloseButtonClicked()));
 	Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetClosable));
-	if (!IsAutoHide)
+	if (!isAutoHide && !isTopLevelArea)
 	{
 		Action = Menu.addAction(tr("Close Other Groups"), d->DockArea, SLOT(closeOtherAreas()));
-		Action->setEnabled(!IsTopLevelArea);
 	}
 	Menu.exec(ev->globalPos());
 }
