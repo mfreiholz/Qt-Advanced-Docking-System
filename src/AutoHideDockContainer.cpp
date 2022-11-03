@@ -277,7 +277,6 @@ void CAutoHideDockContainer::updateSize()
 //============================================================================
 CAutoHideDockContainer::~CAutoHideDockContainer()
 {
-	qDebug() << "~CAutoHideDockContainer()"
 	ADS_PRINT("~CAutoHideDockContainer");
 
 	// Remove event filter in case there are any queued messages

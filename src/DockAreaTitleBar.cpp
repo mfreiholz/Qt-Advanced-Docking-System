@@ -513,7 +513,6 @@ void CDockAreaTitleBar::onAutoHideButtonClicked()
 	}
 	else
 	{
-		qDebug() << "d->DockArea->currentDockWidget()->toggleAutoHide()";
 		d->DockArea->currentDockWidget()->toggleAutoHide();
 	}
 }
@@ -529,7 +528,6 @@ void CDockAreaTitleBar::onAutoHideDockAreaActionClicked()
 //============================================================================
 void CDockAreaTitleBar::onAutoHideToActionClicked()
 {
-	qDebug() << "CDockAreaTitleBar::onAutoHideToActionClicked()";
 	int Location = sender()->property(LocationProperty).toInt();
 	d->DockArea->toggleAutoHide((SideBarLocation)Location);
 }

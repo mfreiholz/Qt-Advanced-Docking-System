@@ -193,8 +193,6 @@ CAutoHideSideBar::CAutoHideSideBar(CDockContainerWidget* parent, SideBarLocation
 		setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	}
 
-	qDebug() << "d->TabsLayout->count " << d->TabsLayout->count();
-
 	hide();
 }
 
@@ -202,7 +200,7 @@ CAutoHideSideBar::CAutoHideSideBar(CDockContainerWidget* parent, SideBarLocation
 //============================================================================
 CAutoHideSideBar::~CAutoHideSideBar() 
 {
-	qDebug() << "~CSideTabBar() ";
+	ADS_PRINT("~CSideTabBar()");
 	// The SideTabeBar is not the owner of the tabs and to prevent deletion
 	// we set the parent here to nullptr to remove it from the children
 	auto Tabs = findChildren<CAutoHideTab*>(QString(), Qt::FindDirectChildrenOnly);
