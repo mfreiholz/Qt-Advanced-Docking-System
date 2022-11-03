@@ -173,6 +173,14 @@ SideBarLocation CAutoHideTab::sideBarLocation() const
 void CAutoHideTab::setOrientation(Qt::Orientation Orientation)
 {
 	d->Orientation = Orientation;
+	if (orientation() == Qt::Horizontal)
+	{
+		setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	}
+	else
+	{
+		setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
+	}
 	CPushButton::setButtonOrientation((Qt::Horizontal == Orientation)
 		? CPushButton::Horizontal : CPushButton::VerticalTopToBottom);
 	updateStyle();

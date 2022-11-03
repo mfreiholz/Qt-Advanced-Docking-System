@@ -746,13 +746,14 @@ void CMainWindow::savePerspective()
 //============================================================================
 void CMainWindow::onViewToggled(bool Open)
 {
+	Q_UNUSED(Open);
 	auto DockWidget = qobject_cast<ads::CDockWidget*>(sender());
 	if (!DockWidget)
 	{
 		return;
 	}
 
-	//qDebug() << DockWidget->objectName() << " viewToggled(" << Open << ")";
+	qDebug() << DockWidget->objectName() << " viewToggled(" << Open << ")";
 }
 
 
