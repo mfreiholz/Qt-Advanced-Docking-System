@@ -561,6 +561,11 @@ void MainWindowPrivate::createActions()
 	a = ui.menuTests->addAction("Toggle Label 0 Window Title");
 	_this->connect(a, SIGNAL(triggered()), SLOT(toggleDockWidgetWindowTitle()));
 	ui.menuTests->addSeparator();
+
+	a = ui.toolBar->addAction("Apply VS Style");
+	a->setToolTip("Applies a Visual Studio light style (visual_studio_light.css)." );
+	a->setIcon(svgIcon(":/adsdemo/images/color_lens.svg"));
+	QObject::connect(a, &QAction::triggered, _this, &CMainWindow::applyVsStyle);
 }
 
 
@@ -862,5 +867,17 @@ void CMainWindow::toggleDockWidgetWindowTitle()
 		Title = Title.left(i);
 	}
 	d->WindowTitleTestDockWidget->setWindowTitle(Title);
+}
+
+
+//============================================================================
+void CMainWindow::applyVsStyle()
+{
+	QFile StyleSheetFile(":adsdemo/res/visual_studio_light.css");
+	StyleSheetFile.open(QIODevice::ReadOnly);
+	QTextStream StyleSheetStream(&StyleSheetFile);
+	auto Stylesheet = StyleSheetStream.readAll();
+	StyleSheetFile.close();
+	d->DockManager->setStyleSheet(Stylesheet);
 }
 
