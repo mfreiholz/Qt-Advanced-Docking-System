@@ -226,28 +226,21 @@ void CAutoHideTab::setDockWidget(CDockWidget* DockWidget)
 
 
 //============================================================================
-void CAutoHideTab::enterEvent(QEvent *event)
+bool CAutoHideTab::event(QEvent* event)
 {
-	d->forwardEventToDockContainer(event);
-	Super::enterEvent(event);
+	switch (event->type())
+	{
+	case QEvent::Enter:
+	case QEvent::Leave:
+	case QEvent::MouseButtonPress:
+		 d->forwardEventToDockContainer(event);
+		 break;
+
+	default:
+		break;
+	}
+	return Super::event(event);
 }
-
-
-//============================================================================
-void CAutoHideTab::leaveEvent(QEvent *event)
-{
-	d->forwardEventToDockContainer(event);
-	Super::leaveEvent(event);
-}
-
-
-//============================================================================
-void CAutoHideTab::mousePressEvent(QMouseEvent* event)
-{
-	d->forwardEventToDockContainer(event);
-	Super::mousePressEvent(event);
-}
-
 
 //============================================================================
 bool CAutoHideTab::iconOnly() const

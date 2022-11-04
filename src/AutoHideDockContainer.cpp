@@ -573,18 +573,20 @@ void CAutoHideDockContainer::leaveEvent(QEvent *event)
 
 
 //============================================================================
-void CAutoHideDockContainer::enterEvent(QEvent *event)
+bool CAutoHideDockContainer::event(QEvent* event)
 {
-	d->forwardEventToDockContainer(event);
-	Super::enterEvent(event);
-}
+	switch (event->type())
+	{
+	case QEvent::Enter:
+	case QEvent::Hide:
+		 d->forwardEventToDockContainer(event);
+		 break;
 
+	default:
+		break;
+	}
 
-//============================================================================
-void CAutoHideDockContainer::hideEvent(QHideEvent *event)
-{
-	d->forwardEventToDockContainer(event);
-	Super::hideEvent(event);
+	return Super::event(event);
 }
 
 }

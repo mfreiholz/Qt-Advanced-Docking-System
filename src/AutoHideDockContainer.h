@@ -64,8 +64,7 @@ protected:
 	virtual bool eventFilter(QObject* watched, QEvent* event) override;
 	virtual void resizeEvent(QResizeEvent* event) override;
 	virtual void leaveEvent(QEvent *event) override;
-	virtual void enterEvent(QEvent *event) override;
-	virtual void hideEvent(QHideEvent *event) override;
+	virtual bool event(QEvent* event) override;
 
 
 	/**
