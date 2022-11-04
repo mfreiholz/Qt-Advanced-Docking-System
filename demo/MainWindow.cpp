@@ -80,6 +80,7 @@
 #include "DockComponentsFactory.h"
 #include "StatusDialog.h"
 #include "DockSplitter.h"
+#include "ImageViewer.h"
 
 
 /**
@@ -318,6 +319,22 @@ struct MainWindowPrivate
 	}
 
 	/**
+	 * Creates a simply image viewr
+	 */
+	ads::CDockWidget* createImageViewer()
+	{
+		static int ImageViewerCount = 0;
+		auto w = new CImageViewer();
+		auto Result = w->loadFile(":adsdemo/images/ads_logo.svg");
+		qDebug() << "loadFile result: " << Result;
+		ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Image Viewer %1").arg(ImageViewerCount++));
+		DockWidget->setWidget(w,ads:: CDockWidget::ForceNoScrollArea);
+		auto ToolBar = DockWidget->createDefaultToolBar();
+		ToolBar->addActions(w->actions());
+		return DockWidget;
+	}
+
+	/**
 	 * Create a table widget
 	 */
 	ads::CDockWidget* createTableWidget()
@@ -510,6 +527,10 @@ void MainWindowPrivate::createContent()
 		_this->connect(DockWidget, SIGNAL(viewToggled(bool)), SLOT(onViewToggled(bool)));
 		_this->connect(DockWidget, SIGNAL(visibilityChanged(bool)), SLOT(onViewVisibilityChanged(bool)));
 	}
+
+	// Create image viewer
+	DockWidget = createImageViewer();
+	DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
 }
 
 
