@@ -99,7 +99,6 @@ void AutoHideTabPrivate::updateOrientation()
 	{
 		_this->setText("");
 		_this->setOrientation(Qt::Horizontal);
-		_this->updateStyle();
 	}
 	else
 	{
@@ -247,6 +246,13 @@ void CAutoHideTab::mousePressEvent(QMouseEvent* event)
 {
 	d->forwardEventToDockContainer(event);
 	Super::mousePressEvent(event);
+}
+
+
+//============================================================================
+bool CAutoHideTab::iconOnly() const
+{
+	return CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideSideBarsIconOnly) && !icon().isNull();
 }
 
 }
