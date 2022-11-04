@@ -620,7 +620,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
     // uncomment the following line if you want to use opaque undocking and
 	// opaque splitter resizing
-    //CDockManager::setConfigFlags(CDockManager::DefaultOpaqueConfig);
+    // CDockManager::setConfigFlags(CDockManager::DefaultOpaqueConfig);
 
     // uncomment the following line if you want a fixed tab width that does
 	// not change if the visibility of the close button changes
@@ -655,7 +655,6 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// uncomment the following line to enable focus highlighting of the dock
 	// widget that has the focus
     CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
-    CDockManager::setConfigFlag(CDockManager::AlwaysShowTabs, true);
 
 	// uncomment if you would like to enable dock widget auto hiding
     CDockManager::setAutoHideConfigFlags(CDockManager::DefaultAutoHideConfig);
@@ -754,7 +753,7 @@ void CMainWindow::onViewToggled(bool Open)
 		return;
 	}
 
-	qDebug() << DockWidget->objectName() << " viewToggled(" << Open << ")";
+	//qDebug() << DockWidget->objectName() << " viewToggled(" << Open << ")";
 }
 
 
