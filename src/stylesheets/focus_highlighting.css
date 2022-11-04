@@ -179,6 +179,12 @@ ads--CAutoHideTab {
 }
 
 
+ads--CAutoHideTab:hover
+{
+	color: palette(highlight);
+}
+
+
 ads--CAutoHideTab[sideBarLocation="0"],
 ads--CAutoHideTab[sideBarLocation="2"]  {
 	border-top: 6px solid rgba(0, 0, 0, 48);
@@ -195,14 +201,12 @@ ads--CAutoHideTab[sideBarLocation="3"] {
 ads--CAutoHideTab:hover[sideBarLocation="0"],
 ads--CAutoHideTab:hover[sideBarLocation="2"]  {
 	border-top: 6px solid palette(highlight);
-	color: palette(highlight);
 }
 
 
 ads--CAutoHideTab:hover[sideBarLocation="1"],
 ads--CAutoHideTab:hover[sideBarLocation="3"]  {
 	border-bottom: 6px solid palette(highlight);
-	color: palette(highlight);
 }
 
 ads--CAutoHideTab[sideBarLocation="0"][activeTab="true"],
@@ -215,6 +219,7 @@ ads--CAutoHideTab[sideBarLocation="1"][activeTab="true"],
 ads--CAutoHideTab[sideBarLocation="3"][activeTab="true"] {
 	border-bottom: 6px solid palette(highlight);
 }
+
 
 
 /*****************************************************************************

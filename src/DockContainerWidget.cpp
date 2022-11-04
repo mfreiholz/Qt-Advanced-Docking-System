@@ -381,7 +381,6 @@ DockContainerWidgetPrivate::DockContainerWidgetPrivate(CDockContainerWidget* _pu
 	DelayedAutoHideTimer.setSingleShot(true);
 	DelayedAutoHideTimer.setInterval(500);
 	QObject::connect(&DelayedAutoHideTimer, &QTimer::timeout, [this](){
-		qDebug() << "DelayedAutoHideTimer timeout";
 		auto GlobalPos = DelayedAutoHideTab->mapToGlobal(QPoint(0, 0));
 		qApp->sendEvent(DelayedAutoHideTab, new QMouseEvent(QEvent::MouseButtonPress,
 				QPoint(0, 0), GlobalPos, Qt::LeftButton, {Qt::LeftButton}, Qt::NoModifier));
@@ -2078,7 +2077,6 @@ void CDockContainerWidget::handleAutoHideWidgetEvent(QEvent* e, QWidget* w)
 	auto AutoHideTab = qobject_cast<CAutoHideTab*>(w);
 	if (AutoHideTab)
 	{
-		qDebug() << "Event AutoHideTab " << e;
 		switch (e->type())
 		{
 		case QEvent::Enter:
@@ -2094,9 +2092,21 @@ void CDockContainerWidget::handleAutoHideWidgetEvent(QEvent* e, QWidget* w)
 			 }
 			 break;
 
-		case QEvent::Leave:
 		case QEvent::MouseButtonPress:
 			 d->DelayedAutoHideTimer.stop();
+			 break;
+
+		case QEvent::Leave:
+			 if (AutoHideTab->dockWidget()->isVisible())
+			 {
+				 d->DelayedAutoHideTab = AutoHideTab;
+				 d->DelayedAutoHideShow = false;
+				 d->DelayedAutoHideTimer.start();
+			 }
+			 else
+			 {
+				 d->DelayedAutoHideTimer.stop();
+			 }
 			 break;
 
 		default:
@@ -2108,7 +2118,6 @@ void CDockContainerWidget::handleAutoHideWidgetEvent(QEvent* e, QWidget* w)
 	auto AutoHideContainer = qobject_cast<CAutoHideDockContainer*>(w);
 	if (AutoHideContainer)
 	{
-		qDebug() << "Event AutoHideContainer " << e;
 		switch (e->type())
 		{
 		case QEvent::Enter:

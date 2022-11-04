@@ -35,6 +35,7 @@
 #include <QSplitter>
 #include <QPointer>
 #include <QApplication>
+#include <QCursor>
 
 #include "DockManager.h"
 #include "DockWidgetTab.h"
@@ -559,7 +560,14 @@ void CAutoHideDockContainer::resizeEvent(QResizeEvent* event)
 //============================================================================
 void CAutoHideDockContainer::leaveEvent(QEvent *event)
 {
-	d->forwardEventToDockContainer(event);
+	// Resizing of the dock container via the resize handle in non opaque mode
+	// mays cause a leave event that is not really a leave event. Therefore
+	// we check here, if we are really outside of our rect.
+	auto pos = mapFromGlobal(QCursor::pos());
+	if (!rect().contains(pos))
+	{
+		d->forwardEventToDockContainer(event);
+	}
 	Super::leaveEvent(event);
 }
 

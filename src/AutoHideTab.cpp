@@ -94,41 +94,17 @@ AutoHideTabPrivate::AutoHideTabPrivate(CAutoHideTab* _public) :
 //============================================================================
 void AutoHideTabPrivate::updateOrientation()
 {
-	auto area = SideBar->sideBarLocation();
-	_this->setOrientation((area == SideBarBottom || area == SideBarTop) ? Qt::Horizontal : Qt::Vertical);
-
-	if (_this->icon().isNull())
-	{
-		return;
-	}
-
-	bool IconOnly = false;
-	switch (area)
-	{
-	case SideBarLocation::SideBarLeft:
-		 IconOnly = CDockManager::testAutoHideConfigFlag(CDockManager::LeftSideBarIconOnly);
-		 break;
-
-	case SideBarLocation::SideBarRight:
-		 IconOnly = CDockManager::testAutoHideConfigFlag(CDockManager::RightSideBarIconOnly);
-		 break;
-
-	case SideBarLocation::SideBarTop:
-		 IconOnly = CDockManager::testAutoHideConfigFlag(CDockManager::BottomSideBarIconOnly);
-		 break;
-
-	case SideBarLocation::SideBarBottom:
-		 IconOnly = CDockManager::testAutoHideConfigFlag(CDockManager::TopSideBarIconOnly);
-		 break;
-
-	default:
-		break;
-	}
-
-	if (IconOnly)
+	bool IconOnly = CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideSideBarsIconOnly);
+	if (IconOnly && !_this->icon().isNull())
 	{
 		_this->setText("");
 		_this->setOrientation(Qt::Horizontal);
+		_this->updateStyle();
+	}
+	else
+	{
+		auto area = SideBar->sideBarLocation();
+		_this->setOrientation((area == SideBarBottom || area == SideBarTop) ? Qt::Horizontal : Qt::Vertical);
 	}
 }
 
