@@ -67,6 +67,9 @@ protected:
 
 	void setSideBar(CAutoHideSideBar *SideTabBar);
 	void removeFromSideBar();
+	virtual void enterEvent(QEvent *event) override;
+	virtual void leaveEvent(QEvent *event) override;
+	virtual void mousePressEvent(QMouseEvent* event) override;
 
 public:
     using Super = CPushButton;

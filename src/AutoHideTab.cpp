@@ -30,6 +30,7 @@
 #include "AutoHideTab.h"
 
 #include <QBoxLayout>
+#include <QApplication>
 
 #include "AutoHideDockContainer.h"
 #include "AutoHideSideBar.h"
@@ -59,6 +60,26 @@ struct AutoHideTabPrivate
 	 * the side bar
 	 */
 	void updateOrientation();
+
+	/**
+	 * Convenience function to ease dock container access
+	 */
+	CDockContainerWidget* dockContainer() const
+	{
+		return DockWidget ? DockWidget->dockContainer() : nullptr;
+	}
+
+	/**
+	 * Forward this event to the dock container
+	 */
+	void forwardEventToDockContainer(QEvent* event)
+	{
+		auto DockContainer = dockContainer();
+		if (DockContainer)
+		{
+			DockContainer->handleAutoHideWidgetEvent(event, _this);
+		}
+	}
 }; // struct DockWidgetTabPrivate
 
 
@@ -226,6 +247,30 @@ void CAutoHideTab::setDockWidget(CDockWidget* DockWidget)
 	d->DockWidget = DockWidget;
 	setText(DockWidget->windowTitle());
 	setIcon(d->DockWidget->icon());
+}
+
+
+//============================================================================
+void CAutoHideTab::enterEvent(QEvent *event)
+{
+	d->forwardEventToDockContainer(event);
+	Super::enterEvent(event);
+}
+
+
+//============================================================================
+void CAutoHideTab::leaveEvent(QEvent *event)
+{
+	d->forwardEventToDockContainer(event);
+	Super::leaveEvent(event);
+}
+
+
+//============================================================================
+void CAutoHideTab::mousePressEvent(QMouseEvent* event)
+{
+	d->forwardEventToDockContainer(event);
+	Super::mousePressEvent(event);
 }
 
 }

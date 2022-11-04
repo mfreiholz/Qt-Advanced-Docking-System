@@ -243,6 +243,7 @@ public:
 		BottomSideBarIconOnly = 0x40,//!< If the flag is set bottom side show only icon if a the dock widget has an icon assigned
 		TopSideBarIconOnly = 0x80, //!< If the flag is set top side bar show only icon if a the dock widget has an icon assigned
 		AutoHideSideBarsIconOnly = LeftSideBarIconOnly | RightSideBarIconOnly | BottomSideBarIconOnly | TopSideBarIconOnly,
+		ShowAutoHideOnMouseOver = 0x100, ///< show the auto hide window on mouse over tab and hide it if mouse leaves auto hide container
 
 		DefaultAutoHideConfig = AutoHideFeatureEnabled
 			                  | DockAreaHasAutoHideButton ///< the default configuration for left and right side bars
