@@ -2064,7 +2064,7 @@ CDockManager* CDockContainerWidget::dockManager() const
 //===========================================================================
 void CDockContainerWidget::handleAutoHideWidgetEvent(QEvent* e, QWidget* w)
 {
-	if (!CDockManager::testAutoHideConfigFlag(CDockManager::ShowAutoHideOnMouseOver))
+	if (!CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideShowOnMouseOver))
 	{
 		return;
 	}
