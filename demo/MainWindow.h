@@ -66,6 +66,7 @@ private slots:
 	void showStatusDialog();
 	void toggleDockWidgetWindowTitle();
 	void applyVsStyle();
+	void createImageViewer();
 };
 
 #endif // MAINWINDOW_H
