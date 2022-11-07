@@ -380,16 +380,7 @@ void CAutoHideDockContainer::moveContentsToParent()
 	// to the user and he does not have to search where the widget was inserted.
 	d->DockWidget->setDockArea(nullptr);
 	auto DockContainer = dockContainer();
-
-	// If the container contained only one visible dock widget, the we need
-	// to emit a top level event for this widget because it is not the one and
-	// only visible docked widget anymore
-	auto TopLevelDockWidget = DockContainer->topLevelDockWidget();
 	DockContainer->addDockWidget(d->getDockWidgetArea(d->SideTabBarArea), d->DockWidget);
-	if (TopLevelDockWidget)
-	{
-		CDockWidget::emitTopLevelEventForWidget(TopLevelDockWidget, false);
-	}
 }
 
 

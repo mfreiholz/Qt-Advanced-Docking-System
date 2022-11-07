@@ -717,7 +717,6 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	// uncomment if you would like to enable dock widget auto hiding
     CDockManager::setAutoHideConfigFlags(CDockManager::DefaultAutoHideConfig);
-    CDockManager::setAutoHideConfigFlag(CDockManager::AutoHideShowOnMouseOver, true);
 
 	// uncomment if you would like to enable an equal distribution of the
 	// available size of a splitter to all contained dock widgets
