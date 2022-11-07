@@ -340,18 +340,18 @@ public:
 		CDockContainerWidget* DockContainerWidget);
 
 	/**
-	 * Adds a dock widget overlayed into the dock manager container based on the side tab bar area.
-	 * An overlay widget is used for auto hide functionality
+	 * Adds an Auto-Hide widget to the dock manager container pinned to
+	 * the given side bar location.
 	 * \return Returns the CAutoHideDockContainer that contains the new DockWidget
 	 */
-	CAutoHideDockContainer* addAutoHideDockWidget(SideBarLocation area, CDockWidget* Dockwidget);
+	CAutoHideDockContainer* addAutoHideDockWidget(SideBarLocation Location, CDockWidget* Dockwidget);
 
 	/**
-	 * Adds dock widget overlayed into the given container based on the CDockWidgetSideTab::SideTabBarArea.
-	 * An overlay widget is used for auto hide functionality
+	 * Adds an Auto-Hide widget to the given DockContainerWidget pinned to
+	 * the given side bar location in this container.
 	 * \return Returns the CAutoHideDockContainer that contains the new DockWidget
 	 */
-	CAutoHideDockContainer* addAutoHideDockWidgetToContainer(SideBarLocation area,
+	CAutoHideDockContainer* addAutoHideDockWidgetToContainer(SideBarLocation Location,
 		CDockWidget* Dockwidget, CDockContainerWidget* DockContainerWidget);
 
 	/**

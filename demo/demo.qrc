@@ -33,5 +33,7 @@
         <file>images/photo.svg</file>
         <file>images/crop_original.svg</file>
         <file>images/panorama.svg</file>
+        <file>images/ads_icon2.svg</file>
+        <file>images/font_download.svg</file>
     </qresource>
 </RCC>

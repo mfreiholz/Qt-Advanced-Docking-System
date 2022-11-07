@@ -222,6 +222,7 @@ struct MainWindowPrivate
 		ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Filesystem %1")
 			.arg(FileSystemCount++));
 		DockWidget->setWidget(w);
+		DockWidget->setIcon(svgIcon(":/adsdemo/images/folder_open.svg"));
 		ui.menuView->addAction(DockWidget->toggleViewAction());
 		// We disable focus to test focus highlighting if the dock widget content
 		// does not support focus
@@ -282,6 +283,7 @@ struct MainWindowPrivate
 
 		ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Label %1").arg(LabelCount++));
 		DockWidget->setWidget(l);
+		DockWidget->setIcon(svgIcon(":/adsdemo/images/font_download.svg"));
 		ui.menuView->addAction(DockWidget->toggleViewAction());
 		return DockWidget;
 	}
@@ -341,6 +343,7 @@ struct MainWindowPrivate
 		auto Result = w->loadFile(FileName);
 		qDebug() << "loadFile result: " << Result;
 		ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Image Viewer %1").arg(ImageViewerCount++));
+		DockWidget->setIcon(svgIcon(":/adsdemo/images/photo.svg"));
 		DockWidget->setWidget(w,ads:: CDockWidget::ForceNoScrollArea);
 		auto ToolBar = DockWidget->createDefaultToolBar();
 		ToolBar->addActions(w->actions());
