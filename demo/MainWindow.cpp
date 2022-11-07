@@ -60,6 +60,7 @@
 #include <QToolButton>
 #include <QToolBar>
 #include <QPointer>
+#include <QRandomGenerator>
 
 
 #ifdef Q_OS_WIN
@@ -325,7 +326,19 @@ struct MainWindowPrivate
 	{
 		static int ImageViewerCount = 0;
 		auto w = new CImageViewer();
-		auto Result = w->loadFile(":adsdemo/images/ads_logo.svg");
+		auto ImageIndex = QRandomGenerator::global()->bounded(4);
+		auto FileName = ":adsdemo/images/ads_logo.svg";
+
+		// Pick a random image from a number of images
+		switch (ImageIndex)
+		{
+		case 0: FileName = ":adsdemo/images/ads_tile_blue.svg"; break;
+		case 1: FileName = ":adsdemo/images/ads_tile_light_blue.svg"; break;
+		case 2: FileName = ":adsdemo/images/ads_tile_green.svg"; break;
+		case 3: FileName = ":adsdemo/images/ads_tile_orange.svg"; break;
+		}
+
+		auto Result = w->loadFile(FileName);
 		qDebug() << "loadFile result: " << Result;
 		ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Image Viewer %1").arg(ImageViewerCount++));
 		DockWidget->setWidget(w,ads:: CDockWidget::ForceNoScrollArea);
@@ -701,6 +714,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	// uncomment if you would like to enable dock widget auto hiding
     CDockManager::setAutoHideConfigFlags(CDockManager::DefaultAutoHideConfig);
+    CDockManager::setAutoHideConfigFlag(CDockManager::AutoHideShowOnMouseOver, true);
 
 	// uncomment if you would like to enable an equal distribution of the
 	// available size of a splitter to all contained dock widgets
