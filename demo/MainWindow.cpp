@@ -874,6 +874,20 @@ void CMainWindow::onEditorCloseRequested()
 
 
 //============================================================================
+void CMainWindow::onImageViewerCloseRequested()
+{
+	auto DockWidget = qobject_cast<ads::CDockWidget*>(sender());
+	int Result = QMessageBox::question(this, "Close Image Viewer", QString("%1 "
+		"contains unsaved changes? Would you like to close it?")
+		.arg(DockWidget->windowTitle()));
+	if (QMessageBox::Yes == Result)
+	{
+		DockWidget->closeDockWidget();
+	}
+}
+
+
+//============================================================================
 void CMainWindow::createTable()
 {
 	auto DockWidget = d->createTableWidget();
@@ -931,9 +945,8 @@ void CMainWindow::createImageViewer()
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetForceCloseWithArea, true);
 	DockWidget->setFeature(ads::CDockWidget::CustomCloseHandling, true);
 	DockWidget->resize(QSize(640, 480));
-	connect(DockWidget, &ads::CDockWidget::closeRequested, [this](){
-		qDebug() << "ImageViewer close requested";
-	});
+	connect(DockWidget, &ads::CDockWidget::closeRequested, this,
+		&CMainWindow::onImageViewerCloseRequested);
 
 	if (a->text().startsWith("Floating"))
 	{

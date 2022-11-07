@@ -63,6 +63,7 @@ private slots:
 	void createEditor();
 	void createTable();
 	void onEditorCloseRequested();
+	void onImageViewerCloseRequested();
 	void showStatusDialog();
 	void toggleDockWidgetWindowTitle();
 	void applyVsStyle();
