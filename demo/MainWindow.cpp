@@ -333,7 +333,7 @@ struct MainWindowPrivate
 		switch (ImageIndex)
 		{
 		case 0: FileName = ":adsdemo/images/ads_tile_blue.svg"; break;
-		case 1: FileName = ":adsdemo/images/ads_tile_light_blue.svg"; break;
+		case 1: FileName = ":adsdemo/images/ads_tile_blue_light.svg"; break;
 		case 2: FileName = ":adsdemo/images/ads_tile_green.svg"; break;
 		case 3: FileName = ":adsdemo/images/ads_tile_orange.svg"; break;
 		}
