@@ -552,8 +552,9 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 		return;
 	}
 
+	CDockContainerWidget* FloatingContainer = FloatingWidget->dockContainer();
 	auto InsertParam = internal::dockAreaInsertParameters(area);
-	auto NewDockAreas = FloatingWidget->dockContainer()->findChildren<CDockAreaWidget*>(
+	auto NewDockAreas = FloatingContainer->findChildren<CDockAreaWidget*>(
 		QString(), Qt::FindChildrenRecursively);
 	QSplitter* TargetAreaSplitter = internal::findParent<QSplitter*>(TargetArea);
 
@@ -566,9 +567,7 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
         TargetAreaSplitter = Splitter;
 	}
 	int AreaIndex = TargetAreaSplitter->indexOf(TargetArea);
-	auto FloatingSplitter = FloatingWidget->dockContainer()->findChild<CDockSplitter*>(
-		QString(), Qt::FindDirectChildrenOnly);
-
+	auto FloatingSplitter = FloatingContainer->rootSplitter();
 	if (TargetAreaSplitter->orientation() == InsertParam.orientation())
 	{
 		auto Sizes = TargetAreaSplitter->sizes();
