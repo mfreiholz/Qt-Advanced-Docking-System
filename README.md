@@ -1,4 +1,4 @@
-![ukraine](doc/taiwan_ukraine.jpg)
+![ukraine](doc/ukraine.jpg)
 
 ![logo](doc/ads_logo.svg)
 
@@ -73,7 +73,9 @@ know it from Visual Studio.
   - [Tab-menu for easy handling of many tabbed dock widgets](#tab-menu-for-easy-handling-of-many-tabbed-dock-widgets)
   - [Many different ways to detach dock widgets](#many-different-ways-to-detach-dock-widgets)
   - [Supports deletion of dynamically created dock widgets](#supports-deletion-of-dynamically-created-dock-widgets)
-  - [Python PyQt5 Bindings](#python-pyqt5-bindings)
+- [Python PyQt5 Bindings](#python-pyqt5-bindings)
+  - [PySide6](#pyside6)
+  - [PyQt5](#pyqt5)
 - [Tested Compatible Environments](#tested-compatible-environments)
   - [Supported Qt Versions](#supported-qt-versions)
   - [Windows](#windows)
@@ -180,21 +182,41 @@ You can detach dock widgets and also dock areas in the following ways:
 
 Normally clicking the close button of a dock widget will just hide the widget and the user can show it again using the toggleView() action of the dock widget. This is meant for user interfaces with a static amount of widgets. But the advanced docking system also supports dynamic dock widgets that will get deleted on close. If you set the dock widget flag `DockWidgetDeleteOnClose` for a certain dock widget, then it will be deleted as soon as you close this dock widget. This enables the implementation of user interfaces with dynamically created editors, like in word processing applications or source code development tools.
 
-### Python PyQt5 Bindings
+## Python PyQt5 Bindings
 
 ![Python Logo](doc/python_logo.png)
 
-The Advanced Docking System comes with a complete Python integration based on
-PyQt5 bindings. The package is available via [conda-forge](https://github.com/conda-forge/pyqtads-feedstock). The python integration has been contributed to this project
-by the following people:
+Thanks to the contribution of several users, the Advanced Docking System comes
+with a complete Python integration. Python bindings are available for **PyQt5** and
+**PySide6**.
+
+### PySide6
+
+A PySide6 ADS package is available via PyPi and can be installed on Windows,
+macOS, and Linux with:
+
+```bash
+pip install PySide6-QtAds
+```
+
+Sample code is available [here](https://github.com/mborgerson/Qt-Advanced-Docking-System/tree/pyside6/examples). To run the samples, you'll also need to install latest qtpy
+from source (pip install https://github.com/spyder-ide/qtpy/archive/refs/heads/master.zip).
+The PySide6 bindings were contributed by:
+
+- [mborgerson](https://github.com/mborgerson)
+
+For more information about the PySide6 bindings read [this](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/issues/298) issue.
+
+### PyQt5
+
+A package is available via [conda-forge](https://github.com/conda-forge/pyqtads-feedstock).
+The python integration has been contributed to this project by the following people:
 
 - [n-elie](https://github.com/n-elie)
 - [Hugo Slepicka](https://github.com/hhslepicka)
 - [K Lauer](https://github.com/klauer)
 
-Latest working version: [3.5.2](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/tag/3.5.2)
-
-A Python integration is also availables via PyPi. You can install the
+A Python integration is also available via PyPi. You can install the
 [PyQtAds](https://pypi.org/project/PyQtAds/) package via pip. This feature has been
 contributed to this project by:
 
