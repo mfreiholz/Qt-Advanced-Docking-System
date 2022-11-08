@@ -566,8 +566,8 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
         TargetAreaSplitter = Splitter;
 	}
 	int AreaIndex = TargetAreaSplitter->indexOf(TargetArea);
-	auto Widget = FloatingWidget->dockContainer()->findChild<QWidget*>(QString(), Qt::FindDirectChildrenOnly);
-	auto FloatingSplitter = qobject_cast<QSplitter*>(Widget);
+	auto FloatingSplitter = FloatingWidget->dockContainer()->findChild<CDockSplitter*>(
+		QString(), Qt::FindDirectChildrenOnly);
 
 	if (TargetAreaSplitter->orientation() == InsertParam.orientation())
 	{
@@ -576,7 +576,7 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 		bool AdjustSplitterSizes = true;
 		if ((FloatingSplitter->orientation() != InsertParam.orientation()) && FloatingSplitter->count() > 1)
 		{
-			TargetAreaSplitter->insertWidget(AreaIndex + InsertParam.insertOffset(), Widget);
+			TargetAreaSplitter->insertWidget(AreaIndex + InsertParam.insertOffset(), FloatingSplitter);
             updateSplitterHandles(TargetAreaSplitter);
         }
 		else
@@ -606,7 +606,7 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 		bool AdjustSplitterSizes = true;
 		if ((FloatingSplitter->orientation() != InsertParam.orientation()) && FloatingSplitter->count() > 1)
 		{
-			NewSplitter->addWidget(Widget);
+			NewSplitter->addWidget(FloatingSplitter);
             updateSplitterHandles(NewSplitter);
         }
 		else
