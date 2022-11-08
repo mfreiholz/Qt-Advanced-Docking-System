@@ -83,7 +83,6 @@ know it from Visual Studio.
   - [Linux](#linux)
 - [Build](#build)
 - [Getting started / Example](#getting-started--example)
-- [Developers](#developers)
 - [License information](#license-information)
 - [Alternative Docking System Implementations](#alternative-docking-system-implementations)
   - [KDDockWidgets](#kddockwidgets)
@@ -349,17 +348,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 ```
-
-## Developers
-
-- Uwe Kindler, Project Maintainer
-- Manuel Freiholz
-
-This work is based on and inspired by the 
-[Advanced Docking System for Qt](https://github.com/mfreiholz/Qt-Advanced-Docking-System)
-from Manuel Freiholz. I did an almost complete rewrite of his code to improve
-code quality, readibility and to fix all issues from the issue tracker
-of his docking system project.
 
 ## License information
 
