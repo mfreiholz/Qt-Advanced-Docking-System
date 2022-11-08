@@ -73,7 +73,7 @@ know it from Visual Studio.
   - [Tab-menu for easy handling of many tabbed dock widgets](#tab-menu-for-easy-handling-of-many-tabbed-dock-widgets)
   - [Many different ways to detach dock widgets](#many-different-ways-to-detach-dock-widgets)
   - [Supports deletion of dynamically created dock widgets](#supports-deletion-of-dynamically-created-dock-widgets)
-- [Python PyQt5 Bindings](#python-pyqt5-bindings)
+- [Python Bindings](#python-bindings)
   - [PySide6](#pyside6)
   - [PyQt5](#pyqt5)
 - [Tested Compatible Environments](#tested-compatible-environments)
@@ -84,10 +84,6 @@ know it from Visual Studio.
 - [Build](#build)
 - [Getting started / Example](#getting-started--example)
 - [License information](#license-information)
-- [Alternative Docking System Implementations](#alternative-docking-system-implementations)
-  - [KDDockWidgets](#kddockwidgets)
-  - [QtitanDocking](#qtitandocking)
-  - [DockingPanes](#dockingpanes)
 - [Donation](#donation)
 - [Showcase](#showcase)
   - [Qt Creator IDE](#qt-creator-ide)
@@ -101,6 +97,10 @@ know it from Visual Studio.
   - [Notepad Next](#notepad-next)
   - [MetGem](#metgem)
   - [PRE Workbench](#pre-workbench)
+- [Alternative Docking System Implementations](#alternative-docking-system-implementations)
+  - [KDDockWidgets](#kddockwidgets)
+  - [QtitanDocking](#qtitandocking)
+  - [DockingPanes](#dockingpanes)
 
 ### Docking everywhere - no central widget
 
@@ -182,7 +182,7 @@ You can detach dock widgets and also dock areas in the following ways:
 
 Normally clicking the close button of a dock widget will just hide the widget and the user can show it again using the toggleView() action of the dock widget. This is meant for user interfaces with a static amount of widgets. But the advanced docking system also supports dynamic dock widgets that will get deleted on close. If you set the dock widget flag `DockWidgetDeleteOnClose` for a certain dock widget, then it will be deleted as soon as you close this dock widget. This enables the implementation of user interfaces with dynamically created editors, like in word processing applications or source code development tools.
 
-## Python PyQt5 Bindings
+## Python Bindings
 
 ![Python Logo](doc/python_logo.png)
 
@@ -354,36 +354,6 @@ MainWindow::~MainWindow()
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](gnu-lgpl-v2.1.md)
 This project uses the [LGPLv2.1 license](gnu-lgpl-v2.1.md)
 
-
-## Alternative Docking System Implementations
-
-If this Qt Advanced Docking System does not fit to your needs you may consider some of the alternative docking system solutions for Qt.
-
-### KDDockWidgets
-
-This is an advanced docking framework for Qt from [KDAB](https://www.kdab.com/). The interesting thing is, that they separated GUI code from logic, so they can easily provide a QtQuick backend in the future. 
-
-- [Blog post about KDDockWidgets](https://www.kdab.com/kddockwidgets/)
-- [GitHub project](https://github.com/KDAB/KDDockWidgets)
-
-**License:** dual-licensed, available under both commercial and GPL license.
-
-### QtitanDocking
-
-This is a commercial component from [Developer Machines](https://www.devmachines.com/) for Qt Framework that allows to create a Microsoft like dockable user interface. They also offer a lot of other interesting and useful components for Qt. The library is available
-
-- [Product page](https://www.devmachines.com/qtitandocking-overview.html)
-
-**License:** Commercial license
-
-### DockingPanes
-
-DockingPanes is a library for Qt Widgets that implements docking windows that have the look and feel of Visual Studio. It provides a simple API which allows an application to make use of docking windows with a few calls.
-
-- [GitHub project](https://github.com/KestrelRadarSensors/dockingpanes)
-
-**License:** GPL
-
 ## Donation
 
 If this project help you reduce time to develop or if you just like it, you can give me a cup of coffee :coffee::wink:.
@@ -510,3 +480,32 @@ PRE Workbench is a Python software and uses the ADS PyQt integration.
 [read more...](https://luelista.github.io/pre_workbench/)
 
 [![PRE Workbench](doc/showcase_pre_workbench.png)](https://youtu.be/U3op5UreV1Q)
+
+## Alternative Docking System Implementations
+
+If this Qt Advanced Docking System does not fit to your needs you may consider some of the alternative docking system solutions for Qt.
+
+### KDDockWidgets
+
+This is an advanced docking framework for Qt from [KDAB](https://www.kdab.com/). The interesting thing is, that they separated GUI code from logic, so they can easily provide a QtQuick backend in the future. 
+
+- [Blog post about KDDockWidgets](https://www.kdab.com/kddockwidgets/)
+- [GitHub project](https://github.com/KDAB/KDDockWidgets)
+
+**License:** dual-licensed, available under both commercial and GPL license.
+
+### QtitanDocking
+
+This is a commercial component from [Developer Machines](https://www.devmachines.com/) for Qt Framework that allows to create a Microsoft like dockable user interface. They also offer a lot of other interesting and useful components for Qt. The library is available
+
+- [Product page](https://www.devmachines.com/qtitandocking-overview.html)
+
+**License:** Commercial license
+
+### DockingPanes
+
+DockingPanes is a library for Qt Widgets that implements docking windows that have the look and feel of Visual Studio. It provides a simple API which allows an application to make use of docking windows with a few calls.
+
+- [GitHub project](https://github.com/KestrelRadarSensors/dockingpanes)
+
+**License:** GPL
