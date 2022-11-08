@@ -88,6 +88,7 @@ know it from Visual Studio.
 - [Alternative Docking System Implementations](#alternative-docking-system-implementations)
   - [KDDockWidgets](#kddockwidgets)
   - [QtitanDocking](#qtitandocking)
+  - [DockingPanes](#dockingpanes)
 - [Donation](#donation)
 - [Showcase](#showcase)
   - [Qt Creator IDE](#qt-creator-ide)
@@ -372,17 +373,28 @@ If this Qt Advanced Docking System does not fit to your needs you may consider s
 
 ### KDDockWidgets
 
-This is an advanced docking framework for Qt from [KDAB](https://www.kdab.com/). The interesting thing is, that they separated GUI code from logic, so they can easily provide a QtQuick backend in the future.
+This is an advanced docking framework for Qt from [KDAB](https://www.kdab.com/). The interesting thing is, that they separated GUI code from logic, so they can easily provide a QtQuick backend in the future. 
 
 - [Blog post about KDDockWidgets](https://www.kdab.com/kddockwidgets/)
 - [GitHub project](https://github.com/KDAB/KDDockWidgets)
 
+**License:** dual-licensed, available under both commercial and GPL license.
 
 ### QtitanDocking
 
-This is a commercial component from [Developer Machines](https://www.devmachines.com/) for Qt Framework that allows to create a Microsoft like dockable user interface. They also offer a lot of other interesting and useful components for Qt.
+This is a commercial component from [Developer Machines](https://www.devmachines.com/) for Qt Framework that allows to create a Microsoft like dockable user interface. They also offer a lot of other interesting and useful components for Qt. The library is available
 
 - [Product page](https://www.devmachines.com/qtitandocking-overview.html)
+
+**License:** Commercial license
+
+### DockingPanes
+
+DockingPanes is a library for Qt Widgets that implements docking windows that have the look and feel of Visual Studio. It provides a simple API which allows an application to make use of docking windows with a few calls.
+
+- [GitHub project](https://github.com/KestrelRadarSensors/dockingpanes)
+
+**License:** GPL
 
 ## Donation
 
