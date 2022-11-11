@@ -223,7 +223,6 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, SideBarL
 	d->ResizeHandle->setMinResizeSize(64);
 	bool OpaqueResize = CDockManager::testConfigFlag(CDockManager::OpaqueSplitterResize);
 	d->ResizeHandle->setOpaqueResize(OpaqueResize);
-	d->Layout->insertWidget(resizeHandleLayoutPosition(area), d->ResizeHandle);
 	d->Size = d->DockArea->size();
 
 	addDockWidget(DockWidget);
@@ -233,6 +232,7 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, SideBarL
 	// then you will likely see this warning for OpenGL widgets or QAxWidgets:
 	// setGeometry: Unable to set geometry XxY+Width+Height on QWidgetWindow/'WidgetClassWindow
 	d->Layout->addWidget(d->DockArea);
+	d->Layout->insertWidget(resizeHandleLayoutPosition(area), d->ResizeHandle);
 }
 
 
