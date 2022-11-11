@@ -201,15 +201,15 @@ CDockContainerWidget* CAutoHideDockContainer::dockContainer() const
 
 
 //============================================================================
-CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, SideBarLocation area, CDockContainerWidget* parent) :
-    Super(parent),
+CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, SideBarLocation area, CDockContainerWidget* parent) :
+	Super(parent),
     d(new AutoHideDockContainerPrivate(this))
 {
 	hide(); // auto hide dock container is initially always hidden
 	d->SideTabBarArea = area;
 	d->SideTab = componentsFactory()->createDockWidgetSideTab(nullptr);
 	connect(d->SideTab, &CAutoHideTab::pressed, this, &CAutoHideDockContainer::toggleCollapseState);
-	d->DockArea = new CDockAreaWidget(DockManager, parent);
+	d->DockArea = new CDockAreaWidget(DockWidget->dockManager(), parent);
 	d->DockArea->setObjectName("autoHideDockArea");
 	d->DockArea->setAutoHideDockContainer(this);
 
@@ -219,7 +219,6 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, SideBa
 	d->Layout->setContentsMargins(0, 0, 0, 0);
 	d->Layout->setSpacing(0);
 	setLayout(d->Layout);
-	d->Layout->addWidget(d->DockArea);
 	d->ResizeHandle = new CResizeHandle(edgeFromSideTabBarArea(area), this);
 	d->ResizeHandle->setMinResizeSize(64);
 	bool OpaqueResize = CDockManager::testConfigFlag(CDockManager::OpaqueSplitterResize);
@@ -227,17 +226,13 @@ CAutoHideDockContainer::CAutoHideDockContainer(CDockManager* DockManager, SideBa
 	d->Layout->insertWidget(resizeHandleLayoutPosition(area), d->ResizeHandle);
 	d->Size = d->DockArea->size();
 
-	updateSize();
-	parent->registerAutoHideWidget(this);
-}
-
-
-//============================================================================
-CAutoHideDockContainer::CAutoHideDockContainer(CDockWidget* DockWidget, SideBarLocation area, CDockContainerWidget* parent) :
-	CAutoHideDockContainer(DockWidget->dockManager(), area, parent)
-{
 	addDockWidget(DockWidget);
-	hide();
+	parent->registerAutoHideWidget(this);
+	// The dock area should not be added to the layout before it contains the
+	// dock widget. If you add it to the layout before it contains the dock widget
+	// then you will likely see this warning for OpenGL widgets or QAxWidgets:
+	// setGeometry: Unable to set geometry XxY+Width+Height on QWidgetWindow/'WidgetClassWindow
+	d->Layout->addWidget(d->DockArea);
 }
 
 

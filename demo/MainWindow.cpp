@@ -493,7 +493,6 @@ void MainWindowPrivate::createContent()
 	auto BottomDockArea = DockManager->addDockWidget(ads::BottomDockWidgetArea, createLongTextLabelDockWidget(), RighDockArea);
 	DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(), RighDockArea);
 	auto LabelDockWidget = createLongTextLabelDockWidget();
-	std::cout << "DockWidget " << LabelDockWidget->objectName().toStdString() << std::endl;
 	DockManager->addDockWidget(ads::CenterDockWidgetArea, LabelDockWidget, BottomDockArea);
 
 	// Tests CustomCloseHandling without DeleteOnClose
@@ -528,13 +527,7 @@ void MainWindowPrivate::createContent()
 
 #ifdef Q_OS_WIN
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    // ActiveX widget only works without OpaqueUndocking and without
-    // auto hide feature
-    if (!ads::CDockManager::testConfigFlag(ads::CDockManager::OpaqueUndocking)
-     && !ads::CDockManager::testAutoHideConfigFlag(ads::CDockManager::AutoHideFeatureEnabled))
-    {
-    	DockManager->addDockWidget(ads::CenterDockWidgetArea, createActiveXWidget(), RighDockArea);
-    }
+    DockManager->addDockWidget(ads::CenterDockWidgetArea, createActiveXWidget(), RighDockArea);
 #endif
 #endif
 
@@ -679,7 +672,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
     // uncomment the following line if you want to use opaque undocking and
 	// opaque splitter resizing
-    // CDockManager::setConfigFlags(CDockManager::DefaultOpaqueConfig);
+    //CDockManager::setConfigFlags(CDockManager::DefaultOpaqueConfig);
 
     // uncomment the following line if you want a fixed tab width that does
 	// not change if the visibility of the close button changes
@@ -853,16 +846,13 @@ void CMainWindow::createEditor()
     	ads::CDockAreaWidget* EditorArea = d->LastDockedEditor ? d->LastDockedEditor->dockAreaWidget() : nullptr;
     	if (EditorArea)
     	{
-    		std::cout << "DockAreaCount before: " << EditorArea->dockContainer()->dockAreaCount() << std::endl;
     		d->DockManager->setConfigFlag(ads::CDockManager::EqualSplitOnInsertion, true);
     		d->DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidget, EditorArea);
-    		std::cout << "DockAreaCount after: " << DockWidget->dockContainer()->dockAreaCount() << std::endl;
     	}
     	else
     	{
     		if (d->LastCreatedFloatingEditor)
     		{
-    			std::cout << "LastCreated" << std::endl;
     			d->DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidget, d->LastCreatedFloatingEditor->dockAreaWidget());
     		}
     		else

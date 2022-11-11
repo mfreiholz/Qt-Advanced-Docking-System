@@ -79,11 +79,6 @@ protected:
 
 public:
 	using Super = QFrame;
-	/**
-	 * Create Auto Hide widget with a dock manager
-	 */
-    CAutoHideDockContainer(CDockManager* DockManager, SideBarLocation area,
-    	CDockContainerWidget* parent);
 
     /**
 	 * Create Auto Hide widget with the given dock widget
