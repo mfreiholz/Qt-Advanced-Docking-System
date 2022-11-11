@@ -20,7 +20,12 @@ integrated development environments (IDEs) such as Visual Studio.
 
 ## New and Noteworthy
 
-The [release 3.8](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/latest)
+The [release 4.0](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/latest)
+adds the following features:
+
+- Auto-Hide functionality ([read more...](#auto-hide-functionality))
+
+The [release 3.8](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/3.8.3)
 adds the following features:
 
 - option to close tabs with the middle mouse button
@@ -189,7 +194,11 @@ The 4.0 release of ADS added the new **Auto-Hide** feature. Thanks to the initia
 contribution by an ADS user, it was possible to close this long standing feature
 request. The "Auto Hide" feature
 allows to display more information using less screen space by hiding or showing
-windows pinned to one of the four dock container borders. The Advanced Docking
+windows pinned to one of the four dock container borders. 
+
+![Auto-Hide Movie](doc/AutoHide_Movie.gif)
+
+The Advanced Docking
 System supports "Auto-Hide" functionality for **all** dock containers - that means,
 for the main window and for each floating widget. Here is short list of all
 auto hide features:
