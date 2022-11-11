@@ -1104,7 +1104,20 @@ bool DockContainerWidgetPrivate::restoreSideBar(CDockingStateReader& s,
 		}
 
 		auto SideBar = _this->sideTabBar(Area);
-		auto AutoHideContainer = SideBar->insertDockWidget(-1, DockWidget);
+		CAutoHideDockContainer* AutoHideContainer;
+		if (DockWidget->isAutoHide())
+		{
+			AutoHideContainer = DockWidget->autoHideDockContainer();
+			if (AutoHideContainer->sideBar() != SideBar)
+			{
+				AutoHideContainer->autoHideTab()->removeFromSideBar();
+				SideBar->insertTab(-1, AutoHideContainer->autoHideTab());
+			}
+		}
+		else
+		{
+			AutoHideContainer = SideBar->insertDockWidget(-1, DockWidget);
+		}
 		AutoHideContainer->setSize(Size);
         DockWidget->setProperty(internal::ClosedProperty, Closed);
 		DockWidget->setProperty(internal::DirtyProperty, false);

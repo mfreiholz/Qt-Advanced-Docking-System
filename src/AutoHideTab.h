@@ -40,6 +40,7 @@ class CDockWidget;
 class CAutoHideSideBar;
 class CDockWidgetTab;
 struct SideTabIconLabelPrivate;
+struct DockContainerWidgetPrivate;
 
 /**
  * A dock widget Side tab that shows a title or an icon.
@@ -60,12 +61,13 @@ private:
     friend struct AutoHideTabPrivate;
 	friend class CDockWidget;
 	friend class CAutoHideDockContainer;
-
-protected:
 	friend class CAutoHideSideBar;
 	friend class CDockAreaWidget;
 	friend class CDockContainerWidget;
+	friend DockContainerWidgetPrivate;
 
+
+protected:
 	void setSideBar(CAutoHideSideBar *SideTabBar);
 	void removeFromSideBar();
 	virtual bool event(QEvent* event) override;
