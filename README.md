@@ -73,6 +73,7 @@ know it from Visual Studio.
   - [Tab-menu for easy handling of many tabbed dock widgets](#tab-menu-for-easy-handling-of-many-tabbed-dock-widgets)
   - [Many different ways to detach dock widgets](#many-different-ways-to-detach-dock-widgets)
   - [Supports deletion of dynamically created dock widgets](#supports-deletion-of-dynamically-created-dock-widgets)
+  - [Auto-Hide Functionality](#auto-hide-functionality)
 - [Python Bindings](#python-bindings)
   - [PySide6](#pyside6)
   - [PyQt5](#pyqt5)
@@ -181,6 +182,31 @@ You can detach dock widgets and also dock areas in the following ways:
 ### Supports deletion of dynamically created dock widgets
 
 Normally clicking the close button of a dock widget will just hide the widget and the user can show it again using the toggleView() action of the dock widget. This is meant for user interfaces with a static amount of widgets. But the advanced docking system also supports dynamic dock widgets that will get deleted on close. If you set the dock widget flag `DockWidgetDeleteOnClose` for a certain dock widget, then it will be deleted as soon as you close this dock widget. This enables the implementation of user interfaces with dynamically created editors, like in word processing applications or source code development tools.
+
+### Auto-Hide Functionality
+
+The 4.0 release of ADS added the new **Auto-Hide** feature. Thanks to the initial
+contribution by an ADS user, it was possible to close this long standing feature
+request. The "Auto Hide" feature
+allows to display more information using less screen space by hiding or showing
+windows pinned to one of the four dock container borders. The Advanced Docking
+System supports "Auto-Hide" functionality for **all** dock containers - that means,
+for the main window and for each floating widget. Here is short list of all
+auto hide features:
+
+- supported for the main window and all floating dock containers
+- supports showing and hiding via mouse click or mouse hover
+- respects opaque / non opaque splitter resizing flag
+- context menu for pinning a dock widget or a complete dock area to a certain border
+- configuration option to configure if the pin button should pin the current
+  dock widget tab or a complete dock area
+- click the pin button holding the Ctrl key to pin a complete dock area
+- fully CSS styleable
+- backward compatible state file format - is is possible to load older dock manager
+  state files without auto hide support and older versions can load the new state
+  files with Auto-Hide state information
+
+More about the auto hide configuration options in the [online documentation...](doc/user-guide.md#auto-hide-configuration-flags)
 
 ## Python Bindings
 
