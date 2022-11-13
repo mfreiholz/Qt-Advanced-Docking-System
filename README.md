@@ -190,11 +190,11 @@ Normally clicking the close button of a dock widget will just hide the widget an
 
 ### Auto-Hide Functionality
 
-The 4.0 release of ADS added the new **Auto-Hide** feature. Thanks to the initial
-contribution by an ADS user, it was possible to close this long standing feature
-request. The "Auto Hide" feature
+The 4.0 release of ADS added the new **Auto-Hide** feature. Thanks to the
+[initial contribution](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/pull/452) by [Ahmad Syarifuddin](https://github.com/SyarifFakhri) it was
+possible to close this long standing [feature request](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/issues/147). The "Auto Hide" feature
 allows to display more information using less screen space by hiding or showing
-windows pinned to one of the four dock container borders. 
+windows pinned to one of the four dock container borders.
 
 ![Auto-Hide Movie](doc/AutoHide_Movie.gif)
 
