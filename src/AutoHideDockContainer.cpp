@@ -38,9 +38,7 @@
 #include <QCursor>
 
 #include "DockManager.h"
-#include "DockWidgetTab.h"
 #include "DockAreaWidget.h"
-#include "DockingStateReader.h"
 #include "ResizeHandle.h"
 #include "DockComponentsFactory.h"
 #include "AutoHideSideBar.h"
@@ -508,7 +506,8 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		// ignore the event, because the auto hide overlay should not get collapsed if
 		// user works in it
 		QMouseEvent* me = static_cast<QMouseEvent*>(event);
-		auto pos = mapFromGlobal(me->globalPos());
+		auto GlobalPos = internal::globalPositionOf(me);
+		auto pos = mapFromGlobal(GlobalPos);
 		if (rect().contains(pos))
 		{
 			return Super::eventFilter(watched, event);
@@ -519,7 +518,7 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		// do not ignore this here, then we will collapse the container and the side tab
 		// click handler will uncollapse it
 		auto SideTab = d->SideTab;
-		pos = SideTab->mapFromGlobal(me->globalPos());
+		pos = SideTab->mapFromGlobal(GlobalPos);
 		if (SideTab->rect().contains(pos))
 		{
 			return Super::eventFilter(watched, event);
@@ -529,6 +528,16 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		// of the open auto hide container, then the auto hide dock widget
 		// should get collapsed
 		collapseView(true);
+	}
+	else if (event->type() == QEvent::NonClientAreaMouseButtonPress)
+	{
+		// If the user starts dragging a floating widget, then we collapse
+		// the auto hide widget
+		CFloatingDockContainer* FloatingWidget = qobject_cast<CFloatingDockContainer*>(watched);
+		if (FloatingWidget)
+		{
+			collapseView(true);
+		}
 	}
 
 	return Super::eventFilter(watched, event);
