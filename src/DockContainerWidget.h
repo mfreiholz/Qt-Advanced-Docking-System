@@ -181,7 +181,7 @@ public:
 	 * \return Returns the dock area widget that contains the new DockWidget
 	 */
 	CDockAreaWidget* addDockWidget(DockWidgetArea area, CDockWidget* Dockwidget,
-		CDockAreaWidget* DockAreaWidget = nullptr);
+		CDockAreaWidget* DockAreaWidget = nullptr, int Index = -1);
 
 	/**
 	 * Removes dockwidget

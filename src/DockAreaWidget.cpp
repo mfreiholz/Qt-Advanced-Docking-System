@@ -416,6 +416,10 @@ void CDockAreaWidget::addDockWidget(CDockWidget* DockWidget)
 void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 	bool Activate)
 {
+	if (index < 0 || index > d->ContentsLayout->count())
+	{
+		index = d->ContentsLayout->count();
+	}
 	d->ContentsLayout->insertWidget(index, DockWidget);
 	DockWidget->setDockArea(this);
 	DockWidget->tabWidget()->setDockAreaWidget(this);
