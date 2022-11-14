@@ -18,7 +18,6 @@
 #include <QMessageBox>
 #include <QApplication>
 #include <QDir>
-#include <QColorSpace>
 #include <QFileDialog>
 #include <QStandardPaths>
 #include <QAction>
@@ -261,7 +260,7 @@ void CImageViewer::mouseMoveEvent(QMouseEvent* Event)
 //============================================================================
 void CImageViewer::wheelEvent(QWheelEvent* Event)
 {
-	double numDegrees = Event->delta() / 8;
+	double numDegrees = Event->angleDelta().y() / 8;
 	double numSteps = numDegrees / 15;
 	d->AutoFit = false;
 	double Zoom;
