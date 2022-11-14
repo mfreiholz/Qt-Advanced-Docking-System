@@ -544,6 +544,14 @@ void MainWindowPrivate::createActions()
 	_this->connect(a, SIGNAL(triggered()), SLOT(createEditor()));
 	ui.menuTests->addAction(a);
 
+	a = ui.toolBar->addAction("Create Editor Tab");
+	a->setProperty("Floating", false);
+	a->setToolTip("Creates a editor tab and inserts it as second tab into an area");
+	a->setIcon(svgIcon(":/adsdemo/images/tab.svg"));
+	a->setProperty("Tabbed", true);
+	_this->connect(a, SIGNAL(triggered()), SLOT(createEditor()));
+	ui.menuTests->addAction(a);
+
 	a = ui.toolBar->addAction("Create Floating Table");
 	a->setToolTip("Creates floating dynamic dockable table with millions of entries");
 	a->setIcon(svgIcon(":/adsdemo/images/grid_on.svg"));
@@ -769,6 +777,8 @@ void CMainWindow::createEditor()
 	QObject* Sender = sender();
 	QVariant vFloating = Sender->property("Floating");
 	bool Floating = vFloating.isValid() ? vFloating.toBool() : true;
+	QVariant vTabbed = Sender->property("Tabbed");
+	bool Tabbed = vTabbed.isValid() ? vTabbed.toBool() : true;
 	auto DockWidget = d->createEditorWidget();
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetDeleteOnClose, true);
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetForceCloseWithArea, true);
@@ -786,16 +796,13 @@ void CMainWindow::createEditor()
     	ads::CDockAreaWidget* EditorArea = d->LastDockedEditor ? d->LastDockedEditor->dockAreaWidget() : nullptr;
     	if (EditorArea)
     	{
-    		std::cout << "DockAreaCount before: " << EditorArea->dockContainer()->dockAreaCount() << std::endl;
     		d->DockManager->setConfigFlag(ads::CDockManager::EqualSplitOnInsertion, true);
     		d->DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidget, EditorArea);
-    		std::cout << "DockAreaCount after: " << DockWidget->dockContainer()->dockAreaCount() << std::endl;
     	}
     	else
     	{
     		if (d->LastCreatedFloatingEditor)
     		{
-    			std::cout << "LastCreated" << std::endl;
     			d->DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidget, d->LastCreatedFloatingEditor->dockAreaWidget());
     		}
     		else

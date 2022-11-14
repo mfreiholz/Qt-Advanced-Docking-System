@@ -17,5 +17,6 @@
         <file>images/create_floating_editor.svg</file>
         <file>images/create_floating_table.svg</file>
         <file>images/docked_editor.svg</file>
+        <file>images/tab.svg</file>
     </qresource>
 </RCC>
