@@ -1232,13 +1232,13 @@ CDockAreaWidget* DockContainerWidgetPrivate::addDockWidgetToDockArea(DockWidgetA
 {
 	if (CenterDockWidgetArea == area)
 	{
-		TargetDockArea->addDockWidget(Dockwidget);
+		TargetDockArea->insertDockWidget(Index, Dockwidget);
 		TargetDockArea->updateTitleBarVisibility();
 		return TargetDockArea;
 	}
 
 	CDockAreaWidget* NewDockArea = new CDockAreaWidget(DockManager, _this);
-	NewDockArea->insertDockWidget(Index, Dockwidget);
+	NewDockArea->addDockWidget(Dockwidget);
 	auto InsertParam = internal::dockAreaInsertParameters(area);
 
 	QSplitter* TargetAreaSplitter = internal::findParent<QSplitter*>(TargetDockArea);

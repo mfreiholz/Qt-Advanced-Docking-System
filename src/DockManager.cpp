@@ -880,15 +880,7 @@ CDockAreaWidget* CDockManager::addDockWidgetTab(DockWidgetArea area,
 
 //============================================================================
 CDockAreaWidget* CDockManager::addDockWidgetTabToArea(CDockWidget* Dockwidget,
-	CDockAreaWidget* DockAreaWidget)
-{
-	return addDockWidget(ads::CenterDockWidgetArea, Dockwidget, DockAreaWidget);
-}
-
-
-//============================================================================
-CDockAreaWidget* CDockManager::insertDockWidgetTabIntoArea(CDockWidget* Dockwidget,
-		CDockAreaWidget* DockAreaWidget, int Index)
+	CDockAreaWidget* DockAreaWidget, int Index)
 {
 	return addDockWidget(ads::CenterDockWidgetArea, Dockwidget, DockAreaWidget, Index);
 }

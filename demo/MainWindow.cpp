@@ -790,28 +790,38 @@ void CMainWindow::createEditor()
 		FloatingWidget->move(QPoint(20, 20));
 		d->LastCreatedFloatingEditor = DockWidget;
 		d->LastDockedEditor.clear();
+		return;
     }
-    else
-    {
-    	ads::CDockAreaWidget* EditorArea = d->LastDockedEditor ? d->LastDockedEditor->dockAreaWidget() : nullptr;
-    	if (EditorArea)
-    	{
-    		d->DockManager->setConfigFlag(ads::CDockManager::EqualSplitOnInsertion, true);
-    		d->DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidget, EditorArea);
-    	}
-    	else
-    	{
-    		if (d->LastCreatedFloatingEditor)
-    		{
-    			d->DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidget, d->LastCreatedFloatingEditor->dockAreaWidget());
-    		}
-    		else
-    		{
-    			d->DockManager->addDockWidget(ads::TopDockWidgetArea, DockWidget);
-    		}
-    	}
-    	d->LastDockedEditor = DockWidget;
-    }
+
+
+	ads::CDockAreaWidget* EditorArea = d->LastDockedEditor ? d->LastDockedEditor->dockAreaWidget() : nullptr;
+	if (EditorArea)
+	{
+		if (Tabbed)
+		{
+			// Test inserting the dock widget tab at a given position instead
+			// of appending it. This function inserts the new dock widget as
+			// first tab
+			d->DockManager->addDockWidgetTabToArea(DockWidget, EditorArea, 0);
+		}
+		else
+		{
+			d->DockManager->setConfigFlag(ads::CDockManager::EqualSplitOnInsertion, true);
+			d->DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidget, EditorArea);
+		}
+	}
+	else
+	{
+		if (d->LastCreatedFloatingEditor)
+		{
+			d->DockManager->addDockWidget(ads::RightDockWidgetArea, DockWidget, d->LastCreatedFloatingEditor->dockAreaWidget());
+		}
+		else
+		{
+			d->DockManager->addDockWidget(ads::TopDockWidgetArea, DockWidget);
+		}
+	}
+	d->LastDockedEditor = DockWidget;
 }
 
 

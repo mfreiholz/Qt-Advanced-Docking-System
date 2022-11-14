@@ -304,16 +304,10 @@ public:
 	/**
 	 * This function will add the given Dockwidget to the given DockAreaWidget
 	 * as a new tab.
+	 * If index is out of range, the tab is simply appended. Otherwise it is
+	 * inserted at the specified position.
 	 */
 	CDockAreaWidget* addDockWidgetTabToArea(CDockWidget* Dockwidget,
-		CDockAreaWidget* DockAreaWidget);
-
-	/**
-	 * This function will inserts the given Dockwidget to the given DockAreaWidget
-	 * as a new tab at the given index.
-	 * If index is out of range, the tab is simply appended. Otherwise it is inserted at the specified position.
-	 */
-	CDockAreaWidget* insertDockWidgetTabIntoArea(CDockWidget* Dockwidget,
 		CDockAreaWidget* DockAreaWidget, int Index = -1);
 
 	/**
