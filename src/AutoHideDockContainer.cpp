@@ -471,6 +471,8 @@ void CAutoHideDockContainer::setSize(int Size)
 //============================================================================
 bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 {
+	// A switch case statement would be nicer here, but we cannot use
+	// internal::FloatingWidgetDragStartEvent in a switch case
     if (event->type() == QEvent::Resize)
 	{
 		if (!d->ResizeHandle->isResizing())
