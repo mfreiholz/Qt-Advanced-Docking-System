@@ -53,6 +53,7 @@ namespace internal
 #ifdef Q_OS_LINUX
 static QString _window_manager;
 static QHash<QString, xcb_atom_t> _xcb_atom_cache;
+const int FloatingWidgetDragStartEvent = QEvent::registerEventType();
 
 
 //============================================================================

@@ -471,7 +471,7 @@ void CAutoHideDockContainer::setSize(int Size)
 //============================================================================
 bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 {
-	if (event->type() == QEvent::Resize)
+    if (event->type() == QEvent::Resize)
 	{
 		if (!d->ResizeHandle->isResizing())
 		{
@@ -539,6 +539,10 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 			collapseView(true);
 		}
 	}
+    else if (event->type() == internal::FloatingWidgetDragStartEvent)
+    {
+        collapseView(true);
+    }
 
 	return Super::eventFilter(watched, event);
 }

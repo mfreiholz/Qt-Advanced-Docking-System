@@ -151,6 +151,7 @@ static const bool RestoreTesting = true;
 static const bool Restore = false;
 static const char* const ClosedProperty = "close";
 static const char* const DirtyProperty = "dirty";
+extern const int FloatingWidgetDragStartEvent;
 
 #ifdef Q_OS_LINUX
 // Utils to directly communicate with the X server

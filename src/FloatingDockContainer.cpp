@@ -406,7 +406,13 @@ struct FloatingDockContainerPrivate
 
 	void setState(eDragState StateId)
 	{
+        auto OldState = DraggingState;
 		DraggingState = StateId;
+        if (DraggingInactive == OldState && DraggingFloatingWidget == DraggingState)
+        {
+            qDebug() << "Start dragging floating widget " << internal::FloatingWidgetDragStartEvent;
+            qApp->postEvent(DockManager, new QEvent((QEvent::Type)internal::FloatingWidgetDragStartEvent));
+        }
 	}
 
 	void setWindowTitle(const QString &Text)
@@ -1281,11 +1287,12 @@ void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 	Super::moveEvent(event);
 	if (!d->IsResizing && event->spontaneous() && s_mousePressed)
 	{
-		d->DraggingState = DraggingFloatingWidget;
+        d->setState(DraggingFloatingWidget);
 		d->updateDropOverlays(QCursor::pos());
 	}
 	d->IsResizing = false;
 }
+
 
 //============================================================================
 bool CFloatingDockContainer::event(QEvent *e)
