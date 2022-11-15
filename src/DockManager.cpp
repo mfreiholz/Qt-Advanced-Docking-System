@@ -851,11 +851,11 @@ void CDockManager::restoreHiddenFloatingWidgets()
 
 //============================================================================
 CDockAreaWidget* CDockManager::addDockWidget(DockWidgetArea area,
-	CDockWidget* Dockwidget, CDockAreaWidget* DockAreaWidget)
+	CDockWidget* Dockwidget, CDockAreaWidget* DockAreaWidget, int Index)
 {
 	d->DockWidgetsMap.insert(Dockwidget->objectName(), Dockwidget);
 	auto Container = DockAreaWidget ? DockAreaWidget->dockContainer() : this;
-	auto AreaOfAddedDockWidget = Container->addDockWidget(area, Dockwidget, DockAreaWidget);
+	auto AreaOfAddedDockWidget = Container->addDockWidget(area, Dockwidget, DockAreaWidget, Index);
 	Q_EMIT dockWidgetAdded(Dockwidget);
 	return AreaOfAddedDockWidget;
 }
@@ -907,9 +907,9 @@ CDockAreaWidget* CDockManager::addDockWidgetTab(DockWidgetArea area,
 
 //============================================================================
 CDockAreaWidget* CDockManager::addDockWidgetTabToArea(CDockWidget* Dockwidget,
-	CDockAreaWidget* DockAreaWidget)
+	CDockAreaWidget* DockAreaWidget, int Index)
 {
-	return addDockWidget(ads::CenterDockWidgetArea, Dockwidget, DockAreaWidget);
+	return addDockWidget(ads::CenterDockWidgetArea, Dockwidget, DockAreaWidget, Index);
 }
 
 
