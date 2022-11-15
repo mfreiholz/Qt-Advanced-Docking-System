@@ -257,11 +257,17 @@ void CAutoHideSideBar::removeAutoHideWidget(CAutoHideDockContainer* AutoHideWidg
 void CAutoHideSideBar::addAutoHideWidget(CAutoHideDockContainer* AutoHideWidget)
 {
 	auto SideBar = AutoHideWidget->autoHideTab()->sideBar();
+	if (SideBar == this)
+	{
+		return;
+	}
+
 	if (SideBar)
 	{
 		SideBar->removeAutoHideWidget(AutoHideWidget);
 	}
 	AutoHideWidget->setParent(d->ContainerWidget);
+	AutoHideWidget->setSideBarLocation(d->SideTabArea);
 	d->ContainerWidget->registerAutoHideWidget(AutoHideWidget);
 	insertTab(-1, AutoHideWidget->autoHideTab());
 }

@@ -353,6 +353,24 @@ SideBarLocation CAutoHideDockContainer::sideBarLocation() const
 	return d->SideTabBarArea;
 }
 
+
+//============================================================================
+void CAutoHideDockContainer::setSideBarLocation(SideBarLocation SideBarLocation)
+{
+	if (d->SideTabBarArea == SideBarLocation)
+	{
+		return;
+	}
+
+	d->SideTabBarArea = SideBarLocation;
+	d->Layout->removeWidget(d->ResizeHandle);
+	d->Layout->setDirection(isHorizontalArea(SideBarLocation) ? QBoxLayout::TopToBottom : QBoxLayout::LeftToRight);
+	d->Layout->insertWidget(resizeHandleLayoutPosition(SideBarLocation), d->ResizeHandle);
+	d->ResizeHandle->setHandlePosition(edgeFromSideTabBarArea(SideBarLocation));
+    internal::repolishStyle(this, internal::RepolishDirectChildren);
+}
+
+
 //============================================================================
 CDockAreaWidget* CAutoHideDockContainer::dockAreaWidget() const
 {

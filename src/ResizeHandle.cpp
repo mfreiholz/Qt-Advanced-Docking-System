@@ -167,18 +167,8 @@ CResizeHandle::CResizeHandle(Qt::Edge HandlePosition, QWidget* parent) :
 	d(new ResizeHandlePrivate(this))
 {
 	d->Target = parent;
-	setHandlePosition(HandlePosition);
 	setMinResizeSize(48);
-	setMaxResizeSize(d->isHorizontal() ? parent->height() : parent->width());
-
-	if (!d->isHorizontal())
-	{
-		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	}
-	else
-	{
-		setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	}
+	setHandlePosition(HandlePosition);
 }
 
 
@@ -243,6 +233,16 @@ void CResizeHandle::setHandlePosition(Qt::Edge HandlePosition)
 
 	case Qt::TopEdge: // fall through
 	case Qt::BottomEdge: setCursor(Qt::SizeVerCursor); break;
+	}
+
+	setMaxResizeSize(d->isHorizontal() ? parentWidget()->height() : parentWidget()->width());
+	if (!d->isHorizontal())
+	{
+		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	}
+	else
+	{
+		setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	}
 }
 

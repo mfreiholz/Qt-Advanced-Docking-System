@@ -66,7 +66,6 @@ protected:
 	virtual void leaveEvent(QEvent *event) override;
 	virtual bool event(QEvent* event) override;
 
-
 	/**
 	 * Updates the size considering the size limits and the resize margins
 	 */
@@ -115,6 +114,13 @@ public:
 	 * Returns the side tab bar area of this Auto Hide dock container
 	 */
 	SideBarLocation sideBarLocation() const;
+
+	/**
+	 * Sets a new SideBarLocation.
+	 * If a new side bar location is set, the auto hide dock container needs
+	 * to update its resize handle position
+	 */
+	void setSideBarLocation(SideBarLocation SideBarLocation);
 
 	/**
 	 * Returns the dock area widget of this Auto Hide dock container
