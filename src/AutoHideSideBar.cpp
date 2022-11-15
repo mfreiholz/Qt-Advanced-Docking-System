@@ -242,6 +242,32 @@ CAutoHideDockContainer* CAutoHideSideBar::insertDockWidget(int Index, CDockWidge
 
 
 //============================================================================
+void CAutoHideSideBar::removeAutoHideWidget(CAutoHideDockContainer* AutoHideWidget)
+{
+	AutoHideWidget->autoHideTab()->removeFromSideBar();
+	auto DockContainer = AutoHideWidget->dockContainer();
+	if (DockContainer)
+	{
+		DockContainer->removeAutoHideWidget(AutoHideWidget);
+	}
+	AutoHideWidget->setParent(nullptr);
+}
+
+//============================================================================
+void CAutoHideSideBar::addAutoHideWidget(CAutoHideDockContainer* AutoHideWidget)
+{
+	auto SideBar = AutoHideWidget->autoHideTab()->sideBar();
+	if (SideBar)
+	{
+		SideBar->removeAutoHideWidget(AutoHideWidget);
+	}
+	AutoHideWidget->setParent(d->ContainerWidget);
+	d->ContainerWidget->registerAutoHideWidget(AutoHideWidget);
+	insertTab(-1, AutoHideWidget->autoHideTab());
+}
+
+
+//============================================================================
 void CAutoHideSideBar::removeTab(CAutoHideTab* SideTab)
 {
 	SideTab->removeEventFilter(this);

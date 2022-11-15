@@ -66,6 +66,7 @@ private:
 	friend struct AutoHideSideBarPrivate;
 	friend class DockWidgetSideTab;
 	friend DockContainerWidgetPrivate;
+	friend CDockContainerWidget;
 
 protected:
 	virtual bool eventFilter(QObject *watched, QEvent *event) override;
@@ -105,6 +106,18 @@ public:
 	 * auto hide tab
 	 */
 	CAutoHideDockContainer* insertDockWidget(int Index, CDockWidget* DockWidget);
+
+	/**
+	 * Removes the auto hide widget from this side bar
+	 */
+	void removeAutoHideWidget(CAutoHideDockContainer* AutoHideWidget);
+
+	/**
+	 * Adds the given AutoHideWidget to this sidebar.
+	 * If the AutoHideWidget is in another sidebar, then it will be removed
+	 * from this sidebar.
+	 */
+	void addAutoHideWidget(CAutoHideDockContainer* AutoHideWidget);
 
 	/**
 	 * Returns orientation of side tab.

@@ -128,6 +128,12 @@ public:
 	 * is set and if the tab has an icon - that means the icon is not null
 	 */
 	bool iconOnly() const;
+
+	/**
+	 * Returns the side bar that contains this tab or a nullptr if the tab is
+	 * not in a side bar
+	 */
+	CAutoHideSideBar* sideBar() const;
 }; // class AutoHideTab
 }
  // namespace ads

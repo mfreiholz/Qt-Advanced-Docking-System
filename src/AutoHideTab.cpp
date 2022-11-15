@@ -122,6 +122,13 @@ void CAutoHideTab::setSideBar(CAutoHideSideBar* SideTabBar)
 
 
 //============================================================================
+CAutoHideSideBar* CAutoHideTab::sideBar() const
+{
+	return d->SideBar;
+}
+
+
+//============================================================================
 void CAutoHideTab::removeFromSideBar()
 {
 	if (d->SideBar == nullptr)
