@@ -1110,8 +1110,7 @@ bool DockContainerWidgetPrivate::restoreSideBar(CDockingStateReader& s,
 			AutoHideContainer = DockWidget->autoHideDockContainer();
 			if (AutoHideContainer->sideBar() != SideBar)
 			{
-				AutoHideContainer->autoHideTab()->removeFromSideBar();
-				SideBar->insertTab(-1, AutoHideContainer->autoHideTab());
+				SideBar->addAutoHideWidget(AutoHideContainer);
 			}
 		}
 		else
@@ -1637,12 +1636,6 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	auto ContainerDropArea = d->DockManager->containerOverlay()->dropAreaUnderCursor();
 	bool Dropped = false;
 
-	auto autoHideWidgets = FloatingWidget->dockContainer()->autoHideWidgets();
-	for (const auto autohideWidget : autoHideWidgets)
-	{
-		createAndSetupAutoHideContainer(autohideWidget->sideBarLocation(), autohideWidget->dockWidget());
-	}
-
 	if (DockArea)
 	{
 		auto dropOverlay = d->DockManager->dockAreaOverlay();
@@ -1672,6 +1665,14 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 			d->dropIntoContainer(FloatingWidget, dropArea);
 			Dropped = true;
 		}
+	}
+
+    // Remove the auto hide widgets from the FloatingWidget and insert
+	// them into this widget
+	for (auto AutohideWidget : FloatingWidget->dockContainer()->autoHideWidgets())
+	{
+		auto SideBar = sideTabBar(AutohideWidget->sideBarLocation());
+		SideBar->addAutoHideWidget(AutohideWidget);
 	}
 
 	if (Dropped)

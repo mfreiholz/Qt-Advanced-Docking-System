@@ -83,6 +83,7 @@ private:
 	friend CAutoHideTab;
 	friend AutoHideTabPrivate;
 	friend AutoHideDockContainerPrivate;
+	friend CAutoHideSideBar;
 
 protected:
 	/**

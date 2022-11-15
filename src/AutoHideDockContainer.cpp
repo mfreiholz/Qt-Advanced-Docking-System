@@ -303,7 +303,8 @@ CAutoHideDockContainer::~CAutoHideDockContainer()
 //============================================================================
 CAutoHideSideBar* CAutoHideDockContainer::sideBar() const
 {
-	return dockContainer()->sideTabBar(d->SideTabBarArea);
+	auto DockContainer = dockContainer();
+	return DockContainer ? DockContainer->sideTabBar(d->SideTabBarArea) : nullptr;
 }
 
 
