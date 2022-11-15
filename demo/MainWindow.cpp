@@ -60,17 +60,19 @@
 #include <QToolButton>
 #include <QToolBar>
 #include <QPointer>
-#include <QRandomGenerator>
+#include <QMap>
+#include <QElapsedTimer>
 
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#include <QRandomGenerator>
+#endif
 
 #ifdef Q_OS_WIN
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QAxWidget>
 #endif
 #endif
-
-#include <QMap>
-#include <QElapsedTimer>
 
 #include "DockManager.h"
 #include "DockWidget.h"
@@ -82,6 +84,21 @@
 #include "StatusDialog.h"
 #include "DockSplitter.h"
 #include "ImageViewer.h"
+
+
+
+/**
+ * Returns a random number from 0 to highest - 1
+ */
+int randomNumberBounded(int highest)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+	return QRandomGenerator::global()->bounded(highest);
+#else
+	qsrand(QTime::currentTime().msec());
+	return qrand() % highest;
+#endif
+}
 
 
 /**
@@ -328,7 +345,7 @@ struct MainWindowPrivate
 	{
 		static int ImageViewerCount = 0;
 		auto w = new CImageViewer();
-		auto ImageIndex = QRandomGenerator::global()->bounded(4);
+		auto ImageIndex = randomNumberBounded(4);
 		auto FileName = ":adsdemo/images/ads_logo.svg";
 
 		// Pick a random image from a number of images
