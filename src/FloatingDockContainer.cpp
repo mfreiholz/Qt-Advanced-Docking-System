@@ -404,13 +404,20 @@ struct FloatingDockContainerPrivate
 		return StateId == DraggingState;
 	}
 
+	/**
+	 * Sets the dragging state and posts a FloatingWidgetDragStartEvent
+	 * if dragging starts
+	 */
 	void setState(eDragState StateId)
 	{
-        auto OldState = DraggingState;
+		if (DraggingState == StateId)
+		{
+			return;
+		}
+
 		DraggingState = StateId;
-        if (DraggingInactive == OldState && DraggingFloatingWidget == DraggingState)
+        if (DraggingFloatingWidget == DraggingState)
         {
-            qDebug() << "Start dragging floating widget " << internal::FloatingWidgetDragStartEvent;
             qApp->postEvent(DockManager, new QEvent((QEvent::Type)internal::FloatingWidgetDragStartEvent));
         }
 	}

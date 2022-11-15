@@ -529,16 +529,6 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		// should get collapsed
 		collapseView(true);
 	}
-	else if (event->type() == QEvent::NonClientAreaMouseButtonPress)
-	{
-		// If the user starts dragging a floating widget, then we collapse
-		// the auto hide widget
-		CFloatingDockContainer* FloatingWidget = qobject_cast<CFloatingDockContainer*>(watched);
-		if (FloatingWidget)
-		{
-			collapseView(true);
-		}
-	}
     else if (event->type() == internal::FloatingWidgetDragStartEvent)
     {
         collapseView(true);
