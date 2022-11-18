@@ -518,6 +518,11 @@ void CDockAreaWidget::insertDockWidget(int index, CDockWidget* DockWidget,
 void CDockAreaWidget::removeDockWidget(CDockWidget* DockWidget)
 {
     ADS_PRINT("CDockAreaWidget::removeDockWidget");
+    if (!DockWidget)
+    {
+    	return;
+    }
+
 
     // If this dock area is in a auto hide container, then we can delete
     // the auto hide container now
@@ -1374,7 +1379,7 @@ bool CDockAreaWidget::isCentralWidgetArea() const
         return false;
     }
 
-    return dockManager()->centralWidget() == dockWidgets()[0];
+    return dockManager()->centralWidget() == dockWidgets().constFirst();
 }
 
 
