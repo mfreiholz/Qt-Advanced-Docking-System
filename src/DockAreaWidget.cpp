@@ -1010,7 +1010,7 @@ bool CDockAreaWidget::isCentralWidgetArea() const
         return false;
     }
 
-    return dockManager()->centralWidget() == dockWidgets()[0];
+    return dockManager()->centralWidget() == dockWidgets().constFirst();
 }
 
 
