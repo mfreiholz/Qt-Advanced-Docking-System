@@ -39,8 +39,7 @@ struct AutoHideTabPrivate;
 class CDockWidget;
 class CAutoHideSideBar;
 class CDockWidgetTab;
-struct SideTabIconLabelPrivate;
-struct DockContainerWidgetPrivate;
+class DockContainerWidgetPrivate;
 
 /**
  * A dock widget Side tab that shows a title or an icon.
