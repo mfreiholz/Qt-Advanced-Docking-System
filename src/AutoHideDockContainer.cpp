@@ -486,6 +486,18 @@ void CAutoHideDockContainer::setSize(int Size)
 	updateSize();
 }
 
+bool is_ancestor_of (const QObject *descendant, const QObject *ancestor)
+{
+    if (!ancestor)
+        return false;
+    while (descendant) {
+        if (descendant == ancestor)
+            return true;
+        descendant = descendant->parent();
+    }
+    return false;
+}
+
 
 //============================================================================
 bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
@@ -503,17 +515,21 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 	{
 		// If the user clicked into another window, then we collapse the
 		// auto hide widget
+		/*qDebug() << 1;
+		qDebug() << "is_ancestor_of " << is_ancestor_of(watched, this);
 		auto widget = qobject_cast<QWidget*>(watched);
+		qDebug() << "isAnchestorOf" << isAncestorOf(widget);
 		if (widget && widget->window() != this->window())
 		{
 			collapseView(true);
 			return Super::eventFilter(watched, event);
-		}
+		}*/
 
 		// We check, if the mouse button press is inside the container
 		// widget. If it is not, i.e. if someone resizes the main window or
 		// clicks into the application menu or toolbar, then we ignore the
 		// event
+		qDebug() << 2;
 		auto Container = dockContainer();
 		QMouseEvent* me = static_cast<QMouseEvent*>(event);
 		auto GlobalPos = internal::globalPositionOf(me);
@@ -527,6 +543,7 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		// If the click is inside of this auto hide container, then we can also
 		// ignore the event, because the auto hide overlay should not get collapsed if
 		// user works in it
+		qDebug() << 3;
 		pos = mapFromGlobal(GlobalPos);
 		if (rect().contains(pos))
 		{
@@ -537,6 +554,7 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		// because the side tab click handler will call collapseView(). If we
 		// do not ignore this here, then we will collapse the container and the side tab
 		// click handler will uncollapse it
+		qDebug() << 4;
 		auto SideTab = d->SideTab;
 		pos = SideTab->mapFromGlobal(GlobalPos);
 		if (SideTab->rect().contains(pos))
@@ -547,9 +565,11 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		// If the mouse button down event is in the dock manager but outside
 		// of the open auto hide container, then the auto hide dock widget
 		// should get collapsed
+		qDebug() << 5;
 		collapseView(true);
 	}
-    else if (event->type() == internal::FloatingWidgetDragStartEvent)
+    else if (event->type() == internal::FloatingWidgetDragStartEvent
+    	||   event->type() == internal::DockedWidgetDragStartEvent)
     {
         collapseView(true);
     }

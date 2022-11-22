@@ -51,6 +51,7 @@ namespace ads
 namespace internal
 {
 const int FloatingWidgetDragStartEvent = QEvent::registerEventType();
+const int DockedWidgetDragStartEvent = QEvent::registerEventType();
 #ifdef Q_OS_LINUX
 static QString _window_manager;
 static QHash<QString, xcb_atom_t> _xcb_atom_cache;
