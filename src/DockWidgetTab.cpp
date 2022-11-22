@@ -337,7 +337,7 @@ bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
     	auto Overlay = DockManager->containerOverlay();
     	Overlay->setAllowedAreas(OuterDockAreas);
     	this->FloatingWidget = FloatingWidget;
-    	qApp->postEvent(DockManager, new QEvent((QEvent::Type)internal::DockedWidgetDragStartEvent));
+    	qApp->postEvent(DockWidget, new QEvent((QEvent::Type)internal::DockedWidgetDragStartEvent));
     }
     else
     {

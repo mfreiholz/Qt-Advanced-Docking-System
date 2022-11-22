@@ -302,6 +302,7 @@ void DockAreaTitleBarPrivate::startFloating(const QPoint& Offset)
 		DockArea->autoHideDockContainer()->hide();
 	}
 	FloatingWidget = makeAreaFloating(Offset, DraggingFloatingWidget);
+	qApp->postEvent(DockArea, new QEvent((QEvent::Type)internal::DockedWidgetDragStartEvent));
 }
 
 

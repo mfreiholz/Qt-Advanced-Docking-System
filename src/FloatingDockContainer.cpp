@@ -418,7 +418,7 @@ struct FloatingDockContainerPrivate
 		DraggingState = StateId;
         if (DraggingFloatingWidget == DraggingState)
         {
-            qApp->postEvent(DockManager, new QEvent((QEvent::Type)internal::FloatingWidgetDragStartEvent));
+            qApp->postEvent(_this, new QEvent((QEvent::Type)internal::FloatingWidgetDragStartEvent));
         }
 	}
 

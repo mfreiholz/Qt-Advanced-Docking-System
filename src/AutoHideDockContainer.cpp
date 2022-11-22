@@ -513,23 +513,10 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 	}
 	else if (event->type() == QEvent::MouseButtonPress)
 	{
-		// If the user clicked into another window, then we collapse the
-		// auto hide widget
-		/*qDebug() << 1;
-		qDebug() << "is_ancestor_of " << is_ancestor_of(watched, this);
-		auto widget = qobject_cast<QWidget*>(watched);
-		qDebug() << "isAnchestorOf" << isAncestorOf(widget);
-		if (widget && widget->window() != this->window())
-		{
-			collapseView(true);
-			return Super::eventFilter(watched, event);
-		}*/
-
 		// We check, if the mouse button press is inside the container
 		// widget. If it is not, i.e. if someone resizes the main window or
 		// clicks into the application menu or toolbar, then we ignore the
 		// event
-		qDebug() << 2;
 		auto Container = dockContainer();
 		QMouseEvent* me = static_cast<QMouseEvent*>(event);
 		auto GlobalPos = internal::globalPositionOf(me);
@@ -543,7 +530,6 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		// If the click is inside of this auto hide container, then we can also
 		// ignore the event, because the auto hide overlay should not get collapsed if
 		// user works in it
-		qDebug() << 3;
 		pos = mapFromGlobal(GlobalPos);
 		if (rect().contains(pos))
 		{
@@ -554,7 +540,6 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		// because the side tab click handler will call collapseView(). If we
 		// do not ignore this here, then we will collapse the container and the side tab
 		// click handler will uncollapse it
-		qDebug() << 4;
 		auto SideTab = d->SideTab;
 		pos = SideTab->mapFromGlobal(GlobalPos);
 		if (SideTab->rect().contains(pos))
@@ -565,13 +550,21 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		// If the mouse button down event is in the dock manager but outside
 		// of the open auto hide container, then the auto hide dock widget
 		// should get collapsed
-		qDebug() << 5;
 		collapseView(true);
 	}
-    else if (event->type() == internal::FloatingWidgetDragStartEvent
-    	||   event->type() == internal::DockedWidgetDragStartEvent)
+    else if (event->type() == internal::FloatingWidgetDragStartEvent)
     {
-        collapseView(true);
+    	// If we are dragging our own floating widget, the we do not need to
+    	// collapse the view
+    	auto FloatingWidget = dockContainer()->floatingWidget();
+    	if (FloatingWidget != watched)
+    	{
+    		collapseView(true);
+    	}
+    }
+    else if (event->type() == internal::DockedWidgetDragStartEvent)
+    {
+    	collapseView(true);
     }
 
 	return Super::eventFilter(watched, event);
