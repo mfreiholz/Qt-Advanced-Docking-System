@@ -486,16 +486,45 @@ void CAutoHideDockContainer::setSize(int Size)
 	updateSize();
 }
 
-bool is_ancestor_of (const QObject *descendant, const QObject *ancestor)
+
+//============================================================================
+/**
+ * Returns true if the object given in ancestor is an ancestor of the object
+ * given in descendant
+ */
+static bool objectIsAncestorOf(const QObject* descendant, const QObject* ancestor)
 {
     if (!ancestor)
+    {
         return false;
-    while (descendant) {
+    }
+    while (descendant)
+    {
         if (descendant == ancestor)
+        {
             return true;
+        }
         descendant = descendant->parent();
     }
     return false;
+}
+
+
+//============================================================================
+/**
+ * Returns true if the object given in ancestor is the object given in descendant
+ * or if it is an ancestor of the object given in descendant
+ */
+static bool isObjectOrAncestor(const QObject *descendant, const QObject *ancestor)
+{
+	if (ancestor && (descendant == ancestor))
+	{
+		return true;
+	}
+	else
+	{
+		return objectIsAncestorOf(descendant, ancestor);
+	}
 }
 
 
@@ -513,25 +542,18 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 	}
 	else if (event->type() == QEvent::MouseButtonPress)
 	{
-		// We check, if the mouse button press is inside the container
-		// widget. If it is not, i.e. if someone resizes the main window or
-		// clicks into the application menu or toolbar, then we ignore the
-		// event
-		auto Container = dockContainer();
-		QMouseEvent* me = static_cast<QMouseEvent*>(event);
-		auto GlobalPos = internal::globalPositionOf(me);
-		auto pos = Container->mapFromGlobal(GlobalPos);
-		if (!Container->rect().contains(pos))
+		auto widget = qobject_cast<QWidget*>(watched);
+		// Ignore non widget events
+		if (!widget)
 		{
 			return Super::eventFilter(watched, event);
 		}
 
 		// Now we check, if the user clicked inside of this auto hide container.
-		// If the click is inside of this auto hide container, then we can also
+		// If the click is inside of this auto hide container, then we can
 		// ignore the event, because the auto hide overlay should not get collapsed if
 		// user works in it
-		pos = mapFromGlobal(GlobalPos);
-		if (rect().contains(pos))
+		if (isObjectOrAncestor(widget, this))
 		{
 			return Super::eventFilter(watched, event);
 		}
@@ -540,16 +562,18 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 		// because the side tab click handler will call collapseView(). If we
 		// do not ignore this here, then we will collapse the container and the side tab
 		// click handler will uncollapse it
-		auto SideTab = d->SideTab;
-		pos = SideTab->mapFromGlobal(GlobalPos);
-		if (SideTab->rect().contains(pos))
+		if (isObjectOrAncestor(widget, d->SideTab.data()))
 		{
 			return Super::eventFilter(watched, event);
 		}
 
-		// If the mouse button down event is in the dock manager but outside
-		// of the open auto hide container, then the auto hide dock widget
-		// should get collapsed
+		// Ignore the mouse click if it is not inside of this container
+		if (!isObjectOrAncestor(widget, dockContainer()))
+		{
+			return Super::eventFilter(watched, event);
+		}
+
+		// user clicked into container - collapse the auto hide widget
 		collapseView(true);
 	}
     else if (event->type() == internal::FloatingWidgetDragStartEvent)
@@ -606,6 +630,10 @@ bool CAutoHideDockContainer::event(QEvent* event)
 	case QEvent::Enter:
 	case QEvent::Hide:
 		 d->forwardEventToDockContainer(event);
+		 break;
+
+	case QEvent::MouseButtonPress:
+		 return true;
 		 break;
 
 	default:
