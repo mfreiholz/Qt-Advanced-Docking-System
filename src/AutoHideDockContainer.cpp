@@ -549,20 +549,20 @@ bool CAutoHideDockContainer::eventFilter(QObject* watched, QEvent* event)
 			return Super::eventFilter(watched, event);
 		}
 
+		// Now check, if the user clicked into the side tab and ignore this event,
+		// because the side tab click handler will call collapseView(). If we
+		// do not ignore this here, then we will collapse the container and the side tab
+		// click handler will uncollapse it
+		if (widget == d->SideTab.data())
+		{
+			return Super::eventFilter(watched, event);
+		}
+
 		// Now we check, if the user clicked inside of this auto hide container.
 		// If the click is inside of this auto hide container, then we can
 		// ignore the event, because the auto hide overlay should not get collapsed if
 		// user works in it
 		if (isObjectOrAncestor(widget, this))
-		{
-			return Super::eventFilter(watched, event);
-		}
-
-		// Now check, if the user clicked into the side tab and ignore this event,
-		// because the side tab click handler will call collapseView(). If we
-		// do not ignore this here, then we will collapse the container and the side tab
-		// click handler will uncollapse it
-		if (isObjectOrAncestor(widget, d->SideTab.data()))
 		{
 			return Super::eventFilter(watched, event);
 		}
