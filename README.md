@@ -26,7 +26,7 @@ The [release 4.0](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System
 adds the following features:
 
 - Auto-Hide functionality ([read more...](#auto-hide-functionality))
- 
+
 ![Auto Hide Functionality](doc/AutoHide_Animation.gif)
 
 - improved demo application with new image viewer dock widgets
