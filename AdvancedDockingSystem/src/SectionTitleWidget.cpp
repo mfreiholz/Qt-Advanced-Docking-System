@@ -25,13 +25,12 @@
 
 ADS_NAMESPACE_BEGIN
 
-SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget* parent) :
-	QFrame(parent),
-	_content(content),
-	_tabMoving(false),
-	_activeTab(false)
+SectionTitleWidget::SectionTitleWidget(SectionContent::RefPtr content, QWidget *parent) : QFrame(parent),
+																						  _content(content),
+																						  _tabMoving(false),
+																						  _activeTab(false)
 {
-	QBoxLayout* l = new QBoxLayout(QBoxLayout::LeftToRight);
+	QBoxLayout *l = new QBoxLayout(QBoxLayout::LeftToRight);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->setSpacing(0);
 	l->addWidget(content->titleWidget());
@@ -57,28 +56,28 @@ void SectionTitleWidget::setActiveTab(bool active)
 		style()->unpolish(this);
 		style()->polish(this);
 		update();
-        
-        if(auto titleWidget = _content->titleWidget())
-        {
-            titleWidget->style()->unpolish(titleWidget);
-            titleWidget->style()->polish(titleWidget);
-            titleWidget->update();
-            
-            // also find QLabel below that and unpolish them (special titleWidget)
-            QWidget* labelChild = titleWidget->findChild<QLabel*>();
-            if(labelChild)
-            {
-                labelChild->style()->unpolish(labelChild);
-                labelChild->style()->polish(labelChild);
-                labelChild->update();
-            }
-        }
+
+		if (auto titleWidget = _content->titleWidget())
+		{
+			titleWidget->style()->unpolish(titleWidget);
+			titleWidget->style()->polish(titleWidget);
+			titleWidget->update();
+
+			// also find QLabel below that and unpolish them (special titleWidget)
+			QWidget *labelChild = titleWidget->findChild<QLabel *>();
+			if (labelChild)
+			{
+				labelChild->style()->unpolish(labelChild);
+				labelChild->style()->polish(labelChild);
+				labelChild->update();
+			}
+		}
 
 		emit activeTabChanged();
 	}
 }
 
-void SectionTitleWidget::mousePressEvent(QMouseEvent* ev)
+void SectionTitleWidget::mousePressEvent(QMouseEvent *ev)
 {
 	if (ev->button() == Qt::LeftButton)
 	{
@@ -89,15 +88,15 @@ void SectionTitleWidget::mousePressEvent(QMouseEvent* ev)
 	QFrame::mousePressEvent(ev);
 }
 
-void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
+void SectionTitleWidget::mouseReleaseEvent(QMouseEvent *ev)
 {
-	SectionWidget* section = NULL;
-	ContainerWidget* cw = findParentContainerWidget(this);
+	SectionWidget *section = NULL;
+	ContainerWidget *cw = findParentContainerWidget(this);
 
 	// Drop contents of FloatingWidget into SectionWidget.
 	if (_fw)
 	{
-		SectionWidget* sw = cw->sectionAt(cw->mapFromGlobal(ev->globalPos()));
+		SectionWidget *sw = cw->sectionAt(cw->mapFromGlobal(ev->globalPosition().toPoint()));
 		if (sw)
 		{
 			cw->_dropOverlay->setAllowedAreas(ADS_NS::AllAreas);
@@ -115,24 +114,23 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 #endif
 				cw->dropContent(data, sw, loc, true);
 #else
-				QPropertyAnimation* moveAnim = new QPropertyAnimation(_fw, "pos", this);
+				QPropertyAnimation *moveAnim = new QPropertyAnimation(_fw, "pos", this);
 				moveAnim->setStartValue(_fw->pos());
 				moveAnim->setEndValue(sw->mapToGlobal(sw->rect().topLeft()));
 				moveAnim->setDuration(ADS_ANIMATION_DURATION);
 
-				QPropertyAnimation* resizeAnim = new QPropertyAnimation(_fw, "size", this);
+				QPropertyAnimation *resizeAnim = new QPropertyAnimation(_fw, "size", this);
 				resizeAnim->setStartValue(_fw->size());
 				resizeAnim->setEndValue(sw->size());
 				resizeAnim->setDuration(ADS_ANIMATION_DURATION);
 
-				QParallelAnimationGroup* animGroup = new QParallelAnimationGroup(this);
+				QParallelAnimationGroup *animGroup = new QParallelAnimationGroup(this);
 				QObject::connect(animGroup, &QPropertyAnimation::finished, [this, data, sw, loc]()
-				{
+								 {
 					InternalContentData data = _fw->takeContent();
 					_fw->deleteLater();
 					_fw.clear();
-					cw->dropContent(data, sw, loc);
-				});
+					cw->dropContent(data, sw, loc); });
 				animGroup->addAnimation(moveAnim);
 				animGroup->addAnimation(resizeAnim);
 				animGroup->start(QAbstractAnimation::DeleteWhenStopped);
@@ -143,13 +141,13 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 		else
 		{
 			DropArea dropArea = ADS_NS::InvalidDropArea;
-			if (cw->outerTopDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
+			if (cw->outerTopDropRect().contains(cw->mapFromGlobal(ev->globalPosition().toPoint())))
 				dropArea = ADS_NS::TopDropArea;
-			if (cw->outerRightDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
+			if (cw->outerRightDropRect().contains(cw->mapFromGlobal(ev->globalPosition().toPoint())))
 				dropArea = ADS_NS::RightDropArea;
-			if (cw->outerBottomDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
+			if (cw->outerBottomDropRect().contains(cw->mapFromGlobal(ev->globalPosition().toPoint())))
 				dropArea = ADS_NS::BottomDropArea;
-			if (cw->outerLeftDropRect().contains(cw->mapFromGlobal(ev->globalPos())))
+			if (cw->outerLeftDropRect().contains(cw->mapFromGlobal(ev->globalPosition().toPoint())))
 				dropArea = ADS_NS::LeftDropArea;
 
 			if (dropArea != ADS_NS::InvalidDropArea)
@@ -170,11 +168,10 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 		}
 	}
 	// End of tab moving, change order now
-	else if (_tabMoving
-			&& (section = findParentSectionWidget(this)) != NULL)
+	else if (_tabMoving && (section = findParentSectionWidget(this)) != NULL)
 	{
 		// Find tab under mouse
-		QPoint pos = ev->globalPos();
+		QPoint pos = ev->globalPosition().toPoint();
 		pos = section->mapFromGlobal(pos);
 		const int fromIndex = section->indexOfContent(_content);
 		const int toIndex = section->indexOfContentByTitlePos(pos, this);
@@ -191,17 +188,17 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 	QFrame::mouseReleaseEvent(ev);
 }
 
-void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
+void SectionTitleWidget::mouseMoveEvent(QMouseEvent *ev)
 {
-	ContainerWidget* cw = findParentContainerWidget(this);
-	SectionWidget* section = NULL;
+	ContainerWidget *cw = findParentContainerWidget(this);
+	SectionWidget *section = NULL;
 
 	// Move already existing FloatingWidget
 	if (_fw && (ev->buttons() & Qt::LeftButton))
 	{
 		ev->accept();
 
-		const QPoint moveToPos = ev->globalPos() - (_dragStartPos + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
+		const QPoint moveToPos = ev->globalPosition().toPoint() - (_dragStartPos + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
 		_fw->move(moveToPos);
 
 		// Show drop indicator
@@ -244,9 +241,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 		return;
 	}
 	// Begin to drag/float the SectionContent.
-	else if (!_fw && !_dragStartPos.isNull() && (ev->buttons() & Qt::LeftButton)
-			&& (section = findParentSectionWidget(this)) != NULL
-			&& !section->titleAreaGeometry().contains(section->mapFromGlobal(ev->globalPos())))
+	else if (!_fw && !_dragStartPos.isNull() && (ev->buttons() & Qt::LeftButton) && (section = findParentSectionWidget(this)) != NULL && !section->titleAreaGeometry().contains(section->mapFromGlobal(ev->globalPosition().toPoint())))
 	{
 		ev->accept();
 
@@ -262,7 +257,7 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 		_fw->resize(section->size());
 		cw->_floatings.append(_fw); // Note: I don't like this...
 
-		const QPoint moveToPos = ev->globalPos() - (_dragStartPos + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
+		const QPoint moveToPos = ev->globalPosition().toPoint() - (_dragStartPos + QPoint(ADS_WINDOW_FRAME_BORDER_WIDTH, ADS_WINDOW_FRAME_BORDER_WIDTH));
 		_fw->move(moveToPos);
 		_fw->show();
 
@@ -276,24 +271,19 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 		return;
 	}
 	// Handle movement of this tab
-	else if (_tabMoving
-			&& (section = findParentSectionWidget(this)) != NULL)
+	else if (_tabMoving && (section = findParentSectionWidget(this)) != NULL)
 	{
 		ev->accept();
 
-		int left, top, right, bottom;
-		getContentsMargins(&left, &top, &right, &bottom);
 		QPoint moveToPos = mapToParent(ev->pos()) - _dragStartPos;
-		moveToPos.setY(0/* + top*/);
+		moveToPos.setY(0 /* + top*/);
 		move(moveToPos);
 
 		return;
 	}
 	// Begin to drag title inside the title area to switch its position inside the SectionWidget.
-	else if (!_dragStartPos.isNull() && (ev->buttons() & Qt::LeftButton)
-			&& (ev->pos() - _dragStartPos).manhattanLength() >= QApplication::startDragDistance() // Wait a few pixels before start moving
-			&& (section = findParentSectionWidget(this)) != NULL
-			&& section->titleAreaGeometry().contains(section->mapFromGlobal(ev->globalPos())))
+	else if (!_dragStartPos.isNull() && (ev->buttons() & Qt::LeftButton) && (ev->pos() - _dragStartPos).manhattanLength() >= QApplication::startDragDistance() // Wait a few pixels before start moving
+			 && (section = findParentSectionWidget(this)) != NULL && section->titleAreaGeometry().contains(section->mapFromGlobal(ev->globalPosition().toPoint())))
 	{
 		ev->accept();
 
