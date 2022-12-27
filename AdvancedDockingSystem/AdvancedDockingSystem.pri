@@ -22,3 +22,6 @@ HEADERS += \
 	$$PWD/include/ads/FloatingWidget.h \
 	$$PWD/include/ads/Internal.h \
 	$$PWD/include/ads/Serialization.h
+
+INCLUDEPATH += $$PWD/include
+DEPENDPATH += $$PWD/include

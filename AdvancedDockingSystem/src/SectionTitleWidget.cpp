@@ -264,8 +264,8 @@ void SectionTitleWidget::mouseMoveEvent(QMouseEvent* ev)
 	{
 		ev->accept();
 
-		int left, top, right, bottom;
-		getContentsMargins(&left, &top, &right, &bottom);
+        //int left, top, right, bottom;
+        //getContentsMargins(&left, &top, &right, &bottom);
 		QPoint moveToPos = mapToParent(ev->pos()) - _dragStartPos;
 		moveToPos.setY(0/* + top*/);
 		move(moveToPos);
