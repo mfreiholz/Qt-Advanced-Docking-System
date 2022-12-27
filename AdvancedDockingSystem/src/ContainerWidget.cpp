@@ -41,7 +41,7 @@ ContainerWidget::ContainerWidget(QWidget *parent) :
 	_dropOverlay(new DropOverlay(this))
 {
 	_mainLayout = new QGridLayout();
-	_mainLayout->setContentsMargins(9, 9, 9, 9);
+    _mainLayout->setContentsMargins(1, 1, 1, 1);
 	_mainLayout->setSpacing(0);
 	setLayout(_mainLayout);
 }

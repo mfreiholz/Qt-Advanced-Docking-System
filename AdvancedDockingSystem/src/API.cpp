@@ -12,15 +12,18 @@ ADS_NAMESPACE_BEGIN
 
 static bool splitterContainsSectionWidget(QSplitter* splitter)
 {
-	for (int i = 0; i < splitter->count(); ++i)
+    for (int i=0; i<splitter->count(); ++i)
 	{
 		QWidget* w = splitter->widget(i);
-		QSplitter* sp = qobject_cast<QSplitter*>(w);
-		SectionWidget* sw = NULL;
+        QSplitter* sp = qobject_cast<QSplitter*>(w);
 		if (sp && splitterContainsSectionWidget(sp))
+        {
 			return true;
-		else if ((sw = qobject_cast<SectionWidget*>(w)) != NULL)
+        }
+        else if (qobject_cast<SectionWidget*>(w) != nullptr)
+        {
 			return true;
+        }
 	}
 	return false;
 }
@@ -49,49 +52,57 @@ void deleteEmptySplitter(ContainerWidget* container)
 
 ContainerWidget* findParentContainerWidget(QWidget* w)
 {
-	ContainerWidget* cw = 0;
-	QWidget* next = w;
-	do
-	{
-		if ((cw = dynamic_cast<ContainerWidget*>(next)) != 0)
-		{
-			break;
-		}
-		next = next->parentWidget();
-	}
-	while (next);
+    ContainerWidget* cw = nullptr;
+    if (w)
+    {
+        QWidget* next = w;
+        do
+        {
+            if ((cw = dynamic_cast<ContainerWidget*>(next)) != nullptr)
+            {
+                break;
+            }
+            next = next->parentWidget();
+        } while (next);
+    }
+
 	return cw;
 }
 
 SectionWidget* findParentSectionWidget(class QWidget* w)
 {
-	SectionWidget* cw = 0;
-	QWidget* next = w;
-	do
-	{
-		if ((cw = dynamic_cast<SectionWidget*>(next)) != 0)
-		{
-			break;
-		}
-		next = next->parentWidget();
-	}
-	while (next);
+    SectionWidget* cw = nullptr;
+    if (w)
+    {
+        QWidget* next = w;
+        do
+        {
+            if ((cw = dynamic_cast<SectionWidget*>(next)) != nullptr)
+            {
+                break;
+            }
+            next = next->parentWidget();
+        } while (next);
+    }
+
 	return cw;
 }
 
 QSplitter* findParentSplitter(class QWidget* w)
 {
-	QSplitter* cw = 0;
-	QWidget* next = w;
-	do
-	{
-		if ((cw = dynamic_cast<QSplitter*>(next)) != 0)
-		{
-			break;
-		}
-		next = next->parentWidget();
-	}
-	while (next);
+    QSplitter* cw = nullptr;
+    if (w)
+    {
+        QWidget* next = w;
+        do
+        {
+            if ((cw = dynamic_cast<QSplitter*>(next)) != nullptr)
+            {
+                break;
+            }
+            next = next->parentWidget();
+        } while (next);
+    }
 	return cw;
 }
 
