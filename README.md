@@ -5,9 +5,9 @@
 ------------------
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/githubuser0xFFFF/Qt-Advanced-Docking-System?color=%23ff9833)](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/latest)
+[![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](gnu-lgpl-v2.1.md)
 [![Build status](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/workflows/linux-builds/badge.svg)](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/actions?query=workflow%3Alinux-builds)
 [![Build status](https://ci.appveyor.com/api/projects/status/qcfb3cy932jw9mpy/branch/master?svg=true)](https://ci.appveyor.com/project/githubuser0xFFFF/qt-advanced-docking-system/branch/master)
-[![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](gnu-lgpl-v2.1.md)
 [![GitHub contributors](https://img.shields.io/github/contributors/githubuser0xFFFF/Qt-Advanced-Docking-System?color=ffdf00)](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/graphs/contributors)
 
 Qt Advanced Docking System lets you create customizable layouts using a full
@@ -26,7 +26,9 @@ The [release 4.0](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System
 adds the following features:
 
 - Auto-Hide functionality ([read more...](#auto-hide-functionality))
+  ![Auto Hide Functionality](doc/AutoHide_Animation.gif)
 - improved demo application with new image viewer dock widgets
+  ![Auto Hide Functionality](doc/Feature_ImageViewer.png)
 - Visual Studio like CSS theme in demo application
 
 The [release 3.8](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/3.8.3)
