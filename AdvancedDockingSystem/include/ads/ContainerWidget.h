@@ -99,8 +99,8 @@ public:
 	 * \see saveState()
 	 */
 	bool restoreState(const QByteArray& data);
+    
 
-	//
 	// Advanced Public API
 	// You usually should not need access to this methods
 	//
@@ -118,6 +118,11 @@ public:
 	QList<SectionContent::RefPtr> contents() const;
 
 	QPointer<DropOverlay> dropOverlay() const;
+    
+    // return section widgets to be sure to add new dock to an existing one
+    const QList<SectionWidget*>& sectionWidgets() const;
+    
+    void updateSectionContentTabMenus();
 
 private:
 	//

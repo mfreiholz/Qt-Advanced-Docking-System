@@ -73,18 +73,18 @@ SectionWidget::SectionWidget(ContainerWidget* parent) :
 #else
 	//QObject::connect(_tabsMenuButton, SIGNAL(clicked()), this, SLOT(onTabsMenuButtonClicked()));
 #endif
-
-	_closeButton = new QPushButton();
+	
+	/*_closeButton = new QPushButton();
 	_closeButton->setObjectName("closeButton");
 	_closeButton->setFlat(true);
 	_closeButton->setIcon(style()->standardIcon(QStyle::SP_TitleBarCloseButton));
 	_closeButton->setToolTip(tr("Close"));
 	_closeButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	_topLayout->addWidget(_closeButton, 0);
+	_topLayout->addWidget(_closeButton, 0);*/
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-	QObject::connect(_closeButton, &QPushButton::clicked, this, &SectionWidget::onCloseButtonClicked);
+	//QObject::connect(_closeButton, &QPushButton::clicked, this, &SectionWidget::onCloseButtonClicked);
 #else
-	QObject::connect(_closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
+	//QObject::connect(_closeButton, SIGNAL(clicked(bool)), this, SLOT(onCloseButtonClicked()));
 #endif
 
 	_tabsLayoutInitCount = _tabsLayout->count();
@@ -349,10 +349,10 @@ void SectionWidget::setCurrentIndex(int index)
 				{
 					stw->setActiveTab(true);
 					_tabsScrollArea->ensureWidgetVisible(stw);
-					if (stw->_content->flags().testFlag(SectionContent::Closeable))
+					/*if (stw->_content->flags().testFlag(SectionContent::Closeable))
 						_closeButton->setEnabled(true);
 					else
-						_closeButton->setEnabled(false);
+						_closeButton->setEnabled(false);*/
 				}
 				else
 					stw->setActiveTab(false);

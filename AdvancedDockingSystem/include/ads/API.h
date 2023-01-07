@@ -50,6 +50,7 @@ class QSplitter;
 ADS_NAMESPACE_BEGIN
 class ContainerWidget;
 class SectionWidget;
+class SectionContent;
 
 enum DropArea
 {

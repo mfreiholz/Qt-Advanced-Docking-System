@@ -46,6 +46,12 @@ ContainerWidget::ContainerWidget(QWidget *parent) :
 	setLayout(_mainLayout);
 }
 
+void ContainerWidget::updateSectionContentTabMenus()
+{
+    for(auto& section : _sections)
+        section->updateTabsMenu();
+}
+
 ContainerWidget::~ContainerWidget()
 {
 	// Note: It's required to delete in 2 steps
@@ -478,6 +484,11 @@ SectionWidget* ContainerWidget::newSectionWidget()
 	SectionWidget* sw = new SectionWidget(this);
 	_sections.append(sw);
 	return sw;
+}
+
+const QList<SectionWidget*>& ContainerWidget::sectionWidgets() const
+{
+    return _sections;
 }
 
 SectionWidget* ContainerWidget::dropContent(const InternalContentData& data, SectionWidget* targetSection, DropArea area, bool autoActive)
