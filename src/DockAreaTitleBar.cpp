@@ -262,8 +262,7 @@ IFloatingWidget* DockAreaTitleBarPrivate::makeAreaFloating(const QPoint& Offset,
 {
 	QSize Size = DockArea->size();
 	this->DragState = DragState;
-	bool CreateFloatingDockContainer = CDockManager::testConfigFlag(
-		CDockManager::OpaqueUndocking) || (DraggingFloatingWidget != DragState);
+	bool CreateFloatingDockContainer = (DraggingFloatingWidget != DragState);
 	CFloatingDockContainer* FloatingDockContainer = nullptr;
 	IFloatingWidget* FloatingWidget;
 	if (CreateFloatingDockContainer)
@@ -589,10 +588,6 @@ void CDockAreaTitleBar::mouseReleaseEvent(QMouseEvent* ev)
 	if (ev->button() == Qt::LeftButton)
 	{
         ADS_PRINT("CDockAreaTitleBar::mouseReleaseEvent");
-		if (CDockManager::testConfigFlag(CDockManager::OpaqueUndocking))
-		{
-			releaseMouse();
-		}
 		ev->accept();
 		auto CurrentDragState = d->DragState;
 		d->DragStartMousePos = QPoint();
@@ -637,11 +632,9 @@ void CDockAreaTitleBar::mouseMoveEvent(QMouseEvent* ev)
 
 	// If one single dock widget in this area is not floatable then the whole
 	// area is not floatable
-	// If we do non opaque undocking, then we can create the floating drag
-	// preview if the dock widget is movable
+	// We can create the floating drag preview if the dock widget is movable
 	auto Features = d->DockArea->features();
-    if (!Features.testFlag(CDockWidget::DockWidgetFloatable)
-    && !(Features.testFlag(CDockWidget::DockWidgetMovable) && !CDockManager::testConfigFlag(CDockManager::OpaqueUndocking)))
+    if (!Features.testFlag(CDockWidget::DockWidgetFloatable) && !(Features.testFlag(CDockWidget::DockWidgetMovable)))
 	{
 		return;
 	}
@@ -653,10 +646,6 @@ void CDockAreaTitleBar::mouseMoveEvent(QMouseEvent* ev)
 		d->startFloating(d->DragStartMousePos);
 		auto Overlay = d->DockArea->dockManager()->containerOverlay();
 		Overlay->setAllowedAreas(OuterDockAreas);
-		if (CDockManager::testConfigFlag(CDockManager::OpaqueUndocking))
-		{
-			grabMouse();
-		}
 	}
 
 	return;
