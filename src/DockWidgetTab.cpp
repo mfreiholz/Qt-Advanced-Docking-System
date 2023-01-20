@@ -392,6 +392,10 @@ void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 {
 	if (ev->button() == Qt::LeftButton)
 	{
+		if (CDockManager::testConfigFlag(CDockManager::OpaqueUndocking))
+		{
+			releaseMouse();
+		}
 		auto CurrentDragState = d->DragState;
 		d->GlobalDragStartMousePosition = QPoint();
 		d->DragStartMousePosition = QPoint();
@@ -490,6 +494,10 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
         		parentWidget()->layout()->update();
 			}
             d->startFloating();
+            if (CDockManager::testConfigFlag(CDockManager::OpaqueUndocking))
+            {
+            	grabMouse();
+            }
         }
     	return;
 	}
