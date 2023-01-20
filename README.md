@@ -113,6 +113,7 @@ know it from Visual Studio.
   - [Notepad Next](#notepad-next)
   - [MetGem](#metgem)
   - [PRE Workbench](#pre-workbench)
+  - [RDE – Robox Development Environment](#rde--robox-development-environment)
 - [Alternative Docking System Implementations](#alternative-docking-system-implementations)
   - [KDDockWidgets](#kddockwidgets)
   - [QtitanDocking](#qtitandocking)
@@ -525,6 +526,19 @@ PRE Workbench is a Python software and uses the ADS PyQt integration.
 [read more...](https://luelista.github.io/pre_workbench/)
 
 [![PRE Workbench](doc/showcase_pre_workbench.png)](https://youtu.be/U3op5UreV1Q)
+
+### [RDE – Robox Development Environment](https://www.robox.it/en/product/rde-robox-development-environment/)
+
+This software is a development environment for PAC (Programmable Automation Controllers)
+from ROBOX. It offers a lot of tools to write, compile and debug machine control
+and application software. The Advanced Docking System helps to organize all the tools and
+windows (Project window, Shell window, Monitor windows, Oscilloscope window...)
+on the screen to provide a easy to use, highly configurable and visual pleasing
+development experience.
+
+[read more...](https://www.robox.it/en/product/rde-robox-development-environment/)
+
+![RDE](doc/showcase_robox_ide.png)
 
 ## Alternative Docking System Implementations
 
