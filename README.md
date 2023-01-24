@@ -114,6 +114,7 @@ know it from Visual Studio.
   - [MetGem](#metgem)
   - [PRE Workbench](#pre-workbench)
   - [RDE – Robox Development Environment](#rde--robox-development-environment)
+  - [ResInsight](#resinsight)
 - [Alternative Docking System Implementations](#alternative-docking-system-implementations)
   - [KDDockWidgets](#kddockwidgets)
   - [QtitanDocking](#qtitandocking)
@@ -537,6 +538,20 @@ development experience.
 [read more...](https://www.robox.it/en/product/rde-robox-development-environment/)
 
 ![RDE](doc/showcase_robox_ide.png)
+
+### [ResInsight](https://www.ceetronsolutions.com/projects/resinsight)
+
+ResInsight as a software from Ceetron Solutions for visualization of oil and
+gas reservoir simulation data. It allows reservoir models, simulation results,
+and measurements to be visualized with very high performance. Optimized use of
+graphics technology and simultaneous processing on multiple CPU cores have been
+vital to enhance the performance and capacity of ResInsight for large data sets.
+The Advanced Docking System has empowered Ceetron to build a much more intuitive
+user interface for its ResInsight users.
+
+[read more...](https://resinsight.org/)
+
+![ResInsight](doc/showcase_resinsight.png)
 
 ## Alternative Docking System Implementations
 
