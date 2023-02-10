@@ -29,11 +29,11 @@ jobs:
     - uses: actions/checkout@v1
     - name: install qt
       run: |
-        sudo apt-get update --fix-missing
-        sudo apt-get install qt6-tools-dev
-        sudo apt-get install qt6-base-dev
-        sudo apt-get install qt6-base-private-dev
-        sudo apt-get install libqt6svg6
+        sudo apt update --fix-missing
+        sudo apt install qt6-base-dev
+        sudo apt install qt6-base-private-dev
+        sudo apt install qt6-tools-dev-tools
+        sudo apt install libqt6svg6
     - name: qmake
       run: qmake
     - name: make
