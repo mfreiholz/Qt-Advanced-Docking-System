@@ -30,6 +30,7 @@ jobs:
     - name: install qt
       run: |
         sudo apt-get update --fix-missing
+        sudo apt-get install qt6-tools-dev
         sudo apt-get install qt6-base-dev
         sudo apt-get install qt6-base-private-dev
         sudo apt-get install libqt6svg6
