@@ -33,7 +33,7 @@ jobs:
           version:      6.2.*
           host:         linux
           target:       desktop
-          archives: 'qtbase qtsvg'
+          archives: qtbase qtsvg
           setup-python: false
     - name: qmake
       run: qmake
