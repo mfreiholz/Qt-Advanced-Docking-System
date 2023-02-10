@@ -21,3 +21,19 @@ jobs:
       run: qmake
     - name: make
       run: make -j4
+      
+  build_ubuntu_2204:
+    runs-on: ubuntu-22.04
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: install qt
+      run: |
+        sudo apt-get update --fix-missing
+        sudo apt-get install qt6-base-dev
+        sudo apt-get install qt6-base-private-dev
+        sudo apt-get install libqt6svg6
+    - name: qmake
+      run: qmake
+    - name: make
+      run: make -j4
