@@ -26,13 +26,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v2
-    - name: Cache Qt
-      id: cache-qt-6-4
-      uses: actions/cache@v1  # not v2!
-      with:
-        path: ../Qt/6.4.2
-        key: ${{ runner.os }}-QtCache-Qt6-4
-
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
@@ -40,7 +33,6 @@ jobs:
         host: linux
         target: desktop
         install-deps: true
-        cached: ${{ steps.cache-qt-6-4.outputs.cache-hit }}
         setup-python: false
         tools: ''
         tools-only: false
