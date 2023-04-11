@@ -119,6 +119,7 @@ know it from Visual Studio.
   - [RDE – Robox Development Environment](#rde--robox-development-environment)
   - [ResInsight](#resinsight)
   - [ADTF 3](#adtf-3)
+  - [DREAM.3D NX](#dream3d-nx)
 - [Alternative Docking System Implementations](#alternative-docking-system-implementations)
   - [KDDockWidgets](#kddockwidgets)
   - [QtitanDocking](#qtitandocking)
@@ -593,13 +594,23 @@ says about the switch to Qt Advanced Docking:
 
 ![ADTF](doc/showcase_adtf.png)
 
+### [DREAM.3D NX](https://github.com/BlueQuartzSoftware/DREAM3D)
+
+DREAM.3D *(Digital Representation Environment for Analysis of Materials in 3D)* is an open source, cross-platform and modular, software suite that allows users to prepare, reconstruct, quantify, instantiate, and mesh, multidimensional, multimodal microstructural data, as well as many other applications.
+
+[BlueQuartz Software](http://www.bluequartz.net/) is currently completely rewriting the DREAM.3D application. For the upcoming version **[DREAM3D NX](http://www.dream3d.io/)** they improved the UI by using the Advanced Docking System. An [early version](http://www.dream3d.io/) of **DREAM3D NX** with ADS is already available to any user who would like to take the brand new version out for a spin.
+
+![DREAM.3D NX](doc/showcase_dream3d_nx.png)
+
+[read more...](http://dream3d.bluequartz.net/)
+
 ## Alternative Docking System Implementations
 
 If this Qt Advanced Docking System does not fit to your needs you may consider some of the alternative docking system solutions for Qt.
 
 ### KDDockWidgets
 
-This is an advanced docking framework for Qt from [KDAB](https://www.kdab.com/). The interesting thing is, that they separated GUI code from logic, so they can easily provide a QtQuick backend in the future. 
+This is an advanced docking framework for Qt from [KDAB](https://www.kdab.com/). The interesting thing is, that they separated GUI code from logic, so they can easily provide a QtQuick backend in the future.
 
 - [Blog post about KDDockWidgets](https://www.kdab.com/kddockwidgets/)
 - [GitHub project](https://github.com/KDAB/KDDockWidgets)
