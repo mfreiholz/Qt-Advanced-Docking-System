@@ -120,6 +120,7 @@ know it from Visual Studio.
   - [ResInsight](#resinsight)
   - [ADTF 3](#adtf-3)
   - [DREAM.3D NX](#dream3d-nx)
+  - [LabPlot](#labplot)
 - [Alternative Docking System Implementations](#alternative-docking-system-implementations)
   - [KDDockWidgets](#kddockwidgets)
   - [QtitanDocking](#qtitandocking)
@@ -603,6 +604,16 @@ DREAM.3D *(Digital Representation Environment for Analysis of Materials in 3D)* 
 ![DREAM.3D NX](doc/showcase_dream3d_nx.png)
 
 [read more...](http://dream3d.bluequartz.net/)
+
+### [LabPlot](https://labplot.kde.org/)
+
+KDE LabPlot is the ultimate free, open source and cross-platform tool for scientists, engineers, and students who need to analyze and visualize data. With its intuitive interface and powerful features, you can create stunning plots and diagrams with ease. Whether you're working with CSV, FITS, or HDF5 data, KDE LabPlot makes it simple to import and analyze your data.
+
+The LabPlot project recently switched to the Qt Advanced Docking System for their user interface. This switch represents a significant improvement to the LabPlot software, allowing users to create and manage complex data visualization layouts with ease.
+
+![LabPlot](doc/showcase_labplot.png)
+
+[read more...](https://labplot.kde.org/)
 
 ## Alternative Docking System Implementations
 
