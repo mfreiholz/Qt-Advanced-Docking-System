@@ -1337,6 +1337,19 @@ bool CFloatingDockContainer::hasNativeTitleBar()
 }
 #endif
 
+
+//============================================================================
+bool CFloatingDockContainer::event(QEvent *e)
+{
+	qDebug() << "CFloatingDockContainer::event: " << e;
+	if (e->type() == QEvent::WindowStateChange)
+	{
+		QWindowStateChangeEvent* ev = static_cast<QWindowStateChangeEvent*>(e);
+		qDebug() << "WindowStateChange " << ev->oldState() << " -> " << windowState();
+		qDebug() << "isActiveWindow " << isActiveWindow();
+	}
+	return Super::event(e);
+}
 } // namespace ads
 
 //---------------------------------------------------------------------------

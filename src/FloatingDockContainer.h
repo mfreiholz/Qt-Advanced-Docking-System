@@ -299,6 +299,7 @@ public:
 	bool hasNativeTitleBar();
 #endif
 
+	virtual bool event(QEvent *e) override;
 }; // class FloatingDockContainer
 }
  // namespace ads
