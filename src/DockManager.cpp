@@ -47,6 +47,7 @@
 #include <QMenu>
 #include <QApplication>
 #include <QWindow>
+#include <QWindowStateChangeEvent>
 
 #include "FloatingDockContainer.h"
 #include "DockOverlay.h"
@@ -116,6 +117,7 @@ struct DockManagerPrivate
 	QVector<CFloatingDockContainer*> UninitializedFloatingWidgets;
 	CDockFocusController* FocusController = nullptr;
     CDockWidget* CentralWidget = nullptr;
+    bool IsLeavingMinimized = false;
 
 	/**
 	 * Private data constructor
@@ -510,9 +512,10 @@ CDockManager::CDockManager(QWidget *parent) :
 		d->FocusController = new CDockFocusController(this);
 	}
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
+
 	window()->installEventFilter(this);
 
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
     connect(qApp, &QApplication::focusWindowChanged, [](QWindow* focusWindow)
     {
         // bring modal dialogs to foreground to ensure that they are in front of any
@@ -629,7 +632,38 @@ bool CDockManager::eventFilter(QObject *obj, QEvent *e)
 	}
 	return Super::eventFilter(obj, e);
 }
+#else
+//============================================================================
+bool CDockManager::eventFilter(QObject *obj, QEvent *e)
+{
+	if (e->type() == QEvent::WindowStateChange)
+	{
+		QWindowStateChangeEvent* ev = static_cast<QWindowStateChangeEvent*>(e);
+		if (ev->oldState().testFlag(Qt::WindowMinimized))
+		{
+			d->IsLeavingMinimized = true;
+			QMetaObject::invokeMethod(this, "endLeavingMinimizedState", Qt::QueuedConnection);
+		}
+	}
+	return Super::eventFilter(obj, e);
+}
 #endif
+
+
+//============================================================================
+void CDockManager::endLeavingMinimizedState()
+{
+	d->IsLeavingMinimized = false;
+	this->activateWindow();
+}
+
+
+//============================================================================
+bool CDockManager::isLeavingMinimizedState() const
+{
+	return d->IsLeavingMinimized;
+}
+
 
 //============================================================================
 void CDockManager::registerFloatingWidget(CFloatingDockContainer* FloatingWidget)

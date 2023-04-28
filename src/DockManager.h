@@ -88,6 +88,12 @@ private:
 	friend class CAutoHideDockContainer;
 	friend CAutoHideSideBar;
 
+public Q_SLOTS:
+	/**
+	 * Ends the isRestoringFromMinimizedState
+	 */
+	void endLeavingMinimizedState();
+
 
 protected:
 	/**
@@ -540,6 +546,15 @@ public:
 	bool isRestoringState() const;
 
 	/**
+	 * This function returns true, if the DockManager window is restoring from
+	 * minimized state.
+	 * The DockManager is in this state starting from the QWindowStateChangeEvent
+	 * that signals the state change from minimized to normal until
+	 * endLeavingMinimizedState() function is called.
+	 */
+	bool isLeavingMinimizedState() const;
+
+	/**
 	 * The distance the user needs to move the mouse with the left button
 	 * hold down before a dock widget start floating
 	 */
@@ -560,9 +575,7 @@ public:
 		widget->setFocus(Qt::OtherFocusReason);
 	}
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
 	bool eventFilter(QObject *obj, QEvent *e) override;
-#endif
 
 	/**
 	 * Returns the dock widget that has focus style in the ui or a nullptr if
