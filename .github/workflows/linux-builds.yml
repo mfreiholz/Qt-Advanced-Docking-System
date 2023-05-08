@@ -1,4 +1,4 @@
-ilds
+name: linux-builds
 
 on: [push]
 
