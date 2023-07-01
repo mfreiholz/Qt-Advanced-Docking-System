@@ -378,6 +378,7 @@ struct FloatingDockContainerPrivate
     QWidget* MouseEventHandler = nullptr;
     CFloatingWidgetTitleBar* TitleBar = nullptr;
 	bool IsResizing = false;
+    bool MousePressed = false;
 #endif
 
 	/**
@@ -1336,12 +1337,12 @@ void CFloatingDockContainer::resizeEvent(QResizeEvent *event)
 	Super::resizeEvent(event);
 }
 
-static bool s_mousePressed = false;
+
 //============================================================================
 void CFloatingDockContainer::moveEvent(QMoveEvent *event)
 {
 	Super::moveEvent(event);
-	if (!d->IsResizing && event->spontaneous() && s_mousePressed)
+    if (!d->IsResizing && event->spontaneous() && d->MousePressed)
 	{
         d->setState(DraggingFloatingWidget);
 		d->updateDropOverlays(QCursor::pos());
@@ -1357,10 +1358,10 @@ bool CFloatingDockContainer::event(QEvent *e)
 	switch (e->type())
 	{
 	case QEvent::WindowActivate:
-		s_mousePressed = false;
+        d->MousePressed = false;
 		break;
 	case QEvent::WindowDeactivate:
-		s_mousePressed = true;
+        d->MousePressed = true;
 		break;
 	default:
 		break;
