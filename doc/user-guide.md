@@ -466,11 +466,11 @@ under the mouse. So you do not need to exactly hit the tab close button to
 close tab. Just click with the middle mouse button on a tab like this is
 possible in various web browsers.
 
+![MiddleMouseButtonClosesTab true](cfg_flag_MiddleMouseButtonClosesTab.gif)
+
 ### `DisableTabTextEliding`
 
 Set this flag to disable eliding of tab texts in dock area tabs.
-
-![MiddleMouseButtonClosesTab true](cfg_flag_MiddleMouseButtonClosesTab.gif)
 
 ## Auto-Hide Configuration Flags
 
