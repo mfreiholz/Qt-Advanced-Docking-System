@@ -527,6 +527,7 @@ void MainWindowPrivate::createContent()
 
 	// Tests CustomCloseHandling without DeleteOnClose
 	LabelDockWidget->setFeature(ads::CDockWidget::CustomCloseHandling, true);
+	LabelDockWidget->setWindowTitle(LabelDockWidget->windowTitle() + " [Custom Close]");
 	QObject::connect(LabelDockWidget, &ads::CDockWidget::closeRequested, [LabelDockWidget, this]()
 	{
 		int Result = QMessageBox::question(_this, "Custom Close Request",

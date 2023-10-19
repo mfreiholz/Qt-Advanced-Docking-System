@@ -432,6 +432,24 @@ void CDockAreaTitleBar::onCloseButtonClicked()
 
 
 //============================================================================
+void CDockAreaTitleBar::onAutoHideCloseActionTriggered()
+{
+	d->DockArea->closeArea();
+}
+
+
+//============================================================================
+void CDockAreaTitleBar::onAutoHideMinimizeActionTriggered()
+{
+	auto AutoHideContainer = d->DockArea->autoHideDockContainer();
+	if (AutoHideContainer)
+	{
+		AutoHideContainer->collapseView(true);
+	}
+}
+
+
+//============================================================================
 void CDockAreaTitleBar::onUndockButtonClicked()
 {
 	if (d->DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
@@ -735,7 +753,17 @@ void CDockAreaTitleBar::contextMenuEvent(QContextMenuEvent* ev)
 		}
 		Menu.addSeparator();
 	}
-	Action = Menu.addAction(isAutoHide ? tr("Close") : tr("Close Group"), this, SLOT(onCloseButtonClicked()));
+
+	if (isAutoHide)
+	{
+		Action = Menu.addAction(tr("Minimize"), this, SLOT(onAutoHideMinimizeActionTriggered()));
+		Action = Menu.addAction(tr("Close"), this, SLOT(onAutoHideCloseActionTriggered()));
+	}
+	else
+	{
+		Action = Menu.addAction(isAutoHide ? tr("Close") : tr("Close Group"), this, SLOT(onCloseButtonClicked()));
+	}
+
 	Action->setEnabled(d->DockArea->features().testFlag(CDockWidget::DockWidgetClosable));
 	if (!isAutoHide && !isTopLevelArea)
 	{
@@ -782,7 +810,8 @@ QString CDockAreaTitleBar::titleBarButtonToolTip(TitleBarButton Button) const
 	case TitleBarButtonClose:
 		if (d->DockArea->isAutoHide())
 		{
-			return tr("Close");
+			bool Minimize = CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideCloseButtonCollapsesDock);
+			return Minimize ? tr("Minimize") : tr("Close");
 		}
 
 		if (CDockManager::testConfigFlag(CDockManager::DockAreaCloseButtonClosesTab))

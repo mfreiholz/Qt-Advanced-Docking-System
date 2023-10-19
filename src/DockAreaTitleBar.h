@@ -97,6 +97,8 @@ private:
 private Q_SLOTS:
 	void onTabsMenuAboutToShow();
 	void onCloseButtonClicked();
+	void onAutoHideCloseActionTriggered();
+	void onAutoHideMinimizeActionTriggered();
 	void onUndockButtonClicked();
 	void onTabsMenuActionTriggered(QAction* Action);
 	void onCurrentTabChanged(int Index);
