@@ -118,6 +118,10 @@ struct DockManagerPrivate
 	CDockFocusController* FocusController = nullptr;
     CDockWidget* CentralWidget = nullptr;
     bool IsLeavingMinimized = false;
+	Qt::ToolButtonStyle ToolBarStyleDocked = Qt::ToolButtonIconOnly;
+	Qt::ToolButtonStyle ToolBarStyleFloating = Qt::ToolButtonTextUnderIcon;
+	QSize ToolBarIconSizeDocked = QSize(16, 16);
+	QSize ToolBarIconSizeFloating = QSize(24, 24);
 
 	/**
 	 * Private data constructor
@@ -1360,6 +1364,63 @@ QString CDockManager::floatingContainersTitle()
 
 	return FloatingContainersTitle;
 }
+
+
+//===========================================================================
+void CDockManager::setDockWidgetToolBarStyle(Qt::ToolButtonStyle Style, CDockWidget::eState State)
+{
+	if (CDockWidget::StateFloating == State)
+	{
+		d->ToolBarStyleFloating = Style;
+	}
+	else
+	{
+		d->ToolBarStyleDocked = Style;
+	}
+}
+
+
+//===========================================================================
+Qt::ToolButtonStyle CDockManager::dockWidgetToolBarStyle(CDockWidget::eState State) const
+{
+	if (CDockWidget::StateFloating == State)
+	{
+		return d->ToolBarStyleFloating;
+	}
+	else
+	{
+		return d->ToolBarStyleDocked;
+	}
+}
+
+
+//===========================================================================
+void CDockManager::setDockWidgetToolBarIconSize(const QSize& IconSize, CDockWidget::eState State)
+{
+	if (CDockWidget::StateFloating == State)
+	{
+		d->ToolBarIconSizeFloating = IconSize;
+	}
+	else
+	{
+		d->ToolBarIconSizeDocked = IconSize;
+	}
+}
+
+
+//===========================================================================
+QSize CDockManager::dockWidgetToolBarIconSize(CDockWidget::eState State) const
+{
+	if (CDockWidget::StateFloating == State)
+	{
+		return d->ToolBarIconSizeFloating;
+	}
+	else
+	{
+		return d->ToolBarIconSizeDocked;
+	}
+}
+
 
 } // namespace ads
 

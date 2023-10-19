@@ -271,6 +271,10 @@ struct MainWindowPrivate
 		auto ToolBar = DockWidget->createDefaultToolBar();
 		ToolBar->addAction(ui.actionSaveState);
 		ToolBar->addAction(ui.actionRestoreState);
+		// For testing all calendar dock widgets have a the tool button style
+		// Qt::ToolButtonTextUnderIcon
+		DockWidget->setToolBarStyleSource(ads::CDockWidget::ToolBarStyleFromDockWidget);
+		DockWidget->setToolBarStyle(Qt::ToolButtonTextUnderIcon, ads::CDockWidget::StateFloating);
 		return DockWidget;
 	}
 
@@ -764,6 +768,7 @@ CMainWindow::CMainWindow(QWidget *parent) :
 
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
+	d->DockManager->setDockWidgetToolBarStyle(Qt::ToolButtonIconOnly, ads::CDockWidget::StateFloating);
 
  #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 	connect(d->PerspectiveComboBox, SIGNAL(activated(QString)),

@@ -627,6 +627,36 @@ public:
 	 */
 	static QString floatingContainersTitle();
 
+    /**
+     * This function sets the tool button style for the given dock widget state.
+     * It is possible to switch the tool button style depending on the state.
+     * If a dock widget is floating, then here are more space and it is
+     * possible to select a style that requires more space like
+     * Qt::ToolButtonTextUnderIcon. For the docked state Qt::ToolButtonIconOnly
+     * might be better.
+     */
+    void setDockWidgetToolBarStyle(Qt::ToolButtonStyle Style, CDockWidget::eState State);
+
+    /**
+     * Returns the tool button style for the given docking state.
+     * \see setToolBarStyle()
+     */
+    Qt::ToolButtonStyle dockWidgetToolBarStyle(CDockWidget::eState State) const;
+
+    /**
+     * This function sets the tool button icon size for the given state.
+     * If a dock widget is floating, there is more space and increasing the
+     * icon size is possible. For docked widgets, small icon sizes, eg. 16 x 16
+     * might be better.
+     */
+    void setDockWidgetToolBarIconSize(const QSize& IconSize, CDockWidget::eState State);
+
+    /**
+     * Returns the icon size for a given docking state.
+     * \see setToolBarIconSize()
+     */
+    QSize dockWidgetToolBarIconSize(CDockWidget::eState State) const;
+
 public Q_SLOTS:
 	/**
 	 * Opens the perspective with the given name.

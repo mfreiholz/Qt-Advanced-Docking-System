@@ -95,6 +95,7 @@ struct DockWidgetPrivate
 	CDockWidget::eMinimumSizeHintMode MinimumSizeHintMode = CDockWidget::MinimumSizeHintFromDockWidget;
 	WidgetFactory* Factory = nullptr;
 	QPointer<CAutoHideTab> SideTabWidget;
+	CDockWidget::eToolBarStyleSource ToolBarStyleSource = CDockWidget::ToolBarStyleFromDockManager;
 	
 	/**
 	 * Private data constructor
@@ -139,6 +140,11 @@ struct DockWidgetPrivate
 	 * returns true on success.
 	 */
 	bool createWidgetFromFactory();
+
+	/**
+	 * Use the dock manager toolbar style and icon size for the different states
+	 */
+	void setToolBarStyleFromDockManager();
 };
 // struct DockWidgetPrivate
 
@@ -328,6 +334,22 @@ bool DockWidgetPrivate::createWidgetFromFactory()
 	
 	_this->setWidget(w, Factory->insertMode);
 	return true;
+}
+
+
+//============================================================================
+void DockWidgetPrivate::setToolBarStyleFromDockManager()
+{
+	if (!DockManager)
+	{
+		return;
+	}
+	auto State = CDockWidget::StateDocked;
+	_this->setToolBarIconSize(DockManager->dockWidgetToolBarIconSize(State), State);
+	_this->setToolBarStyle(DockManager->dockWidgetToolBarStyle(State), State);
+	State = CDockWidget::StateFloating;
+	_this->setToolBarIconSize(DockManager->dockWidgetToolBarIconSize(State), State);
+	_this->setToolBarStyle(DockManager->dockWidgetToolBarStyle(State), State);
 }
 
 
@@ -523,6 +545,15 @@ CDockManager* CDockWidget::dockManager() const
 void CDockWidget::setDockManager(CDockManager* DockManager)
 {
 	d->DockManager = DockManager;
+	if (!DockManager)
+	{
+		return;
+	}
+
+	if (ToolBarStyleFromDockManager == d->ToolBarStyleSource)
+	{
+		d->setToolBarStyleFromDockManager();
+	}
 }
 
 
@@ -1281,6 +1312,24 @@ void CDockWidget::toggleAutoHide(SideBarLocation Location)
 	}
 
 	setAutoHide(!isAutoHide(), Location);
+}
+
+
+//============================================================================
+void CDockWidget::setToolBarStyleSource(eToolBarStyleSource Source)
+{
+	d->ToolBarStyleSource = Source;
+	if (ToolBarStyleFromDockManager == d->ToolBarStyleSource)
+	{
+		d->setToolBarStyleFromDockManager();
+	}
+}
+
+
+//============================================================================
+CDockWidget::eToolBarStyleSource CDockWidget::toolBarStyleSource() const
+{
+	return d->ToolBarStyleSource;
 }
 
 
