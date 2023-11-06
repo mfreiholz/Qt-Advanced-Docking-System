@@ -72,10 +72,11 @@ struct DockAreaTitleBarPrivate
 	QPointer<CTitleBarButton> AutoHideButton;
 	QPointer<CTitleBarButton> UndockButton;
 	QPointer<CTitleBarButton> CloseButton;
+	QPointer<CTitleBarButton> MinimizeButton;
 	QBoxLayout* Layout;
 	CDockAreaWidget* DockArea;
 	CDockAreaTabBar* TabBar;
-	CElidingLabel* AutoHideTitleLabel;
+	CElidingLabel* AutoHideTitleLabel = nullptr;
 	bool MenuOutdated = true;
 	QMenu* TabsMenu;
 	QList<tTitleBarButton*> DockWidgetActionsButtons;
@@ -218,6 +219,17 @@ void DockAreaTitleBarPrivate::createButtons()
 	Layout->addWidget(AutoHideButton, 0);
 	_this->connect(AutoHideButton, SIGNAL(clicked()),  SLOT(onAutoHideButtonClicked()));
 
+	// Minimize button
+	MinimizeButton = new CTitleBarButton(testAutoHideConfigFlag(CDockManager::AutoHideHasMinimizeButton));
+	MinimizeButton->setObjectName("dockAreaMinimizeButton");
+	MinimizeButton->setAutoRaise(true);
+	MinimizeButton->setVisible(false);
+	internal::setButtonIcon(MinimizeButton, QStyle::SP_TitleBarMinButton, ads::DockAreaMinimizeIcon);
+	internal::setToolTip(MinimizeButton, QObject::tr("Minimize"));
+	MinimizeButton->setSizePolicy(ButtonSizePolicy);
+	Layout->addWidget(MinimizeButton, 0);
+	_this->connect(MinimizeButton, SIGNAL(clicked()), SLOT(minimizeAutoHideContainer()));
+
 	// Close button
 	CloseButton = new CTitleBarButton(testConfigFlag(CDockManager::DockAreaHasCloseButton));
 	CloseButton->setObjectName("dockAreaCloseButton");
@@ -236,7 +248,10 @@ void DockAreaTitleBarPrivate::createAutoHideTitleLabel()
 {
 	AutoHideTitleLabel = new CElidingLabel("");
 	AutoHideTitleLabel->setObjectName("autoHideTitleLabel");
-	Layout->addWidget(AutoHideTitleLabel);
+	// At position 0 is the tab bar - insert behind tab bar
+	Layout->insertWidget(1, AutoHideTitleLabel);
+	AutoHideTitleLabel->setVisible(false); // Default hidden
+	Layout->insertWidget(2 ,new CSpacerWidget(_this));
 }
 
 
@@ -324,10 +339,8 @@ CDockAreaTitleBar::CDockAreaTitleBar(CDockAreaWidget* parent) :
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
 	d->createTabBar();
-	d->createAutoHideTitleLabel();
-	d->AutoHideTitleLabel->setVisible(false); // Default hidden
-	d->Layout->addWidget(new CSpacerWidget(this));
 	d->createButtons();
+	d->createAutoHideTitleLabel();
 
     setFocusPolicy(Qt::NoFocus);
 }
@@ -439,7 +452,7 @@ void CDockAreaTitleBar::onAutoHideCloseActionTriggered()
 
 
 //============================================================================
-void CDockAreaTitleBar::onAutoHideMinimizeActionTriggered()
+void CDockAreaTitleBar::minimizeAutoHideContainer()
 {
 	auto AutoHideContainer = d->DockArea->autoHideDockContainer();
 	if (AutoHideContainer)
@@ -565,6 +578,7 @@ CTitleBarButton* CDockAreaTitleBar::button(TitleBarButton which) const
 	case TitleBarButtonUndock: return d->UndockButton;
 	case TitleBarButtonClose: return d->CloseButton;
 	case TitleBarButtonAutoHide: return d->AutoHideButton;
+	case TitleBarButtonMinimize: return d->MinimizeButton;
 	default:
 		return nullptr;
 	}
@@ -756,7 +770,7 @@ void CDockAreaTitleBar::contextMenuEvent(QContextMenuEvent* ev)
 
 	if (isAutoHide)
 	{
-		Action = Menu.addAction(tr("Minimize"), this, SLOT(onAutoHideMinimizeActionTriggered()));
+		Action = Menu.addAction(tr("Minimize"), this, SLOT(minimizeAutoHideContainer()));
 		Action = Menu.addAction(tr("Close"), this, SLOT(onAutoHideCloseActionTriggered()));
 	}
 	else
@@ -831,6 +845,16 @@ QString CDockAreaTitleBar::titleBarButtonToolTip(TitleBarButton Button) const
 	return QString();
 }
 
+
+//============================================================================
+void CDockAreaTitleBar::showAutoHideControls(bool Show)
+{
+	d->TabBar->setVisible(!Show); // Auto hide toolbar never has tabs
+	d->MinimizeButton->setVisible(Show);
+	d->AutoHideTitleLabel->setVisible(Show);
+}
+
+
 //============================================================================
 CTitleBarButton::CTitleBarButton(bool showInTitleBar, QWidget* parent)
 	: tTitleBarButton(parent),
@@ -886,6 +910,7 @@ CSpacerWidget::CSpacerWidget(QWidget* Parent /*= 0*/) : Super(Parent)
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setStyleSheet("border: none; background: none;");
 }
+
 
 } // namespace ads
 

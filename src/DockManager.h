@@ -251,10 +251,13 @@ public:
 		AutoHideSideBarsIconOnly = 0x10,///< show only icons in auto hide side tab - if a tab has no icon, then the text will be shown
 		AutoHideShowOnMouseOver = 0x20, ///< show the auto hide window on mouse over tab and hide it if mouse leaves auto hide container
 		AutoHideCloseButtonCollapsesDock = 0x40, ///< Close button of an auto hide container collapses the dock instead of hiding it completely
+		AutoHideHasCloseButton = 0x80, //< If the flag is set an auto hide title bar has a close button
+		AutoHideHasMinimizeButton = 0x100, ///< if this flag is set, the auto hide title bar has a minimize button to collapse the dock widget
 
 		DefaultAutoHideConfig = AutoHideFeatureEnabled
 			                  | DockAreaHasAutoHideButton
 			                  | AutoHideCloseButtonCollapsesDock
+			                  | AutoHideHasCloseButton
 
 	};
     Q_DECLARE_FLAGS(AutoHideFlags, eAutoHideFlag)

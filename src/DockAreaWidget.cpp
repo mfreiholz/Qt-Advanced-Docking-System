@@ -390,20 +390,29 @@ void DockAreaWidgetPrivate::updateTitleBarButtonVisibility(bool IsTopLevel)
 		return;
 	}
 
-	if (IsTopLevel)
+	bool IsAutoHide = _this->isAutoHide();
+	if (IsAutoHide)
+	{
+		bool ShowCloseButton = CDockManager::autoHideConfigFlags().testFlag(CDockManager::AutoHideHasCloseButton);
+		TitleBar->button(TitleBarButtonClose)->setVisible(ShowCloseButton);
+		TitleBar->button(TitleBarButtonAutoHide)->setVisible(true);
+		TitleBar->button(TitleBarButtonUndock)->setVisible(false);
+        TitleBar->button(TitleBarButtonTabsMenu)->setVisible(false);
+	}
+	else if (IsTopLevel)
 	{
 		TitleBar->button(TitleBarButtonClose)->setVisible(!container->isFloating());
 		TitleBar->button(TitleBarButtonAutoHide)->setVisible(!container->isFloating());
         // Undock and tabs should never show when auto hidden
-		TitleBar->button(TitleBarButtonUndock)->setVisible(!container->isFloating() && !_this->isAutoHide());
-        TitleBar->button(TitleBarButtonTabsMenu)->setVisible(!_this->isAutoHide());
+		TitleBar->button(TitleBarButtonUndock)->setVisible(!container->isFloating());
+        TitleBar->button(TitleBarButtonTabsMenu)->setVisible(true);
 	}
 	else
 	{
 		TitleBar->button(TitleBarButtonClose)->setVisible(true);
 		TitleBar->button(TitleBarButtonAutoHide)->setVisible(true);
-		TitleBar->button(TitleBarButtonUndock)->setVisible(!_this->isAutoHide());
-        TitleBar->button(TitleBarButtonTabsMenu)->setVisible(!_this->isAutoHide());
+		TitleBar->button(TitleBarButtonUndock)->setVisible(true);
+        TitleBar->button(TitleBarButtonTabsMenu)->setVisible(true);
 	}
 }
 
@@ -847,9 +856,7 @@ void CDockAreaWidget::updateTitleBarVisibility()
 
 	if (isAutoHideFeatureEnabled())
 	{
-		auto tabBar = d->TitleBar->tabBar();
-		tabBar->setVisible(!IsAutoHide);  // Never show tab bar when auto hidden
-		d->TitleBar->autoHideTitleLabel()->setVisible(IsAutoHide);  // Always show when auto hidden, never otherwise
+		d->TitleBar->showAutoHideControls(IsAutoHide);
 		updateTitleBarButtonVisibility(Container->topLevelDockArea() == this);
 	}
 }

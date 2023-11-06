@@ -334,6 +334,12 @@ ads--CAutoHideDockContainer #dockAreaAutoHideButton {
 }
 
 
+ads--CAutoHideDockContainer #dockAreaMinimizeButton {
+	qproperty-icon: url(:/ads/images/minimize-button-focused.svg);
+	qproperty-iconSize: 16px;	
+}
+
+
 ads--CAutoHideDockContainer #dockAreaCloseButton{
         qproperty-icon: url(:/ads/images/close-button-focused.svg)
 }
