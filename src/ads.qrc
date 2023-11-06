@@ -22,5 +22,6 @@
         <file>images/pin-button-big.svg</file>
         <file>images/minimize-button.svg</file>
         <file>images/minimize-button-focused.svg</file>
+        <file>images/vs-pin-button-disabled.svg</file>
     </qresource>
 </RCC>
