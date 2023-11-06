@@ -41,6 +41,8 @@
   - [`AutoHideSideBarsIconOnly`](#autohidesidebarsicononly)
   - [`AutoHideShowOnMouseOver`](#autohideshowonmouseover)
   - [`AutoHideCloseButtonCollapsesDock`](#autohideclosebuttoncollapsesdock)
+  - [`AutoHideHasCloseButton`](#autohidehasclosebutton)
+  - [`AutoHideHasMinimizeButton`](#autohidehasminimizebutton)
 - [DockWidget Feature Flags](#dockwidget-feature-flags)
   - [`DockWidgetClosable`](#dockwidgetclosable)
   - [`DockWidgetMovable`](#dockwidgetmovable)
@@ -609,6 +611,24 @@ close button in an auto hide widget collapses the auto hide widget instead of
 closing it.
 
 ![AutoHideCloseButtonCollapsesDock true](cfg_flag_AutoHideCloseButtonCollapsesDock_true.gif)
+
+If you enable the `AutoHideHasMinimizeButton` flag, you should disable this
+flag our you will have two buttons with minimize functionality.
+
+### `AutoHideHasCloseButton`
+
+If this flag is set (default), then each auto hide widget has a close button:
+
+![AutoHideHasCloseButton](cfg_flag_AutoHideHasCloseButton.png)
+
+The functionality of the close button (close or minimize) is configured by the
+`AutoHideCloseButtonCollapsesDock` flag.
+
+### `AutoHideHasMinimizeButton`
+
+If this flag is set (disabled by default), then each auto hide widget has a minimize button.
+
+![AutoHideHasMinimizeButton](cfg_flag_AutoHideHasMinimizeButton.png)
 
 ## DockWidget Feature Flags
 
