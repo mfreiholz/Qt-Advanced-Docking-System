@@ -32,6 +32,11 @@
   - [Auto Hide Dock Widgets](#auto-hide-dock-widgets)
   - [Pinning Auto-Hide Widgets to a certain border](#pinning-auto-hide-widgets-to-a-certain-border)
   - [Show / Hide Auto-Hide Widgets via Mouse Over](#show--hide-auto-hide-widgets-via-mouse-over)
+  - [Drag \& Drop to Auto-Hide](#drag--drop-to-auto-hide)
+  - [Auto-Hide Tab Insertion Order](#auto-hide-tab-insertion-order)
+  - [Auto-Hide Tab Sorting](#auto-hide-tab-sorting)
+  - [Auto-Hide Drag to Float / Dock](#auto-hide-drag-to-float--dock)
+  - [Auto-Hide Context Menu](#auto-hide-context-menu)
   - [Adding Auto Hide Widgets](#adding-auto-hide-widgets)
   - [Setting Auto-Hide Flags](#setting-auto-hide-flags)
   - [`AutoHideFeatureEnabled`](#autohidefeatureenabled)
@@ -472,7 +477,14 @@ possible in various web browsers.
 
 ### `DisableTabTextEliding`
 
-Set this flag to disable eliding of tab texts in dock area tabs.
+Set this flag to disable eliding of tab texts in dock area tabs:
+
+![DisableTabTextEliding true](cfg_flag_DisableTabTextEliding_true.png)
+
+The flag is disabled by default and the text in all tabs is elided to show as
+many tabs as possible even if there is not much space:
+
+![DisableTabTextEliding false](cfg_flag_DisableTabTextEliding_false.png)
 
 ## Auto-Hide Configuration Flags
 
@@ -509,6 +521,59 @@ the same container. If the Auto-Hide config flag `AutoHideShowOnMouseOver` is se
 the Auto-Hide widget is shown, if the user hovers over the Auto-Hide tab and is
 collapsed if the mouse cursor leaves the Auto-Hide widget. Showing and hiding
 by mouse click still works if this feature is enabled.
+
+### Drag & Drop to Auto-Hide
+
+You can easily drag any dock widget or any floating widget to the
+borders of a window to pin it as a auto-hide tab in one of the 4 sidebars.
+If you drag a dock widget close the one of the four window borders, special
+drop overlays will be shown to indicate the drop area for auto-hide widgets:
+
+![Auo-Hide drag to Sidebar](AutoHide_Drag_to_Sidebar.gif)
+
+Of course, this also works with dock areas:
+
+![Auo-Hide drag Dock Area](AutoHide_Drag_DockArea.gif)
+
+If you drag a dock widget or dock area into a sidebar, then you even have
+control over where tabs are inserted. Simply drag your mouse over a specific
+auto-hide tab, and your dragged dock widget will be inserted before this tab.
+Drag to the sidebar area behind the last tab, and the dragged widget will be
+appended as last tab. In the following screen capture, the **Image Viewer 1** will
+be inserted before the **Table 0** Auto-Hide tab and the **Image Viewer 2**
+is appended behind the last tab:
+
+![Auo-Hide tab insert order](AutoHide_Tab_Insert_Order.gif)
+
+### Auto-Hide Tab Insertion Order
+
+It is also possible to drag Auto-Hide tabs to a new auto-hide position.
+That means, you can drag them to a different border or sidebar:
+
+![Auto-Hide change sidebar](AutoHide_Change_Sidebar.gif)
+
+### Auto-Hide Tab Sorting
+
+You can drag Auto-Hide tabs to a new position in the current sidebar 
+to sort them:
+
+![Auo-Hide sort tabs](AutoHide_Sort_Tabs.gif)
+
+### Auto-Hide Drag to Float / Dock
+
+But that is not all. You can also simply move Auto-Hide tabs to another
+floating widget or dock them via drag and drop:
+
+![Auo-Hide drag to float or dock](AutoHide_Drag_to_Float_or_Dock.gif)
+
+### Auto-Hide Context Menu
+
+All Auto-Hide tabs now have a context menu, that provides all the functionality
+that you know from Dock widget tabs. With the **Pin To...** item from the
+context menu it is very easy to move an Auto-Hide tab to a different Auto-Hide
+sidebar:
+
+![Auo-Hide context menu](AutoHide_Context_Menu.png)
 
 ### Adding Auto Hide Widgets
 
