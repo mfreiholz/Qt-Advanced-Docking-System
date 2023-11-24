@@ -421,11 +421,12 @@ void CDockWidgetTab::mouseReleaseEvent(QMouseEvent* ev)
 			 break;
 
 		default:
-			if (CDockManager::testConfigFlag(CDockManager::FocusHighlighting))
-			{
-				d->focusController()->setDockWidgetTabPressed(false);
-			}
-			break; // do nothing
+			break;
+		}
+
+		if (CDockManager::testConfigFlag(CDockManager::FocusHighlighting))
+		{
+			d->focusController()->setDockWidgetTabPressed(false);
 		}
 	} 
 	else if (ev->button() == Qt::MiddleButton)
