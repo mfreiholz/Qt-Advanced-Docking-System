@@ -587,16 +587,7 @@ void DockContainerWidgetPrivate::dropIntoSection(CFloatingDockContainer* Floatin
 	auto InsertParam = internal::dockAreaInsertParameters(area);
 	auto NewDockAreas = FloatingContainer->findChildren<CDockAreaWidget*>(
 		QString(), Qt::FindChildrenRecursively);
-	QSplitter* TargetAreaSplitter = internal::findParent<QSplitter*>(TargetArea);
-
-	if (!TargetAreaSplitter)
-	{
-		QSplitter* Splitter = newSplitter(InsertParam.orientation());
-		Layout->replaceWidget(TargetArea, Splitter);
-		Splitter->addWidget(TargetArea);
-        updateSplitterHandles(Splitter);
-        TargetAreaSplitter = Splitter;
-	}
+	auto TargetAreaSplitter = TargetArea->parentSplitter();
 	int AreaIndex = TargetAreaSplitter->indexOf(TargetArea);
 	auto FloatingSplitter = FloatingContainer->rootSplitter();
 	if (TargetAreaSplitter->orientation() == InsertParam.orientation())
@@ -742,7 +733,7 @@ void DockContainerWidgetPrivate::moveToNewSection(QWidget* Widget, CDockAreaWidg
 	}
 
 	auto InsertParam = internal::dockAreaInsertParameters(area);
-	QSplitter* TargetAreaSplitter = internal::findParent<QSplitter*>(TargetArea);
+	auto TargetAreaSplitter = TargetArea->parentSplitter();
 	int AreaIndex = TargetAreaSplitter->indexOf(TargetArea);
 	auto Sizes = TargetAreaSplitter->sizes();
 	if (TargetAreaSplitter->orientation() == InsertParam.orientation())
@@ -877,7 +868,7 @@ void DockContainerWidgetPrivate::moveToContainer(QWidget* Widget, DockWidgetArea
 		// it already has and do nothing, if it is the same place. It would
 		// also work without this check, but it looks nicer with the check
 		// because there will be no layout updates
-		auto Splitter = internal::findParent<CDockSplitter*>(DroppedDockArea);
+		auto Splitter = DroppedDockArea->parentSplitter();
 		auto InsertParam = internal::dockAreaInsertParameters(area);
 		if (Splitter == RootSplitter && InsertParam.orientation() == Splitter->orientation())
 		{
@@ -1364,7 +1355,7 @@ CDockAreaWidget* DockContainerWidgetPrivate::addDockWidgetToDockArea(DockWidgetA
 	NewDockArea->addDockWidget(Dockwidget);
 	auto InsertParam = internal::dockAreaInsertParameters(area);
 
-	QSplitter* TargetAreaSplitter = internal::findParent<QSplitter*>(TargetDockArea);
+	auto TargetAreaSplitter = TargetDockArea->parentSplitter();
 	int index = TargetAreaSplitter ->indexOf(TargetDockArea);
 	if (TargetAreaSplitter->orientation() == InsertParam.orientation())
 	{
@@ -1381,7 +1372,7 @@ CDockAreaWidget* DockContainerWidgetPrivate::addDockWidgetToDockArea(DockWidgetA
 	{
 		ADS_PRINT("TargetAreaSplitter->orientation() != InsertParam.orientation()");
 		auto TargetAreaSizes = TargetAreaSplitter->sizes();
-		QSplitter* NewSplitter = newSplitter(InsertParam.orientation());
+		auto NewSplitter = newSplitter(InsertParam.orientation());
 		NewSplitter->addWidget(TargetDockArea);
 
 		insertWidgetIntoSplitter(NewSplitter, NewDockArea, InsertParam.append());
@@ -1572,7 +1563,7 @@ void CDockContainerWidget::removeDockArea(CDockAreaWidget* area)
 
 	area->disconnect(this);
 	d->DockAreas.removeAll(area);
-	CDockSplitter* Splitter = internal::findParent<CDockSplitter*>(area);
+	auto Splitter = area->parentSplitter();
 
 	// Remove are from parent splitter and recursively hide tree of parent
 	// splitters if it has no visible content
@@ -1943,7 +1934,7 @@ bool CDockContainerWidget::restoreState(CDockingStateReader& s, bool Testing)
 
 
 //============================================================================
-QSplitter* CDockContainerWidget::rootSplitter() const
+CDockSplitter* CDockContainerWidget::rootSplitter() const
 {
 	return d->RootSplitter;
 }

@@ -1318,7 +1318,7 @@ QList<int> CDockManager::splitterSizes(CDockAreaWidget *ContainedArea) const
 {
     if (ContainedArea)
     {
-        auto Splitter = internal::findParent<CDockSplitter*>(ContainedArea);
+        auto Splitter = ContainedArea->parentSplitter();
         if (Splitter)
         {
             return Splitter->sizes();
@@ -1335,7 +1335,7 @@ void CDockManager::setSplitterSizes(CDockAreaWidget *ContainedArea, const QList<
         return;
     }
 
-    auto Splitter = internal::findParent<CDockSplitter*>(ContainedArea);
+    auto Splitter = ContainedArea->parentSplitter();
     if (Splitter && Splitter->count() == sizes.count())
     {
         Splitter->setSizes(sizes);

@@ -184,11 +184,11 @@ void DockWidgetPrivate::showDockWidget()
 		DockArea->setCurrentDockWidget(_this);
 		DockArea->toggleView(true);
 		TabWidget->show();
-		QSplitter* Splitter = internal::findParent<QSplitter*>(DockArea);
+		auto Splitter = DockArea->parentSplitter();
 		while (Splitter && !Splitter->isVisible() && !DockArea->isAutoHide())
 		{
 			Splitter->show();
-			Splitter = internal::findParent<QSplitter*>(Splitter);
+			Splitter = internal::findParent<CDockSplitter*>(Splitter);
 		}
 
 		CDockContainerWidget* Container = DockArea->dockContainer();

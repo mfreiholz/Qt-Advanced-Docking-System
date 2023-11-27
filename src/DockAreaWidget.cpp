@@ -464,6 +464,13 @@ CAutoHideDockContainer* CDockAreaWidget::autoHideDockContainer() const
 	return d->AutoHideDockContainer;
 }
 
+
+//============================================================================
+CDockSplitter* CDockAreaWidget::parentSplitter() const
+{
+	return internal::findParent<CDockSplitter*>(this);
+}
+
 //============================================================================
 bool CDockAreaWidget::isAutoHide() const
 {
@@ -600,7 +607,7 @@ void CDockAreaWidget::hideAreaWithNoVisibleContent()
 	this->toggleView(false);
 
 	// Hide empty parent splitters
-	auto Splitter = internal::findParent<CDockSplitter*>(this);
+	auto Splitter = parentSplitter();
 	internal::hideEmptyParentSplitters(Splitter);
 
 	//Hide empty floating widget
