@@ -28,6 +28,7 @@
   - [`FloatingContainerForceQWidgetTitleBar` (Linux only)](#floatingcontainerforceqwidgettitlebar-linux-only)
   - [`MiddleMouseButtonClosesTab`](#middlemousebuttonclosestab)
   - [`DisableTabTextEliding`](#disabletabtexteliding)
+  - [`ShowTabTextOnlyForActiveTab`](#showtabtextonlyforactivetab)
 - [Auto-Hide Configuration Flags](#auto-hide-configuration-flags)
   - [Auto Hide Dock Widgets](#auto-hide-dock-widgets)
   - [Pinning Auto-Hide Widgets to a certain border](#pinning-auto-hide-widgets-to-a-certain-border)
@@ -485,6 +486,13 @@ The flag is disabled by default and the text in all tabs is elided to show as
 many tabs as possible even if there is not much space:
 
 ![DisableTabTextEliding false](cfg_flag_DisableTabTextEliding_false.png)
+
+### `ShowTabTextOnlyForActiveTab`
+
+Set this flag (default = false) to show label texts in dock area tabs only
+for active tabs. Inactive tabs only show their icon:
+
+![MShowTabTextOnlyForActiveTab true](cfg_flag_ShowTabTextOnlyForActiveTab_true.png)
 
 ## Auto-Hide Configuration Flags
 
