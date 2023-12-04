@@ -256,8 +256,7 @@ public:
 
 		DefaultAutoHideConfig = AutoHideFeatureEnabled
 			                  | DockAreaHasAutoHideButton
-			                  | AutoHideCloseButtonCollapsesDock
-			                  | AutoHideHasCloseButton
+			                  | AutoHideHasMinimizeButton
 
 	};
     Q_DECLARE_FLAGS(AutoHideFlags, eAutoHideFlag)
