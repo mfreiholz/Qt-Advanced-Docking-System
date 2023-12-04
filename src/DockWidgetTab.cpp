@@ -581,6 +581,14 @@ void CDockWidgetTab::setActiveTab(bool active)
 {
     d->updateCloseButtonVisibility(active);
 
+	if(CDockManager::testConfigFlag(CDockManager::ShowTabTextOnlyForActiveTab) && !d->Icon.isNull())
+	{
+		if(active)
+			d->TitleLabel->setVisible(true);
+		else
+			d->TitleLabel->setVisible(false);
+	}
+
 	// Focus related stuff
 	if (CDockManager::testConfigFlag(CDockManager::FocusHighlighting) && !d->DockWidget->dockManager()->isRestoringState())
 	{
