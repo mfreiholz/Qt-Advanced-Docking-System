@@ -587,7 +587,7 @@ bool CDockManager::eventFilter(QObject *obj, QEvent *e)
 	// Window always on top of the MainWindow.
 	if (e->type() == QEvent::WindowActivate)
 	{
-		for (auto _window : floatingWidgets())
+        for (auto _window : d->FloatingWidgets)
 		{
 			if (!_window->isVisible() || window()->isMinimized())
 			{
@@ -609,7 +609,7 @@ bool CDockManager::eventFilter(QObject *obj, QEvent *e)
 	}
 	else if (e->type() == QEvent::WindowDeactivate)
 	{
-		for (auto _window : floatingWidgets())
+        for (auto _window : d->FloatingWidgets)
 		{
 			if (!_window->isVisible() || window()->isMinimized())
 			{
@@ -632,7 +632,7 @@ bool CDockManager::eventFilter(QObject *obj, QEvent *e)
 	// Sync minimize with MainWindow
 	if (e->type() == QEvent::WindowStateChange)
 	{
-		for (auto _window : floatingWidgets())
+        for (auto _window : d->FloatingWidgets)
 		{
 			if (! _window->isVisible())
 			{

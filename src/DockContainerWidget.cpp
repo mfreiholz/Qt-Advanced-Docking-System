@@ -2063,7 +2063,7 @@ CDockAreaWidget* CDockContainerWidget::topLevelDockArea() const
 QList<CDockWidget*> CDockContainerWidget::dockWidgets() const
 {
 	QList<CDockWidget*> Result;
-	for (const auto DockArea : d->DockAreas)
+    for (const auto& DockArea : d->DockAreas)
 	{
 		if (!DockArea)
 		{
@@ -2099,7 +2099,7 @@ void CDockContainerWidget::removeAutoHideWidget(CAutoHideDockContainer* Autohide
 CDockWidget::DockWidgetFeatures CDockContainerWidget::features() const
 {
 	CDockWidget::DockWidgetFeatures Features(CDockWidget::AllDockWidgetFeatures);
-	for (const auto DockArea : d->DockAreas)
+    for (const auto& DockArea : d->DockAreas)
 	{
 		if (!DockArea)
 		{
@@ -2122,7 +2122,7 @@ CFloatingDockContainer* CDockContainerWidget::floatingWidget() const
 //============================================================================
 void CDockContainerWidget::closeOtherAreas(CDockAreaWidget* KeepOpenArea)
 {
-	for (const auto DockArea : d->DockAreas)
+    for (const auto& DockArea : d->DockAreas)
 	{
 		if (!DockArea || DockArea == KeepOpenArea)
 		{
