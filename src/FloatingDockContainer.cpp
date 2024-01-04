@@ -764,6 +764,31 @@ CFloatingDockContainer::CFloatingDockContainer(CDockWidget *DockWidget) :
 CFloatingDockContainer::~CFloatingDockContainer()
 {
 	ADS_PRINT("~CFloatingDockContainer");
+	std::vector<QPointer<ads::CDockAreaWidget>> areas;
+	for (int i = 0; i != dockContainer()->dockAreaCount(); ++i)
+	{
+		areas.push_back( dockContainer()->dockArea(i) );
+	}
+	for (auto area : areas)
+	{
+		if (!area)
+		{
+			continue;
+		}
+
+		// QPointer delete safety - just in case some dock wigdet in destruction
+		// deletes another related/twin or child dock widget.
+		std::vector<QPointer<QWidget>> deleteWidgets;
+		for (auto widget : area->dockWidgets())
+		{
+			deleteWidgets.push_back(widget);
+		}
+		for (auto ptrWdg : deleteWidgets)
+		{
+			delete ptrWdg;
+		}
+	}
+
 	if (d->DockManager)
 	{
 		d->DockManager->removeFloatingWidget(this);
