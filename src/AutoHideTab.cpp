@@ -174,7 +174,7 @@ void AutoHideTabPrivate::updateOrientation()
 bool AutoHideTabPrivate::startFloating(eDragState DraggingState)
 {
 	auto DockArea = DockWidget->dockAreaWidget();
-    ADS_PRINT("isFloating " << dockContainer->isFloating());
+    ADS_PRINT("isFloating " << dockContainer()->isFloating());
 
     ADS_PRINT("startFloating");
 	DragState = DraggingState;
