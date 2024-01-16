@@ -140,6 +140,11 @@ protected:
 	void removeDockArea(CDockAreaWidget* area);
 
 	/**
+	 * Remove all dock areas and returns the list of removed dock areas
+	 */
+	QList<QPointer<CDockAreaWidget>> removeAllDockAreas();
+
+	/**
 	 * Saves the state into the given stream
 	 */
 	void saveState(QXmlStreamWriter& Stream) const;

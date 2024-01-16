@@ -258,9 +258,9 @@ public:
     QList<CDockWidget*> dockWidgets() const;
 
 	/**
-	 * This function hides the floating bar instantely and delete it later.
+	 * This function hides the floating widget instantly and delete it later.
 	 */
-	void hideAndDeleteLater();
+	void finishDropOperation();
 
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
     /**

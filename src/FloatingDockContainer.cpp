@@ -776,7 +776,7 @@ CFloatingDockContainer::~CFloatingDockContainer()
 			continue;
 		}
 
-		// QPointer delete safety - just in case some dock wigdet in destruction
+		// QPointer delete safety - just in case some dock widget in destruction
 		// deletes another related/twin or child dock widget.
 		std::vector<QPointer<QWidget>> deleteWidgets;
 		for (auto widget : area->dockWidgets())
@@ -1167,7 +1167,7 @@ QList<CDockWidget*> CFloatingDockContainer::dockWidgets() const
 }
 
 //============================================================================
-void CFloatingDockContainer::hideAndDeleteLater()
+void CFloatingDockContainer::finishDropOperation()
 {
 	// Widget has been redocked, so it must be hidden right way (see 
 	// https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/issues/351)
@@ -1175,6 +1175,11 @@ void CFloatingDockContainer::hideAndDeleteLater()
 	// dock widgets that shall not be toggled hidden.
 	d->AutoHideChildren = false;
 	hide();
+	// The floating widget will be deleted now. Ensure, that the destructor
+	// of the floating widget does not delete any dock areas that have been
+	// moved to a new container - simply remove all dock areas before deleting
+	// the floating widget
+	d->DockContainer->removeAllDockAreas();
 	deleteLater();
 	if (d->DockManager)
 	{
