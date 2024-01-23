@@ -660,6 +660,38 @@ public:
      */
     QSize dockWidgetToolBarIconSize(CDockWidget::eState State) const;
 
+    /**
+     * Returns all dock widget features that are globally locked by the dock
+     * manager.
+     * Globally locked features are removed from the features of all dock
+     * widgets.
+     */
+    CDockWidget::DockWidgetFeatures globallyLockedDockWidgetFeatures() const;
+
+    /**
+     * Globally Lock features of all dock widgets to "freeze" the current
+     * workspace layout.
+     * For example, it is now possible to lock the workspace to avoid
+     * accidentally dragging a docked view. Locking wasn’t possible before.
+     * So, users had to manually dock it back to the desired place after
+     * each accidental undock.
+     * You can use a combination of the following feature flags:
+     * - CDockWidget::DockWidgetClosable
+     * - CDockWidget::DockWidgetMovable
+     * - CDockWidget::DockWidgetFloatable
+     * - CDockWidget::DockWidgetPinable
+     *
+     * To clear the locked features, you can use CDockWidget::NoDockWidgetFeatures
+     * The following code shows how to lock and unlock dock widget features
+     * globally.
+     *
+     * \code
+     * DockManager->lockDockWidgetFeaturesGlobally();
+     * DockManager->lockDockWidgetFeaturesGlobally(CDockWidget::NoDockWidgetFeatures);
+     * \code
+     */
+    void lockDockWidgetFeaturesGlobally(CDockWidget::DockWidgetFeatures Features = CDockWidget::GloballyLockableFeatures);
+
 public Q_SLOTS:
 	/**
 	 * Opens the perspective with the given name.

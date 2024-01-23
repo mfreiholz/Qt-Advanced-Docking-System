@@ -165,6 +165,7 @@ public:
         DefaultDockWidgetFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable | DockWidgetFocusable | DockWidgetPinnable,
         AllDockWidgetFeatures = DefaultDockWidgetFeatures | DockWidgetDeleteOnClose | CustomCloseHandling,
         DockWidgetAlwaysCloseAndDelete = DockWidgetForceCloseWithArea | DockWidgetDeleteOnClose,
+        GloballyLockableFeatures = DockWidgetClosable | DockWidgetMovable | DockWidgetFloatable | DockWidgetPinnable,
         NoDockWidgetFeatures = 0x000
     };
     Q_DECLARE_FLAGS(DockWidgetFeatures, DockWidgetFeature)
@@ -335,6 +336,11 @@ public:
      * DockWidgetMovable and DockWidgetFloatable.
      */
     DockWidgetFeatures features() const;
+
+    /**
+     * Triggers notification of feature change signals and functions
+     */
+    void notifyFeaturesChanged();
 
     /**
      * Returns the dock manager that manages the dock widget or 0 if the widget

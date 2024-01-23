@@ -122,6 +122,7 @@ struct DockManagerPrivate
 	Qt::ToolButtonStyle ToolBarStyleFloating = Qt::ToolButtonTextUnderIcon;
 	QSize ToolBarIconSizeDocked = QSize(16, 16);
 	QSize ToolBarIconSizeFloating = QSize(24, 24);
+	CDockWidget::DockWidgetFeatures LockedDockWidgetFeatures;
 
 	/**
 	 * Private data constructor
@@ -1443,6 +1444,33 @@ QSize CDockManager::dockWidgetToolBarIconSize(CDockWidget::eState State) const
 	{
 		return d->ToolBarIconSizeDocked;
 	}
+}
+
+
+//===========================================================================
+void CDockManager::lockDockWidgetFeaturesGlobally(CDockWidget::DockWidgetFeatures Value)
+{
+	// Limit the features to CDockWidget::GloballyLockableFeatures
+	Value &= CDockWidget::GloballyLockableFeatures;
+	if (d->LockedDockWidgetFeatures == Value)
+	{
+		return;
+	}
+
+	d->LockedDockWidgetFeatures = Value;
+	// Call the notifyFeaturesChanged() function for all dock widgets to update
+	// the state of the close and detach buttons
+    for (auto DockWidget : d->DockWidgetsMap)
+    {
+    	DockWidget->notifyFeaturesChanged();
+    }
+}
+
+
+//===========================================================================
+CDockWidget::DockWidgetFeatures CDockManager::globallyLockedDockWidgetFeatures() const
+{
+	return d->LockedDockWidgetFeatures;
 }
 
 
