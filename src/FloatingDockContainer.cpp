@@ -760,10 +760,22 @@ CFloatingDockContainer::CFloatingDockContainer(CDockWidget *DockWidget) :
     d->DockManager->notifyWidgetOrAreaRelocation(DockWidget);
 }
 
+
 //============================================================================
 CFloatingDockContainer::~CFloatingDockContainer()
 {
 	ADS_PRINT("~CFloatingDockContainer");
+	if (d->DockManager)
+	{
+		d->DockManager->removeFloatingWidget(this);
+	}
+	delete d;
+}
+
+
+//============================================================================
+void CFloatingDockContainer::deleteContent()
+{
 	std::vector<QPointer<ads::CDockAreaWidget>> areas;
 	for (int i = 0; i != dockContainer()->dockAreaCount(); ++i)
 	{
@@ -788,12 +800,6 @@ CFloatingDockContainer::~CFloatingDockContainer()
 			delete ptrWdg;
 		}
 	}
-
-	if (d->DockManager)
-	{
-		d->DockManager->removeFloatingWidget(this);
-	}
-	delete d;
 }
 
 //============================================================================

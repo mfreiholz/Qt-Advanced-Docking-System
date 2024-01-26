@@ -566,6 +566,7 @@ CDockManager::~CDockManager()
 	auto FloatingWidgets = d->FloatingWidgets;
 	for (auto FloatingWidget : FloatingWidgets)
 	{
+		FloatingWidget->deleteContent();
 		delete FloatingWidget;
 	}
 
