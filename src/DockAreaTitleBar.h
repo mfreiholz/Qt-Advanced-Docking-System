@@ -43,6 +43,7 @@ class CDockAreaTabBar;
 class CDockAreaWidget;
 struct DockAreaTitleBarPrivate;
 class CElidingLabel;
+class CDockAreaTitleBar;
 
 using tTitleBarButton = QToolButton;
 
@@ -59,10 +60,12 @@ class CTitleBarButton : public tTitleBarButton
 private:
 	bool ShowInTitleBar = true;
 	bool HideWhenDisabled = false;
+	TitleBarButton TitleBarButtonId;
 
 public:
 	using Super = tTitleBarButton;
-	CTitleBarButton(bool ShowInTitleBar = true, QWidget* parent = nullptr);
+	CTitleBarButton(bool ShowInTitleBar, bool HideWhenDisabled, TitleBarButton ButtonId,
+		QWidget* parent = nullptr);
 
 	/**
 	* Adjust this visibility change request with our internal settings:
@@ -73,6 +76,22 @@ public:
 	 * Configures, if the title bar button should be shown in title bar
 	 */
 	void setShowInTitleBar(bool Show);
+
+	/**
+	 * Identifier for the title bar button
+	 */
+	TitleBarButton buttonId() const {return TitleBarButtonId;}
+
+	/**
+	 * Return the title bar that contains this button
+     */
+	CDockAreaTitleBar* titleBar() const;
+
+	/**
+	 * Returns true, if the button is in a title bar in an auto hide area
+	 */
+	bool isInAutoHideArea() const;
+
 
 protected:
 	/**
@@ -170,6 +189,11 @@ public:
 	CElidingLabel* autoHideTitleLabel() const;
 
 	/**
+     * Returns the dock area widget that contains this title bar
+     */
+	CDockAreaWidget* dockAreaWidget() const;
+
+	/**
 	 * Updates the visibility of the dock widget actions in the title bar
 	 */
 	void updateDockWidgetActionsButtons();
@@ -214,6 +238,11 @@ public:
 	 * Call this function, to create all the required auto hide controls
 	 */
 	void showAutoHideControls(bool Show);
+
+	/**
+	 * Returns true, if the auto hide controls are visible
+	 */
+	bool isAutoHide() const;
 
 Q_SIGNALS:
 	/**
