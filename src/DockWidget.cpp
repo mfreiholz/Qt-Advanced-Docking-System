@@ -271,7 +271,10 @@ void DockWidgetPrivate::closeAutoHideDockWidgetsIfNeeded()
 		return;
 	}
 
-	if (!DockContainer->openedDockWidgets().isEmpty())
+	// If the dock container is the dock manager, or if it is not empty, then we
+	// don't need to do anything
+	if ((DockContainer == _this->dockManager())
+	 || !DockContainer->openedDockWidgets().isEmpty())
 	{
 		return;
 	}
