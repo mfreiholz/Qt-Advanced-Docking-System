@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/ads">
-        <file>stylesheets/default-windows.css</file>
-        <file>stylesheets/vendor-partsolutions.css</file>
-        <file>stylesheets/modern-windows.css</file>
-    </qresource>
-</RCC>
