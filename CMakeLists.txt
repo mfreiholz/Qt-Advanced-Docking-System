@@ -45,3 +45,5 @@ if(BUILD_EXAMPLES)
     add_subdirectory(demo)
 endif()
 
+
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation Directory" FORCE)
