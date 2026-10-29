@@ -1,0 +1,32 @@
+cmake_minimum_required(VERSION 3.16)
+project(ads_example_configflags VERSION ${QtADS_VERSION}) 
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} 5.5 COMPONENTS Core Gui Widgets REQUIRED)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+add_executable(ConfigFlagsExample WIN32 
+    main.cpp
+    createmainviewwindow.cpp
+    createmainviewwindow.h
+    createmainviewwindow.ui
+    mainwindow.cpp
+    mainwindow.h
+    mainwindow.ui
+)
+target_include_directories(ConfigFlagsExample PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../src")
+target_link_libraries(ConfigFlagsExample PRIVATE ads::qtadvanceddocking)
+target_link_libraries(ConfigFlagsExample PUBLIC Qt${QT_VERSION_MAJOR}::Core 
+                                                Qt${QT_VERSION_MAJOR}::Gui 
+                                                Qt${QT_VERSION_MAJOR}::Widgets)
+set_target_properties(ConfigFlagsExample PROPERTIES 
+    AUTOMOC ON
+    AUTORCC ON
+    AUTOUIC ON
+    CXX_STANDARD 14
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+    VERSION ${QtADS_VERSION}
+    EXPORT_NAME "Qt Advanced Docking System Config Flags"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/bin"
+)

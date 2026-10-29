@@ -1,0 +1,155 @@
+name: Linux Builds
+
+# ---------------------------------------------------------------------------
+# Workflow triggers
+# ---------------------------------------------------------------------------
+#
+# Build Qt ADS:
+#
+# - for every push to the repository;
+# - manually from the GitHub Actions UI.
+#
+# Each build uses the Qt version provided by the corresponding Ubuntu
+# distribution rather than installing a fixed Qt version.
+#
+# This verifies compatibility with the actual compiler, system libraries,
+# CMake version, and Qt packages available on each supported Ubuntu LTS
+# release.
+# ---------------------------------------------------------------------------
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  # -------------------------------------------------------------------------
+  # Linux compatibility builds
+  # -------------------------------------------------------------------------
+
+  build:
+    name: Ubuntu ${{ matrix.ubuntu }}
+
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        include:
+          - ubuntu: "20.04"
+            qt_major: "5"
+            qt_package: qtbase5-dev
+            qt_private_package: qtbase5-private-dev
+            qt_declarative_package: qtdeclarative5-dev
+
+          - ubuntu: "22.04"
+            qt_major: "6"
+            qt_package: qt6-base-dev
+            qt_private_package: qt6-base-private-dev
+            qt_declarative_package: qt6-declarative-dev
+
+          - ubuntu: "24.04"
+            qt_major: "6"
+            qt_package: qt6-base-dev
+            qt_private_package: qt6-base-private-dev
+            qt_declarative_package: qt6-declarative-dev
+
+          - ubuntu: "26.04"
+            qt_major: "6"
+            qt_package: qt6-base-dev
+            qt_private_package: qt6-base-private-dev
+            qt_declarative_package: qt6-declarative-dev
+
+    container:
+      image: ubuntu:${{ matrix.ubuntu }}
+
+    steps:
+      # ---------------------------------------------------------------------
+      # Install build dependencies
+      # ---------------------------------------------------------------------
+      #
+      # Qt is installed directly from the package repositories of the
+      # corresponding Ubuntu release. This ensures that ADS is tested
+      # against the Qt version normally available to users of that release.
+      #
+      # The private Qt development package is required because ADS uses
+      # private Qt GUI APIs on Linux.
+      # ---------------------------------------------------------------------
+
+      - name: Install system dependencies
+        run: |
+          apt-get update
+
+          DEBIAN_FRONTEND=noninteractive apt-get install -y \
+            build-essential \
+            ca-certificates \
+            cmake \
+            git \
+            ninja-build \
+            libgl1-mesa-dev \
+            libx11-dev \
+            libxcb1-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-0 \
+            ${{ matrix.qt_package }} \
+            ${{ matrix.qt_private_package }} \
+            ${{ matrix.qt_declarative_package }}
+
+      # Fetch the complete Git history and all tags because the ADS
+      # versioning logic derives version information from Git.
+      - name: Checkout source
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # Print the relevant build environment information. This makes it
+      # easier to diagnose problems specific to an Ubuntu or Qt version.
+      - name: Show build environment
+        run: |
+          cat /etc/os-release
+
+          echo
+          echo "Compiler:"
+          c++ --version
+
+          echo
+          echo "CMake:"
+          cmake --version
+
+          echo
+          echo "Qt:"
+          if [ "${{ matrix.qt_major }}" = "6" ]; then
+            qmake6 -v
+          else
+            qmake -v
+          fi
+
+      # ---------------------------------------------------------------------
+      # Configure
+      # ---------------------------------------------------------------------
+      #
+      # Qt is installed into the standard system locations, therefore no
+      # CMAKE_PREFIX_PATH is required.
+      #
+      # QT_VERSION_MAJOR explicitly selects the Qt major version expected
+      # for this Ubuntu release.
+      # ---------------------------------------------------------------------
+
+      - name: Configure
+        run: |
+          cmake \
+            -S . \
+            -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="${GITHUB_WORKSPACE}/install" \
+            -DQT_VERSION_MAJOR=${{ matrix.qt_major }}
+
+      # Compile ADS using all available CPU cores.
+      - name: Build
+        run: cmake --build build --parallel
+
+      # Verify the ADS installation rules and exported CMake package.
+      - name: Install
+        run: cmake --install build
+        

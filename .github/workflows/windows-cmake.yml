@@ -1,0 +1,158 @@
+# ---------------------------------------------------------------------------
+# Windows Build Workflow
+#
+# Builds and installs Qt Advanced Docking System on Windows using the two
+# supported Windows compiler toolchains:
+#
+# - Microsoft Visual C++ (MSVC) with Ninja
+# - Qt-provided MinGW with MinGW Makefiles
+#
+# The workflow verifies that the project can be configured, compiled, and
+# installed successfully with both toolchains.
+#
+# The complete Git history is checked out because the CMake versioning logic
+# may use Git tags to determine version information.
+# ---------------------------------------------------------------------------
+
+name: windows-builds
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  # -------------------------------------------------------------------------
+  # MSVC Build
+  #
+  # Builds the project with the Visual Studio 2022 compiler using Ninja.
+  #
+  # Qt 6.4.2 provides Windows binaries built with the MSVC 2019 ABI.
+  # These binaries are compatible with the Visual Studio 2022 compiler.
+  # -------------------------------------------------------------------------
+  build_windows_msvc:
+    name: Build with MSVC and Ninja
+    runs-on: windows-2022
+
+    env:
+      QT_VERSION: 6.4.2
+      QT_DIR: ${{ github.workspace }}\Qt
+
+    steps:
+      # Fetch the complete repository history including tags. This is required
+      # by versioning logic that derives version information from Git.
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Ninja is used as the CMake generator for the MSVC build.
+      - name: Install Ninja build system
+        run: choco install ninja --no-progress
+
+      # Install the prebuilt Qt package for the MSVC 2019 ABI.
+      #
+      # Visual Studio 2022 is binary compatible with libraries built using the
+      # supported MSVC 2019 ABI, so this package can be used with the VS 2022
+      # compiler provided by the GitHub runner.
+      - name: Install Qt for MSVC
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          target: desktop
+          host: windows
+          arch: win64_msvc2019_64
+          dir: ${{ env.QT_DIR }}
+          setup-python: false
+
+      # Configure the Visual Studio 2022 compiler environment so that CMake and
+      # Ninja can locate cl.exe, the Windows SDK, and the required build tools.
+      - name: Setup MSVC Developer Environment
+        uses: TheMrMilchmann/setup-msvc-dev@v3
+        with:
+          arch: x64
+
+      # Configure a Release build using Ninja and the installed Qt version.
+      - name: Configure CMake with Ninja and MSVC
+        shell: powershell
+        run: |
+          cmake -S . -B build -G Ninja `
+            -DCMAKE_PREFIX_PATH="${{ env.QT_DIR }}\Qt\${{ env.QT_VERSION }}\msvc2019_64" `
+            -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}\install" `
+            -DCMAKE_BUILD_TYPE=Release
+
+      # Compile the complete project.
+      - name: Build with Ninja and MSVC
+        shell: powershell
+        run: cmake --build build
+
+      # Verify the project's CMake install rules by installing the generated
+      # files into the workflow-local installation directory.
+      - name: Install built files
+        shell: powershell
+        run: cmake --install build
+
+
+  # -------------------------------------------------------------------------
+  # MinGW Build
+  #
+  # Builds the project using the MinGW toolchain distributed with Qt.
+  #
+  # The MinGW compiler version must match the toolchain used to build the
+  # installed Qt binaries.
+  # -------------------------------------------------------------------------
+  build_windows_mingw:
+    name: Build with Qt MinGW and CMake
+    runs-on: windows-2022
+
+    env:
+      QT_VERSION: 6.8.3
+      QT_DIR: ${{ github.workspace }}\Qt
+
+    steps:
+      # Fetch the complete repository history including tags. This is required
+      # by versioning logic that derives version information from Git.
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Install Qt together with the matching MinGW 13.1.0 toolchain.
+      - name: Install Qt and MinGW
+        uses: jurplel/install-qt-action@v4
+        with:
+          aqtversion: '==3.1.19'
+          version: ${{ env.QT_VERSION }}
+          target: desktop
+          host: windows
+          arch: win64_mingw
+          dir: ${{ env.QT_DIR }}
+          tools: 'tools_mingw1310'
+          setup-python: false
+
+      # Add the Qt-provided MinGW compiler to PATH for all subsequent steps.
+      - name: Add Qt MinGW to PATH
+        shell: powershell
+        run: |
+          echo "${{ env.QT_DIR }}\Tools\mingw1310_64\bin" >> $env:GITHUB_PATH
+
+      # Configure a Release build using the MinGW Makefiles generator and the
+      # Qt installation matching the MinGW compiler added above.
+      - name: Configure CMake with MinGW
+        shell: powershell
+        run: |
+          cmake -S . -B build-mingw -G "MinGW Makefiles" `
+            -DCMAKE_PREFIX_PATH="${{ env.QT_DIR }}\Qt\${{ env.QT_VERSION }}\mingw_64" `
+            -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}\install" `
+            -DCMAKE_BUILD_TYPE=Release
+
+      # Compile the project using two parallel build jobs.
+      - name: Build with MinGW
+        shell: powershell
+        run: cmake --build build-mingw --parallel 2
+
+      # Verify the project's CMake install rules by installing the generated
+      # files into the workflow-local installation directory.
+      - name: Install built files
+        shell: powershell
+        run: cmake --install build-mingw
+    
